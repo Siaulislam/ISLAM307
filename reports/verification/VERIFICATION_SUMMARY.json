@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-07-11T05:14:05.822536+00:00",
+  "hadith": {
+    "total": 36313,
+    "source": "fawazahmed0/hadith-api@1",
+    "authenticated_source_policy_met": false,
+    "commercial_ready": false,
+    "grade_distribution": {
+      "UNKNOWN": 15163,
+      "SAHIH": 16219,
+      "DAIF": 3256,
+      "OTHER": 257,
+      "HASAN": 1352,
+      "MAWDU": 66
+    }
+  },
+  "tafsir": {
+    "total": 6009,
+    "expected": 6236,
+    "complete": false,
+    "commercial_ready": false
+  },
+  "development_blocked": true,
+  "recommendation": "Rebuild hadith.db from Sunnah.com API; confirm tafsir licensing before commercial use."
+}

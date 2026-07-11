@@ -1,0 +1,55 @@
+.device-toggle {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+.device-toggle button {
+  border: 1px solid var(--border);
+  background: white;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.device-toggle button.active {
+  background: var(--emerald);
+  color: white;
+  border-color: var(--emerald);
+}
+
+.device-phone .phone { width: var(--phone-w); min-height: var(--phone-h); }
+.device-tablet .phone.tablet-frame,
+.device-tablet .phone:not(.tablet-frame) {
+  width: 820px;
+  min-height: 600px;
+  border-radius: 28px;
+}
+.device-fold .phone {
+  width: 720px;
+  min-height: 680px;
+  border-radius: 32px;
+}
+
+.split-layout {
+  display: flex;
+  min-height: 520px;
+  padding: 16px;
+  gap: 0;
+}
+.split-pane {
+  flex: 1;
+  padding: 12px 16px;
+  border-right: 1px solid var(--border);
+}
+.split-detail {
+  flex: 1.4;
+  background: var(--emerald-soft);
+  border-radius: 0 16px 16px 0;
+  border: none;
+}
+
+@media (max-width: 900px) {
+  .device-tablet .phone { width: 100%; max-width: 820px; }
+}

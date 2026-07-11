@@ -1,0 +1,7 @@
+{
+  "api_base": "https://api.sunnah.com",
+  "api_key": "YOUR_SUNNAH_COM_API_KEY",
+  "request_delay_seconds": 0.35,
+  "page_limit": 100,
+  "notes": "Request an API key at https://sunnah.com/developers (create an issue on github.com/sunnah-com/api). Copy this file to sunnah_config.local.json and add your key."
+}

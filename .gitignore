@@ -15,8 +15,12 @@ app/.flutter-plugins-dependencies
 app/.packages
 app/pubspec.lock
 
-# Python cache (keep source JSON cache optional)
-tools/quran/cache/*.json
+# Large SQLite outputs (git)
+app/assets/databases/hadith.db
+app/assets/databases/tafsir.db
+tools/hadith/cache/
+tools/hadith/sunnah_config.local.json
+tools/tafsir/cache/
 
 # Large optional PDF source (user provides locally)
 data/source/*.pdf

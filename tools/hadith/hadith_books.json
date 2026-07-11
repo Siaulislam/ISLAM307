@@ -1,0 +1,78 @@
+{
+  "allowed_sources": [
+    {
+      "slug": "sunnah.com",
+      "name": "Sunnah.com",
+      "website": "https://sunnah.com",
+      "role": "primary",
+      "notes": "Official API for canonical hadith collections"
+    },
+    {
+      "slug": "hadeethenc.com",
+      "name": "HadeethEnc.com",
+      "website": "https://hadeethenc.com",
+      "role": "enrichment",
+      "notes": "Official supervised hadith explanations and Urdu translations"
+    },
+    {
+      "slug": "shamela.ws",
+      "name": "Maktaba Shamela",
+      "website": "https://shamela.ws",
+      "role": "future",
+      "notes": "Authenticated Arabic editions — manual import path"
+    },
+    {
+      "slug": "qurancomplex.gov.sa",
+      "name": "King Fahd Complex",
+      "website": "https://qurancomplex.gov.sa",
+      "role": "future",
+      "notes": "Official publications where applicable"
+    }
+  ],
+  "primary_provider": "sunnah.com",
+  "reference_url_template": "https://sunnah.com/{collection}:{hadith_number}",
+  "books": [
+    {
+      "slug": "bukhari",
+      "collection": "bukhari",
+      "name_en": "Sahih Bukhari",
+      "name_ar": "صحيح البخاري"
+    },
+    {
+      "slug": "muslim",
+      "collection": "muslim",
+      "name_en": "Sahih Muslim",
+      "name_ar": "صحيح مسلم"
+    },
+    {
+      "slug": "abudawud",
+      "collection": "abudawud",
+      "name_en": "Sunan Abu Dawood",
+      "name_ar": "سنن أبي داود"
+    },
+    {
+      "slug": "tirmidhi",
+      "collection": "tirmidhi",
+      "name_en": "Jami' at-Tirmidhi",
+      "name_ar": "جامع الترمذي"
+    },
+    {
+      "slug": "nasai",
+      "collection": "nasai",
+      "name_en": "Sunan an-Nasa'i",
+      "name_ar": "سنن النسائي"
+    },
+    {
+      "slug": "ibnmajah",
+      "collection": "ibnmajah",
+      "name_en": "Sunan Ibn Majah",
+      "name_ar": "سنن ابن ماجه"
+    },
+    {
+      "slug": "malik",
+      "collection": "malik",
+      "name_en": "Muwatta Imam Malik",
+      "name_ar": "موطأ الإمام مالك"
+    }
+  ]
+}

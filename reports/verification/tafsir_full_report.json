@@ -1,0 +1,732 @@
+{
+  "database_path": "C:\\ISLAM307\\app\\assets\\databases\\tafsir.db",
+  "file_size_mb": 99.44,
+  "meta": {
+    "builder": "ISLAM307 tafsir builder",
+    "offline": "true",
+    "entry_count": "6009"
+  },
+  "sources": [
+    {
+      "id": 1,
+      "slug": "ibn-kathir",
+      "name_en": "Tafsir Ibn Kathir",
+      "name_ar": "تفسير ابن كثير",
+      "author": "Ibn Kathir",
+      "language": "en",
+      "sort_order": 1
+    }
+  ],
+  "total_entries": 6009,
+  "expected_ayahs_quran": 6236,
+  "coverage_percent": 96.36,
+  "is_complete": false,
+  "surahs_with_any_entry": 112,
+  "surahs_complete": 111,
+  "surahs_partial_or_missing": [
+    {
+      "surah": 1,
+      "expected_ayahs": 7,
+      "entries": 0,
+      "complete": false
+    },
+    {
+      "surah": 2,
+      "expected_ayahs": 286,
+      "entries": 266,
+      "complete": false
+    },
+    {
+      "surah": 3,
+      "expected_ayahs": 200,
+      "entries": 0,
+      "complete": false
+    }
+  ],
+  "per_surah": [
+    {
+      "surah": 1,
+      "expected_ayahs": 7,
+      "entries": 0,
+      "complete": false
+    },
+    {
+      "surah": 2,
+      "expected_ayahs": 286,
+      "entries": 266,
+      "complete": false
+    },
+    {
+      "surah": 3,
+      "expected_ayahs": 200,
+      "entries": 0,
+      "complete": false
+    },
+    {
+      "surah": 4,
+      "expected_ayahs": 176,
+      "entries": 176,
+      "complete": true
+    },
+    {
+      "surah": 5,
+      "expected_ayahs": 120,
+      "entries": 120,
+      "complete": true
+    },
+    {
+      "surah": 6,
+      "expected_ayahs": 165,
+      "entries": 165,
+      "complete": true
+    },
+    {
+      "surah": 7,
+      "expected_ayahs": 206,
+      "entries": 206,
+      "complete": true
+    },
+    {
+      "surah": 8,
+      "expected_ayahs": 75,
+      "entries": 75,
+      "complete": true
+    },
+    {
+      "surah": 9,
+      "expected_ayahs": 129,
+      "entries": 129,
+      "complete": true
+    },
+    {
+      "surah": 10,
+      "expected_ayahs": 109,
+      "entries": 109,
+      "complete": true
+    },
+    {
+      "surah": 11,
+      "expected_ayahs": 123,
+      "entries": 123,
+      "complete": true
+    },
+    {
+      "surah": 12,
+      "expected_ayahs": 111,
+      "entries": 111,
+      "complete": true
+    },
+    {
+      "surah": 13,
+      "expected_ayahs": 43,
+      "entries": 43,
+      "complete": true
+    },
+    {
+      "surah": 14,
+      "expected_ayahs": 52,
+      "entries": 52,
+      "complete": true
+    },
+    {
+      "surah": 15,
+      "expected_ayahs": 99,
+      "entries": 99,
+      "complete": true
+    },
+    {
+      "surah": 16,
+      "expected_ayahs": 128,
+      "entries": 128,
+      "complete": true
+    },
+    {
+      "surah": 17,
+      "expected_ayahs": 111,
+      "entries": 111,
+      "complete": true
+    },
+    {
+      "surah": 18,
+      "expected_ayahs": 110,
+      "entries": 110,
+      "complete": true
+    },
+    {
+      "surah": 19,
+      "expected_ayahs": 98,
+      "entries": 98,
+      "complete": true
+    },
+    {
+      "surah": 20,
+      "expected_ayahs": 135,
+      "entries": 135,
+      "complete": true
+    },
+    {
+      "surah": 21,
+      "expected_ayahs": 112,
+      "entries": 112,
+      "complete": true
+    },
+    {
+      "surah": 22,
+      "expected_ayahs": 78,
+      "entries": 78,
+      "complete": true
+    },
+    {
+      "surah": 23,
+      "expected_ayahs": 118,
+      "entries": 118,
+      "complete": true
+    },
+    {
+      "surah": 24,
+      "expected_ayahs": 64,
+      "entries": 64,
+      "complete": true
+    },
+    {
+      "surah": 25,
+      "expected_ayahs": 77,
+      "entries": 77,
+      "complete": true
+    },
+    {
+      "surah": 26,
+      "expected_ayahs": 227,
+      "entries": 227,
+      "complete": true
+    },
+    {
+      "surah": 27,
+      "expected_ayahs": 93,
+      "entries": 93,
+      "complete": true
+    },
+    {
+      "surah": 28,
+      "expected_ayahs": 88,
+      "entries": 88,
+      "complete": true
+    },
+    {
+      "surah": 29,
+      "expected_ayahs": 69,
+      "entries": 69,
+      "complete": true
+    },
+    {
+      "surah": 30,
+      "expected_ayahs": 60,
+      "entries": 60,
+      "complete": true
+    },
+    {
+      "surah": 31,
+      "expected_ayahs": 34,
+      "entries": 34,
+      "complete": true
+    },
+    {
+      "surah": 32,
+      "expected_ayahs": 30,
+      "entries": 30,
+      "complete": true
+    },
+    {
+      "surah": 33,
+      "expected_ayahs": 73,
+      "entries": 73,
+      "complete": true
+    },
+    {
+      "surah": 34,
+      "expected_ayahs": 54,
+      "entries": 54,
+      "complete": true
+    },
+    {
+      "surah": 35,
+      "expected_ayahs": 45,
+      "entries": 45,
+      "complete": true
+    },
+    {
+      "surah": 36,
+      "expected_ayahs": 83,
+      "entries": 83,
+      "complete": true
+    },
+    {
+      "surah": 37,
+      "expected_ayahs": 182,
+      "entries": 182,
+      "complete": true
+    },
+    {
+      "surah": 38,
+      "expected_ayahs": 88,
+      "entries": 88,
+      "complete": true
+    },
+    {
+      "surah": 39,
+      "expected_ayahs": 75,
+      "entries": 75,
+      "complete": true
+    },
+    {
+      "surah": 40,
+      "expected_ayahs": 85,
+      "entries": 85,
+      "complete": true
+    },
+    {
+      "surah": 41,
+      "expected_ayahs": 54,
+      "entries": 54,
+      "complete": true
+    },
+    {
+      "surah": 42,
+      "expected_ayahs": 53,
+      "entries": 53,
+      "complete": true
+    },
+    {
+      "surah": 43,
+      "expected_ayahs": 89,
+      "entries": 89,
+      "complete": true
+    },
+    {
+      "surah": 44,
+      "expected_ayahs": 59,
+      "entries": 59,
+      "complete": true
+    },
+    {
+      "surah": 45,
+      "expected_ayahs": 37,
+      "entries": 37,
+      "complete": true
+    },
+    {
+      "surah": 46,
+      "expected_ayahs": 35,
+      "entries": 35,
+      "complete": true
+    },
+    {
+      "surah": 47,
+      "expected_ayahs": 38,
+      "entries": 38,
+      "complete": true
+    },
+    {
+      "surah": 48,
+      "expected_ayahs": 29,
+      "entries": 29,
+      "complete": true
+    },
+    {
+      "surah": 49,
+      "expected_ayahs": 18,
+      "entries": 18,
+      "complete": true
+    },
+    {
+      "surah": 50,
+      "expected_ayahs": 45,
+      "entries": 45,
+      "complete": true
+    },
+    {
+      "surah": 51,
+      "expected_ayahs": 60,
+      "entries": 60,
+      "complete": true
+    },
+    {
+      "surah": 52,
+      "expected_ayahs": 49,
+      "entries": 49,
+      "complete": true
+    },
+    {
+      "surah": 53,
+      "expected_ayahs": 62,
+      "entries": 62,
+      "complete": true
+    },
+    {
+      "surah": 54,
+      "expected_ayahs": 55,
+      "entries": 55,
+      "complete": true
+    },
+    {
+      "surah": 55,
+      "expected_ayahs": 78,
+      "entries": 78,
+      "complete": true
+    },
+    {
+      "surah": 56,
+      "expected_ayahs": 96,
+      "entries": 96,
+      "complete": true
+    },
+    {
+      "surah": 57,
+      "expected_ayahs": 29,
+      "entries": 29,
+      "complete": true
+    },
+    {
+      "surah": 58,
+      "expected_ayahs": 22,
+      "entries": 22,
+      "complete": true
+    },
+    {
+      "surah": 59,
+      "expected_ayahs": 24,
+      "entries": 24,
+      "complete": true
+    },
+    {
+      "surah": 60,
+      "expected_ayahs": 13,
+      "entries": 13,
+      "complete": true
+    },
+    {
+      "surah": 61,
+      "expected_ayahs": 14,
+      "entries": 14,
+      "complete": true
+    },
+    {
+      "surah": 62,
+      "expected_ayahs": 11,
+      "entries": 11,
+      "complete": true
+    },
+    {
+      "surah": 63,
+      "expected_ayahs": 11,
+      "entries": 11,
+      "complete": true
+    },
+    {
+      "surah": 64,
+      "expected_ayahs": 18,
+      "entries": 18,
+      "complete": true
+    },
+    {
+      "surah": 65,
+      "expected_ayahs": 12,
+      "entries": 12,
+      "complete": true
+    },
+    {
+      "surah": 66,
+      "expected_ayahs": 12,
+      "entries": 12,
+      "complete": true
+    },
+    {
+      "surah": 67,
+      "expected_ayahs": 30,
+      "entries": 30,
+      "complete": true
+    },
+    {
+      "surah": 68,
+      "expected_ayahs": 52,
+      "entries": 52,
+      "complete": true
+    },
+    {
+      "surah": 69,
+      "expected_ayahs": 52,
+      "entries": 52,
+      "complete": true
+    },
+    {
+      "surah": 70,
+      "expected_ayahs": 44,
+      "entries": 44,
+      "complete": true
+    },
+    {
+      "surah": 71,
+      "expected_ayahs": 28,
+      "entries": 28,
+      "complete": true
+    },
+    {
+      "surah": 72,
+      "expected_ayahs": 28,
+      "entries": 28,
+      "complete": true
+    },
+    {
+      "surah": 73,
+      "expected_ayahs": 20,
+      "entries": 20,
+      "complete": true
+    },
+    {
+      "surah": 74,
+      "expected_ayahs": 56,
+      "entries": 56,
+      "complete": true
+    },
+    {
+      "surah": 75,
+      "expected_ayahs": 40,
+      "entries": 40,
+      "complete": true
+    },
+    {
+      "surah": 76,
+      "expected_ayahs": 31,
+      "entries": 31,
+      "complete": true
+    },
+    {
+      "surah": 77,
+      "expected_ayahs": 50,
+      "entries": 50,
+      "complete": true
+    },
+    {
+      "surah": 78,
+      "expected_ayahs": 40,
+      "entries": 40,
+      "complete": true
+    },
+    {
+      "surah": 79,
+      "expected_ayahs": 46,
+      "entries": 46,
+      "complete": true
+    },
+    {
+      "surah": 80,
+      "expected_ayahs": 42,
+      "entries": 42,
+      "complete": true
+    },
+    {
+      "surah": 81,
+      "expected_ayahs": 29,
+      "entries": 29,
+      "complete": true
+    },
+    {
+      "surah": 82,
+      "expected_ayahs": 19,
+      "entries": 19,
+      "complete": true
+    },
+    {
+      "surah": 83,
+      "expected_ayahs": 36,
+      "entries": 36,
+      "complete": true
+    },
+    {
+      "surah": 84,
+      "expected_ayahs": 25,
+      "entries": 25,
+      "complete": true
+    },
+    {
+      "surah": 85,
+      "expected_ayahs": 22,
+      "entries": 22,
+      "complete": true
+    },
+    {
+      "surah": 86,
+      "expected_ayahs": 17,
+      "entries": 17,
+      "complete": true
+    },
+    {
+      "surah": 87,
+      "expected_ayahs": 19,
+      "entries": 19,
+      "complete": true
+    },
+    {
+      "surah": 88,
+      "expected_ayahs": 26,
+      "entries": 26,
+      "complete": true
+    },
+    {
+      "surah": 89,
+      "expected_ayahs": 30,
+      "entries": 30,
+      "complete": true
+    },
+    {
+      "surah": 90,
+      "expected_ayahs": 20,
+      "entries": 20,
+      "complete": true
+    },
+    {
+      "surah": 91,
+      "expected_ayahs": 15,
+      "entries": 15,
+      "complete": true
+    },
+    {
+      "surah": 92,
+      "expected_ayahs": 21,
+      "entries": 21,
+      "complete": true
+    },
+    {
+      "surah": 93,
+      "expected_ayahs": 11,
+      "entries": 11,
+      "complete": true
+    },
+    {
+      "surah": 94,
+      "expected_ayahs": 8,
+      "entries": 8,
+      "complete": true
+    },
+    {
+      "surah": 95,
+      "expected_ayahs": 8,
+      "entries": 8,
+      "complete": true
+    },
+    {
+      "surah": 96,
+      "expected_ayahs": 19,
+      "entries": 19,
+      "complete": true
+    },
+    {
+      "surah": 97,
+      "expected_ayahs": 5,
+      "entries": 5,
+      "complete": true
+    },
+    {
+      "surah": 98,
+      "expected_ayahs": 8,
+      "entries": 8,
+      "complete": true
+    },
+    {
+      "surah": 99,
+      "expected_ayahs": 8,
+      "entries": 8,
+      "complete": true
+    },
+    {
+      "surah": 100,
+      "expected_ayahs": 11,
+      "entries": 11,
+      "complete": true
+    },
+    {
+      "surah": 101,
+      "expected_ayahs": 11,
+      "entries": 11,
+      "complete": true
+    },
+    {
+      "surah": 102,
+      "expected_ayahs": 8,
+      "entries": 8,
+      "complete": true
+    },
+    {
+      "surah": 103,
+      "expected_ayahs": 3,
+      "entries": 3,
+      "complete": true
+    },
+    {
+      "surah": 104,
+      "expected_ayahs": 9,
+      "entries": 9,
+      "complete": true
+    },
+    {
+      "surah": 105,
+      "expected_ayahs": 5,
+      "entries": 5,
+      "complete": true
+    },
+    {
+      "surah": 106,
+      "expected_ayahs": 4,
+      "entries": 4,
+      "complete": true
+    },
+    {
+      "surah": 107,
+      "expected_ayahs": 7,
+      "entries": 7,
+      "complete": true
+    },
+    {
+      "surah": 108,
+      "expected_ayahs": 3,
+      "entries": 3,
+      "complete": true
+    },
+    {
+      "surah": 109,
+      "expected_ayahs": 6,
+      "entries": 6,
+      "complete": true
+    },
+    {
+      "surah": 110,
+      "expected_ayahs": 3,
+      "entries": 3,
+      "complete": true
+    },
+    {
+      "surah": 111,
+      "expected_ayahs": 5,
+      "entries": 5,
+      "complete": true
+    },
+    {
+      "surah": 112,
+      "expected_ayahs": 4,
+      "entries": 4,
+      "complete": true
+    },
+    {
+      "surah": 113,
+      "expected_ayahs": 5,
+      "entries": 5,
+      "complete": true
+    },
+    {
+      "surah": 114,
+      "expected_ayahs": 6,
+      "entries": 6,
+      "complete": true
+    }
+  ]
+}
