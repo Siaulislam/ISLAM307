@@ -1,7 +1,9 @@
 {
   "source": {
     "ar_chapters": "sunnah.com/bukhari (Arabic kitab titles)",
-    "ur_chapters": "hadith.maktabahmorba.com Sahih Bukhari Urdu kitab list"
+    "ur_chapters": "hadith.maktabahmorba.com Sahih Bukhari Urdu kitab list",
+    "ar_chapters_extra": "sunnah.com/{muslim,abudawud,tirmidhi} Arabic kitab titles",
+    "ur_chapters_note": "Urdu chapter titles currently authenticated for Bukhari only; other books fall back to English until an authenticated Urdu list is added"
   },
   "books": {
     "bukhari": {
@@ -608,6 +610,906 @@
         "ar": "كتاب التوحيد",
         "ur": "کتاب اللہ اور سنت رسول اللہ",
         "number": 97
+      }
+    },
+    "muslim": {
+      "Introduction": {
+        "en": "Introduction",
+        "ar": "المقدمة",
+        "ur": "Introduction",
+        "number": 0
+      },
+      "The Book of Faith": {
+        "en": "The Book of Faith",
+        "ar": "كتاب الإيمان",
+        "ur": "The Book of Faith",
+        "number": 1
+      },
+      "The Book of Purification": {
+        "en": "The Book of Purification",
+        "ar": "كتاب الطهارة",
+        "ur": "The Book of Purification",
+        "number": 2
+      },
+      "The Book of Menstruation": {
+        "en": "The Book of Menstruation",
+        "ar": "كتاب الحيض",
+        "ur": "The Book of Menstruation",
+        "number": 3
+      },
+      "The Book of Prayers": {
+        "en": "The Book of Prayers",
+        "ar": "كتاب الصلاة",
+        "ur": "The Book of Prayers",
+        "number": 4
+      },
+      "The Book of Mosques and Places of Prayer": {
+        "en": "The Book of Mosques and Places of Prayer",
+        "ar": "كتاب الْمَسَاجِدِ وَمَوَاضِعِ الصَّلاَةِ",
+        "ur": "The Book of Mosques and Places of Prayer",
+        "number": 5
+      },
+      "The Book of Prayer - Travellers": {
+        "en": "The Book of Prayer - Travellers",
+        "ar": "كتاب صلاة المسافرين وقصرها",
+        "ur": "The Book of Prayer - Travellers",
+        "number": 6
+      },
+      "The Book of Prayer - Friday": {
+        "en": "The Book of Prayer - Friday",
+        "ar": "كتاب الجمعة",
+        "ur": "The Book of Prayer - Friday",
+        "number": 7
+      },
+      "The Book of Prayer - Two Eids": {
+        "en": "The Book of Prayer - Two Eids",
+        "ar": "كتاب صلاة العيدين",
+        "ur": "The Book of Prayer - Two Eids",
+        "number": 8
+      },
+      "The Book of Prayer - Rain": {
+        "en": "The Book of Prayer - Rain",
+        "ar": "كتاب صلاة الاستسقاء‏",
+        "ur": "The Book of Prayer - Rain",
+        "number": 9
+      },
+      "The Book of Prayer - Eclipses": {
+        "en": "The Book of Prayer - Eclipses",
+        "ar": "كتاب الكسوف",
+        "ur": "The Book of Prayer - Eclipses",
+        "number": 10
+      },
+      "The Book of Prayer - Funerals": {
+        "en": "The Book of Prayer - Funerals",
+        "ar": "كتاب الجنائز",
+        "ur": "The Book of Prayer - Funerals",
+        "number": 11
+      },
+      "The Book of Zakat": {
+        "en": "The Book of Zakat",
+        "ar": "كتاب الزكاة",
+        "ur": "The Book of Zakat",
+        "number": 12
+      },
+      "The Book of Fasting": {
+        "en": "The Book of Fasting",
+        "ar": "كتاب الصيام",
+        "ur": "The Book of Fasting",
+        "number": 13
+      },
+      "The Book of I'tikaf": {
+        "en": "The Book of I'tikaf",
+        "ar": "كتاب الاعتكاف",
+        "ur": "The Book of I'tikaf",
+        "number": 14
+      },
+      "The Book of Pilgrimage": {
+        "en": "The Book of Pilgrimage",
+        "ar": "كتاب الحج",
+        "ur": "The Book of Pilgrimage",
+        "number": 15
+      },
+      "The Book of Marriage": {
+        "en": "The Book of Marriage",
+        "ar": "كتاب النكاح",
+        "ur": "The Book of Marriage",
+        "number": 16
+      },
+      "The Book of Suckling": {
+        "en": "The Book of Suckling",
+        "ar": "كتاب الرضاع",
+        "ur": "The Book of Suckling",
+        "number": 17
+      },
+      "The Book of Divorce": {
+        "en": "The Book of Divorce",
+        "ar": "كتاب الطلاق",
+        "ur": "The Book of Divorce",
+        "number": 18
+      },
+      "The Book of Invoking Curses": {
+        "en": "The Book of Invoking Curses",
+        "ar": "كتاب اللعان",
+        "ur": "The Book of Invoking Curses",
+        "number": 19
+      },
+      "The Book of Emancipating Slaves": {
+        "en": "The Book of Emancipating Slaves",
+        "ar": "كتاب العتق",
+        "ur": "The Book of Emancipating Slaves",
+        "number": 20
+      },
+      "The Book of Transactions": {
+        "en": "The Book of Transactions",
+        "ar": "كتاب البيوع",
+        "ur": "The Book of Transactions",
+        "number": 21
+      },
+      "The Book of Musaqah": {
+        "en": "The Book of Musaqah",
+        "ar": "كتاب المساقاة",
+        "ur": "The Book of Musaqah",
+        "number": 22
+      },
+      "The Book of the Rules of Inheritance": {
+        "en": "The Book of the Rules of Inheritance",
+        "ar": "كتاب الفرائض",
+        "ur": "The Book of the Rules of Inheritance",
+        "number": 23
+      },
+      "The Book of Gifts": {
+        "en": "The Book of Gifts",
+        "ar": "كتاب الهبات",
+        "ur": "The Book of Gifts",
+        "number": 24
+      },
+      "The Book of Wills": {
+        "en": "The Book of Wills",
+        "ar": "كتاب الوصية",
+        "ur": "The Book of Wills",
+        "number": 25
+      },
+      "The Book of Vows": {
+        "en": "The Book of Vows",
+        "ar": "كتاب النذر",
+        "ur": "The Book of Vows",
+        "number": 26
+      },
+      "The Book of Oaths": {
+        "en": "The Book of Oaths",
+        "ar": "كتاب الأيمان",
+        "ur": "The Book of Oaths",
+        "number": 27
+      },
+      "The Book of Oaths, Muharibin, Qasas (Retaliation), and Diyat (Blood Money)": {
+        "en": "The Book of Oaths, Muharibin, Qasas (Retaliation), and Diyat (Blood Money)",
+        "ar": "كتاب القسامة والمحاربين والقصاص والديات",
+        "ur": "The Book of Oaths, Muharibin, Qasas (Retaliation), and Diyat (Blood Money)",
+        "number": 28
+      },
+      "The Book of Legal Punishments": {
+        "en": "The Book of Legal Punishments",
+        "ar": "كتاب الحدود",
+        "ur": "The Book of Legal Punishments",
+        "number": 29
+      },
+      "The Book of Judicial Decisions": {
+        "en": "The Book of Judicial Decisions",
+        "ar": "كتاب الأقضية",
+        "ur": "The Book of Judicial Decisions",
+        "number": 30
+      },
+      "The Book of Lost Property": {
+        "en": "The Book of Lost Property",
+        "ar": "كتاب اللقطة",
+        "ur": "The Book of Lost Property",
+        "number": 31
+      },
+      "The Book of Jihad and Expeditions": {
+        "en": "The Book of Jihad and Expeditions",
+        "ar": "كتاب الجهاد والسير",
+        "ur": "The Book of Jihad and Expeditions",
+        "number": 32
+      },
+      "The Book on Government": {
+        "en": "The Book on Government",
+        "ar": "كتاب الإمارة",
+        "ur": "The Book on Government",
+        "number": 33
+      },
+      "The Book of Hunting, Slaughter, and what may be Eaten": {
+        "en": "The Book of Hunting, Slaughter, and what may be Eaten",
+        "ar": "كتاب الصيد والذبائح وما يؤكل من الحيوان",
+        "ur": "The Book of Hunting, Slaughter, and what may be Eaten",
+        "number": 34
+      },
+      "The Book of Sacrifices": {
+        "en": "The Book of Sacrifices",
+        "ar": "كتاب الأضاحى",
+        "ur": "The Book of Sacrifices",
+        "number": 35
+      },
+      "The Book of Drinks": {
+        "en": "The Book of Drinks",
+        "ar": "كتاب الأشربة",
+        "ur": "The Book of Drinks",
+        "number": 36
+      },
+      "The Book of Clothes and Adornment": {
+        "en": "The Book of Clothes and Adornment",
+        "ar": "كتاب اللباس والزينة",
+        "ur": "The Book of Clothes and Adornment",
+        "number": 37
+      },
+      "The Book of Manners and Etiquette": {
+        "en": "The Book of Manners and Etiquette",
+        "ar": "كتاب الآداب",
+        "ur": "The Book of Manners and Etiquette",
+        "number": 38
+      },
+      "The Book of Greetings": {
+        "en": "The Book of Greetings",
+        "ar": "كتاب السلام",
+        "ur": "The Book of Greetings",
+        "number": 39
+      },
+      "The Book Concerning the Use of Correct Words": {
+        "en": "The Book Concerning the Use of Correct Words",
+        "ar": "كتاب الألفاظ من الأدب وغيرها",
+        "ur": "The Book Concerning the Use of Correct Words",
+        "number": 40
+      },
+      "The Book of Poetry": {
+        "en": "The Book of Poetry",
+        "ar": "كتاب الشعر",
+        "ur": "The Book of Poetry",
+        "number": 41
+      },
+      "The Book of Dreams": {
+        "en": "The Book of Dreams",
+        "ar": "كتاب الرؤيا",
+        "ur": "The Book of Dreams",
+        "number": 42
+      },
+      "The Book of Virtues": {
+        "en": "The Book of Virtues",
+        "ar": "كتاب الفضائل",
+        "ur": "The Book of Virtues",
+        "number": 43
+      },
+      "The Book of the Merits of the Companions": {
+        "en": "The Book of the Merits of the Companions",
+        "ar": "كتاب فضائل الصحابة رضى الله تعالى عنهم",
+        "ur": "The Book of the Merits of the Companions",
+        "number": 44
+      },
+      "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship": {
+        "en": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+        "ar": "كتاب البر والصلة والآداب",
+        "ur": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+        "number": 45
+      },
+      "The Book of Destiny": {
+        "en": "The Book of Destiny",
+        "ar": "كتاب القدر",
+        "ur": "The Book of Destiny",
+        "number": 46
+      },
+      "The Book of Knowledge": {
+        "en": "The Book of Knowledge",
+        "ar": "كتاب العلم",
+        "ur": "The Book of Knowledge",
+        "number": 47
+      },
+      "The Book Pertaining to the Remembrance of Allah, Supplication, Repentance and Seeking Forgiveness": {
+        "en": "The Book Pertaining to the Remembrance of Allah, Supplication, Repentance and Seeking Forgiveness",
+        "ar": "كتاب الذكر والدعاء والتوبة والاستغفار",
+        "ur": "The Book Pertaining to the Remembrance of Allah, Supplication, Repentance and Seeking Forgiveness",
+        "number": 48
+      },
+      "The Book of Heart-Melting Traditions": {
+        "en": "The Book of Heart-Melting Traditions",
+        "ar": "كتاب الرقاق",
+        "ur": "The Book of Heart-Melting Traditions",
+        "number": 49
+      },
+      "The Book of Repentance": {
+        "en": "The Book of Repentance",
+        "ar": "كتاب التوبة",
+        "ur": "The Book of Repentance",
+        "number": 50
+      },
+      "Characteristics of The Hypocrites And Rulings Concerning Them": {
+        "en": "Characteristics of The Hypocrites And Rulings Concerning Them",
+        "ar": "كتاب صفات المنافقين وأحكامهم",
+        "ur": "Characteristics of The Hypocrites And Rulings Concerning Them",
+        "number": 51
+      },
+      "Characteristics of the Day of Judgment, Paradise, and Hell": {
+        "en": "Characteristics of the Day of Judgment, Paradise, and Hell",
+        "ar": "كتاب صفة القيامة والجنة والنار",
+        "ur": "Characteristics of the Day of Judgment, Paradise, and Hell",
+        "number": 52
+      },
+      "The Book of Paradise, its Description, its Bounties and its Inhabitants": {
+        "en": "The Book of Paradise, its Description, its Bounties and its Inhabitants",
+        "ar": "كتاب الجنة وصفة نعيمها وأهلها",
+        "ur": "The Book of Paradise, its Description, its Bounties and its Inhabitants",
+        "number": 53
+      },
+      "The Book of Tribulations and Portents of the Last Hour": {
+        "en": "The Book of Tribulations and Portents of the Last Hour",
+        "ar": "كتاب الفتن وأشراط الساعة",
+        "ur": "The Book of Tribulations and Portents of the Last Hour",
+        "number": 54
+      },
+      "The Book of Zuhd and Softening of Hearts": {
+        "en": "The Book of Zuhd and Softening of Hearts",
+        "ar": "كتاب الزهد والرقائق",
+        "ur": "The Book of Zuhd and Softening of Hearts",
+        "number": 55
+      },
+      "The Book of Commentary on the Qur'an": {
+        "en": "The Book of Commentary on the Qur'an",
+        "ar": "كتاب التفسير",
+        "ur": "The Book of Commentary on the Qur'an",
+        "number": 56
+      }
+    },
+    "abudawud": {
+      "Purification (Kitab Al-Taharah)": {
+        "en": "Purification (Kitab Al-Taharah)",
+        "ar": "كتاب الطهارة",
+        "ur": "Purification (Kitab Al-Taharah)",
+        "number": 1
+      },
+      "Prayer (Kitab Al-Salat)": {
+        "en": "Prayer (Kitab Al-Salat)",
+        "ar": "كتاب الصلاة",
+        "ur": "Prayer (Kitab Al-Salat)",
+        "number": 2
+      },
+      "The Book Of The Prayer For Rain (Kitab al-Istisqa')": {
+        "en": "The Book Of The Prayer For Rain (Kitab al-Istisqa')",
+        "ar": "كتاب الاستسقاء",
+        "ur": "The Book Of The Prayer For Rain (Kitab al-Istisqa')",
+        "number": 3
+      },
+      "Prayer (Kitab Al-Salat): Detailed Rules of Law about the Prayer during Journey": {
+        "en": "Prayer (Kitab Al-Salat): Detailed Rules of Law about the Prayer during Journey",
+        "ar": "كتاب صلاة السفر",
+        "ur": "Prayer (Kitab Al-Salat): Detailed Rules of Law about the Prayer during Journey",
+        "number": 4
+      },
+      "Prayer (Kitab Al-Salat): Voluntary Prayers": {
+        "en": "Prayer (Kitab Al-Salat): Voluntary Prayers",
+        "ar": "كتاب التطوع",
+        "ur": "Prayer (Kitab Al-Salat): Voluntary Prayers",
+        "number": 5
+      },
+      "Prayer (Kitab Al-Salat): Detailed Injunctions about Ramadan": {
+        "en": "Prayer (Kitab Al-Salat): Detailed Injunctions about Ramadan",
+        "ar": "كتاب شهر رمضان",
+        "ur": "Prayer (Kitab Al-Salat): Detailed Injunctions about Ramadan",
+        "number": 6
+      },
+      "Prayer (Kitab Al-Salat): Prostration while reciting the Qur'an": {
+        "en": "Prayer (Kitab Al-Salat): Prostration while reciting the Qur'an",
+        "ar": "كتاب سجود القرآن",
+        "ur": "Prayer (Kitab Al-Salat): Prostration while reciting the Qur'an",
+        "number": 7
+      },
+      "Prayer (Kitab Al-Salat): Detailed Injunctions about Witr": {
+        "en": "Prayer (Kitab Al-Salat): Detailed Injunctions about Witr",
+        "ar": "كتاب الوتر",
+        "ur": "Prayer (Kitab Al-Salat): Detailed Injunctions about Witr",
+        "number": 8
+      },
+      "Zakat (Kitab Al-Zakat)": {
+        "en": "Zakat (Kitab Al-Zakat)",
+        "ar": "كتاب الزكاة",
+        "ur": "Zakat (Kitab Al-Zakat)",
+        "number": 9
+      },
+      "The Book of Lost and Found Items": {
+        "en": "The Book of Lost and Found Items",
+        "ar": "كتاب اللقطة",
+        "ur": "The Book of Lost and Found Items",
+        "number": 10
+      },
+      "The Rites of Hajj (Kitab Al-Manasik Wa'l-Hajj)": {
+        "en": "The Rites of Hajj (Kitab Al-Manasik Wa'l-Hajj)",
+        "ar": "كتاب المناسك",
+        "ur": "The Rites of Hajj (Kitab Al-Manasik Wa'l-Hajj)",
+        "number": 11
+      },
+      "Marriage (Kitab Al-Nikah)": {
+        "en": "Marriage (Kitab Al-Nikah)",
+        "ar": "كتاب النكاح",
+        "ur": "Marriage (Kitab Al-Nikah)",
+        "number": 12
+      },
+      "Divorce (Kitab Al-Talaq)": {
+        "en": "Divorce (Kitab Al-Talaq)",
+        "ar": "كتاب الطلاق",
+        "ur": "Divorce (Kitab Al-Talaq)",
+        "number": 13
+      },
+      "Fasting (Kitab Al-Siyam)": {
+        "en": "Fasting (Kitab Al-Siyam)",
+        "ar": "كتاب الصوم",
+        "ur": "Fasting (Kitab Al-Siyam)",
+        "number": 14
+      },
+      "Jihad (Kitab Al-Jihad)": {
+        "en": "Jihad (Kitab Al-Jihad)",
+        "ar": "كتاب الجهاد",
+        "ur": "Jihad (Kitab Al-Jihad)",
+        "number": 15
+      },
+      "Sacrifice (Kitab Al-Dahaya)": {
+        "en": "Sacrifice (Kitab Al-Dahaya)",
+        "ar": "كتاب الضحايا",
+        "ur": "Sacrifice (Kitab Al-Dahaya)",
+        "number": 16
+      },
+      "Game (Kitab Al-Said)": {
+        "en": "Game (Kitab Al-Said)",
+        "ar": "كتاب الصيد",
+        "ur": "Game (Kitab Al-Said)",
+        "number": 17
+      },
+      "Wills (Kitab Al-Wasaya)": {
+        "en": "Wills (Kitab Al-Wasaya)",
+        "ar": "كتاب الوصايا",
+        "ur": "Wills (Kitab Al-Wasaya)",
+        "number": 18
+      },
+      "Shares of Inheritance (Kitab Al-Fara'id)": {
+        "en": "Shares of Inheritance (Kitab Al-Fara'id)",
+        "ar": "كتاب الفرائض",
+        "ur": "Shares of Inheritance (Kitab Al-Fara'id)",
+        "number": 19
+      },
+      "Tribute, Spoils, and Rulership (Kitab Al-Kharaj, Wal-Fai' Wal-Imarah)": {
+        "en": "Tribute, Spoils, and Rulership (Kitab Al-Kharaj, Wal-Fai' Wal-Imarah)",
+        "ar": "كتاب الخراج والإمارة والفىء",
+        "ur": "Tribute, Spoils, and Rulership (Kitab Al-Kharaj, Wal-Fai' Wal-Imarah)",
+        "number": 20
+      },
+      "Funerals (Kitab Al-Jana'iz)": {
+        "en": "Funerals (Kitab Al-Jana'iz)",
+        "ar": "كتاب الجنائز",
+        "ur": "Funerals (Kitab Al-Jana'iz)",
+        "number": 21
+      },
+      "Oaths and Vows (Kitab Al-Aiman Wa Al-Nudhur)": {
+        "en": "Oaths and Vows (Kitab Al-Aiman Wa Al-Nudhur)",
+        "ar": "كتاب الأيمان والنذور",
+        "ur": "Oaths and Vows (Kitab Al-Aiman Wa Al-Nudhur)",
+        "number": 22
+      },
+      "Commercial Transactions (Kitab Al-Buyu)": {
+        "en": "Commercial Transactions (Kitab Al-Buyu)",
+        "ar": "كتاب البيوع",
+        "ur": "Commercial Transactions (Kitab Al-Buyu)",
+        "number": 23
+      },
+      "Wages (Kitab Al-Ijarah)": {
+        "en": "Wages (Kitab Al-Ijarah)",
+        "ar": "كتاب الإجارة",
+        "ur": "Wages (Kitab Al-Ijarah)",
+        "number": 24
+      },
+      "The Office of the Judge (Kitab Al-Aqdiyah)": {
+        "en": "The Office of the Judge (Kitab Al-Aqdiyah)",
+        "ar": "كتاب الأقضية",
+        "ur": "The Office of the Judge (Kitab Al-Aqdiyah)",
+        "number": 25
+      },
+      "Knowledge (Kitab Al-Ilm)": {
+        "en": "Knowledge (Kitab Al-Ilm)",
+        "ar": "كتاب العلم",
+        "ur": "Knowledge (Kitab Al-Ilm)",
+        "number": 26
+      },
+      "Drinks (Kitab Al-Ashribah)": {
+        "en": "Drinks (Kitab Al-Ashribah)",
+        "ar": "كتاب الأشربة",
+        "ur": "Drinks (Kitab Al-Ashribah)",
+        "number": 27
+      },
+      "Foods (Kitab Al-At'imah)": {
+        "en": "Foods (Kitab Al-At'imah)",
+        "ar": "كتاب الأطعمة",
+        "ur": "Foods (Kitab Al-At'imah)",
+        "number": 28
+      },
+      "Medicine (Kitab Al-Tibb)": {
+        "en": "Medicine (Kitab Al-Tibb)",
+        "ar": "كتاب الطب",
+        "ur": "Medicine (Kitab Al-Tibb)",
+        "number": 29
+      },
+      "Divination and Omens (Kitab Al-Kahanah Wa Al-Tatayyur)": {
+        "en": "Divination and Omens (Kitab Al-Kahanah Wa Al-Tatayyur)",
+        "ar": "كتاب الكهانة و التطير",
+        "ur": "Divination and Omens (Kitab Al-Kahanah Wa Al-Tatayyur)",
+        "number": 30
+      },
+      "The Book of Manumission of Slaves": {
+        "en": "The Book of Manumission of Slaves",
+        "ar": "كتاب العتق",
+        "ur": "The Book of Manumission of Slaves",
+        "number": 31
+      },
+      "Dialects and Readings of the Qur'an (Kitab Al-Huruf Wa Al-Qira'at)": {
+        "en": "Dialects and Readings of the Qur'an (Kitab Al-Huruf Wa Al-Qira'at)",
+        "ar": "كتاب الحروف والقراءات",
+        "ur": "Dialects and Readings of the Qur'an (Kitab Al-Huruf Wa Al-Qira'at)",
+        "number": 32
+      },
+      "Hot Baths (Kitab Al-Hammam)": {
+        "en": "Hot Baths (Kitab Al-Hammam)",
+        "ar": "كتاب الحمَّام",
+        "ur": "Hot Baths (Kitab Al-Hammam)",
+        "number": 33
+      },
+      "Clothing (Kitab Al-Libas)": {
+        "en": "Clothing (Kitab Al-Libas)",
+        "ar": "كتاب اللباس",
+        "ur": "Clothing (Kitab Al-Libas)",
+        "number": 34
+      },
+      "Combing the Hair (Kitab Al-Tarajjul)": {
+        "en": "Combing the Hair (Kitab Al-Tarajjul)",
+        "ar": "كتاب الترجل",
+        "ur": "Combing the Hair (Kitab Al-Tarajjul)",
+        "number": 35
+      },
+      "Signet-Rings (Kitab Al-Khatam)": {
+        "en": "Signet-Rings (Kitab Al-Khatam)",
+        "ar": "كتاب الخاتم",
+        "ur": "Signet-Rings (Kitab Al-Khatam)",
+        "number": 36
+      },
+      "Trials and Fierce Battles (Kitab Al-Fitan Wa Al-Malahim)": {
+        "en": "Trials and Fierce Battles (Kitab Al-Fitan Wa Al-Malahim)",
+        "ar": "كتاب الفتن والملاحم",
+        "ur": "Trials and Fierce Battles (Kitab Al-Fitan Wa Al-Malahim)",
+        "number": 37
+      },
+      "The Promised Deliverer (Kitab Al-Mahdi)": {
+        "en": "The Promised Deliverer (Kitab Al-Mahdi)",
+        "ar": "كتاب المهدى",
+        "ur": "The Promised Deliverer (Kitab Al-Mahdi)",
+        "number": 38
+      },
+      "Battles (Kitab Al-Malahim)": {
+        "en": "Battles (Kitab Al-Malahim)",
+        "ar": "كتاب الملاحم",
+        "ur": "Battles (Kitab Al-Malahim)",
+        "number": 39
+      },
+      "Prescribed Punishments (Kitab Al-Hudud)": {
+        "en": "Prescribed Punishments (Kitab Al-Hudud)",
+        "ar": "كتاب الحدود",
+        "ur": "Prescribed Punishments (Kitab Al-Hudud)",
+        "number": 40
+      },
+      "Types of Blood-Wit (Kitab Al-Diyat)": {
+        "en": "Types of Blood-Wit (Kitab Al-Diyat)",
+        "ar": "كتاب الديات",
+        "ur": "Types of Blood-Wit (Kitab Al-Diyat)",
+        "number": 41
+      },
+      "Model Behavior of the Prophet (Kitab Al-Sunnah)": {
+        "en": "Model Behavior of the Prophet (Kitab Al-Sunnah)",
+        "ar": "كتاب السنة",
+        "ur": "Model Behavior of the Prophet (Kitab Al-Sunnah)",
+        "number": 42
+      },
+      "General Behavior (Kitab Al-Adab)": {
+        "en": "General Behavior (Kitab Al-Adab)",
+        "ar": "كتاب الأدب",
+        "ur": "General Behavior (Kitab Al-Adab)",
+        "number": 43
+      }
+    },
+    "tirmidhi": {
+      "The Book on Purification": {
+        "en": "The Book on Purification",
+        "ar": "كتاب الطهارة عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Purification",
+        "number": 1
+      },
+      "The Book on Salat (Prayer)": {
+        "en": "The Book on Salat (Prayer)",
+        "ar": "كتاب الصلاة",
+        "ur": "The Book on Salat (Prayer)",
+        "number": 2
+      },
+      "The Book on Al-Witr": {
+        "en": "The Book on Al-Witr",
+        "ar": "أَبْوَابُ الْوِتْرِ",
+        "ur": "The Book on Al-Witr",
+        "number": 3
+      },
+      "The Book on the Day of Friday": {
+        "en": "The Book on the Day of Friday",
+        "ar": "كِتَاب الْجُمُعَةِ عَنْ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+        "ur": "The Book on the Day of Friday",
+        "number": 4
+      },
+      "The Book on the Two Eids": {
+        "en": "The Book on the Two Eids",
+        "ar": "أَبْوَابُ الْعِيدَيْنِ عَنْ رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+        "ur": "The Book on the Two Eids",
+        "number": 5
+      },
+      "The Book on Traveling": {
+        "en": "The Book on Traveling",
+        "ar": "أَبْوَابُ السَّفَرِ",
+        "ur": "The Book on Traveling",
+        "number": 6
+      },
+      "The Book on Zakat": {
+        "en": "The Book on Zakat",
+        "ar": "كتاب الزكاة عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Zakat",
+        "number": 7
+      },
+      "The Book on Fasting": {
+        "en": "The Book on Fasting",
+        "ar": "كتاب الصوم عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Fasting",
+        "number": 8
+      },
+      "The Book on Hajj": {
+        "en": "The Book on Hajj",
+        "ar": "كتاب الحج عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Hajj",
+        "number": 9
+      },
+      "The Book on Jana''iz (Funerals)": {
+        "en": "The Book on Jana''iz (Funerals)",
+        "ar": "كتاب الجنائز عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Jana''iz (Funerals)",
+        "number": 10
+      },
+      "The Book on Marriage": {
+        "en": "The Book on Marriage",
+        "ar": "كتاب النكاح عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Marriage",
+        "number": 11
+      },
+      "The Book on Suckling": {
+        "en": "The Book on Suckling",
+        "ar": "كتاب الرضاع",
+        "ur": "The Book on Suckling",
+        "number": 12
+      },
+      "The Book on Divorce and Li'an": {
+        "en": "The Book on Divorce and Li'an",
+        "ar": "كتاب الطلاق واللعان عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Divorce and Li'an",
+        "number": 13
+      },
+      "The Book on Business": {
+        "en": "The Book on Business",
+        "ar": "كتاب البيوع عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Business",
+        "number": 14
+      },
+      "The Chapters On Judgements From The Messenger of Allah": {
+        "en": "The Chapters On Judgements From The Messenger of Allah",
+        "ar": "كتاب الأحكام عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Chapters On Judgements From The Messenger of Allah",
+        "number": 15
+      },
+      "The Book on Blood Money": {
+        "en": "The Book on Blood Money",
+        "ar": "كتاب الديات عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Blood Money",
+        "number": 16
+      },
+      "The Book on Legal Punishments (Al-Hudud)": {
+        "en": "The Book on Legal Punishments (Al-Hudud)",
+        "ar": "كتاب الحدود عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Legal Punishments (Al-Hudud)",
+        "number": 17
+      },
+      "The Book on Hunting": {
+        "en": "The Book on Hunting",
+        "ar": "كتاب الصيد والذبائح عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Hunting",
+        "number": 18
+      },
+      "The Book on Sacrifices": {
+        "en": "The Book on Sacrifices",
+        "ar": "كتاب الأضاحى عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Sacrifices",
+        "number": 19
+      },
+      "The Book on Vows and Oaths": {
+        "en": "The Book on Vows and Oaths",
+        "ar": "كتاب النذور والأيمان عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Vows and Oaths",
+        "number": 20
+      },
+      "The Book on Military Expeditions": {
+        "en": "The Book on Military Expeditions",
+        "ar": "كتاب السير عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Military Expeditions",
+        "number": 21
+      },
+      "The Book on Virtues of Jihad": {
+        "en": "The Book on Virtues of Jihad",
+        "ar": "كتاب فضائل الجهاد عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Virtues of Jihad",
+        "number": 22
+      },
+      "The Book on Jihad": {
+        "en": "The Book on Jihad",
+        "ar": "كتاب الجهاد عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Jihad",
+        "number": 23
+      },
+      "The Book on Clothing": {
+        "en": "The Book on Clothing",
+        "ar": "كتاب اللباس",
+        "ur": "The Book on Clothing",
+        "number": 24
+      },
+      "The Book on Food": {
+        "en": "The Book on Food",
+        "ar": "كتاب الأطعمة عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Food",
+        "number": 25
+      },
+      "The Book on Drinks": {
+        "en": "The Book on Drinks",
+        "ar": "كتاب الأشربة عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Drinks",
+        "number": 26
+      },
+      "Chapters on Righteousness And Maintaining Good Relations With Relatives": {
+        "en": "Chapters on Righteousness And Maintaining Good Relations With Relatives",
+        "ar": "كتاب البر والصلة عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Righteousness And Maintaining Good Relations With Relatives",
+        "number": 27
+      },
+      "Chapters on Medicine": {
+        "en": "Chapters on Medicine",
+        "ar": "كتاب الطب عن رسول اللَّهِ صلى الله عليه وسلم",
+        "ur": "Chapters on Medicine",
+        "number": 28
+      },
+      "Chapters On Inheritance": {
+        "en": "Chapters On Inheritance",
+        "ar": "كتاب الفرائض عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Inheritance",
+        "number": 29
+      },
+      "Chapters On Wasaya (Wills and Testament)": {
+        "en": "Chapters On Wasaya (Wills and Testament)",
+        "ar": "كتاب الوصايا عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Wasaya (Wills and Testament)",
+        "number": 30
+      },
+      "Chapters On Wala' And Gifts": {
+        "en": "Chapters On Wala' And Gifts",
+        "ar": "كتاب الولاء والهبة عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Wala' And Gifts",
+        "number": 31
+      },
+      "Chapters On Al-Qadar": {
+        "en": "Chapters On Al-Qadar",
+        "ar": "كتاب القدر عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Al-Qadar",
+        "number": 32
+      },
+      "Chapters On Al-Fitan": {
+        "en": "Chapters On Al-Fitan",
+        "ar": "كتاب الفتن عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Al-Fitan",
+        "number": 33
+      },
+      "Chapters On Dreams": {
+        "en": "Chapters On Dreams",
+        "ar": "كتاب الرؤيا عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Dreams",
+        "number": 34
+      },
+      "Chapters On Witnesses": {
+        "en": "Chapters On Witnesses",
+        "ar": "كتاب الشهادات عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Witnesses",
+        "number": 35
+      },
+      "Chapters On Zuhd": {
+        "en": "Chapters On Zuhd",
+        "ar": "كتاب الزهد عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters On Zuhd",
+        "number": 36
+      },
+      "Chapters on the description of the Day of Judgement, Ar-Riqaq, and Al-Wara'": {
+        "en": "Chapters on the description of the Day of Judgement, Ar-Riqaq, and Al-Wara'",
+        "ar": "كتاب صفة القيامة والرقائق والورع عن رسول الله صلى الله",
+        "ur": "Chapters on the description of the Day of Judgement, Ar-Riqaq, and Al-Wara'",
+        "number": 37
+      },
+      "Chapters on the description of Paradise": {
+        "en": "Chapters on the description of Paradise",
+        "ar": "كتاب صفة الجنة عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on the description of Paradise",
+        "number": 38
+      },
+      "The Book on the Description of Hellfire": {
+        "en": "The Book on the Description of Hellfire",
+        "ar": "كتاب صفة جهنم عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on the Description of Hellfire",
+        "number": 39
+      },
+      "The Book on Faith": {
+        "en": "The Book on Faith",
+        "ar": "كتاب الإيمان عن رسول الله صلى الله عليه وسلم",
+        "ur": "The Book on Faith",
+        "number": 40
+      },
+      "Chapters on Knowledge": {
+        "en": "Chapters on Knowledge",
+        "ar": "كتاب العلم عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Knowledge",
+        "number": 41
+      },
+      "Chapters on Seeking Permission": {
+        "en": "Chapters on Seeking Permission",
+        "ar": "كتاب الاستئذان والآداب عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Seeking Permission",
+        "number": 42
+      },
+      "Chapters on Manners": {
+        "en": "Chapters on Manners",
+        "ar": "كتاب الأدب عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Manners",
+        "number": 43
+      },
+      "Chapters on Parables": {
+        "en": "Chapters on Parables",
+        "ar": "كتاب الأمثال عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Parables",
+        "number": 44
+      },
+      "Chapters on The Virtues of the Qur'an": {
+        "en": "Chapters on The Virtues of the Qur'an",
+        "ar": "كتاب ثواب القرآن عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on The Virtues of the Qur'an",
+        "number": 45
+      },
+      "Chapters on Recitation": {
+        "en": "Chapters on Recitation",
+        "ar": "كتاب القراءات عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Recitation",
+        "number": 46
+      },
+      "Chapters on Tafsir": {
+        "en": "Chapters on Tafsir",
+        "ar": "كتاب تفسير القرآن عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Tafsir",
+        "number": 47
+      },
+      "Chapters on Supplication": {
+        "en": "Chapters on Supplication",
+        "ar": "كتاب الدعوات عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Supplication",
+        "number": 48
+      },
+      "Chapters on Virtues": {
+        "en": "Chapters on Virtues",
+        "ar": "كتاب المناقب عن رسول الله صلى الله عليه وسلم",
+        "ur": "Chapters on Virtues",
+        "number": 49
       }
     }
   }

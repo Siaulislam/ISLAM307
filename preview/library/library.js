@@ -63,7 +63,8 @@ const state = {
   hadithLang: localStorage.getItem('i307_hadith_lang') || 'ur',
   hadithListRows: [],
   hadithListShown: 0,
-  hadithListPage: 100,
+  // Paint in chunks so the full book (Bukhari/Muslim 7563, etc.) appears without a fake 120 cap.
+  hadithListPage: 400,
   tafsirSources: [],
   tafsirCache: {},
   currentSurah: null,
@@ -604,8 +605,23 @@ function renderHadithList(slug, filter = '') {
     );
   });
   state.hadithListRows = rows;
+  // Always paint the complete book/filter set (chunked) — never stop at 120.
   state.hadithListShown = Math.min(state.hadithListPage, rows.length);
   paintHadithListPage(slug, pack, true);
+  scheduleFillAllHadith(slug);
+}
+
+function scheduleFillAllHadith(slug) {
+  const pack = state.hadithCache[slug];
+  if (!pack) return;
+  const rows = state.hadithListRows || [];
+  if (state.hadithListShown >= rows.length) return;
+  requestAnimationFrame(() => {
+    if (state.hadithSlug !== slug) return;
+    state.hadithListShown = Math.min(rows.length, state.hadithListShown + state.hadithListPage);
+    paintHadithListPage(slug, pack, false);
+    scheduleFillAllHadith(slug);
+  });
 }
 
 function paintHadithListPage(slug, pack, reset = false) {
@@ -614,13 +630,16 @@ function paintHadithListPage(slug, pack, reset = false) {
   const visible = rows.slice(0, shown);
   const totalAll = (pack.hadiths || []).length;
   const q = (state.hadithFilter || '').trim();
+  const done = shown >= rows.length;
   const status = q
-    ? `${pack.book.en} · ${rows.length.toLocaleString()} matches · showing ${visible.length.toLocaleString()}`
-    : `${pack.book.en} · ${totalAll.toLocaleString()} hadith · showing ${visible.length.toLocaleString()}`;
+    ? `${pack.book.en} · ${rows.length.toLocaleString()} matches · ${done ? 'all shown' : `loading ${visible.length.toLocaleString()}…`}`
+    : `${pack.book.en} · full collection ${totalAll.toLocaleString()} hadith · ${done ? 'all numbers listed' : `loading ${visible.length.toLocaleString()}…`}`;
 
   if (reset) {
+    const maxN = totalAll ? Math.max(...pack.hadiths.map((h) => h.n)) : 0;
     $('hadith-view').innerHTML = `
       <p class="status" id="hadith-list-status">${escapeHtml(status)}</p>
+      <p class="hadith-list-hint">Same on every number: Language (Urdu / English / Arabic) · Ravi · Reference. Type a number (1–${maxN}) in search to jump.</p>
       <div class="hadith-number-list" id="hadith-number-list"></div>
       <div class="hadith-list-more" id="hadith-list-more"></div>
     `;
@@ -652,14 +671,19 @@ function paintHadithListPage(slug, pack, reset = false) {
 
   const more = $('hadith-list-more');
   if (!more) return;
-  if (shown < rows.length) {
-    more.innerHTML = `<button type="button" class="hadith-action" id="hadith-load-more">Load more (${(rows.length - shown).toLocaleString()} remaining)</button>`;
+  if (!done && rows.length > 0) {
+    more.innerHTML = `<button type="button" class="hadith-action" id="hadith-load-more">Show remaining ${(rows.length - shown).toLocaleString()} now</button>`;
     const btn = $('hadith-load-more');
-    if (btn) btn.onclick = () => loadMoreHadith(slug);
+    if (btn) {
+      btn.onclick = () => {
+        state.hadithListShown = rows.length;
+        paintHadithListPage(slug, pack, false);
+      };
+    }
   } else if (rows.length === 0) {
     more.innerHTML = '<p class="empty">No matches.</p>';
   } else {
-    more.innerHTML = `<p class="status">All ${rows.length.toLocaleString()} hadith loaded · same Ravi / Reference / language on every number</p>`;
+    more.innerHTML = `<p class="status">All ${rows.length.toLocaleString()} hadith loaded · Language / Ravi / Reference work on every number (Bukhari, Muslim, Abu Dawood, Tirmidhi)</p>`;
   }
 }
 

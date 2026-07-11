@@ -230,6 +230,12 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
   gap: 8px;
   justify-items: start;
 }
+.hadith-list-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
 .hadith-number-row {
   display: grid;
   gap: 2px;

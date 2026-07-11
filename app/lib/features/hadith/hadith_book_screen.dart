@@ -58,35 +58,52 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
   @override
   Widget build(BuildContext context) {
     final title = _book?['name_en']?.toString() ?? 'Hadith';
+    final total = _book?['hadith_count'];
+    final totalLabel = total == null ? title : '$title · $total';
+    final hasMore = total is int ? _items.length < total : true;
     return Scaffold(
       appBar: AppBar(
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
+        title: Text(totalLabel, style: const TextStyle(fontWeight: FontWeight.w800)),
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
           : NotificationListener<ScrollNotification>(
               onNotification: (n) {
-                if (n.metrics.pixels > n.metrics.maxScrollExtent - 240) _loadMore();
+                if (hasMore && n.metrics.pixels > n.metrics.maxScrollExtent - 240) _loadMore();
                 return false;
               },
               child: ListView.builder(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                itemCount: _items.length + (_loadingMore ? 1 : 0),
+                itemCount: _items.length + ((hasMore || _loadingMore) ? 1 : 0),
                 itemBuilder: (_, i) {
                   if (i >= _items.length) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16),
-                      child: Center(child: CircularProgressIndicator(color: Islam307Theme.emerald)),
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: _loadingMore
+                            ? const CircularProgressIndicator(color: Islam307Theme.emerald)
+                            : Text(
+                                'Scroll for more · ${_items.length}${total is int ? ' / $total' : ''} hadith',
+                                style: const TextStyle(color: Colors.black54),
+                              ),
+                      ),
                     );
                   }
                   final h = _items[i];
+                  final kitab = (h['kitab'] ?? h['chapter_title'] ?? '').toString();
+                  final grade = (h['grade'] ?? '').toString();
+                  final subtitle = [
+                    if (kitab.isNotEmpty) kitab,
+                    if (grade.isNotEmpty) grade,
+                    'Language · Ravi · Reference',
+                  ].join(' · ');
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: ListTile(
                       title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
                       subtitle: Text(
-                        'Tap number → Arabic + Urdu/English/Arabic · Ravi & Reference',
+                        subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
