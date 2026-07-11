@@ -1,0 +1,18 @@
+/* ISLAM 307 — Kitab (Hadith collection) icons */
+.list-row .kitab-icon-wrap {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  padding: 0;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.1);
+}
+.list-row .kitab-icon {
+  width: 44px;
+  height: 44px;
+  display: block;
+  border-radius: 12px;
+  object-fit: cover;
+}

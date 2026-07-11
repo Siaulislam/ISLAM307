@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "design": "ISLAM 307 original kitab marks — not copied from any third-party app",
+  "icon_base_path": "icons/hadith",
+  "books": [
+    {
+      "slug": "bukhari",
+      "name_en": "Sahih Bukhari",
+      "name_ar": "صحيح البخاري",
+      "icon_file": "bukhari.svg",
+      "accent": "#065f46",
+      "accent_soft": "#ecfdf5",
+      "badge": "Sahih",
+      "short_ar": "بخاري"
+    },
+    {
+      "slug": "muslim",
+      "name_en": "Sahih Muslim",
+      "name_ar": "صحيح مسلم",
+      "icon_file": "muslim.svg",
+      "accent": "#0e7490",
+      "accent_soft": "#ecfeff",
+      "badge": "Sahih",
+      "short_ar": "مسلم"
+    },
+    {
+      "slug": "abudawud",
+      "name_en": "Sunan Abu Dawood",
+      "name_ar": "سنن أبي داود",
+      "icon_file": "abudawud.svg",
+      "accent": "#1d4ed8",
+      "accent_soft": "#eff6ff",
+      "badge": "Sunan",
+      "short_ar": "أبو داود"
+    },
+    {
+      "slug": "tirmidhi",
+      "name_en": "Jami' at-Tirmidhi",
+      "name_ar": "جامع الترمذي",
+      "icon_file": "tirmidhi.svg",
+      "accent": "#6d28d9",
+      "accent_soft": "#f5f3ff",
+      "badge": "Jami'",
+      "short_ar": "الترمذي"
+    },
+    {
+      "slug": "nasai",
+      "name_en": "Sunan an-Nasa'i",
+      "name_ar": "سنن النسائي",
+      "icon_file": "nasai.svg",
+      "accent": "#b45309",
+      "accent_soft": "#fffbeb",
+      "badge": "Sunan",
+      "short_ar": "النسائي"
+    },
+    {
+      "slug": "ibnmajah",
+      "name_en": "Sunan Ibn Majah",
+      "name_ar": "سنن ابن ماجه",
+      "icon_file": "ibnmajah.svg",
+      "accent": "#334155",
+      "accent_soft": "#f8fafc",
+      "badge": "Sunan",
+      "short_ar": "ابن ماجه"
+    },
+    {
+      "slug": "malik",
+      "name_en": "Muwatta Imam Malik",
+      "name_ar": "موطأ الإمام مالك",
+      "icon_file": "malik.svg",
+      "accent": "#9f1239",
+      "accent_soft": "#fff1f2",
+      "badge": "Muwatta",
+      "short_ar": "الموطأ"
+    }
+  ]
+}
