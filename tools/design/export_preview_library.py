@@ -14,6 +14,12 @@ QURAN_DB = ROOT / "app" / "assets" / "databases" / "quran.db"
 HADITH_GZ = ROOT / "app" / "assets" / "databases" / "hadith.db.gz"
 TAFSIR_GZ = ROOT / "app" / "assets" / "databases" / "tafsir.db.gz"
 
+import sys
+
+sys.path.insert(0, str(ROOT / "tools" / "hadith"))
+from hadith_meta import build_reference_detail, extract_ravi_chain, isnad_excerpt  # noqa: E402
+
+
 
 def connect_gz(path: Path) -> sqlite3.Connection:
     raw = gzip.decompress(path.read_bytes())
@@ -106,6 +112,22 @@ def export_hadith() -> dict:
             reference = f"{book['en']} · Hadith {ref_hadith}"
             if ref_book not in (None, 0, "0"):
                 reference = f"{book['en']} · Book {ref_book} · Hadith {ref_hadith}"
+            ravi_primary = (r["narrator"] or "").strip()
+            ravi_chain = extract_ravi_chain(
+                r["text_ar"] or "",
+                ravi_primary,
+                r["text_en"] or "",
+            )
+            ref_detail = build_reference_detail(
+                book_name=book["en"],
+                book_slug=book["slug"],
+                hadith_number=r["hadith_number"],
+                reference_book=ref_book,
+                reference_hadith=ref_hadith,
+                chapter_title=r["chapter_title"],
+                chapter_number=r["chapter_number"],
+                grade=r["grade"],
+            )
             rows.append(
                 {
                     "n": r["hadith_number"],
@@ -113,14 +135,17 @@ def export_hadith() -> dict:
                     "en": r["text_en"] or "",
                     "ur": r["text_ur"] or "",
                     "grade": r["grade"] or "",
-                    "ravi": (r["narrator"] or "").strip(),
-                    "narrator": (r["narrator"] or "").strip(),
+                    "ravi": ravi_primary,
+                    "narrator": ravi_primary,
+                    "ravi_chain": ravi_chain,
+                    "isnad": isnad_excerpt(r["text_ar"] or ""),
                     "reference": reference,
+                    "reference_detail": ref_detail,
                     "reference_book": ref_book,
                     "reference_hadith": ref_hadith,
                     "kitab": r["chapter_title"] or "",
                     "kitab_number": r["chapter_number"],
-                    "source_url": f"https://sunnah.com/{book['slug']}:{r['hadith_number']}",
+                    "source_url": ref_detail["source_url"],
                 }
             )
         write_json_gz(OUT / "hadith" / f"{book['slug']}.json.gz", {"book": book, "hadiths": rows})

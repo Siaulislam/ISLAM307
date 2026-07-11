@@ -203,14 +203,144 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
   color: var(--text);
   line-height: 1.45;
 }
+.hadith-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+.hadith-action {
+  border: 1px solid var(--emerald);
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.hadith-action:hover { background: var(--emerald); color: #fff; }
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.modal-head h3 { margin: 0; }
+.hadith-detail-modal {
+  width: min(560px, 100%);
+  max-height: min(86vh, 720px);
+  overflow: auto;
+}
+.ravi-primary {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--emerald-soft);
+}
+.ravi-primary span {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--emerald-deep);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.ravi-chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ravi-chain li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.ravi-step {
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--emerald);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.ravi-chain strong {
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+.isnad-box {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.isnad-box > span {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ref-table th,
+.ref-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  font-size: 14px;
+}
+.ref-table tr:last-child th,
+.ref-table tr:last-child td { border-bottom: 0; }
+.ref-table th {
+  width: 38%;
+  color: var(--emerald-deep);
+  font-weight: 800;
+  background: rgba(6, 95, 70, .06);
+}
+.ref-table td {
+  font-weight: 600;
+  color: var(--text);
+  min-height: 1.2em;
+}
+.ref-table td:empty::after {
+  content: '';
+}
 .ref-link {
   display: inline-block;
-  margin-top: 8px;
+  margin-top: 12px;
   color: var(--emerald);
   font-weight: 700;
   font-size: 12px;
 }
-body.dark .hadith-meta-row span { color: #6ee7b7; }
+body.dark .hadith-meta-row span,
+body.dark .ref-table th,
+body.dark .ravi-primary span { color: #6ee7b7; }
+body.dark .hadith-action {
+  background: #102018;
+  color: #a7f3d0;
+}
+body.dark .ref-table th { background: #102018; }
+body.dark .ravi-primary { background: #102018; }
+body.dark .ravi-chain li { background: #0f172a; }
 .status { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 .ur { direction: rtl; text-align: right; font-size: calc(17px * var(--reader-scale, 1)); }
 .ar { font-size: calc(22px * var(--reader-scale, 1)); }

@@ -1,5 +1,6 @@
 import '../database/database_registry.dart';
 import '../modules/module_catalog.dart';
+import '../../features/hadith/hadith_meta.dart';
 
 /// Offline hadith access — authenticated database rows only.
 class HadithRepository {
@@ -116,7 +117,7 @@ class HadithRepository {
     final book = bookRows.isEmpty ? null : bookRows.first;
     final bookName = book?['name_en'] as String? ?? map['book_name'] as String? ?? 'Hadith';
     final slug = book?['slug'] as String? ?? map['book_slug'] as String? ?? 'hadith';
-    final hadithNo = map['hadith_number'];
+    final hadithNo = map['hadith_number'] as int;
     final refBook = map['reference_book'];
     final refHadith = map['reference_hadith'] ?? hadithNo;
 
@@ -126,22 +127,39 @@ class HadithRepository {
     }
 
     String? kitab;
+    dynamic kitabNumber;
     final chapterId = map['chapter_id'];
     if (chapterId != null) {
       final chapters = await db.query('chapters', where: 'id = ?', whereArgs: [chapterId], limit: 1);
       if (chapters.isNotEmpty) {
         kitab = chapters.first['title'] as String?;
-        map['kitab_number'] = chapters.first['number'];
+        kitabNumber = chapters.first['number'];
+        map['kitab_number'] = kitabNumber;
       }
     }
 
     final ravi = (map['narrator'] as String?)?.trim();
+    final textAr = map['text_ar'] as String?;
+    final textEn = map['text_en'] as String?;
     map['ravi'] = (ravi == null || ravi.isEmpty) ? null : ravi;
+    map['ravi_chain'] = extractRaviChain(textAr, primary: ravi, textEn: textEn);
+    map['isnad'] = isnadExcerpt(textAr);
     map['reference'] = reference;
     map['kitab'] = kitab;
     map['book_name'] ??= bookName;
     map['book_slug'] ??= slug;
-    map['reference_url'] = 'https://sunnah.com/$slug:$hadithNo';
+    map['reference_detail'] = buildReferenceDetail(
+      bookName: bookName,
+      bookSlug: slug,
+      hadithNumber: hadithNo,
+      referenceBook: refBook,
+      referenceHadith: refHadith,
+      chapterTitle: kitab,
+      chapterNumber: kitabNumber,
+      grade: map['grade'] as String?,
+    );
+    map['reference_url'] =
+        (map['reference_detail'] as Map<String, String>)['source_url'] ?? 'https://sunnah.com/$slug:$hadithNo';
     return map;
   }
 

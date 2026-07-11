@@ -87,11 +87,10 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                       title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
                       subtitle: Text(
                         [
-                          if (((h['ravi'] as String?) ?? '').isNotEmpty) 'RAVI: ${h['ravi']}',
-                          'Reference: ${h['reference'] ?? ''}',
+                          'Tap open → use Ravi / Reference for full detail',
                           '${h['text_en'] ?? h['text_ar'] ?? ''}',
                         ].where((e) => e.trim().isNotEmpty).join('\n'),
-                        maxLines: 4,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
                       isThreeLine: true,

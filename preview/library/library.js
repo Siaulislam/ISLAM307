@@ -385,18 +385,105 @@ async function openHadithBook(book, button) {
   renderHadithList(book.slug);
 }
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function closeHadithModal() {
+  const existing = document.getElementById('hadith-detail-modal');
+  if (existing) existing.remove();
+}
+
+function openHadithModal(title, bodyHtml) {
+  closeHadithModal();
+  const modal = document.createElement('div');
+  modal.id = 'hadith-detail-modal';
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal hadith-detail-modal">
+      <div class="modal-head">
+        <h3>${escapeHtml(title)}</h3>
+        <button type="button" class="ghost" data-close aria-label="Close">Close</button>
+      </div>
+      <div class="modal-body">${bodyHtml}</div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector('[data-close]').onclick = () => modal.remove();
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+}
+
+function openRaviDetail(hadith, book) {
+  const primary = (hadith.ravi || hadith.narrator || '').trim();
+  const chain = Array.isArray(hadith.ravi_chain) ? hadith.ravi_chain.filter(Boolean) : [];
+  const isnad = (hadith.isnad || '').trim();
+  let body = '';
+  if (primary) {
+    body += `<p class="ravi-primary"><span>Primary Ravi</span><strong>${escapeHtml(primary)}</strong></p>`;
+  }
+  if (chain.length) {
+    body += `
+      <ol class="ravi-chain" dir="auto">
+        ${chain.map((name, i) => `<li><span class="ravi-step">${i + 1}</span><strong>${escapeHtml(name)}</strong></li>`).join('')}
+      </ol>`;
+  } else {
+    body += `<p class="empty">Full ravi / isnad chain is not available in the authenticated source for this hadith.</p>`;
+  }
+  if (isnad) {
+    body += `<div class="isnad-box"><span>Isnad (from authenticated Arabic text)</span><p class="ar" dir="rtl">${escapeHtml(isnad)}</p></div>`;
+  }
+  openHadithModal(`Ravi · Hadith ${hadith.n}`, body);
+}
+
+function openReferenceDetail(hadith, book) {
+  const d = hadith.reference_detail || {};
+  const rows = [
+    ['Kitab', d.kitab || hadith.kitab || ''],
+    ['Baab', d.baab || hadith.kitab || ''],
+    ['Volume', d.volume || (hadith.reference_book && String(hadith.reference_book) !== '0' ? String(hadith.reference_book) : '')],
+    ['English Kitab', d.english_kitab || hadith.kitab || ''],
+    ['English Name', d.english_name || book.en || ''],
+    ['Hadith Number', d.hadith_number || String(hadith.n)],
+    ['Takhreej', d.takhreej || ''],
+    ['Status', d.status || hadith.grade || ''],
+    ['Wazahat', d.wazahat || ''],
+  ];
+  const sourceUrl = d.source_url || hadith.source_url || '';
+  const body = `
+    <table class="ref-table">
+      <tbody>
+        ${rows.map(([label, value]) => `
+          <tr>
+            <th>${escapeHtml(label)}</th>
+            <td>${escapeHtml(value)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    ${sourceUrl ? `<a class="ref-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener">Open source reference</a>` : ''}
+  `;
+  openHadithModal(`Reference · Hadith ${hadith.n}`, body);
+}
+
 function renderHadithList(slug, filter = '') {
   const pack = state.hadithCache[slug];
   if (!pack) return;
   const q = filter.trim().toLowerCase();
   const rows = pack.hadiths.filter((h) => {
     if (!q) return true;
+    const chain = Array.isArray(h.ravi_chain) ? h.ravi_chain.join(' ') : '';
     return (
       String(h.n) === q ||
       (h.en || '').toLowerCase().includes(q) ||
       (h.ar || '').includes(filter) ||
       (h.ur || '').includes(filter) ||
       (h.ravi || h.narrator || '').toLowerCase().includes(q) ||
+      chain.toLowerCase().includes(q) ||
       (h.reference || '').toLowerCase().includes(q) ||
       (h.kitab || '').toLowerCase().includes(q) ||
       (h.grade || '').toLowerCase().includes(q)
@@ -404,25 +491,27 @@ function renderHadithList(slug, filter = '') {
   }).slice(0, q ? 200 : 100);
   $('hadith-view').innerHTML = `
     <p class="status">${pack.book.en} · showing ${rows.length}${q ? ' matches' : ' (first 100 — search to find more)'}</p>
-    ${rows.map((h) => {
-      const ravi = (h.ravi || h.narrator || '').trim();
-      const reference = h.reference || `${pack.book.en} · Hadith ${h.n}`;
-      return `
-      <div class="hadith-card">
-        <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.grade ? h.grade : 'Grade not verified.'}</span></div>
-        <div class="hadith-meta">
-          <div class="hadith-meta-row"><span>RAVI</span><strong>${ravi || 'Ravi not available in authenticated source'}</strong></div>
-          <div class="hadith-meta-row"><span>Reference</span><strong>${reference}</strong></div>
-          ${h.kitab ? `<div class="hadith-meta-row"><span>Kitab / Baab</span><strong>${h.kitab}</strong></div>` : ''}
-          <div class="hadith-meta-row"><span>English Name</span><strong>${pack.book.en}</strong></div>
+    ${rows.map((h, idx) => `
+      <div class="hadith-card" data-hadith-idx="${idx}">
+        <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.grade ? escapeHtml(h.grade) : 'Grade not verified.'}</span></div>
+        <div class="hadith-actions">
+          <button type="button" class="hadith-action" data-act="ravi">Ravi</button>
+          <button type="button" class="hadith-action" data-act="reference">Reference</button>
         </div>
-        ${h.ar ? `<p class="ar">${h.ar}</p>` : ''}
-        ${h.ur ? `<p class="en ur">${h.ur}</p>` : ''}
-        <p class="en">${h.en || ''}</p>
-        ${h.source_url ? `<a class="ref-link" href="${h.source_url}" target="_blank" rel="noopener">Open reference</a>` : ''}
-      </div>`;
-    }).join('') || '<p class="empty">No matches.</p>'}
+        ${h.ar ? `<p class="ar">${escapeHtml(h.ar)}</p>` : ''}
+        ${h.ur ? `<p class="en ur">${escapeHtml(h.ur)}</p>` : ''}
+        <p class="en">${escapeHtml(h.en || '')}</p>
+      </div>`).join('') || '<p class="empty">No matches.</p>'}
   `;
+  $('hadith-view').querySelectorAll('.hadith-card').forEach((card) => {
+    const h = rows[Number(card.dataset.hadithIdx)];
+    card.querySelectorAll('[data-act]').forEach((btn) => {
+      btn.onclick = () => {
+        if (btn.dataset.act === 'ravi') openRaviDetail(h, pack.book);
+        if (btn.dataset.act === 'reference') openReferenceDetail(h, pack.book);
+      };
+    });
+  });
 }
 
 function renderTafsirSources() {
