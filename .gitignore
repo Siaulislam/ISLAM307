@@ -30,3 +30,6 @@ data/source/*.pdf
 
 # OS
 Thumbs.db
+
+# GitHub Pages build output
+_site/
