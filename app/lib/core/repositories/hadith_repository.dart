@@ -141,9 +141,11 @@ class HadithRepository {
     final ravi = (map['narrator'] as String?)?.trim();
     final textAr = map['text_ar'] as String?;
     final textEn = map['text_en'] as String?;
+    final textUr = map['text_ur'] as String?;
     map['ravi'] = (ravi == null || ravi.isEmpty) ? null : ravi;
-    map['ravi_chain'] = extractRaviChain(textAr, primary: ravi, textEn: textEn);
+    map['ravi_chain'] = extractRaviChain(textAr, primary: ravi, textEn: textEn, textUr: textUr);
     map['isnad'] = isnadExcerpt(textAr);
+    map['isnad_ur'] = isnadExcerptUrdu(textUr);
     map['reference'] = reference;
     map['kitab'] = kitab;
     map['book_name'] ??= bookName;

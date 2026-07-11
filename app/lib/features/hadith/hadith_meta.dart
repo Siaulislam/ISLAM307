@@ -1,5 +1,8 @@
 /// Extract authentic isnad (ravi chain) and reference detail from offline hadith rows.
-/// Never invents narrators — only parses authenticated Arabic/English text fields.
+/// Never invents narrators — only parses authenticated Arabic/Urdu text fields.
+
+const prophetAr = 'رسول اللہ صلی اللہ علیہ وسلم';
+const prophetUr = 'نبی کریم محمد صلی اللہ علیہ وسلم';
 
 final _diac = RegExp(r'[\u064B-\u065F\u0670\u06D6-\u06ED]');
 
@@ -24,11 +27,20 @@ final _arStop = RegExp(
   unicode: true,
 );
 
+final _urStop = RegExp(
+  r'(آپ\s+نے\s+فرمایا|فرمایا\s+کہ|کہ\s+ایک\s+شخص|سے\s+سوال\s+کیا|'
+  r'نبی\s+کریم\s+صلی\s+اللہ\s+علیہ\s+وسلم\s+سے\s+سوال|'
+  r'رسول\s+اللہ\s+صلی\s+اللہ\s+علیہ\s+وسلم\s+سے\s+سوال)',
+  unicode: true,
+);
+
 final _leadingVerb = RegExp(
   r'^(?:حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|سمع|عن|ان|قال)\s+',
 );
 
-String _cleanName(String name) {
+final _urHonorific = RegExp(r'\s*(?:رضی|رضى)\s*اللہ\s*(?:عنہا|عنها|عنہ|عنه)\s*', unicode: true);
+
+String _cleanArName(String name) {
   var n = _stripDiac(name);
   n = n.replaceAll(RegExp(r'\s+'), ' ').trim();
   n = n.replaceAll(RegExp(r'^[ ۔،,;:.\-ـ]+|[ ۔،,;:.\-ـ]+$'), '');
@@ -37,44 +49,129 @@ String _cleanName(String name) {
   return n.trim();
 }
 
-List<String> extractRaviChain(String? textAr, {String? primary, String? textEn}) {
+String _cleanUrName(String name) {
+  var n = name.replaceAll(RegExp(r'\s+'), ' ').trim();
+  n = n.replaceAll(_urHonorific, ' ');
+  n = n.replaceAll(RegExp(r'\s+'), ' ').trim();
+  n = n.replaceFirst(RegExp(r'\s+(نے|سے|کی|کو|وہ|کہتے|ہیں)$'), '');
+  return n.trim();
+}
+
+List<String> _appendProphet(List<String> names, String label) {
+  if (names.isEmpty) return names;
+  final joined = names.join(' ');
+  if (joined.contains('رسول اللہ') || joined.contains('نبی کریم') || joined.contains('محمد صلی')) {
+    return names;
+  }
+  return [...names, label];
+}
+
+(List<String> names, String excerpt) extractRaviChainUrdu(String? textUr) {
+  final text = (textUr ?? '').trim();
+  if (text.isEmpty) return (<String>[], '');
+  final stop = _urStop.firstMatch(text);
+  final head = stop != null ? text.substring(0, stop.start).replaceAll(RegExp(r'[ ،,]+$'), '') : (text.length > 560 ? text.substring(0, 560) : text);
+  if (head.isEmpty) return (<String>[], '');
+
   final names = <String>[];
   final seen = <String>{};
 
   void add(String raw) {
-    final name = _cleanName(raw);
-    if (name.length < 2 || name.length > 90) return;
-    if ({'قال', 'قالت', 'يقول', 'سمعت', 'عنه', 'عنها', 'ابي', 'ابيه'}.contains(name)) return;
+    final name = _cleanUrName(raw);
+    if (name.length < 2 || name.length > 100) return;
+    if ({'ہم', 'ان', 'انہوں', 'اپنے', 'والد', 'یہ', 'اس', 'حدیث', 'وہ'}.contains(name)) return;
     final key = name.replaceAll(' ', '');
     if (seen.contains(key)) return;
     seen.add(key);
     names.add(name);
   }
 
-  // textEn reserved for future English isnad fallback when Arabic is empty
+  for (final m in RegExp(r'(?:ہم\s*)?کو\s+([^،.]{2,60}?)\s+نے\s+(?:یہ\s+)?(?:حدیث\s+)?بیان\s+کی', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+  }
+  for (final m in RegExp(r'ہم\s*کو\s+([^،.]{2,60}?)\s+نے\s+خبر\s+دی', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+  }
+  for (final m in RegExp(
+    r'ان\s*کو\s+([^،.]{2,50}?)\s+نے(?:\s+([^،.]{2,50}?)\s+کی\s+روایت\s+سے)?\s*(?:خبر\s+دی|بیان\s+کی)?',
+    unicode: true,
+  ).allMatches(head)) {
+    add(m.group(1)!);
+    if (m.group(2) != null) add(m.group(2)!);
+  }
+  for (final m in RegExp(r'([^\s،,]{2,40})\s+([^\s،,]{2,40})\s+سے\s+روایت\s+کرتے', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+    add(m.group(2)!);
+  }
+  for (final m in RegExp(
+    r'(?:^|،|\.|۔)\s*(?:وہ\s+)?([^\s،.]{2,20}(?:\s+[^\s،.]{2,20}){0,3})\s+سے(?=\s*(?:،|۔|\.|$|وہ))',
+    unicode: true,
+  ).allMatches(head)) {
+    final chunk = m.group(1)!;
+    if (['نے', 'بیان', 'خبر', 'روایت', 'حدیث', 'کہتے'].any(chunk.contains)) continue;
+    add(chunk);
+  }
+  if (RegExp(r'اپنے\s+والد\s+سے').hasMatch(head)) add('ان کے والد');
+  for (final m in RegExp(r'انہوں\s+نے\s+(?!اپنے\s+والد)([^،.]{2,70}?)\s+سے\s+نقل\s+کی', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+  }
+
+  return (_appendProphet(names, prophetUr), head.length > 480 ? head.substring(0, 480) : head);
+}
+
+(List<String> names, String excerpt) extractRaviChainArabic(String? textAr, {String? primary}) {
+  final names = <String>[];
+  final seen = <String>{};
+
+  void add(String raw) {
+    final name = _cleanArName(raw);
+    if (name.length < 2 || name.length > 90) return;
+    if ({'قال', 'قالت', 'يقول', 'سمعت', 'عنه', 'عنها', 'ابي', 'ابيه'}.contains(name)) return;
+    if (name.contains('"') || name.contains('\u200f')) return;
+    final key = name.replaceAll(' ', '');
+    if (seen.contains(key)) return;
+    seen.add(key);
+    names.add(name);
+  }
+
   final text = _stripDiac(textAr ?? '');
-  if (text.isEmpty && (textEn ?? '').trim().isNotEmpty) {
-    // Keep primary narrator only when Arabic isnad is absent in source.
-  } else if (text.isNotEmpty) {
+  var excerpt = '';
+  if (text.isNotEmpty) {
     final stop = _arStop.firstMatch(text);
-    final head = stop != null ? text.substring(0, stop.start) : (text.length > 520 ? text.substring(0, 520) : text);
+    final head = stop != null ? text.substring(0, stop.start) : (text.length > 420 ? text.substring(0, 420) : text);
+    excerpt = isnadExcerpt(textAr);
     for (final part in head.split(_arSplit)) {
       if (part.trim().isEmpty) continue;
-      final chunk = part.split(RegExp(r'(?:قال|انه|يقول|،|,)')).first;
-      add(chunk);
-      if (names.length >= 14) break;
+      add(part.split(RegExp(r'(?:قال|انه|يقول|،|,)')).first);
+      if (names.length >= 12) break;
     }
   }
 
   final primaryClean = primary?.trim() ?? '';
-  if (primaryClean.isNotEmpty) {
-    final pk = _cleanName(primaryClean).replaceAll(' ', '');
+  if (primaryClean.isNotEmpty && primaryClean.length < 60 && !primaryClean.contains('(')) {
+    final pk = _cleanArName(primaryClean).replaceAll(' ', '');
     if (pk.isNotEmpty && !seen.contains(pk) && !names.contains(primaryClean)) {
       names.add(primaryClean);
     }
   }
 
-  return names;
+  return (_appendProphet(names, prophetAr), excerpt);
+}
+
+List<String> extractRaviChain(String? textAr, {String? primary, String? textEn, String? textUr}) {
+  final ur = extractRaviChainUrdu(textUr);
+  final urPeople = ur.$1.where((n) => !n.contains('نبی کریم') && !n.contains('رسول اللہ')).length;
+  if (urPeople >= 2) return ur.$1;
+
+  final ar = extractRaviChainArabic(textAr, primary: primary);
+  final arPeople = ar.$1.where((n) => !n.contains('رسول اللہ')).length;
+  if (arPeople >= 2) return ar.$1;
+  if (ur.$1.isNotEmpty) return ur.$1;
+  if (ar.$1.isNotEmpty) return ar.$1;
+
+  final primaryClean = primary?.trim() ?? '';
+  if (primaryClean.isNotEmpty) return _appendProphet([primaryClean], prophetUr);
+  return const [];
 }
 
 String isnadExcerpt(String? textAr, {int maxLen = 420}) {
@@ -85,6 +182,11 @@ String isnadExcerpt(String? textAr, {int maxLen = 420}) {
   if (stop == null) return text.length > maxLen ? text.substring(0, maxLen) : text;
   final cut = (stop.start + 8).clamp(0, text.length);
   final excerpt = text.substring(0, cut).replaceAll(RegExp(r'[ ،,;:]+$'), '');
+  return excerpt.length > maxLen ? excerpt.substring(0, maxLen) : excerpt;
+}
+
+String isnadExcerptUrdu(String? textUr, {int maxLen = 480}) {
+  final excerpt = extractRaviChainUrdu(textUr).$2;
   return excerpt.length > maxLen ? excerpt.substring(0, maxLen) : excerpt;
 }
 

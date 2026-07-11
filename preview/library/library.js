@@ -58,6 +58,9 @@ const state = {
   ayahsBySurah: null,
   hadithBooks: [],
   hadithCache: {},
+  hadithSlug: null,
+  hadithFilter: '',
+  hadithLang: localStorage.getItem('i307_hadith_lang') || 'ur',
   tafsirSources: [],
   tafsirCache: {},
   currentSurah: null,
@@ -378,11 +381,13 @@ function renderHadithBooks() {
 async function openHadithBook(book, button) {
   $('hadith-books').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
   if (button) button.classList.add('active');
+  state.hadithSlug = book.slug;
+  state.hadithFilter = $('hadith-search').value || '';
   $('hadith-view').innerHTML = `<p class="status">Loading ${book.en}…</p>`;
   if (!state.hadithCache[book.slug]) {
     state.hadithCache[book.slug] = await fetchJsonGz(`data/hadith/${book.slug}.json.gz`);
   }
-  renderHadithList(book.slug);
+  renderHadithList(book.slug, state.hadithFilter);
 }
 
 function escapeHtml(value) {
@@ -398,13 +403,13 @@ function closeHadithModal() {
   if (existing) existing.remove();
 }
 
-function openHadithModal(title, bodyHtml) {
+function openHadithModal(title, bodyHtml, { darkTable = false } = {}) {
   closeHadithModal();
   const modal = document.createElement('div');
   modal.id = 'hadith-detail-modal';
   modal.className = 'modal-backdrop';
   modal.innerHTML = `
-    <div class="modal hadith-detail-modal">
+    <div class="modal hadith-detail-modal${darkTable ? ' ref-modal-dark' : ''}">
       <div class="modal-head">
         <h3>${escapeHtml(title)}</h3>
         <button type="button" class="ghost" data-close aria-label="Close">Close</button>
@@ -419,24 +424,36 @@ function openHadithModal(title, bodyHtml) {
   });
 }
 
-function openRaviDetail(hadith, book) {
-  const primary = (hadith.ravi || hadith.narrator || '').trim();
+function openRaviDetail(hadith) {
   const chain = Array.isArray(hadith.ravi_chain) ? hadith.ravi_chain.filter(Boolean) : [];
-  const isnad = (hadith.isnad || '').trim();
-  let body = '';
-  if (primary) {
-    body += `<p class="ravi-primary"><span>Primary Ravi</span><strong>${escapeHtml(primary)}</strong></p>`;
-  }
+  const isnadUr = (hadith.isnad_ur || '').trim();
+  const isnadAr = (hadith.isnad || '').trim();
+  let body = `<p class="lead ravi-lead">Names only · first ravi → each heard from the next → Holy Prophet Muhammad ﷺ</p>`;
   if (chain.length) {
     body += `
       <ol class="ravi-chain" dir="auto">
-        ${chain.map((name, i) => `<li><span class="ravi-step">${i + 1}</span><strong>${escapeHtml(name)}</strong></li>`).join('')}
+        ${chain.map((name, i) => {
+          const isLast = i === chain.length - 1;
+          const stepLabel = isLast ? 'ﷺ' : String(i + 1);
+          const heard = i === 0
+            ? 'First narrator'
+            : (isLast ? 'Final · Holy Prophet' : `Heard from previous`);
+          return `<li class="${isLast ? 'is-prophet' : ''}">
+            <span class="ravi-step">${stepLabel}</span>
+            <div>
+              <strong>${escapeHtml(name)}</strong>
+              <small>${heard}</small>
+            </div>
+          </li>`;
+        }).join('')}
       </ol>`;
   } else {
-    body += `<p class="empty">Full ravi / isnad chain is not available in the authenticated source for this hadith.</p>`;
+    body += `<p class="empty">Full ravi chain is not available in the authenticated source for this hadith.</p>`;
   }
-  if (isnad) {
-    body += `<div class="isnad-box"><span>Isnad (from authenticated Arabic text)</span><p class="ar" dir="rtl">${escapeHtml(isnad)}</p></div>`;
+  if (isnadUr) {
+    body += `<div class="isnad-box"><span>Isnad (Urdu · authenticated)</span><p class="ur isnad-highlight" dir="rtl">${escapeHtml(isnadUr)}</p></div>`;
+  } else if (isnadAr) {
+    body += `<div class="isnad-box"><span>Isnad (Arabic · authenticated)</span><p class="ar" dir="rtl">${escapeHtml(isnadAr)}</p></div>`;
   }
   openHadithModal(`Ravi · Hadith ${hadith.n}`, body);
 }
@@ -449,30 +466,81 @@ function openReferenceDetail(hadith, book) {
     ['Volume', d.volume || (hadith.reference_book && String(hadith.reference_book) !== '0' ? String(hadith.reference_book) : '')],
     ['English Kitab', d.english_kitab || hadith.kitab || ''],
     ['English Name', d.english_name || book.en || ''],
-    ['Hadith Number', d.hadith_number || String(hadith.n)],
     ['Takhreej', d.takhreej || ''],
     ['Status', d.status || hadith.grade || ''],
     ['Wazahat', d.wazahat || ''],
   ];
-  const sourceUrl = d.source_url || hadith.source_url || '';
   const body = `
-    <table class="ref-table">
+    <table class="ref-table ref-table-shot">
       <tbody>
         ${rows.map(([label, value]) => `
           <tr>
             <th>${escapeHtml(label)}</th>
-            <td>${escapeHtml(value)}</td>
+            <td dir="auto">${escapeHtml(value)}</td>
           </tr>`).join('')}
       </tbody>
     </table>
-    ${sourceUrl ? `<a class="ref-link" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noopener">Open source reference</a>` : ''}
   `;
-  openHadithModal(`Reference · Hadith ${hadith.n}`, body);
+  openHadithModal(`Reference · Hadith ${hadith.n}`, body, { darkTable: true });
+}
+
+function translationFor(hadith, lang) {
+  if (lang === 'en') return hadith.en || '';
+  if (lang === 'ar') return hadith.ar || '';
+  return hadith.ur || '';
+}
+
+function openHadithDetail(slug, hadithNumber) {
+  const pack = state.hadithCache[slug];
+  if (!pack) return;
+  const hadith = pack.hadiths.find((h) => Number(h.n) === Number(hadithNumber));
+  if (!hadith) {
+    $('hadith-view').innerHTML = `<p class="empty">Hadith ${hadithNumber} not found in authenticated source.</p>`;
+    return;
+  }
+  const lang = state.hadithLang;
+  const translation = translationFor(hadith, lang);
+  const rtl = lang === 'ur' || lang === 'ar';
+  $('hadith-view').innerHTML = `
+    <div class="hadith-detail">
+      <div class="hadith-detail-top">
+        <button type="button" class="ghost back-hadith" data-back>&larr; ${escapeHtml(pack.book.en)} list</button>
+        <div class="meta-row"><span>Hadith ${hadith.n}</span><span>${hadith.grade ? escapeHtml(hadith.grade) : (hadith.reference_detail?.status || 'Grade not verified.')}</span></div>
+      </div>
+      <div class="hadith-actions">
+        <button type="button" class="hadith-action" data-act="ravi">Ravi</button>
+        <button type="button" class="hadith-action" data-act="reference">Reference</button>
+      </div>
+      <div class="lang-toggle" role="tablist" aria-label="Translation language">
+        <button type="button" data-lang="ur" class="${lang === 'ur' ? 'active' : ''}">Urdu</button>
+        <button type="button" data-lang="en" class="${lang === 'en' ? 'active' : ''}">English</button>
+        <button type="button" data-lang="ar" class="${lang === 'ar' ? 'active' : ''}">Arabic</button>
+      </div>
+      ${hadith.ar ? `<p class="ar hadith-arabic" dir="rtl">${escapeHtml(hadith.ar)}</p>` : '<p class="empty">Arabic text unavailable in authenticated source.</p>'}
+      <div class="hadith-translation ${rtl ? 'rtl' : ''}" dir="${rtl ? 'rtl' : 'ltr'}">
+        ${translation
+          ? `<p class="${lang === 'ar' ? 'ar' : (lang === 'ur' ? 'ur' : 'en')}">${escapeHtml(translation)}</p>`
+          : `<p class="empty">${lang.toUpperCase()} translation unavailable in authenticated source.</p>`}
+      </div>
+    </div>
+  `;
+  $('hadith-view').querySelector('[data-back]').onclick = () => renderHadithList(slug, state.hadithFilter);
+  $('hadith-view').querySelectorAll('[data-lang]').forEach((btn) => {
+    btn.onclick = () => {
+      state.hadithLang = btn.dataset.lang;
+      localStorage.setItem('i307_hadith_lang', state.hadithLang);
+      openHadithDetail(slug, hadithNumber);
+    };
+  });
+  $('hadith-view').querySelector('[data-act="ravi"]').onclick = () => openRaviDetail(hadith);
+  $('hadith-view').querySelector('[data-act="reference"]').onclick = () => openReferenceDetail(hadith, pack.book);
 }
 
 function renderHadithList(slug, filter = '') {
   const pack = state.hadithCache[slug];
   if (!pack) return;
+  state.hadithSlug = slug;
+  state.hadithFilter = filter;
   const q = filter.trim().toLowerCase();
   const rows = pack.hadiths.filter((h) => {
     if (!q) return true;
@@ -488,29 +556,19 @@ function renderHadithList(slug, filter = '') {
       (h.kitab || '').toLowerCase().includes(q) ||
       (h.grade || '').toLowerCase().includes(q)
     );
-  }).slice(0, q ? 200 : 100);
+  }).slice(0, q ? 250 : 120);
   $('hadith-view').innerHTML = `
-    <p class="status">${pack.book.en} · showing ${rows.length}${q ? ' matches' : ' (first 100 — search to find more)'}</p>
-    ${rows.map((h, idx) => `
-      <div class="hadith-card" data-hadith-idx="${idx}">
-        <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.grade ? escapeHtml(h.grade) : 'Grade not verified.'}</span></div>
-        <div class="hadith-actions">
-          <button type="button" class="hadith-action" data-act="ravi">Ravi</button>
-          <button type="button" class="hadith-action" data-act="reference">Reference</button>
-        </div>
-        ${h.ar ? `<p class="ar">${escapeHtml(h.ar)}</p>` : ''}
-        ${h.ur ? `<p class="en ur">${escapeHtml(h.ur)}</p>` : ''}
-        <p class="en">${escapeHtml(h.en || '')}</p>
-      </div>`).join('') || '<p class="empty">No matches.</p>'}
+    <p class="status">${pack.book.en} · tap a hadith number · showing ${rows.length}${q ? ' matches' : ' (first 120 — search for more)'}</p>
+    <div class="hadith-number-list">
+      ${rows.map((h) => `
+        <button type="button" class="hadith-number-row" data-n="${h.n}">
+          <strong>Hadith ${h.n}</strong>
+          <small>${escapeHtml(h.kitab || pack.book.en)}${h.reference_detail?.status ? ' · ' + escapeHtml(h.reference_detail.status) : ''}</small>
+        </button>`).join('') || '<p class="empty">No matches.</p>'}
+    </div>
   `;
-  $('hadith-view').querySelectorAll('.hadith-card').forEach((card) => {
-    const h = rows[Number(card.dataset.hadithIdx)];
-    card.querySelectorAll('[data-act]').forEach((btn) => {
-      btn.onclick = () => {
-        if (btn.dataset.act === 'ravi') openRaviDetail(h, pack.book);
-        if (btn.dataset.act === 'reference') openReferenceDetail(h, pack.book);
-      };
-    });
+  $('hadith-view').querySelectorAll('[data-n]').forEach((btn) => {
+    btn.onclick = () => openHadithDetail(slug, btn.dataset.n);
   });
 }
 

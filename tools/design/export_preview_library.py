@@ -17,7 +17,12 @@ TAFSIR_GZ = ROOT / "app" / "assets" / "databases" / "tafsir.db.gz"
 import sys
 
 sys.path.insert(0, str(ROOT / "tools" / "hadith"))
-from hadith_meta import build_reference_detail, extract_ravi_chain, isnad_excerpt  # noqa: E402
+from hadith_meta import (  # noqa: E402
+    build_reference_detail,
+    extract_ravi_chain,
+    isnad_excerpt,
+    isnad_excerpt_urdu,
+)
 
 
 
@@ -117,6 +122,7 @@ def export_hadith() -> dict:
                 r["text_ar"] or "",
                 ravi_primary,
                 r["text_en"] or "",
+                r["text_ur"] or "",
             )
             ref_detail = build_reference_detail(
                 book_name=book["en"],
@@ -139,6 +145,7 @@ def export_hadith() -> dict:
                     "narrator": ravi_primary,
                     "ravi_chain": ravi_chain,
                     "isnad": isnad_excerpt(r["text_ar"] or ""),
+                    "isnad_ur": isnad_excerpt_urdu(r["text_ur"] or ""),
                     "reference": reference,
                     "reference_detail": ref_detail,
                     "reference_book": ref_book,

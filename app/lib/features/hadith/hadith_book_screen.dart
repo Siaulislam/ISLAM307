@@ -86,11 +86,8 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                     child: ListTile(
                       title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
                       subtitle: Text(
-                        [
-                          'Tap open → use Ravi / Reference for full detail',
-                          '${h['text_en'] ?? h['text_ar'] ?? ''}',
-                        ].where((e) => e.trim().isNotEmpty).join('\n'),
-                        maxLines: 3,
+                        'Tap number → Arabic + Urdu/English/Arabic · Ravi & Reference',
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       isThreeLine: true,
