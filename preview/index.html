@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISLAM 307 — Local Preview</title>
+  <style>
+    :root { --emerald:#065f46; --gold:#c9a227; --bg:#fff; --muted:#64748b; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:Segoe UI,system-ui,sans-serif; background:linear-gradient(135deg,#f8fafc,#ecfdf5,#fffbeb); min-height:100vh; color:#0f172a; padding:40px 20px; }
+    .wrap { max-width:720px; margin:0 auto; }
+    h1 { color:var(--emerald); font-size:32px; margin-bottom:8px; }
+    p.lead { color:var(--muted); line-height:1.6; margin-bottom:28px; }
+    .card { background:var(--bg); border:1px solid #e2e8f0; border-radius:16px; padding:20px; margin-bottom:16px; box-shadow:0 4px 24px rgba(15,23,42,.06); }
+    .card h2 { font-size:18px; margin-bottom:12px; }
+    a.btn { display:inline-block; margin:6px 8px 0 0; padding:10px 16px; border-radius:999px; background:var(--emerald); color:#fff; text-decoration:none; font-weight:600; font-size:14px; }
+    a.btn.secondary { background:#fff; color:var(--emerald); border:1px solid #cbd5e1; }
+    a.btn:hover { opacity:.92; }
+    ul { margin:12px 0 0 20px; color:var(--muted); line-height:1.8; font-size:14px; }
+    code { background:#f1f5f9; padding:2px 6px; border-radius:6px; font-size:13px; }
+    .status { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; background:#ecfdf5; color:var(--emerald); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>ISLAM 307 — Local Preview</h1>
+    <p class="lead">Same style as XMONEY local preview: run <code>scripts/start-local-preview.ps1</code> then open these links in Chrome.</p>
+
+    <div class="card">
+      <h2>UI Mockups <span class="status">Ready</span></h2>
+      <a class="btn" href="/design/mockups/index.html">Phase 1 — All 15 screens</a>
+      <a class="btn" href="/design/mockups/phase3-mockups.html">Phase 3 — Hadith · Tafsir · AI</a>
+      <ul>
+        <li>Phase 3 includes new <strong>kitab icons</strong> (7 hadith books)</li>
+        <li>Use <strong>Phone / Tablet / Fold</strong> toggle on Phase 3</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Verification reports <span class="status">Ready</span></h2>
+      <a class="btn secondary" href="/reports/verification/HADITH_VERIFICATION_REPORT.md">Hadith report</a>
+      <a class="btn secondary" href="/reports/verification/TAFSIR_VERIFICATION_REPORT.md">Tafsir report</a>
+      <a class="btn secondary" href="/reports/verification/README.md">Summary README</a>
+    </div>
+
+    <div class="card">
+      <h2>Flutter app <span class="status">Quran only</span></h2>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6">Mockups are HTML. The real app runs with Flutter:</p>
+      <ul>
+        <li><code>cd app</code></li>
+        <li><code>flutter pub get</code></li>
+        <li><code>flutter run -d chrome</code> (optional — needs Flutter SDK)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>GitHub</h2>
+      <a class="btn secondary" href="https://github.com/Siaulislam/ISLAM307" target="_blank" rel="noopener">github.com/Siaulislam/ISLAM307</a>
+    </div>
+  </div>
+</body>
+</html>
