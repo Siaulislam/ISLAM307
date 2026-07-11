@@ -42,6 +42,11 @@ Press `Ctrl+C` in the terminal to stop the server.
 
 Redeploys automatically on every push to `main`.
 
+**If you see 404:** open [Repository Settings → Pages](https://github.com/Siaulislam/ISLAM307/settings/pages) and set:
+- **Source:** Deploy from a branch
+- **Branch:** `gh-pages` → `/ (root)`
+- Save, then wait ~1 minute and refresh.
+
 ### UI mockups (file path alternative)
 Open `design/mockups/index.html` directly in Chrome if you prefer.
 

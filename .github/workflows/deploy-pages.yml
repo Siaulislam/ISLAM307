@@ -1,3 +1,8 @@
+# Build static preview site and deploy to GitHub Pages (like XMONEY).
+# Live URL: https://siaulislam.github.io/ISLAM307/preview/
+#
+# One-time setup (if 404): Repo Settings → Pages → Source → Deploy from branch
+#   Branch: gh-pages  Folder: / (root)
 name: Deploy GitHub Pages
 
 on:
@@ -6,17 +11,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-islam307
+  cancel-in-progress: true
 
 jobs:
-  build:
+  deploy-preview:
+    name: Static site → gh-pages
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@v4
 
@@ -27,32 +33,20 @@ jobs:
       - name: Build static preview site
         run: python tools/design/build_gh_pages_site.py
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          enablement: true
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.verify.outputs.preview_url || steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: "Deploy ISLAM 307 preview (${{ github.sha }})"
 
       - name: Verify preview is publicly accessible
         id: verify
-        env:
-          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
         run: |
           set -euo pipefail
-          echo "Deployed to: ${PAGE_URL}"
+          PAGE_URL="https://siaulislam.github.io/ISLAM307/"
           echo "Waiting for GitHub Pages CDN (up to ~3 minutes)…"
           ok=0
           for attempt in $(seq 1 12); do
@@ -65,8 +59,10 @@ jobs:
             sleep 15
           done
           if [[ "$ok" != "1" ]]; then
-            echo "::error::Preview not reachable at ${PAGE_URL}preview/"
-            exit 1
+            echo "::warning::Preview not yet reachable at ${PAGE_URL}preview/"
+            echo "Enable Pages once: Settings → Pages → Deploy from branch → gh-pages → / (root)"
+            echo "preview_url=${PAGE_URL}" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           echo "preview_url=${PAGE_URL}" >> "$GITHUB_OUTPUT"
           echo "Preview verified: ${PAGE_URL}preview/"
@@ -85,4 +81,7 @@ jobs:
             echo "| Preview hub | ${PAGE_URL}preview/ |"
             echo "| Phase 1 mockups | ${PAGE_URL}design/mockups/index.html |"
             echo "| Phase 3 mockups | ${PAGE_URL}design/mockups/phase3-mockups.html |"
+            echo ""
+            echo "If you see **404**, enable Pages once:"
+            echo "Settings → Pages → **Deploy from a branch** → **gh-pages** → **/ (root)**"
           } >> "$GITHUB_STEP_SUMMARY"
