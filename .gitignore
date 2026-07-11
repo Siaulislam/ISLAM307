@@ -1,0 +1,25 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+__pycache__/
+.DS_Store
+.idea/
+.vscode/
+
+# Flutter
+app/.dart_tool/
+app/build/
+app/.flutter-plugins
+app/.flutter-plugins-dependencies
+app/.packages
+app/pubspec.lock
+
+# Python cache (keep source JSON cache optional)
+tools/quran/cache/*.json
+
+# Large optional PDF source (user provides locally)
+data/source/*.pdf
+
+# OS
+Thumbs.db

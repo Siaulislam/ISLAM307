@@ -1,0 +1,24 @@
+name: Build quran.db
+
+on:
+  push:
+    paths:
+      - 'tools/quran/**'
+      - '.github/workflows/build-quran-db.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build quran.db
+        run: python tools/quran/build_quran_db.py --skip-pdf
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quran-db
+          path: app/assets/databases/quran.db
