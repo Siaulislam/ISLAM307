@@ -428,18 +428,17 @@ function openRaviDetail(hadith) {
   const chain = Array.isArray(hadith.ravi_chain) ? hadith.ravi_chain.filter(Boolean) : [];
   const isnadUr = (hadith.isnad_ur || '').trim();
   const isnadAr = (hadith.isnad || '').trim();
-  let body = `<p class="lead ravi-lead">Names only · first ravi → each heard from the next → Holy Prophet Muhammad ﷺ</p>`;
+  let body = `<p class="lead ravi-lead">Isnad only · first narrator → … → last Companion before the Prophet ﷺ (Prophet is not listed)</p>`;
   if (chain.length) {
     body += `
       <ol class="ravi-chain" dir="auto">
         ${chain.map((name, i) => {
           const isLast = i === chain.length - 1;
-          const stepLabel = isLast ? 'ﷺ' : String(i + 1);
           const heard = i === 0
             ? 'First narrator'
-            : (isLast ? 'Final · Holy Prophet' : `Heard from previous`);
-          return `<li class="${isLast ? 'is-prophet' : ''}">
-            <span class="ravi-step">${stepLabel}</span>
+            : (isLast ? 'Last narrator · from the Prophet ﷺ' : 'Narrated from previous');
+          return `<li class="${isLast ? 'is-last-rawi' : ''}">
+            <span class="ravi-step">${i + 1}</span>
             <div>
               <strong>${escapeHtml(name)}</strong>
               <small>${heard}</small>
@@ -448,12 +447,12 @@ function openRaviDetail(hadith) {
         }).join('')}
       </ol>`;
   } else {
-    body += `<p class="empty">Full ravi chain is not available in the authenticated source for this hadith.</p>`;
+    body += `<p class="empty">Full ravi chain is not available in the authenticated isnad for this hadith.</p>`;
   }
-  if (isnadUr) {
-    body += `<div class="isnad-box"><span>Isnad (Urdu · authenticated)</span><p class="ur isnad-highlight" dir="rtl">${escapeHtml(isnadUr)}</p></div>`;
-  } else if (isnadAr) {
+  if (isnadAr) {
     body += `<div class="isnad-box"><span>Isnad (Arabic · authenticated)</span><p class="ar" dir="rtl">${escapeHtml(isnadAr)}</p></div>`;
+  } else if (isnadUr) {
+    body += `<div class="isnad-box"><span>Isnad (Urdu · authenticated)</span><p class="ur isnad-highlight" dir="rtl">${escapeHtml(isnadUr)}</p></div>`;
   }
   openHadithModal(`Ravi · Hadith ${hadith.n}`, body);
 }

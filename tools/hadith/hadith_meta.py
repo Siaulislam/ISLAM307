@@ -1,259 +1,354 @@
 #!/usr/bin/env python3
-"""Helpers to extract authentic isnad (ravi chain) and reference detail from hadith rows."""
+"""
+Extract authentic isnad (rawi / narrator chain) and reference detail.
+
+Rules:
+- Narrators come ONLY from the Isnad, never from the Matn.
+- Chain = first transmitter → … → last Companion before the Prophet ﷺ.
+- Do NOT include Prophet Muhammad ﷺ in the rawi list.
+- Preserve full names (ibn / bin / bint / Abu / Umm / al- / ibn Abi / ibn al-).
+- Never invent names; parse authenticated Arabic/English source text only.
+- English is used internally for "Narrated X" labels and Prophet/matn boundaries.
+"""
 
 from __future__ import annotations
 
 import re
 
-_DIAC = re.compile(r"[\u064B-\u065F\u0670\u06D6-\u06ED]")
+_DIAC = re.compile(r"[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]")
 
-_PROPHET_AR = "رسول اللہ صلی اللہ علیہ وسلم"
-_PROPHET_UR = "نبی کریم محمد صلی اللہ علیہ وسلم"
-
-# Verbs / connectors that introduce the next narrator in an isnad (diacritics stripped).
-_AR_SPLIT = re.compile(
-    r"(?:^|[\s،,;:]+)"
-    r"(?:حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|سمع|عن|ان|قال)"
-    r"(?:[\s،,;:]+|$)",
+_PROPHET_AR = re.compile(
+    r"(?:"
+    r"رسول\s*الله|رسول\s*اللہ|"
+    r"النبي\b|النبی\b|"
+    r"نبي\s*الله|نبی\s*اللہ|"
+    r"محمد\s*(?:صلى|صلی|ﷺ)"
+    r")",
     re.UNICODE,
 )
 
-_AR_STOP = re.compile(
-    r"(قال\s+رسول|ان\s+رسول|عن\s+النبي|انه\s+قال|يقول\s*:|سمعت\s+رسول)",
+_PROPHET_EN = re.compile(
+    r"(?:"
+    r"Allah'?s\s+Messenger|"
+    r"Messenger\s+of\s+Allah|"
+    r"the\s+Prophet|"
+    r"Prophet\s+Muhammad|"
+    r"Holy\s+Prophet"
+    r")",
+    re.IGNORECASE,
+)
+
+_HONORIFIC_AR = re.compile(
+    r"\s*(?:ـ\s*)?(?:رضي|رضى)\s*الله\s*(?:عنهما|عنها|عنهم|عنه)\s*(?:ـ\s*)?",
     re.UNICODE,
 )
 
-_UR_STOP = re.compile(
-    r"(آپ\s+نے\s+فرمایا|فرمایا\s+کہ|کہ\s+ایک\s+شخص|سے\s+سوال\s+کیا|"
-    r"نبی\s+کریم\s+صلی\s+اللہ\s+علیہ\s+وسلم\s+سے\s+سوال|"
-    r"رسول\s+اللہ\s+صلی\s+اللہ\s+علیہ\s+وسلم\s+سے\s+سوال)",
+_HONORIFIC_EN = re.compile(
+    r"\s*\((?:may\s+Allah\s+be\s+pleased[^)]*|the\s+mother\s+of\s+the\s+faithful[^)]*)\)\s*",
+    re.IGNORECASE,
+)
+
+# Transmission verbs ONLY — never bare "ان" (would break سفيان / حيان).
+_TX_VERBS = (
+    "حدثنا",
+    "حدثني",
+    "اخبرنا",
+    "اخبرني",
+    "انبانا",
+    "انباني",
+    "سمعت",
+)
+
+_TX_FIND = re.compile(
+    r"(?:^|[\s،,;:]+|(?:قال|قالت)\s*:?\s*)"
+    r"(?P<verb>حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن)"
+    r"(?=[\s،,;:]+|$)",
     re.UNICODE,
 )
 
-_UR_HONORIFIC = re.compile(
-    r"\s*(?:رضی|رضى)\s*اللہ\s*(?:عنہا|عنها|عنہ|عنه)\s*",
-    re.UNICODE,
+_TRAILING_SPEECH = re.compile(r"\s+(?:قال|قالت|يقول)\s*$", re.UNICODE)
+
+_PROPHET_NAME_ONLY = re.compile(
+    r"^(?:"
+    r"رسول\s*الله|رسول\s*اللہ|النبي|النبی|نبي\s*الله|نبی\s*اللہ|"
+    r"محمد(?:\s*صلى.*)?|"
+    r"allah'?s\s+messenger|the\s+prophet|messenger\s+of\s+allah|prophet\s+muhammad"
+    r")$",
+    re.IGNORECASE | re.UNICODE,
 )
 
 
 def _strip_diac(text: str) -> str:
-    text = _DIAC.sub("", text or "")
-    return text.replace("أ", "ا").replace("إ", "ا").replace("آ", "ا").replace("ٱ", "ا")
+    """Strip tashkeel only — keep ة / ى / ئ (part of authentic names)."""
+    return _DIAC.sub("", text or "")
 
 
-_LEADING_VERB = re.compile(
-    r"^(?:حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|سمع|عن|ان|قال)\s+",
-)
+def _fold_ar(text: str) -> str:
+    """Fold hamza forms for verb / boundary matching only."""
+    t = _strip_diac(text)
+    return (
+        t.replace("أ", "ا")
+        .replace("إ", "ا")
+        .replace("آ", "ا")
+        .replace("ٱ", "ا")
+        .replace("ؤ", "و")
+        .replace("ئ", "ي")
+    )
 
 
-def _clean_ar_name(name: str) -> str:
-    name = _strip_diac(name or "")
-    name = re.sub(r"\s+", " ", name).strip(" ۔،,;:.-ـ")
-    name = _LEADING_VERB.sub("", name)
-    name = re.sub(r"^(ال)?(شيوخ|شيخ|الامام)\s+", "", name)
-    name = re.sub(r"\s*(رضي الله عنه|رضي الله عنها|رضى الله عنه|رضى الله عنها).*$", "", name)
-    name = re.sub(r"\s*ـ\s*$", "", name)
-    return name.strip()
+def _normalize_ws(text: str) -> str:
+    return re.sub(r"\s+", " ", text or "").strip()
 
 
-def _clean_ur_name(name: str) -> str:
-    name = re.sub(r"\s+", " ", name or "").strip(" ،,;:۔")
-    name = _UR_HONORIFIC.sub(" ", name)
-    name = re.sub(r"\s+", " ", name).strip(" ،,;:۔")
-    name = re.sub(r"\s+(نے|سے|کی|کو|وہ|کہتے|ہیں)$", "", name).strip()
-    return name.strip()
+def _is_prophet_token(name: str) -> bool:
+    n = _normalize_ws(_fold_ar(name))
+    if not n:
+        return False
+    if _PROPHET_NAME_ONLY.match(n):
+        return True
+    if _PROPHET_AR.search(n) and len(n) < 48:
+        return True
+    if _PROPHET_EN.search(n) and len(n) < 56:
+        return True
+    return False
 
 
-def _append_prophet(names: list[str], label: str) -> list[str]:
-    if not names:
-        return names
-    joined = " ".join(names)
-    if "رسول اللہ" in joined or "نبی کریم" in joined or "محمد صلی" in joined:
-        return names
-    out = list(names)
-    out.append(label)
-    return out
+def _clean_name_ar(raw: str) -> str:
+    """Preserve ibn/bin/bint/Abu/Umm/al-/ibn Abi; strip honorifics and matn tails."""
+    name = _HONORIFIC_AR.sub(" ", raw or "")
+    name = name.replace("ـ", " ")
+    name = _strip_diac(name)
+    name = _normalize_ws(name).strip(" ،,;:.-")
+
+    folded = _fold_ar(name)
+    for verb in (*_TX_VERBS, "عن"):
+        if folded == verb or folded.startswith(verb + " "):
+            name = _normalize_ws(name[len(verb) :]).strip(" ،,;:.-")
+            folded = _fold_ar(name)
+            break
+
+    # Cut matn / tafsir / location leftovers (not part of the person name).
+    name = re.split(
+        r"\s+(?:قال|قالت|يقول|في\s+قوله|في\s+قول|على\s+المنبر)\b",
+        name,
+        maxsplit=1,
+    )[0]
+    name = _TRAILING_SPEECH.sub("", name)
+    name = _normalize_ws(name).strip(" ،,;:.-")
+
+    # Remove dangling "انه" / "انها" ONLY — never bare "ان" (breaks سفيان).
+    name = re.sub(r"\s*,?\s*انه(?:ا)?\s*$", "", name)
+    name = _normalize_ws(name).strip(" ،,;:.-")
+
+    if not name or name in {"قال", "قالت", "ان", "عن", "و", "ه", "ها", "انه", "انها"}:
+        return ""
+    if _is_prophet_token(name):
+        return ""
+    if len(name) > 90:
+        return ""
+    return name
 
 
-def extract_ravi_chain_urdu(text_ur: str | None) -> tuple[list[str], str]:
-    """Parse Urdu isnad (blue-highlight style) into ordered narrator names + isnad excerpt."""
-    text = (text_ur or "").strip()
-    if not text:
-        return [], ""
+def _clean_name_en(raw: str) -> str:
+    name = _HONORIFIC_EN.sub(" ", raw or "")
+    name = _normalize_ws(name).strip(" ,;:.-")
+    name = re.split(
+        r"\s+(?:said|reported|asked|while|that|in\s+the|regarding|reporting)\b",
+        name,
+        maxsplit=1,
+        flags=re.IGNORECASE,
+    )[0]
+    name = _normalize_ws(name).strip(" ,;:.-'\"")
+    if not name or _is_prophet_token(name):
+        return ""
+    if len(name) > 80:
+        return ""
+    return name
 
-    stop = _UR_STOP.search(text)
-    head = text[: stop.start()].strip(" ،,") if stop else text[:560]
-    if not head:
-        return [], ""
+
+def _cut_isnad_ar(text_ar: str) -> str:
+    """Arabic isnad only: start → last narrator, before Prophet / matn.
+
+    Returns diacritic-stripped text (hamza preserved) for name display.
+    """
+    display = _strip_diac(text_ar)
+    plain = _fold_ar(display)
+    if not plain:
+        return ""
+
+    candidates: list[int] = []
+
+    # 1) Companion begins speaking: انها قالت / انه قال (not انه سمع)
+    for m in re.finditer(r"انها\s+قالت|انه\s+قال", plain):
+        candidates.append(m.start())
+
+    # 2) ان <person> … Prophet  (matn, e.g. ان الحارث … سال رسول الله)
+    for m in re.finditer(r"\sان\s+(?!ه\s+سمع)", plain):
+        if _PROPHET_AR.search(plain[m.start() :]):
+            if re.search(r"(?:حدثنا|حدثني|اخبرنا|عن)", plain[: m.start()]):
+                candidates.append(m.start())
+
+    # 3) Direct report from the Prophet
+    for m in re.finditer(
+        r"(?:قال|قالت|سمعت|سمع|عن|ان|كان|سال)\s+(?:رسول\s*الله|النبي|نبي\s*الله)",
+        plain,
+    ):
+        candidates.append(m.start())
+
+    # 4) First prophet token after a chain exists
+    for m in _PROPHET_AR.finditer(plain):
+        if re.search(r"(?:حدثنا|حدثني|اخبرنا|عن)", plain[: m.start()]):
+            candidates.append(m.start())
+            break
+
+    if not candidates:
+        m = re.search(r"[\"«»\{]|قوله\s*تعالي", plain)
+        cut = m.start() if m else min(500, len(plain))
+    else:
+        positive = [c for c in candidates if c > 0]
+        cut = min(positive) if positive else min(candidates)
+
+    # Offsets align between display and plain (1:1 folding).
+    return display[:cut].strip(" ،,;:")
+
+
+def _prepare_isnad_display(isnad: str) -> tuple[str, str]:
+    """Return (display_text, search_text) with aligned offsets (1:1 folding)."""
+    display = _strip_diac(isnad)
+    # Normalize "أنه سمع" / "انه سمع" → سمعت (isnad continuation). Avoid \b (breaks on Arabic).
+    display = re.sub(r"أن(?:ه|ها)?\s+سمع\s+|ان(?:ه|ها)?\s+سمع\s+", " سمعت ", display)
+    search = _fold_ar(display)
+    return display, search
+
+
+def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
+    """
+    English-shaped internal parse of Arabic isnad:
+      حدثنا / أخبرنا / عن / سمعت + FULL NAME
+    Names are sliced from diacritic-stripped authentic text (keeps ئ/ة).
+    """
+    if not isnad:
+        return []
+
+    display, search = _prepare_isnad_display(isnad)
+    matches = list(_TX_FIND.finditer(search))
+    if not matches:
+        return []
 
     names: list[str] = []
     seen: set[str] = set()
 
-    def add(raw: str) -> None:
-        name = _clean_ur_name(raw)
-        if len(name) < 2 or len(name) > 100:
-            return
-        if name in {"ہم", "ان", "انہوں", "اپنے", "والد", "یہ", "اس", "حدیث", "وہ"}:
-            return
-        key = name.replace(" ", "")
-        if key in seen:
-            return
-        seen.add(key)
-        names.append(name)
-
-    # (ہم) کو NAME نے (یہ) حدیث بیان کی
-    for m in re.finditer(
-        r"(?:ہم\s*)?کو\s+([^،.]{2,60}?)\s+نے\s+(?:یہ\s+)?(?:حدیث\s+)?بیان\s+کی",
-        head,
-        re.UNICODE,
-    ):
-        add(m.group(1))
-
-    # ہم کو NAME نے خبر دی
-    for m in re.finditer(
-        r"ہم\s*کو\s+([^،.]{2,60}?)\s+نے\s+خبر\s+دی",
-        head,
-        re.UNICODE,
-    ):
-        add(m.group(1))
-
-    # ان کو NAME نے [NAME2 کی روایت سے] خبر دی
-    for m in re.finditer(
-        r"ان\s*کو\s+([^،.]{2,50}?)\s+نے(?:\s+([^،.]{2,50}?)\s+کی\s+روایت\s+سے)?\s*(?:خبر\s+دی|بیان\s+کی)?",
-        head,
-        re.UNICODE,
-    ):
-        add(m.group(1))
-        if m.group(2):
-            add(m.group(2))
-
-    # NAME1 NAME2 سے روایت کرتے ہیں
-    for m in re.finditer(
-        r"([^\s،,]{2,40})\s+([^\s،,]{2,40})\s+سے\s+روایت\s+کرتے",
-        head,
-        re.UNICODE,
-    ):
-        add(m.group(1))
-        add(m.group(2))
-
-    # Short "وہ NAME سے" / "عقیل ابن شہاب سے" clauses only (avoid swallowing sentences)
-    for m in re.finditer(
-        r"(?:^|،|\.|۔)\s*(?:وہ\s+)?([^\s،.]{2,20}(?:\s+[^\s،.]{2,20}){0,3})\s+سے(?=\s*(?:،|۔|\.|$|وہ))",
-        head,
-        re.UNICODE,
-    ):
-        chunk = m.group(1)
-        if any(tok in chunk for tok in ("نے", "بیان", "خبر", "روایت", "حدیث", "کہتے")):
+    for i, m in enumerate(matches):
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(search)
+        chunk = display[start:end].strip(" ،,;:")
+        if not chunk:
             continue
-        add(chunk)
 
-    # انہوں نے اپنے والد سے نقل کی → keep wording from source
-    if re.search(r"اپنے\s+والد\s+سے", head):
-        add("ان کے والد")
+        folded_chunk = _fold_ar(chunk)
+        if re.match(r"^(?:انها\s+قالت|انه\s+قال|قال\s+رسول|قالت\s+رسول)", folded_chunk):
+            break
+        if _is_prophet_token(chunk):
+            break
 
-    # انہوں نے NAME سے نقل کی
-    for m in re.finditer(
-        r"انہوں\s+نے\s+(?!اپنے\s+والد)([^،.]{2,70}?)\s+سے\s+نقل\s+کی",
-        head,
-        re.UNICODE,
-    ):
-        add(m.group(1))
+        name = _clean_name_ar(chunk)
+        if not name:
+            continue
+        if _is_prophet_token(name):
+            break
 
-    names = _append_prophet(names, _PROPHET_UR)
-    return names, head[:480]
-
-
-def extract_ravi_chain_arabic(text_ar: str | None, primary: str | None = None) -> tuple[list[str], str]:
-    names: list[str] = []
-    seen: set[str] = set()
-
-    def add(raw: str) -> None:
-        name = _clean_ar_name(raw)
-        if len(name) < 2 or len(name) > 90:
-            return
-        if name in {"قال", "قالت", "يقول", "سمعت", "عنه", "عنها", "ابي", "ابيه"}:
-            return
-        # reject matn leftovers / quotes
-        if any(ch in name for ch in {'"', "«", "»", "\u200f", "ما انا", "فأخذني", "يكتب"}):
-            return
-        if re.search(r"[A-Za-z]{3,}", name) and "bin" not in name.lower() and "ibn" not in name.lower():
-            # allow English primary later; skip English matn fragments here
-            if "'" in name or "(" in name:
-                return
-        key = name.replace(" ", "")
+        key = _fold_ar(name).replace(" ", "")
         if key in seen:
-            return
+            continue
         seen.add(key)
         names.append(name)
+        if len(names) >= 16:
+            break
 
-    text = _strip_diac(text_ar or "")
-    excerpt = ""
-    if text:
-        stop = _AR_STOP.search(text)
-        head = text[: stop.start()] if stop else text[:420]
-        excerpt = isnad_excerpt(text_ar)
-        for part in [p for p in _AR_SPLIT.split(head) if p and p.strip()]:
-            chunk = re.split(r"(?:قال|انه|يقول|،|,)", part, maxsplit=1)[0]
-            add(chunk)
-            if len(names) >= 12:
-                break
+    return names
 
-    primary_clean = (primary or "").strip()
-    if primary_clean and len(names) < 8:
-        pk = _clean_ar_name(primary_clean).replace(" ", "")
-        if pk and pk not in seen and primary_clean not in names:
-            # only add short primary narrator labels
-            if len(primary_clean) < 60 and "(" not in primary_clean:
-                names.append(primary_clean)
 
-    names = _append_prophet(names, _PROPHET_AR)
-    return names, excerpt
+def _cut_isnad_en(text_en: str) -> str:
+    plain = text_en or ""
+    m = _PROPHET_EN.search(plain)
+    if not m:
+        return plain[:400]
+    return plain[: m.start()].strip(" ,;:")
+
+
+def _extract_narrated_en(text_en: str | None) -> list[str]:
+    """English 'Narrated X:' companion label when Arabic isnad is unavailable."""
+    text = (text_en or "").strip()
+    if not text:
+        return []
+    head = _cut_isnad_en(text) if _PROPHET_EN.search(text) else text.split(".", 1)[0]
+    m = re.match(
+        r"^\s*Narrated\s+(.+?)(?:\s*[:.\n]|\s+that\b|\s+said\b|\s+reported\b)",
+        head,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+    if not m:
+        return []
+    name = _clean_name_en(m.group(1))
+    return [name] if name else []
 
 
 def extract_ravi_chain(
     text_ar: str | None,
     primary: str | None = None,
     text_en: str | None = None,
-    text_ur: str | None = None,
+    text_ur: str | None = None,  # noqa: ARG001 — display helper only
 ) -> list[str]:
-    """Prefer Urdu isnad (matches app screenshots), else Arabic, else primary narrator."""
-    ur_names, _ = extract_ravi_chain_urdu(text_ur)
-    # Urdu isnad is preferred when it yields a real chain (2+ including prophet => 1+ narrators)
-    if len([n for n in ur_names if "نبی کریم" not in n and "رسول اللہ" not in n]) >= 2:
-        return ur_names
+    """
+    Ordered rawi list from authenticated isnad only (excludes Prophet ﷺ).
 
-    ar_names, _ = extract_ravi_chain_arabic(text_ar, primary)
-    if len([n for n in ar_names if "رسول اللہ" not in n]) >= 2:
-        return ar_names
+    Prefer Arabic isnad; fall back to English Narrated-X; then DB narrator field.
+    """
+    ar = (text_ar or "").strip()
+    en = (text_en or "").strip()
 
-    if ur_names:
-        return ur_names
-    if ar_names:
-        return ar_names
+    names: list[str] = []
+    if ar:
+        names = _extract_names_from_ar_isnad(_cut_isnad_ar(ar))
 
-    primary_clean = (primary or "").strip()
-    if primary_clean:
-        return _append_prophet([primary_clean], _PROPHET_UR)
-    return []
+    if len(names) < 1 and en:
+        names = _extract_narrated_en(en)
+
+    if not names and primary:
+        p = _clean_name_en(primary) if re.search(r"[A-Za-z]", primary or "") else _clean_name_ar(primary or "")
+        if p and not _is_prophet_token(p):
+            names = [p]
+
+    return [n for n in names if n and not _is_prophet_token(n)]
 
 
-def isnad_excerpt(text_ar: str | None, max_len: int = 420) -> str:
-    """Return the authenticated Arabic isnad head (before matn), if present."""
+def isnad_excerpt(text_ar: str | None, max_len: int = 480) -> str:
+    """Authenticated Arabic isnad head (before Prophet/matn)."""
     text = (text_ar or "").strip()
     if not text:
         return ""
-    plain = _strip_diac(text)
-    stop = _AR_STOP.search(plain)
-    if stop:
-        cut = min(len(text), max(stop.start() + 8, int(len(text) * (stop.start() / max(len(plain), 1)))))
-        excerpt = text[:cut].strip(" ،,;:")
-        return excerpt[:max_len]
-    return text[:max_len]
+    plain = _fold_ar(text)
+    cut_plain = _cut_isnad_ar(text)
+    if not cut_plain or not plain:
+        return text[:max_len]
+    ratio = len(cut_plain) / max(len(plain), 1)
+    cut = max(1, min(len(text), int(len(text) * ratio) + 12))
+    return text[:cut].strip(" ،,;:")[:max_len]
 
 
 def isnad_excerpt_urdu(text_ur: str | None, max_len: int = 480) -> str:
-    _, excerpt = extract_ravi_chain_urdu(text_ur)
-    return excerpt[:max_len]
+    """Urdu isnad excerpt for display only (names are not parsed from Urdu)."""
+    text = (text_ur or "").strip()
+    if not text:
+        return ""
+    stop = re.search(
+        r"(آپ\s+نے\s+فرمایا|فرمایا\s+کہ|"
+        r"نبی\s+کریم|رسول\s+اللہ|رسول\s+الله|"
+        r"صلی\s+اللہ\s+علیہ\s+وسلم\s+سے\s+سوال)",
+        text,
+    )
+    head = text[: stop.start()].strip(" ،,") if stop else text[:max_len]
+    return head[:max_len]
 
 
 def build_reference_detail(
@@ -267,7 +362,6 @@ def build_reference_detail(
     chapter_number,
     grade: str | None,
 ) -> dict:
-    """Full reference table fields matching the Reference screenshot layout."""
     volume = "" if reference_book in (None, 0, "0", "") else str(reference_book)
     hadith_ref = "" if reference_hadith in (None, "") else str(reference_hadith)
     if not hadith_ref:
@@ -279,15 +373,10 @@ def build_reference_detail(
 
     chapter = (chapter_title or "").strip()
     ch_num = "" if chapter_number in (None, "") else str(chapter_number)
-    # Baab = subject/paragraph within kitab; source DB stores chapter title.
-    # Keep both fields; empty when source has no separate baab title.
-    baab = chapter
-    if ch_num and chapter:
-        baab = f"{chapter}"
 
     return {
         "kitab": chapter,
-        "baab": baab,
+        "baab": chapter,
         "baab_number": ch_num,
         "volume": volume,
         "english_kitab": chapter,

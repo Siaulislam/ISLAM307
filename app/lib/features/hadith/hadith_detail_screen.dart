@@ -65,12 +65,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                   Text('Ravi · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 8),
                   const Text(
-                    'Names only · first ravi → each heard from the next → Holy Prophet Muhammad ﷺ',
+                    'Isnad only · first narrator → … → last Companion before the Prophet ﷺ (Prophet is not listed)',
                     style: TextStyle(color: Islam307Theme.textMuted, height: 1.4),
                   ),
                   const SizedBox(height: 14),
                   if (chain.isEmpty)
-                    const Text('Full ravi chain is not available in the authenticated source for this hadith.')
+                    const Text('Full ravi chain is not available in the authenticated isnad for this hadith.')
                   else
                     ...[
                       for (var i = 0; i < chain.length; i++)
@@ -89,7 +89,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 radius: 14,
                                 backgroundColor: Islam307Theme.emerald,
                                 child: Text(
-                                  i == chain.length - 1 ? 'ﷺ' : '${i + 1}',
+                                  '${i + 1}',
                                   style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
                                 ),
                               ),
@@ -106,7 +106,9 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                     Text(
                                       i == 0
                                           ? 'First narrator'
-                                          : (i == chain.length - 1 ? 'Final · Holy Prophet' : 'Heard from previous'),
+                                          : (i == chain.length - 1
+                                              ? 'Last narrator · from the Prophet ﷺ'
+                                              : 'Narrated from previous'),
                                       style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -116,7 +118,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                           ),
                         ),
                     ],
-                  if (isnadUr.isNotEmpty) ...[
+                  if (isnad.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    const Text('ISNAD (ARABIC · AUTHENTICATED)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+                    const SizedBox(height: 8),
+                    Text(isnad, textAlign: TextAlign.right, textDirection: TextDirection.rtl, style: Islam307Theme.arabic(size: 18)),
+                  ] else if (isnadUr.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     const Text('ISNAD (URDU · AUTHENTICATED)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
                     const SizedBox(height: 8),
@@ -131,11 +138,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                         style: Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)),
                       ),
                     ),
-                  ] else if (isnad.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    const Text('ISNAD (ARABIC · AUTHENTICATED)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
-                    const SizedBox(height: 8),
-                    Text(isnad, textAlign: TextAlign.right, textDirection: TextDirection.rtl, style: Islam307Theme.arabic(size: 18)),
                   ],
                 ],
               ),
