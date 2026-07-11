@@ -462,6 +462,92 @@ body {
   min-height: calc(var(--phone-h) - 44px);
   text-align: center;
 }
+.splash-brand {
+  background: #f7f4ee;
+  padding: 18px;
+}
+.brand-logo-full {
+  width: min(86%, 280px);
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.welcome-brand-body {
+  padding-top: 18px;
+  background: linear-gradient(#f7f4ee, #fff 55%);
+}
+.welcome-logo {
+  width: min(78%, 240px);
+  margin-bottom: 8px;
+}
+.welcome-title {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 22px;
+  color: var(--emerald-deep);
+}
+.welcome-sub {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 6px;
+  font-size: 13px;
+}
+.brand-top-bar {
+  align-items: center;
+}
+.brand-top,
+.brand-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-top strong,
+.brand-footer strong {
+  display: block;
+  color: var(--emerald-deep);
+  font-size: 15px;
+  font-weight: 900;
+}
+.brand-top small,
+.brand-footer small {
+  display: block;
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  margin-top: 2px;
+}
+.brand-logo-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid #f5e6b8;
+  background: #f7f4ee;
+}
+.brand-footer {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 14px;
+  background: #f7f4ee;
+  border: 1px solid #f5e6b8;
+  justify-content: center;
+  text-align: left;
+}
+.ni-logo {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.ni-logo img {
+  width: 22px;
+  height: 22px;
+  object-fit: cover;
+}
 .splash-center h2 {
   margin-top: 24px;
   font-size: 26px;

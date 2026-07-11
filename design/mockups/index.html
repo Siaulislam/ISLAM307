@@ -22,13 +22,9 @@
       <!-- 1 SPLASH -->
       <div class="screen active" data-id="splash">
         <div class="phone">
-          <div class="pattern-bg"></div>
           <div class="phone-notch">ISLAM 307</div>
-          <div class="splash-center">
-            <div class="logo-mark"><div><span>307</span><small>ISLAM</small></div></div>
-            <h2>ISLAM 307</h2>
-            <p>Your complete offline Islamic companion</p>
-            <div style="margin-top:40px;width:48px;height:4px;background:var(--gold);border-radius:4px;animation:pulse 1.5s infinite"></div>
+          <div class="splash-center splash-brand">
+            <img class="brand-logo-full" src="../islam307_brand_logo.png" alt="ISLAM 307" />
           </div>
         </div>
         <p class="screen-label">1 · Splash Screen</p>
@@ -37,19 +33,18 @@
       <!-- 2 WELCOME -->
       <div class="screen" data-id="welcome">
         <div class="phone">
-          <div class="pattern-bg"></div>
           <div class="phone-notch">Welcome</div>
-          <div class="screen-body" style="padding-top:48px">
-            <div class="logo-mark" style="width:72px;height:72px;border-radius:20px"><div><span style="font-size:18px">307</span></div></div>
-            <h2 style="text-align:center;margin-top:20px;font-size:24px;color:var(--emerald-deep)">Welcome to ISLAM 307</h2>
-            <p style="text-align:center;color:var(--muted);margin-top:8px;font-size:14px">100% offline · Quran · Hadith · Prayer</p>
-            <p style="text-align:center;margin-top:24px;font-size:13px;font-weight:700;color:var(--muted)">Choose language</p>
+          <div class="screen-body welcome-brand-body">
+            <img class="brand-logo-full welcome-logo" src="../islam307_brand_logo.png" alt="ISLAM 307" />
+            <h2 class="welcome-title">Welcome</h2>
+            <p class="welcome-sub">100% offline · Quran · Hadith · Prayer</p>
+            <p style="text-align:center;margin-top:18px;font-size:13px;font-weight:700;color:var(--muted)">Choose language</p>
             <div class="lang-pills">
               <span class="lang-pill">العربية</span>
               <span class="lang-pill active">English</span>
               <span class="lang-pill">اردو</span>
             </div>
-            <div style="margin-top:32px">
+            <div style="margin-top:24px">
               <button class="btn-primary" data-goto="home">Get Started</button>
               <button class="btn-outline" data-goto="home">Continue as Guest</button>
             </div>
@@ -61,11 +56,16 @@
       <!-- 3 HOME -->
       <div class="screen" data-id="home">
         <div class="phone">
-          <div class="pattern-bg"></div>
           <div class="phone-notch">Home</div>
           <div class="screen-body">
-            <div class="top-bar">
-              <div class="avatar">ZS</div>
+            <div class="top-bar brand-top-bar">
+              <div class="brand-top">
+                <img class="brand-logo-mark" src="../islam307_brand_logo.png" alt="ISLAM 307" />
+                <div>
+                  <strong>ISLAM 307</strong>
+                  <small>KNOWLEDGE · GUIDANCE · PEACE</small>
+                </div>
+              </div>
               <div style="display:flex;gap:8px">
                 <div class="icon-btn">🔍</div>
                 <div class="icon-btn">🔔</div>
@@ -112,9 +112,16 @@
               <p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Actions are judged by intentions...</p>
               <span class="ref-badge">Sahih Bukhari · 1</span>
             </div>
+            <div class="brand-footer">
+              <img class="brand-logo-mark" src="../islam307_brand_logo.png" alt="ISLAM 307" />
+              <div>
+                <strong>ISLAM 307</strong>
+                <small>KNOWLEDGE · GUIDANCE · PEACE</small>
+              </div>
+            </div>
           </div>
           <nav class="bottom-nav">
-            <div class="nav-item active" data-goto="home"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item active" data-goto="home"><div class="ni ni-logo"><img src="../islam307_brand_logo.png" alt="" /></div>Home</div>
             <div class="nav-item" data-goto="quran"><div class="ni">📖</div>Quran</div>
             <div class="nav-item" data-goto="ai"><div class="ni">✨</div>AI</div>
             <div class="nav-item" data-goto="library"><div class="ni">📕</div>Library</div>

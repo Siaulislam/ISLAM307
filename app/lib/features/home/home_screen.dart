@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/branding/islam307_logo.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
 
@@ -28,25 +29,11 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           children: [
             Row(
               children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: Islam307Theme.emeraldSoft,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: Islam307Theme.goldLight, width: 2),
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text('307', style: TextStyle(fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep, fontSize: 12)),
-                ),
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: Text('ISLAM 307', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Islam307Theme.emeraldDeep)),
-                ),
+                const Expanded(child: Islam307BrandBar(showTagline: true)),
                 IconButton(
                   onPressed: () => context.push('/search'),
                   icon: const Icon(Icons.search_rounded),
@@ -57,7 +44,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             _verseCard(context),
             const SizedBox(height: 14),
             _prayerCard(),
@@ -76,10 +63,33 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _infoCard('Continue Reading', 'Al-Baqarah · Page 42 · Juz 1', onTap: () => context.push('/quran/read/2/1')),
             _infoCard('Daily Hadith', 'Actions are judged by intentions…', subtitle: 'Sahih Bukhari · 1', onTap: () => context.push('/hadith/read/1/1')),
+            const SizedBox(height: 20),
+            _dashboardFooter(),
           ],
         ),
       ),
       bottomNavigationBar: _bottomNav(context, 0),
+    );
+  }
+
+  Widget _dashboardFooter() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7F4EE),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Islam307Theme.goldLight.withValues(alpha: 0.7)),
+      ),
+      child: const Column(
+        children: [
+          Islam307BrandBar(showTagline: true, alignment: MainAxisAlignment.center),
+          SizedBox(height: 6),
+          Text(
+            '100% Offline Islamic Companion',
+            style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
     );
   }
 
@@ -208,7 +218,10 @@ class HomeScreen extends ConsumerWidget {
       ('Search', Icons.search_rounded, '/search'),
     ];
     return Container(
-      decoration: BoxDecoration(border: Border(top: BorderSide(color: Theme.of(context).dividerColor)), color: Theme.of(context).scaffoldBackgroundColor),
+      decoration: BoxDecoration(
+        border: Border(top: BorderSide(color: Theme.of(context).dividerColor)),
+        color: Theme.of(context).scaffoldBackgroundColor,
+      ),
       padding: const EdgeInsets.fromLTRB(8, 8, 8, 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -223,11 +236,35 @@ class HomeScreen extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: active ? BoxDecoration(color: Islam307Theme.emeraldSoft, borderRadius: BorderRadius.circular(10)) : null,
-                  child: Icon(items[i].$2, size: 22, color: active ? Islam307Theme.emerald : Islam307Theme.textMuted),
+                  padding: const EdgeInsets.all(4),
+                  decoration: active
+                      ? BoxDecoration(color: Islam307Theme.emeraldSoft, borderRadius: BorderRadius.circular(10))
+                      : null,
+                  child: i == 0
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            Islam307Logo.assetPath,
+                            width: 26,
+                            height: 26,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Icon(
+                              items[i].$2,
+                              size: 22,
+                              color: active ? Islam307Theme.emerald : Islam307Theme.textMuted,
+                            ),
+                          ),
+                        )
+                      : Icon(items[i].$2, size: 22, color: active ? Islam307Theme.emerald : Islam307Theme.textMuted),
                 ),
-                Text(items[i].$1, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: active ? Islam307Theme.emerald : Islam307Theme.textMuted)),
+                Text(
+                  items[i].$1,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: active ? Islam307Theme.emerald : Islam307Theme.textMuted,
+                  ),
+                ),
               ],
             ),
           );

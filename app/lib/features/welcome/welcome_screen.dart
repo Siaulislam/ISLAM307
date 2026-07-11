@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/branding/islam307_logo.dart';
 import '../../core/theme/islam307_theme.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -15,17 +16,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Islam307Theme.white,
+      backgroundColor: const Color(0xFFF7F4EE),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: Column(
             children: [
-              const Spacer(),
-              const Text('Welcome to ISLAM 307', textAlign: TextAlign.center, style: TextStyle(fontSize: 26, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep)),
-              const SizedBox(height: 8),
-              const Text('Quran · Hadith · Prayer · AI — fully offline', textAlign: TextAlign.center, style: TextStyle(color: Islam307Theme.textMuted)),
-              const SizedBox(height: 32),
+              const Expanded(
+                flex: 5,
+                child: Center(child: Islam307Logo(height: 260)),
+              ),
+              const Text(
+                'Welcome',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Quran · Hadith · Prayer · AI — fully offline',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13),
+              ),
+              const SizedBox(height: 22),
               const Text('Choose language', style: TextStyle(fontWeight: FontWeight.w700, color: Islam307Theme.textMuted)),
               const SizedBox(height: 12),
               Row(
