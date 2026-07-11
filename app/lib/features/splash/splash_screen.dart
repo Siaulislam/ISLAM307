@@ -20,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     super.initState();
     _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 1600));
     _fade = CurvedAnimation(parent: _ctrl, curve: Curves.easeOut);
-    _scale = Tween<double>(begin: 0.92, end: 1).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
+    _scale = Tween<double>(begin: 0.94, end: 1).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
     _ctrl.forward();
     Future.delayed(const Duration(milliseconds: 2800), () {
       if (mounted) context.go('/welcome');
@@ -37,14 +37,28 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F4EE),
-      body: FadeTransition(
-        opacity: _fade,
-        child: ScaleTransition(
-          scale: _scale,
-          child: const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 28),
-              child: Islam307Logo(height: 320),
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fade,
+          child: ScaleTransition(
+            scale: _scale,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final side = constraints.biggest.shortestSide;
+                final logoH = (side * 0.62).clamp(160.0, 300.0);
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: logoH,
+                        maxHeight: constraints.maxHeight * 0.72,
+                      ),
+                      child: Islam307Logo(height: logoH, width: logoH),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),

@@ -243,15 +243,18 @@ class HomeScreen extends ConsumerWidget {
                   child: i == 0
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            Islam307Logo.assetPath,
-                            width: 26,
-                            height: 26,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Icon(
-                              items[i].$2,
-                              size: 22,
-                              color: active ? Islam307Theme.emerald : Islam307Theme.textMuted,
+                          child: ColoredBox(
+                            color: const Color(0xFFF7F4EE),
+                            child: Image.asset(
+                              Islam307Logo.assetPath,
+                              width: 26,
+                              height: 26,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Icon(
+                                items[i].$2,
+                                size: 22,
+                                color: active ? Islam307Theme.emerald : Islam307Theme.textMuted,
+                              ),
                             ),
                           ),
                         )

@@ -18,52 +18,68 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F4EE),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-          child: Column(
-            children: [
-              const Expanded(
-                flex: 5,
-                child: Center(child: Islam307Logo(height: 260)),
-              ),
-              const Text(
-                'Welcome',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Quran · Hadith · Prayer · AI — fully offline',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13),
-              ),
-              const SizedBox(height: 22),
-              const Text('Choose language', style: TextStyle(fontWeight: FontWeight.w700, color: Islam307Theme.textMuted)),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  _langChip(0, 'العربية'),
-                  const SizedBox(width: 8),
-                  _langChip(1, 'English'),
-                  const SizedBox(width: 8),
-                  _langChip(2, 'اردو'),
-                ],
-              ),
-              const Spacer(),
-              FilledButton(onPressed: () => context.go('/home'), child: const Text('Get Started')),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => context.go('/home'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Islam307Theme.emeraldDeep,
-                  side: const BorderSide(color: Islam307Theme.emerald, width: 2),
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final side = constraints.biggest.shortestSide;
+            final logoH = (side * 0.42).clamp(120.0, 220.0);
+            return SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight - 24),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 8),
+                      Center(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: logoH, maxHeight: logoH),
+                          child: Islam307Logo(height: logoH, width: logoH),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Welcome',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep),
+                      ),
+                      const SizedBox(height: 6),
+                      const Text(
+                        'Quran · Hadith · Prayer · AI — fully offline',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13),
+                      ),
+                      const SizedBox(height: 22),
+                      const Text('Choose language', style: TextStyle(fontWeight: FontWeight.w700, color: Islam307Theme.textMuted)),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _langChip(0, 'العربية'),
+                          const SizedBox(width: 8),
+                          _langChip(1, 'English'),
+                          const SizedBox(width: 8),
+                          _langChip(2, 'اردو'),
+                        ],
+                      ),
+                      const Spacer(),
+                      const SizedBox(height: 28),
+                      FilledButton(onPressed: () => context.go('/home'), child: const Text('Get Started')),
+                      const SizedBox(height: 12),
+                      OutlinedButton(
+                        onPressed: () => context.go('/home'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Islam307Theme.emeraldDeep,
+                          side: const BorderSide(color: Islam307Theme.emerald, width: 2),
+                          minimumSize: const Size(double.infinity, 52),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        child: const Text('Continue as Guest', style: TextStyle(fontWeight: FontWeight.w700)),
+                      ),
+                    ],
+                  ),
                 ),
-                child: const Text('Continue as Guest', style: TextStyle(fontWeight: FontWeight.w700)),
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );

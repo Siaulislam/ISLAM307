@@ -50,13 +50,16 @@ class Islam307BrandBar extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Image.asset(
-            Islam307Logo.assetPath,
-            width: logoSize,
-            height: logoSize,
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
-            errorBuilder: (_, __, ___) => _FallbackMark(size: logoSize),
+          child: ColoredBox(
+            color: const Color(0xFFF7F4EE),
+            child: Image.asset(
+              Islam307Logo.assetPath,
+              width: logoSize,
+              height: logoSize,
+              fit: BoxFit.contain,
+              filterQuality: FilterQuality.high,
+              errorBuilder: (_, __, ___) => _FallbackMark(size: logoSize),
+            ),
           ),
         ),
         const SizedBox(width: 10),
