@@ -61,6 +61,9 @@ const state = {
   hadithSlug: null,
   hadithFilter: '',
   hadithLang: localStorage.getItem('i307_hadith_lang') || 'ur',
+  hadithListRows: [],
+  hadithListShown: 0,
+  hadithListPage: 100,
   tafsirSources: [],
   tafsirCache: {},
   currentSurah: null,
@@ -585,6 +588,8 @@ function renderHadithList(slug, filter = '') {
   const rows = pack.hadiths.filter((h) => {
     if (!q) return true;
     const chain = Array.isArray(h.ravi_chain) ? h.ravi_chain.join(' ') : '';
+    const byLang = h.ravi_by_lang || {};
+    const urChain = Array.isArray(byLang.ur) ? byLang.ur.join(' ') : '';
     return (
       String(h.n) === q ||
       (h.en || '').toLowerCase().includes(q) ||
@@ -592,24 +597,88 @@ function renderHadithList(slug, filter = '') {
       (h.ur || '').includes(filter) ||
       (h.ravi || h.narrator || '').toLowerCase().includes(q) ||
       chain.toLowerCase().includes(q) ||
+      urChain.includes(filter) ||
       (h.reference || '').toLowerCase().includes(q) ||
       (h.kitab || '').toLowerCase().includes(q) ||
       (h.grade || '').toLowerCase().includes(q)
     );
-  }).slice(0, q ? 250 : 120);
-  $('hadith-view').innerHTML = `
-    <p class="status">${pack.book.en} · tap a hadith number · showing ${rows.length}${q ? ' matches' : ' (first 120 — search for more)'}</p>
-    <div class="hadith-number-list">
-      ${rows.map((h) => `
-        <button type="button" class="hadith-number-row" data-n="${h.n}">
-          <strong>Hadith ${h.n}</strong>
-          <small>${escapeHtml(h.kitab || pack.book.en)}${h.reference_detail?.status ? ' · ' + escapeHtml(h.reference_detail.status) : ''}</small>
-        </button>`).join('') || '<p class="empty">No matches.</p>'}
-    </div>
-  `;
-  $('hadith-view').querySelectorAll('[data-n]').forEach((btn) => {
-    btn.onclick = () => openHadithDetail(slug, btn.dataset.n);
   });
+  state.hadithListRows = rows;
+  state.hadithListShown = Math.min(state.hadithListPage, rows.length);
+  paintHadithListPage(slug, pack, true);
+}
+
+function paintHadithListPage(slug, pack, reset = false) {
+  const rows = state.hadithListRows || [];
+  const shown = state.hadithListShown || 0;
+  const visible = rows.slice(0, shown);
+  const totalAll = (pack.hadiths || []).length;
+  const q = (state.hadithFilter || '').trim();
+  const status = q
+    ? `${pack.book.en} · ${rows.length.toLocaleString()} matches · showing ${visible.length.toLocaleString()}`
+    : `${pack.book.en} · ${totalAll.toLocaleString()} hadith · showing ${visible.length.toLocaleString()}`;
+
+  if (reset) {
+    $('hadith-view').innerHTML = `
+      <p class="status" id="hadith-list-status">${escapeHtml(status)}</p>
+      <div class="hadith-number-list" id="hadith-number-list"></div>
+      <div class="hadith-list-more" id="hadith-list-more"></div>
+    `;
+    const scroller = $('hadith-view');
+    scroller.onscroll = () => maybeLoadMoreHadith(slug);
+  } else {
+    const statusEl = $('hadith-list-status');
+    if (statusEl) statusEl.textContent = status;
+  }
+
+  const list = $('hadith-number-list');
+  if (!list) return;
+  if (reset) list.innerHTML = '';
+
+  const start = reset ? 0 : list.querySelectorAll('[data-n]').length;
+  const frag = document.createDocumentFragment();
+  for (let i = start; i < visible.length; i += 1) {
+    const h = visible[i];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hadith-number-row';
+    btn.dataset.n = String(h.n);
+    const statusText = h.reference_detail?.status ? ` · ${h.reference_detail.status}` : '';
+    btn.innerHTML = `<strong>Hadith ${h.n}</strong><small>${escapeHtml(h.kitab || pack.book.en)}${escapeHtml(statusText)}</small>`;
+    btn.onclick = () => openHadithDetail(slug, h.n);
+    frag.appendChild(btn);
+  }
+  list.appendChild(frag);
+
+  const more = $('hadith-list-more');
+  if (!more) return;
+  if (shown < rows.length) {
+    more.innerHTML = `<button type="button" class="hadith-action" id="hadith-load-more">Load more (${(rows.length - shown).toLocaleString()} remaining)</button>`;
+    const btn = $('hadith-load-more');
+    if (btn) btn.onclick = () => loadMoreHadith(slug);
+  } else if (rows.length === 0) {
+    more.innerHTML = '<p class="empty">No matches.</p>';
+  } else {
+    more.innerHTML = `<p class="status">All ${rows.length.toLocaleString()} hadith loaded · same Ravi / Reference / language on every number</p>`;
+  }
+}
+
+function loadMoreHadith(slug) {
+  const pack = state.hadithCache[slug];
+  if (!pack) return;
+  const rows = state.hadithListRows || [];
+  if (state.hadithListShown >= rows.length) return;
+  state.hadithListShown = Math.min(rows.length, state.hadithListShown + state.hadithListPage);
+  paintHadithListPage(slug, pack, false);
+}
+
+function maybeLoadMoreHadith(slug) {
+  const view = $('hadith-view');
+  if (!view) return;
+  if (view.scrollTop + view.clientHeight < view.scrollHeight - 200) return;
+  const rows = state.hadithListRows || [];
+  if (state.hadithListShown >= rows.length) return;
+  loadMoreHadith(slug);
 }
 
 function renderTafsirSources() {

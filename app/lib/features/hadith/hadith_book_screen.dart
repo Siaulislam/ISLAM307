@@ -19,7 +19,7 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
   bool _loading = true;
   bool _loadingMore = false;
   int _offset = 0;
-  static const _pageSize = 40;
+  static const _pageSize = 100;
 
   @override
   void initState() {
