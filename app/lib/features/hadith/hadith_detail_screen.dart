@@ -20,6 +20,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   bool _loading = true;
   String _lang = 'ur'; // ur | en | ar
 
+  static const _langOptions = [
+    ('ur', 'Urdu'),
+    ('en', 'English'),
+    ('ar', 'Arabic'),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -43,12 +49,69 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     return (h['text_ur'] as String?) ?? '';
   }
 
+  Map<String, String> _raviCopy() {
+    switch (_lang) {
+      case 'ur':
+        return {
+          'title': 'راوی',
+          'lead': 'صرف سند · پہلا راوی → … → آخری صحابی نبی ﷺ سے پہلے',
+          'first': 'پہلا راوی',
+          'mid': 'پچھلے سے روایت',
+          'last': 'آخری راوی · نبی ﷺ سے',
+          'empty': 'اس حدیث کی مکمل سند ماخذ میں دستیاب نہیں۔',
+          'isnad': 'سند (مستند)',
+        };
+      case 'ar':
+        return {
+          'title': 'الرواة',
+          'lead': 'الإسناد فقط · من أول راوٍ إلى آخر صحابي قبل النبي ﷺ',
+          'first': 'أول راوٍ',
+          'mid': 'روى عن السابق',
+          'last': 'آخر راوٍ · عن النبي ﷺ',
+          'empty': 'سلسلة الرواة الكاملة غير متوفرة في الإسناد الموثق لهذا الحديث.',
+          'isnad': 'الإسناد (موثق)',
+        };
+      default:
+        return {
+          'title': 'Ravi',
+          'lead': 'Isnad only · first narrator → … → last Companion before the Prophet ﷺ',
+          'first': 'First narrator',
+          'mid': 'Narrated from previous',
+          'last': 'Last narrator · from the Prophet ﷺ',
+          'empty': 'Full ravi chain is not available in the authenticated isnad for this hadith.',
+          'isnad': 'Isnad (authenticated)',
+        };
+    }
+  }
+
+  List<String> _raviChain() {
+    final h = _hadith;
+    if (h == null) return const [];
+    final byLang = h['ravi_by_lang'];
+    if (byLang is Map && byLang[_lang] is List) {
+      return (byLang[_lang] as List).map((e) => '$e').where((e) => e.isNotEmpty).toList();
+    }
+    return (h['ravi_chain'] as List?)?.map((e) => '$e').toList() ?? const [];
+  }
+
+  String _isnadText() {
+    final h = _hadith;
+    if (h == null) return '';
+    final byLang = h['isnad_by_lang'];
+    if (byLang is Map && byLang[_lang] != null) {
+      return '${byLang[_lang]}'.trim();
+    }
+    if (_lang == 'ur') return (h['isnad_ur'] as String?)?.trim() ?? '';
+    return (h['isnad'] as String?)?.trim() ?? '';
+  }
+
   void _openRaviSheet() {
     final h = _hadith;
     if (h == null) return;
-    final chain = (h['ravi_chain'] as List?)?.cast<String>() ?? const <String>[];
-    final isnadUr = (h['isnad_ur'] as String?)?.trim() ?? '';
-    final isnad = (h['isnad'] as String?)?.trim() ?? '';
+    final chain = _raviChain();
+    final isnad = _isnadText();
+    final t = _raviCopy();
+    final rtl = _lang == 'ur' || _lang == 'ar';
 
     showModalBottomSheet<void>(
       context: context,
@@ -62,15 +125,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Ravi · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  Text('${t['title']} · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Isnad only · first narrator → … → last Companion before the Prophet ﷺ (Prophet is not listed)',
-                    style: TextStyle(color: Islam307Theme.textMuted, height: 1.4),
-                  ),
+                  Text(t['lead']!, textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, style: const TextStyle(color: Islam307Theme.textMuted, height: 1.4)),
                   const SizedBox(height: 14),
                   if (chain.isEmpty)
-                    const Text('Full ravi chain is not available in the authenticated isnad for this hadith.')
+                    Text(t['empty']!, textDirection: rtl ? TextDirection.rtl : TextDirection.ltr)
                   else
                     ...[
                       for (var i = 0; i < chain.length; i++)
@@ -88,10 +148,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                               CircleAvatar(
                                 radius: 14,
                                 backgroundColor: Islam307Theme.emerald,
-                                child: Text(
-                                  '${i + 1}',
-                                  style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
-                                ),
+                                child: Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800)),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
@@ -100,15 +157,11 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                   children: [
                                     Text(
                                       chain[i],
-                                      textDirection: TextDirection.rtl,
+                                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
                                       style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
                                     ),
                                     Text(
-                                      i == 0
-                                          ? 'First narrator'
-                                          : (i == chain.length - 1
-                                              ? 'Last narrator · from the Prophet ﷺ'
-                                              : 'Narrated from previous'),
+                                      i == 0 ? t['first']! : (i == chain.length - 1 ? t['last']! : t['mid']!),
                                       style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
                                     ),
                                   ],
@@ -120,23 +173,15 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                     ],
                   if (isnad.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    const Text('ISNAD (ARABIC · AUTHENTICATED)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+                    Text(t['isnad']!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
                     const SizedBox(height: 8),
-                    Text(isnad, textAlign: TextAlign.right, textDirection: TextDirection.rtl, style: Islam307Theme.arabic(size: 18)),
-                  ] else if (isnadUr.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    const Text('ISNAD (URDU · AUTHENTICATED)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: const Color(0xFFEFF6FF), borderRadius: BorderRadius.circular(12)),
-                      child: Text(
-                        isnadUr,
-                        textAlign: TextAlign.right,
-                        textDirection: TextDirection.rtl,
-                        style: Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)),
-                      ),
+                    Text(
+                      isnad,
+                      textAlign: rtl ? TextAlign.right : TextAlign.left,
+                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                      style: _lang == 'ar'
+                          ? Islam307Theme.arabic(size: 18)
+                          : (_lang == 'ur' ? Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)) : const TextStyle(height: 1.5)),
                     ),
                   ],
                 ],
@@ -151,18 +196,34 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   void _openReferenceSheet() {
     final h = _hadith;
     if (h == null) return;
-    final d = Map<String, String>.from((h['reference_detail'] as Map?)?.map((k, v) => MapEntry('$k', '$v')) ?? {});
-    final grade = HadithRepository.gradingSummary(h);
-    final rows = <(String, String)>[
-      ('Kitab', d['kitab'] ?? h['kitab']?.toString() ?? ''),
-      ('Baab', d['baab'] ?? h['kitab']?.toString() ?? ''),
-      ('Volume', d['volume'] ?? ''),
-      ('English Kitab', d['english_kitab'] ?? h['kitab']?.toString() ?? ''),
-      ('English Name', d['english_name'] ?? h['book_name']?.toString() ?? ''),
-      ('Takhreej', d['takhreej'] ?? ''),
-      ('Status', (d['status']?.isNotEmpty == true) ? d['status']! : grade.grade),
-      ('Wazahat', d['wazahat'] ?? ''),
-    ];
+    final detail = h['reference_detail'];
+    List<(String, String)> rows = [];
+    if (detail is Map && detail['by_lang'] is Map && (detail['by_lang'] as Map)[_lang] is Map) {
+      final localized = Map<String, dynamic>.from((detail['by_lang'] as Map)[_lang] as Map);
+      final rawRows = localized['rows'];
+      if (rawRows is List) {
+        for (final row in rawRows) {
+          if (row is List && row.length >= 2) {
+            rows.add(('${row[0]}', '${row[1]}'));
+          }
+        }
+      }
+    }
+    if (rows.isEmpty) {
+      final d = Map<String, String>.from((detail as Map?)?.map((k, v) => MapEntry('$k', '$v')) ?? {});
+      rows = [
+        ('Kitab', d['kitab'] ?? h['kitab']?.toString() ?? ''),
+        ('Baab', d['baab'] ?? h['kitab']?.toString() ?? ''),
+        ('Volume', d['volume'] ?? ''),
+        ('English Kitab', d['english_kitab'] ?? ''),
+        ('English Name', d['english_name'] ?? h['book_name']?.toString() ?? ''),
+        ('Takhreej', d['takhreej'] ?? ''),
+        ('Status', d['status'] ?? ''),
+        ('Wazahat', d['wazahat'] ?? ''),
+      ];
+    }
+
+    final title = {'en': 'Reference', 'ur': 'حوالہ', 'ar': 'المرجع'}[_lang] ?? 'Reference';
 
     showModalBottomSheet<void>(
       context: context,
@@ -177,10 +238,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Reference · Hadith ${widget.hadithNumber}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white),
-                  ),
+                  Text('$title · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white)),
                   const SizedBox(height: 14),
                   Container(
                     decoration: BoxDecoration(
@@ -193,9 +251,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                         for (var i = 0; i < rows.length; i++)
                           Container(
                             decoration: BoxDecoration(
-                              border: i == rows.length - 1
-                                  ? null
-                                  : const Border(bottom: BorderSide(color: Color(0xFF334155))),
+                              border: i == rows.length - 1 ? null : const Border(bottom: BorderSide(color: Color(0xFF334155))),
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                             child: Row(
@@ -234,6 +290,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final h = _hadith;
     final translation = _translation();
     final rtl = _lang == 'ur' || _lang == 'ar';
+    final raviLabel = {'en': 'Ravi', 'ur': 'راوی', 'ar': 'الرواة'}[_lang]!;
+    final refLabel = {'en': 'Reference', 'ur': 'حوالہ', 'ar': 'المرجع'}[_lang]!;
 
     return Scaffold(
       appBar: AppBar(
@@ -251,26 +309,31 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        FilledButton.tonal(onPressed: _openRaviSheet, child: const Text('Ravi')),
-                        FilledButton.tonal(onPressed: _openReferenceSheet, child: const Text('Reference')),
+                        FilledButton.tonal(onPressed: _openRaviSheet, child: Text(raviLabel)),
+                        FilledButton.tonal(onPressed: _openReferenceSheet, child: Text(refLabel)),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        for (final opt in const [('ur', 'Urdu'), ('en', 'English'), ('ar', 'Arabic')])
-                          ChoiceChip(
-                            label: Text(opt.$2),
-                            selected: _lang == opt.$1,
-                            onSelected: (_) => setState(() => _lang = opt.$1),
-                            selectedColor: Islam307Theme.emeraldSoft,
-                            labelStyle: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              color: _lang == opt.$1 ? Islam307Theme.emeraldDeep : Islam307Theme.textMuted,
-                            ),
-                          ),
-                      ],
+                    InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: 'Language',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _lang,
+                          isExpanded: true,
+                          items: [
+                            for (final opt in _langOptions)
+                              DropdownMenuItem(value: opt.$1, child: Text(opt.$2, style: const TextStyle(fontWeight: FontWeight.w700))),
+                          ],
+                          onChanged: (v) {
+                            if (v == null) return;
+                            setState(() => _lang = v);
+                          },
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     if ((h['text_ar'] as String?)?.isNotEmpty == true)

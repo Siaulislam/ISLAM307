@@ -337,7 +337,7 @@ def isnad_excerpt(text_ar: str | None, max_len: int = 480) -> str:
 
 
 def isnad_excerpt_urdu(text_ur: str | None, max_len: int = 480) -> str:
-    """Urdu isnad excerpt for display only (names are not parsed from Urdu)."""
+    """Urdu isnad excerpt (before Prophet / matn markers)."""
     text = (text_ur or "").strip()
     if not text:
         return ""
@@ -351,10 +351,166 @@ def isnad_excerpt_urdu(text_ur: str | None, max_len: int = 480) -> str:
     return head[:max_len]
 
 
+def isnad_excerpt_en(text_en: str | None, max_len: int = 320) -> str:
+    """English isnad head only (Narrated …), before Prophet/matn."""
+    text = (text_en or "").strip()
+    if not text:
+        return ""
+    return _cut_isnad_en(text)[:max_len]
+
+
+_UR_HONOR = re.compile(r"\s*(?:رضی|رضى)\s*اللہ\s*(?:عنہا|عنها|عنہ|عنه)\s*", re.UNICODE)
+
+
+def _clean_name_ur(raw: str) -> str:
+    name = _normalize_ws(raw or "")
+    name = _UR_HONOR.sub(" ", name)
+    name = _normalize_ws(name).strip(" ،,;:۔")
+    name = re.sub(r"\s+(نے|سے|کی|کو)$", "", name).strip()
+    if not name or name in {"ہم", "ان", "انہوں", "اپنے", "والد", "یہ", "اس", "حدیث", "وہ"}:
+        return ""
+    if _is_prophet_token(name):
+        return ""
+    if len(name) > 100:
+        return ""
+    return name
+
+
+def extract_ravi_chain_urdu(text_ur: str | None) -> list[str]:
+    """Urdu isnad names only (stop before Prophet; Prophet not included)."""
+    head = isnad_excerpt_urdu(text_ur, max_len=560)
+    if not head:
+        return []
+
+    names: list[str] = []
+    seen: set[str] = set()
+
+    def add(raw: str) -> None:
+        name = _clean_name_ur(raw)
+        if not name:
+            return
+        key = name.replace(" ", "")
+        if key in seen:
+            return
+        seen.add(key)
+        names.append(name)
+
+    for m in re.finditer(
+        r"(?:ہم\s*)?کو\s+([^،.]{2,60}?)\s+نے\s+(?:یہ\s+)?(?:حدیث\s+)?بیان\s+کی",
+        head,
+        re.UNICODE,
+    ):
+        add(m.group(1))
+    for m in re.finditer(r"ہم\s*کو\s+([^،.]{2,60}?)\s+نے\s+خبر\s+دی", head, re.UNICODE):
+        add(m.group(1))
+    for m in re.finditer(
+        r"ان\s*کو\s+([^،.]{2,50}?)\s+نے(?:\s+([^،.]{2,50}?)\s+کی\s+روایت\s+سے)?\s*(?:خبر\s+دی|بیان\s+کی)?",
+        head,
+        re.UNICODE,
+    ):
+        add(m.group(1))
+        if m.group(2):
+            add(m.group(2))
+    for m in re.finditer(
+        r"([^\s،,]{2,40})\s+([^\s،,]{2,40})\s+سے\s+روایت\s+کرتے",
+        head,
+        re.UNICODE,
+    ):
+        add(m.group(1))
+        add(m.group(2))
+    for m in re.finditer(
+        r"(?:^|،|\.|۔)\s*(?:وہ\s+)?([^\s،.]{2,20}(?:\s+[^\s،.]{2,20}){0,3})\s+سے(?=\s*(?:،|۔|\.|$|وہ))",
+        head,
+        re.UNICODE,
+    ):
+        chunk = m.group(1)
+        if any(tok in chunk for tok in ("نے", "بیان", "خبر", "روایت", "حدیث", "کہتے")):
+            continue
+        add(chunk)
+    if re.search(r"اپنے\s+والد\s+سے", head):
+        add("ان کے والد")
+    for m in re.finditer(
+        r"انہوں\s+نے\s+(?!اپنے\s+والد)([^،.]{2,70}?)\s+سے\s+نقل\s+کی",
+        head,
+        re.UNICODE,
+    ):
+        add(m.group(1))
+
+    return [n for n in names if n and not _is_prophet_token(n)]
+
+
+def extract_ravi_by_lang(
+    text_ar: str | None,
+    primary: str | None = None,
+    text_en: str | None = None,
+    text_ur: str | None = None,
+) -> dict[str, list[str]]:
+    """Authenticated rawi lists keyed by language code."""
+    ar = extract_ravi_chain(text_ar, primary, text_en, text_ur)
+    ur = extract_ravi_chain_urdu(text_ur)
+    en = _extract_narrated_en(text_en)
+    # English editions usually expose only the companion. Prefer full Arabic
+    # isnad names when English lacks a multi-person chain (never invent EN names).
+    if len(en) < 2 and len(ar) >= 2:
+        en = list(ar)
+    elif not en:
+        en = list(ar)
+    if not ur:
+        ur = list(ar)
+    return {"ar": ar, "en": en, "ur": ur}
+
+
+def isnad_by_lang(
+    text_ar: str | None,
+    text_en: str | None = None,
+    text_ur: str | None = None,
+) -> dict[str, str]:
+    return {
+        "ar": isnad_excerpt(text_ar),
+        "en": isnad_excerpt_en(text_en),
+        "ur": isnad_excerpt_urdu(text_ur),
+    }
+
+
+_REF_LABELS = {
+    "en": {
+        "kitab": "Kitab",
+        "baab": "Baab",
+        "volume": "Volume",
+        "english_kitab": "English Kitab",
+        "english_name": "English Name",
+        "takhreej": "Takhreej",
+        "status": "Status",
+        "wazahat": "Wazahat",
+    },
+    "ur": {
+        "kitab": "کتاب",
+        "baab": "باب",
+        "volume": "جلد",
+        "english_kitab": "انگریزی کتاب",
+        "english_name": "انگریزی نام",
+        "takhreej": "تخریج",
+        "status": "حیثیت",
+        "wazahat": "وضاحت",
+    },
+    "ar": {
+        "kitab": "كتاب",
+        "baab": "باب",
+        "volume": "المجلد",
+        "english_kitab": "الكتاب بالإنجليزية",
+        "english_name": "الاسم بالإنجليزية",
+        "takhreej": "التخريج",
+        "status": "الحالة",
+        "wazahat": "الشرح",
+    },
+}
+
+
 def build_reference_detail(
     *,
     book_name: str,
     book_slug: str,
+    book_name_ar: str | None = None,
     hadith_number: int,
     reference_book,
     reference_hadith,
@@ -367,14 +523,19 @@ def build_reference_detail(
     if not hadith_ref:
         hadith_ref = str(hadith_number)
 
-    status = (grade or "").strip()
-    if not status and book_slug in {"bukhari", "muslim"}:
-        status = "صحیح"
-
+    grade_raw = (grade or "").strip()
     chapter = (chapter_title or "").strip()
     ch_num = "" if chapter_number in (None, "") else str(chapter_number)
+    book_ar = (book_name_ar or "").strip()
 
-    return {
+    def _status(lang: str) -> str:
+        if grade_raw:
+            return grade_raw
+        if book_slug in {"bukhari", "muslim"}:
+            return {"en": "Sahih", "ur": "صحیح", "ar": "صحيح"}[lang]
+        return {"en": "Not graded in source", "ur": "ماخذ میں درجہ نہیں", "ar": "غير مُصنَّف في المصدر"}[lang]
+
+    base = {
         "kitab": chapter,
         "baab": chapter,
         "baab_number": ch_num,
@@ -383,8 +544,31 @@ def build_reference_detail(
         "english_name": book_name,
         "hadith_number": hadith_ref,
         "takhreej": "",
-        "status": status,
+        "status": _status("ur"),
         "wazahat": "",
         "source_url": f"https://sunnah.com/{book_slug}:{hadith_number}",
         "chapter_number": ch_num,
     }
+
+    by_lang: dict[str, dict] = {}
+    for lang, labels in _REF_LABELS.items():
+        values = {
+            "kitab": chapter,
+            "baab": chapter,
+            "volume": volume,
+            "english_kitab": chapter,
+            "english_name": book_ar if lang == "ar" and book_ar else book_name,
+            "takhreej": "",
+            "status": _status(lang),
+            "wazahat": "",
+        }
+        rows = [[labels[key], values[key]] for key in labels]
+        by_lang[lang] = {
+            "labels": labels,
+            "values": values,
+            "rows": rows,
+        }
+
+    base["by_lang"] = by_lang
+    return base
+

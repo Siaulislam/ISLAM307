@@ -228,9 +228,129 @@ String isnadExcerptUrdu(String? textUr, {int maxLen = 480}) {
   return head.length > maxLen ? head.substring(0, maxLen) : head;
 }
 
-Map<String, String> buildReferenceDetail({
+String isnadExcerptEn(String? textEn, {int maxLen = 320}) {
+  final text = (textEn ?? '').trim();
+  if (text.isEmpty) return '';
+  final head = _cutIsnadEn(text);
+  return head.length > maxLen ? head.substring(0, maxLen) : head;
+}
+
+final _urHonor = RegExp(r'\s*(?:رضی|رضى)\s*اللہ\s*(?:عنہا|عنها|عنہ|عنه)\s*', unicode: true);
+
+String _cleanNameUr(String raw) {
+  var name = _norm(raw).replaceAll(_urHonor, ' ');
+  name = _norm(name).replaceAll(RegExp(r'^[ ،,;:۔]+|[ ،,;:۔]+$'), '');
+  name = name.replaceFirst(RegExp(r'\s+(نے|سے|کی|کو)$'), '');
+  if (name.isEmpty || {'ہم', 'ان', 'انہوں', 'اپنے', 'والد', 'یہ', 'اس', 'حدیث', 'وہ'}.contains(name)) return '';
+  if (_isProphetToken(name) || name.length > 100) return '';
+  return name;
+}
+
+List<String> extractRaviChainUrdu(String? textUr) {
+  final head = isnadExcerptUrdu(textUr, maxLen: 560);
+  if (head.isEmpty) return [];
+  final names = <String>[];
+  final seen = <String>{};
+
+  void add(String raw) {
+    final name = _cleanNameUr(raw);
+    if (name.isEmpty) return;
+    final key = name.replaceAll(' ', '');
+    if (seen.contains(key)) return;
+    seen.add(key);
+    names.add(name);
+  }
+
+  for (final m in RegExp(r'(?:ہم\s*)?کو\s+([^،.]{2,60}?)\s+نے\s+(?:یہ\s+)?(?:حدیث\s+)?بیان\s+کی', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+  }
+  for (final m in RegExp(r'ہم\s*کو\s+([^،.]{2,60}?)\s+نے\s+خبر\s+دی', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+  }
+  for (final m in RegExp(
+    r'ان\s*کو\s+([^،.]{2,50}?)\s+نے(?:\s+([^،.]{2,50}?)\s+کی\s+روایت\s+سے)?\s*(?:خبر\s+دی|بیان\s+کی)?',
+    unicode: true,
+  ).allMatches(head)) {
+    add(m.group(1)!);
+    if (m.group(2) != null) add(m.group(2)!);
+  }
+  for (final m in RegExp(r'([^\s،,]{2,40})\s+([^\s،,]{2,40})\s+سے\s+روایت\s+کرتے', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+    add(m.group(2)!);
+  }
+  for (final m in RegExp(
+    r'(?:^|،|\.|۔)\s*(?:وہ\s+)?([^\s،.]{2,20}(?:\s+[^\s،.]{2,20}){0,3})\s+سے(?=\s*(?:،|۔|\.|$|وہ))',
+    unicode: true,
+  ).allMatches(head)) {
+    final chunk = m.group(1)!;
+    if (['نے', 'بیان', 'خبر', 'روایت', 'حدیث', 'کہتے'].any(chunk.contains)) continue;
+    add(chunk);
+  }
+  if (RegExp(r'اپنے\s+والد\s+سے').hasMatch(head)) add('ان کے والد');
+  for (final m in RegExp(r'انہوں\s+نے\s+(?!اپنے\s+والد)([^،.]{2,70}?)\s+سے\s+نقل\s+کی', unicode: true).allMatches(head)) {
+    add(m.group(1)!);
+  }
+  return names.where((n) => !_isProphetToken(n)).toList();
+}
+
+Map<String, List<String>> extractRaviByLang(String? textAr, {String? primary, String? textEn, String? textUr}) {
+  final ar = extractRaviChain(textAr, primary: primary, textEn: textEn, textUr: textUr);
+  var ur = extractRaviChainUrdu(textUr);
+  var en = _extractNarratedEn(textEn);
+  if (en.length < 2 && ar.length >= 2) {
+    en = List<String>.from(ar);
+  } else if (en.isEmpty) {
+    en = List<String>.from(ar);
+  }
+  if (ur.isEmpty) ur = List<String>.from(ar);
+  return {'ar': ar, 'en': en, 'ur': ur};
+}
+
+Map<String, String> isnadByLang(String? textAr, {String? textEn, String? textUr}) {
+  return {
+    'ar': isnadExcerpt(textAr),
+    'en': isnadExcerptEn(textEn),
+    'ur': isnadExcerptUrdu(textUr),
+  };
+}
+
+const refLabels = {
+  'en': {
+    'kitab': 'Kitab',
+    'baab': 'Baab',
+    'volume': 'Volume',
+    'english_kitab': 'English Kitab',
+    'english_name': 'English Name',
+    'takhreej': 'Takhreej',
+    'status': 'Status',
+    'wazahat': 'Wazahat',
+  },
+  'ur': {
+    'kitab': 'کتاب',
+    'baab': 'باب',
+    'volume': 'جلد',
+    'english_kitab': 'انگریزی کتاب',
+    'english_name': 'انگریزی نام',
+    'takhreej': 'تخریج',
+    'status': 'حیثیت',
+    'wazahat': 'وضاحت',
+  },
+  'ar': {
+    'kitab': 'كتاب',
+    'baab': 'باب',
+    'volume': 'المجلد',
+    'english_kitab': 'الكتاب بالإنجليزية',
+    'english_name': 'الاسم بالإنجليزية',
+    'takhreej': 'التخريج',
+    'status': 'الحالة',
+    'wazahat': 'الشرح',
+  },
+};
+
+Map<String, dynamic> buildReferenceDetail({
   required String bookName,
   required String bookSlug,
+  String? bookNameAr,
   required int hadithNumber,
   dynamic referenceBook,
   dynamic referenceHadith,
@@ -244,13 +364,43 @@ Map<String, String> buildReferenceDetail({
   var hadithRef = (referenceHadith == null || '$referenceHadith'.trim().isEmpty) ? '' : '$referenceHadith';
   if (hadithRef.isEmpty) hadithRef = '$hadithNumber';
 
-  var status = (grade ?? '').trim();
-  if (status.isEmpty && (bookSlug == 'bukhari' || bookSlug == 'muslim')) {
-    status = 'صحیح';
-  }
-
+  final gradeRaw = (grade ?? '').trim();
   final chapter = (chapterTitle ?? '').trim();
   final chNum = chapterNumber == null ? '' : '$chapterNumber';
+  final bookAr = (bookNameAr ?? '').trim();
+
+  String statusFor(String lang) {
+    if (gradeRaw.isNotEmpty) return gradeRaw;
+    if (bookSlug == 'bukhari' || bookSlug == 'muslim') {
+      return {'en': 'Sahih', 'ur': 'صحیح', 'ar': 'صحيح'}[lang]!;
+    }
+    return {
+      'en': 'Not graded in source',
+      'ur': 'ماخذ میں درجہ نہیں',
+      'ar': 'غير مُصنَّف في المصدر',
+    }[lang]!;
+  }
+
+  final byLang = <String, Map<String, dynamic>>{};
+  for (final entry in refLabels.entries) {
+    final lang = entry.key;
+    final labels = entry.value;
+    final values = {
+      'kitab': chapter,
+      'baab': chapter,
+      'volume': volume,
+      'english_kitab': chapter,
+      'english_name': (lang == 'ar' && bookAr.isNotEmpty) ? bookAr : bookName,
+      'takhreej': '',
+      'status': statusFor(lang),
+      'wazahat': '',
+    };
+    byLang[lang] = {
+      'labels': labels,
+      'values': values,
+      'rows': [for (final key in labels.keys) [labels[key]!, values[key]!]],
+    };
+  }
 
   return {
     'kitab': chapter,
@@ -261,9 +411,10 @@ Map<String, String> buildReferenceDetail({
     'english_name': bookName,
     'hadith_number': hadithRef,
     'takhreej': '',
-    'status': status,
+    'status': statusFor('ur'),
     'wazahat': '',
     'source_url': 'https://sunnah.com/$bookSlug:$hadithNumber',
     'chapter_number': chNum,
+    'by_lang': byLang,
   };
 }

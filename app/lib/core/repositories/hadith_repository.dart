@@ -142,17 +142,24 @@ class HadithRepository {
     final textAr = map['text_ar'] as String?;
     final textEn = map['text_en'] as String?;
     final textUr = map['text_ur'] as String?;
+    final bookNameAr = book?['name_ar'] as String?;
     map['ravi'] = (ravi == null || ravi.isEmpty) ? null : ravi;
-    map['ravi_chain'] = extractRaviChain(textAr, primary: ravi, textEn: textEn, textUr: textUr);
-    map['isnad'] = isnadExcerpt(textAr);
-    map['isnad_ur'] = isnadExcerptUrdu(textUr);
+    final raviByLang = extractRaviByLang(textAr, primary: ravi, textEn: textEn, textUr: textUr);
+    map['ravi_by_lang'] = raviByLang;
+    map['ravi_chain'] = raviByLang['ar'] ?? const <String>[];
+    final isnads = isnadByLang(textAr, textEn: textEn, textUr: textUr);
+    map['isnad_by_lang'] = isnads;
+    map['isnad'] = isnads['ar'] ?? '';
+    map['isnad_ur'] = isnads['ur'] ?? '';
     map['reference'] = reference;
     map['kitab'] = kitab;
     map['book_name'] ??= bookName;
     map['book_slug'] ??= slug;
+    map['book_name_ar'] ??= bookNameAr;
     map['reference_detail'] = buildReferenceDetail(
       bookName: bookName,
       bookSlug: slug,
+      bookNameAr: bookNameAr,
       hadithNumber: hadithNo,
       referenceBook: refBook,
       referenceHadith: refHadith,
@@ -161,7 +168,7 @@ class HadithRepository {
       grade: map['grade'] as String?,
     );
     map['reference_url'] =
-        (map['reference_detail'] as Map<String, String>)['source_url'] ?? 'https://sunnah.com/$slug:$hadithNo';
+        (map['reference_detail'] as Map)['source_url']?.toString() ?? 'https://sunnah.com/$slug:$hadithNo';
     return map;
   }
 

@@ -268,6 +268,31 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
   border-color: var(--emerald);
   color: #fff;
 }
+.lang-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.lang-dropdown select {
+  appearance: none;
+  border: 1px solid var(--emerald);
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  border-radius: 999px;
+  padding: 8px 36px 8px 14px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--emerald-deep) 50%), linear-gradient(135deg, var(--emerald-deep) 50%, transparent 50%);
+  background-position: calc(100% - 16px) calc(50% - 3px), calc(100% - 11px) calc(50% - 3px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  min-width: 140px;
+}
 .hadith-arabic {
   margin: 0 0 14px;
   padding-bottom: 14px;
@@ -432,7 +457,8 @@ body.dark .ref-table th { background: #102018; }
 body.dark .ravi-primary { background: #102018; }
 body.dark .ravi-chain li { background: #0f172a; }
 body.dark .hadith-number-row,
-body.dark .lang-toggle button {
+body.dark .lang-toggle button,
+body.dark .lang-dropdown select {
   background: #121a2a;
   color: var(--text);
   border-color: var(--border);

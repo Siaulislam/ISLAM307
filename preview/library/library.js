@@ -424,51 +424,91 @@ function openHadithModal(title, bodyHtml, { darkTable = false } = {}) {
   });
 }
 
+function raviCopy(lang) {
+  const copy = {
+    en: {
+      lead: 'Isnad only · first narrator → … → last Companion before the Prophet ﷺ (Prophet is not listed)',
+      first: 'First narrator',
+      mid: 'Narrated from previous',
+      last: 'Last narrator · from the Prophet ﷺ',
+      empty: 'Full ravi chain is not available in the authenticated isnad for this hadith.',
+      isnad: 'Isnad (authenticated)',
+      title: 'Ravi',
+    },
+    ur: {
+      lead: 'صرف سند · پہلا راوی → … → آخری صحابی نبی ﷺ سے پہلے (نبی ﷺ فہرست میں نہیں)',
+      first: 'پہلا راوی',
+      mid: 'پچھلے سے روایت',
+      last: 'آخری راوی · نبی ﷺ سے',
+      empty: 'اس حدیث کی مکمل سند ماخذ میں دستیاب نہیں۔',
+      isnad: 'سند (مستند)',
+      title: 'راوی',
+    },
+    ar: {
+      lead: 'الإسناد فقط · من أول راوٍ إلى آخر صحابي قبل النبي ﷺ (النبي ﷺ غير مدرج)',
+      first: 'أول راوٍ',
+      mid: 'روى عن السابق',
+      last: 'آخر راوٍ · عن النبي ﷺ',
+      empty: 'سلسلة الرواة الكاملة غير متوفرة في الإسناد الموثق لهذا الحديث.',
+      isnad: 'الإسناد (موثق)',
+      title: 'الرواة',
+    },
+  };
+  return copy[lang] || copy.en;
+}
+
 function openRaviDetail(hadith) {
-  const chain = Array.isArray(hadith.ravi_chain) ? hadith.ravi_chain.filter(Boolean) : [];
-  const isnadUr = (hadith.isnad_ur || '').trim();
-  const isnadAr = (hadith.isnad || '').trim();
-  let body = `<p class="lead ravi-lead">Isnad only · first narrator → … → last Companion before the Prophet ﷺ (Prophet is not listed)</p>`;
+  const lang = state.hadithLang || 'ur';
+  const t = raviCopy(lang);
+  const byLang = hadith.ravi_by_lang || {};
+  const chain = (Array.isArray(byLang[lang]) && byLang[lang].length
+    ? byLang[lang]
+    : (hadith.ravi_chain || [])).filter(Boolean);
+  const isnads = hadith.isnad_by_lang || {};
+  const isnadText = (isnads[lang] || (lang === 'ur' ? hadith.isnad_ur : hadith.isnad) || '').trim();
+  const rtl = lang === 'ur' || lang === 'ar';
+  let body = `<p class="lead ravi-lead" dir="${rtl ? 'rtl' : 'ltr'}">${escapeHtml(t.lead)}</p>`;
   if (chain.length) {
     body += `
       <ol class="ravi-chain" dir="auto">
         ${chain.map((name, i) => {
           const isLast = i === chain.length - 1;
-          const heard = i === 0
-            ? 'First narrator'
-            : (isLast ? 'Last narrator · from the Prophet ﷺ' : 'Narrated from previous');
+          const heard = i === 0 ? t.first : (isLast ? t.last : t.mid);
           return `<li class="${isLast ? 'is-last-rawi' : ''}">
             <span class="ravi-step">${i + 1}</span>
             <div>
               <strong>${escapeHtml(name)}</strong>
-              <small>${heard}</small>
+              <small>${escapeHtml(heard)}</small>
             </div>
           </li>`;
         }).join('')}
       </ol>`;
   } else {
-    body += `<p class="empty">Full ravi chain is not available in the authenticated isnad for this hadith.</p>`;
+    body += `<p class="empty" dir="${rtl ? 'rtl' : 'ltr'}">${escapeHtml(t.empty)}</p>`;
   }
-  if (isnadAr) {
-    body += `<div class="isnad-box"><span>Isnad (Arabic · authenticated)</span><p class="ar" dir="rtl">${escapeHtml(isnadAr)}</p></div>`;
-  } else if (isnadUr) {
-    body += `<div class="isnad-box"><span>Isnad (Urdu · authenticated)</span><p class="ur isnad-highlight" dir="rtl">${escapeHtml(isnadUr)}</p></div>`;
+  if (isnadText) {
+    body += `<div class="isnad-box"><span>${escapeHtml(t.isnad)}</span><p class="${lang === 'en' ? 'en' : (lang === 'ar' ? 'ar' : 'ur isnad-highlight')}" dir="${rtl ? 'rtl' : 'ltr'}">${escapeHtml(isnadText)}</p></div>`;
   }
-  openHadithModal(`Ravi · Hadith ${hadith.n}`, body);
+  openHadithModal(`${t.title} · Hadith ${hadith.n}`, body);
 }
 
 function openReferenceDetail(hadith, book) {
+  const lang = state.hadithLang || 'ur';
   const d = hadith.reference_detail || {};
-  const rows = [
-    ['Kitab', d.kitab || hadith.kitab || ''],
-    ['Baab', d.baab || hadith.kitab || ''],
-    ['Volume', d.volume || (hadith.reference_book && String(hadith.reference_book) !== '0' ? String(hadith.reference_book) : '')],
-    ['English Kitab', d.english_kitab || hadith.kitab || ''],
-    ['English Name', d.english_name || book.en || ''],
-    ['Takhreej', d.takhreej || ''],
-    ['Status', d.status || hadith.grade || ''],
-    ['Wazahat', d.wazahat || ''],
-  ];
+  const localized = (d.by_lang && d.by_lang[lang]) || null;
+  const rows = localized && Array.isArray(localized.rows)
+    ? localized.rows
+    : [
+        ['Kitab', d.kitab || hadith.kitab || ''],
+        ['Baab', d.baab || hadith.kitab || ''],
+        ['Volume', d.volume || ''],
+        ['English Kitab', d.english_kitab || hadith.kitab || ''],
+        ['English Name', d.english_name || book.en || ''],
+        ['Takhreej', d.takhreej || ''],
+        ['Status', d.status || hadith.grade || ''],
+        ['Wazahat', d.wazahat || ''],
+      ];
+  const title = { en: 'Reference', ur: 'حوالہ', ar: 'المرجع' }[lang] || 'Reference';
   const body = `
     <table class="ref-table ref-table-shot">
       <tbody>
@@ -480,7 +520,7 @@ function openReferenceDetail(hadith, book) {
       </tbody>
     </table>
   `;
-  openHadithModal(`Reference · Hadith ${hadith.n}`, body, { darkTable: true });
+  openHadithModal(`${title} · Hadith ${hadith.n}`, body, { darkTable: true });
 }
 
 function translationFor(hadith, lang) {
@@ -500,6 +540,8 @@ function openHadithDetail(slug, hadithNumber) {
   const lang = state.hadithLang;
   const translation = translationFor(hadith, lang);
   const rtl = lang === 'ur' || lang === 'ar';
+  const raviLabel = { en: 'Ravi', ur: 'راوی', ar: 'الرواة' }[lang] || 'Ravi';
+  const refLabel = { en: 'Reference', ur: 'حوالہ', ar: 'المرجع' }[lang] || 'Reference';
   $('hadith-view').innerHTML = `
     <div class="hadith-detail">
       <div class="hadith-detail-top">
@@ -507,14 +549,17 @@ function openHadithDetail(slug, hadithNumber) {
         <div class="meta-row"><span>Hadith ${hadith.n}</span><span>${hadith.grade ? escapeHtml(hadith.grade) : (hadith.reference_detail?.status || 'Grade not verified.')}</span></div>
       </div>
       <div class="hadith-actions">
-        <button type="button" class="hadith-action" data-act="ravi">Ravi</button>
-        <button type="button" class="hadith-action" data-act="reference">Reference</button>
+        <button type="button" class="hadith-action" data-act="ravi">${escapeHtml(raviLabel)}</button>
+        <button type="button" class="hadith-action" data-act="reference">${escapeHtml(refLabel)}</button>
       </div>
-      <div class="lang-toggle" role="tablist" aria-label="Translation language">
-        <button type="button" data-lang="ur" class="${lang === 'ur' ? 'active' : ''}">Urdu</button>
-        <button type="button" data-lang="en" class="${lang === 'en' ? 'active' : ''}">English</button>
-        <button type="button" data-lang="ar" class="${lang === 'ar' ? 'active' : ''}">Arabic</button>
-      </div>
+      <label class="lang-dropdown">
+        <span>Language</span>
+        <select id="hadith-lang-select" aria-label="Hadith language">
+          <option value="ur" ${lang === 'ur' ? 'selected' : ''}>Urdu</option>
+          <option value="en" ${lang === 'en' ? 'selected' : ''}>English</option>
+          <option value="ar" ${lang === 'ar' ? 'selected' : ''}>Arabic</option>
+        </select>
+      </label>
       ${hadith.ar ? `<p class="ar hadith-arabic" dir="rtl">${escapeHtml(hadith.ar)}</p>` : '<p class="empty">Arabic text unavailable in authenticated source.</p>'}
       <div class="hadith-translation ${rtl ? 'rtl' : ''}" dir="${rtl ? 'rtl' : 'ltr'}">
         ${translation
@@ -524,13 +569,12 @@ function openHadithDetail(slug, hadithNumber) {
     </div>
   `;
   $('hadith-view').querySelector('[data-back]').onclick = () => renderHadithList(slug, state.hadithFilter);
-  $('hadith-view').querySelectorAll('[data-lang]').forEach((btn) => {
-    btn.onclick = () => {
-      state.hadithLang = btn.dataset.lang;
-      localStorage.setItem('i307_hadith_lang', state.hadithLang);
-      openHadithDetail(slug, hadithNumber);
-    };
-  });
+  const langSelect = $('hadith-view').querySelector('#hadith-lang-select');
+  langSelect.onchange = () => {
+    state.hadithLang = langSelect.value;
+    localStorage.setItem('i307_hadith_lang', state.hadithLang);
+    openHadithDetail(slug, hadithNumber);
+  };
   $('hadith-view').querySelector('[data-act="ravi"]').onclick = () => openRaviDetail(hadith);
   $('hadith-view').querySelector('[data-act="reference"]').onclick = () => openReferenceDetail(hadith, pack.book);
 }

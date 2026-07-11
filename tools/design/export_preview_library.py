@@ -19,9 +19,8 @@ import sys
 sys.path.insert(0, str(ROOT / "tools" / "hadith"))
 from hadith_meta import (  # noqa: E402
     build_reference_detail,
-    extract_ravi_chain,
-    isnad_excerpt,
-    isnad_excerpt_urdu,
+    extract_ravi_by_lang,
+    isnad_by_lang,
 )
 
 
@@ -118,15 +117,17 @@ def export_hadith() -> dict:
             if ref_book not in (None, 0, "0"):
                 reference = f"{book['en']} · Book {ref_book} · Hadith {ref_hadith}"
             ravi_primary = (r["narrator"] or "").strip()
-            ravi_chain = extract_ravi_chain(
+            ravi_by_lang = extract_ravi_by_lang(
                 r["text_ar"] or "",
                 ravi_primary,
                 r["text_en"] or "",
                 r["text_ur"] or "",
             )
+            isnads = isnad_by_lang(r["text_ar"] or "", r["text_en"] or "", r["text_ur"] or "")
             ref_detail = build_reference_detail(
                 book_name=book["en"],
                 book_slug=book["slug"],
+                book_name_ar=book.get("ar") or "",
                 hadith_number=r["hadith_number"],
                 reference_book=ref_book,
                 reference_hadith=ref_hadith,
@@ -143,9 +144,11 @@ def export_hadith() -> dict:
                     "grade": r["grade"] or "",
                     "ravi": ravi_primary,
                     "narrator": ravi_primary,
-                    "ravi_chain": ravi_chain,
-                    "isnad": isnad_excerpt(r["text_ar"] or ""),
-                    "isnad_ur": isnad_excerpt_urdu(r["text_ur"] or ""),
+                    "ravi_chain": ravi_by_lang.get("ar") or [],
+                    "ravi_by_lang": ravi_by_lang,
+                    "isnad": isnads.get("ar") or "",
+                    "isnad_ur": isnads.get("ur") or "",
+                    "isnad_by_lang": isnads,
                     "reference": reference,
                     "reference_detail": ref_detail,
                     "reference_book": ref_book,
