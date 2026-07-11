@@ -30,3 +30,4 @@ flutter:
     - assets/databases/tafsir.db.gz
     - assets/branding/
     - assets/branding/hadith/
+    - assets/branding/books/
