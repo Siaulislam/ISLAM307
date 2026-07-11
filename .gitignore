@@ -17,10 +17,13 @@ app/pubspec.lock
 
 # Large SQLite outputs (git)
 app/assets/databases/hadith.db
+app/assets/databases/hadith.db-shm
+app/assets/databases/hadith.db-wal
 app/assets/databases/tafsir.db
 tools/hadith/cache/
 tools/hadith/sunnah_config.local.json
 tools/tafsir/cache/
+tools/quran/cache/
 
 # Large optional PDF source (user provides locally)
 data/source/*.pdf

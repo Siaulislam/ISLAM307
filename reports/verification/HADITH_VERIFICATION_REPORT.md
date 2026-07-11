@@ -37,9 +37,18 @@ Per fawazahmed0/hadith-api References.md, editions vary by book and language:
 
 Gradings were **copied from upstream JSON**, which scraped/parsed **al-maktaba.org (Maktaba Shamela web)** grading pages — not directly from Sunnah.com scholars.
 
-Top scholars appearing in grade strings:
+Top scholars **documented by upstream** (per book, from al-maktaba.org grading editions):
 
-- No structured scholar field; grades embedded in single text column.
+| Collection | Grading scholars (upstream) |
+|------------|----------------------------|
+| Sunan Abu Dawood | Al-Albani, Arnaout, Muhammad Muhyi Al-Din Abdul Hamid |
+| Jami' at-Tirmidhi | Al-Albani, Ahmed Muhammad Shakir, Bashar Awad Maarouf |
+| Sunan an-Nasa'i | Al-Albani, Abu Ghuddah |
+| Sunan Ibn Majah | Al-Albani, Muhammad Fouad Abd al-Baqi, Arnaout |
+| Sahih Bukhari / Muslim | No per-hadith grade stored in this database (collection assumed Sahih) |
+| Muwatta Malik | Mixed grades where present |
+
+**In hadith.db:** Scholar names are **not stored as separate fields**. Grade text often lists classification only (e.g. "Hasan Sahih") without `graded_by`.
 
 ## 4. Official scholars vs copied source?
 
