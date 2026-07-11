@@ -48,8 +48,8 @@
               <span class="lang-pill">اردو</span>
             </div>
             <div style="margin-top:32px">
-              <button class="btn-primary">Get Started</button>
-              <button class="btn-outline">Continue as Guest</button>
+              <button class="btn-primary" data-goto="home">Get Started</button>
+              <button class="btn-outline" data-goto="home">Continue as Guest</button>
             </div>
           </div>
         </div>
@@ -88,35 +88,35 @@
             </div>
             <p class="section-title">Quick Access</p>
             <div class="grid-4">
-              <div class="grid-item"><div class="icon">📖</div><span>Quran</span></div>
-              <div class="grid-item"><div class="icon">📜</div><span>Hadith</span></div>
-              <div class="grid-item"><div class="icon">📚</div><span>Tafsir</span></div>
-              <div class="grid-item"><div class="icon">✨</div><span>AI</span></div>
-              <div class="grid-item"><div class="icon">🕌</div><span>Prayer</span></div>
-              <div class="grid-item"><div class="icon">🧭</div><span>Qibla</span></div>
-              <div class="grid-item"><div class="icon">📿</div><span>Azkar</span></div>
-              <div class="grid-item"><div class="icon">🤲</div><span>Duas</span></div>
-              <div class="grid-item"><div class="icon">📕</div><span>Library</span></div>
-              <div class="grid-item"><div class="icon">🎧</div><span>Audio</span></div>
-              <div class="grid-item"><div class="icon">🎬</div><span>Videos</span></div>
-              <div class="grid-item"><div class="icon">⬇️</div><span>Downloads</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="quran"><div class="icon">📖</div><span>Quran</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="hadith"><div class="icon">📜</div><span>Hadith</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="tafsir"><div class="icon">📚</div><span>Tafsir</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="ai"><div class="icon">✨</div><span>AI</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🕌</div><span>Prayer</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🧭</div><span>Qibla</span></div>
+              <div class="grid-item is-disabled" title="Coming soon"><div class="icon">📿</div><span>Azkar</span></div>
+              <div class="grid-item is-disabled" title="Coming soon"><div class="icon">🤲</div><span>Duas</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="library"><div class="icon">📕</div><span>Library</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="audio"><div class="icon">🎧</div><span>Audio</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="videos"><div class="icon">🎬</div><span>Videos</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="downloads"><div class="icon">⬇️</div><span>Downloads</span></div>
             </div>
-            <div class="card" style="margin-top:14px">
+            <div class="card" style="margin-top:14px" role="button" tabindex="0" data-goto="quran-reader">
               <strong style="font-size:13px">Continue Reading</strong>
               <p style="font-size:12px;color:var(--muted);margin-top:4px">Al-Baqarah · Page 42 · Juz 1</p>
             </div>
-            <div class="card">
+            <div class="card" role="button" tabindex="0" data-goto="hadith">
               <strong style="font-size:13px">Daily Hadith</strong>
               <p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Actions are judged by intentions...</p>
               <span class="ref-badge">Sahih Bukhari · 1</span>
             </div>
           </div>
           <nav class="bottom-nav">
-            <div class="nav-item active"><div class="ni">🏠</div>Home</div>
-            <div class="nav-item"><div class="ni">📖</div>Quran</div>
-            <div class="nav-item"><div class="ni">✨</div>AI</div>
-            <div class="nav-item"><div class="ni">📕</div>Library</div>
-            <div class="nav-item"><div class="ni">☰</div>More</div>
+            <div class="nav-item active" data-goto="home"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item" data-goto="quran"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item" data-goto="ai"><div class="ni">✨</div>AI</div>
+            <div class="nav-item" data-goto="library"><div class="ni">📕</div>Library</div>
+            <div class="nav-item" data-goto="more"><div class="ni">☰</div>More</div>
           </nav>
         </div>
         <p class="screen-label">3 · Home Dashboard</p>
@@ -138,16 +138,17 @@
               <span class="lang-pill" style="font-size:11px;padding:8px 14px">Juz</span>
               <span class="lang-pill" style="font-size:11px;padding:8px 14px">Page</span>
             </div>
-            <div class="list-row"><div class="num">1</div><div class="meta"><strong>Al-Fatiha</strong><small>الفاتحة · 7 Ayahs · Page 1</small></div><span style="color:var(--gold)">★</span></div>
-            <div class="list-row"><div class="num">2</div><div class="meta"><strong>Al-Baqarah</strong><small>البقرة · 286 Ayahs · Page 2</small></div></div>
-            <div class="list-row"><div class="num">3</div><div class="meta"><strong>Al-Imran</strong><small>آل عمران · 200 Ayahs · Page 50</small></div></div>
-            <div class="list-row"><div class="num">36</div><div class="meta"><strong>Yasin</strong><small>يس · 83 Ayahs · Page 440</small></div><span style="color:var(--gold)">★</span></div>
+            <div class="list-row" data-goto="quran-reader"><div class="num">1</div><div class="meta"><strong>Al-Fatiha</strong><small>الفاتحة · 7 Ayahs · Page 1</small></div><span style="color:var(--gold)">★</span></div>
+            <div class="list-row" data-goto="quran-reader"><div class="num">2</div><div class="meta"><strong>Al-Baqarah</strong><small>البقرة · 286 Ayahs · Page 2</small></div></div>
+            <div class="list-row" data-goto="quran-reader"><div class="num">3</div><div class="meta"><strong>Al-Imran</strong><small>آل عمران · 200 Ayahs · Page 50</small></div></div>
+            <div class="list-row" data-goto="quran-reader"><div class="num">36</div><div class="meta"><strong>Yasin</strong><small>يس · 83 Ayahs · Page 440</small></div><span style="color:var(--gold)">★</span></div>
+            <p style="margin-top:12px;text-align:center"><a class="btn-primary" style="display:inline-block;width:auto;padding:10px 18px;text-decoration:none" href="../../preview/library/index.html">Open full Quran library</a></p>
             <p style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center">13-Line Uthmani · Offline · 114 Surahs</p>
           </div>
           <nav class="bottom-nav">
-            <div class="nav-item"><div class="ni">🏠</div>Home</div>
-            <div class="nav-item active"><div class="ni">📖</div>Quran</div>
-            <div class="nav-item"><div class="ni">✨</div>AI</div>
+            <div class="nav-item" data-goto="home"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item active" data-goto="quran"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item" data-goto="ai"><div class="ni">✨</div>AI</div>
             <div class="nav-item"><div class="ni">📕</div>Library</div>
             <div class="nav-item"><div class="ni">☰</div>More</div>
           </nav>
@@ -195,13 +196,14 @@
           <div class="screen-body">
             <strong style="font-size:18px;color:var(--emerald-deep)">Hadith Collections</strong>
             <div class="search-bar" style="margin-top:12px">🔍 Search hadith...</div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/bukhari.svg" alt="Sahih Bukhari" /></div><div class="meta"><strong>Sahih Bukhari</strong><small>7,563 hadith · Offline</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/muslim.svg" alt="Sahih Muslim" /></div><div class="meta"><strong>Sahih Muslim</strong><small>7,563 hadith · Offline</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/abudawud.svg" alt="Abu Dawood" /></div><div class="meta"><strong>Abu Dawood</strong><small>5,274 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/tirmidhi.svg" alt="Tirmidhi" /></div><div class="meta"><strong>Tirmidhi</strong><small>3,956 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/nasai.svg" alt="Nasai" /></div><div class="meta"><strong>Nasai</strong><small>5,758 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/ibnmajah.svg" alt="Ibn Majah" /></div><div class="meta"><strong>Ibn Majah</strong><small>4,341 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/malik.svg" alt="Muwatta Imam Malik" /></div><div class="meta"><strong>Muwatta Imam Malik</strong><small>1,720 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-detail"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/bukhari.svg" alt="Sahih Bukhari" /></div><div class="meta"><strong>Sahih Bukhari</strong><small>7,563 hadith · Offline</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/muslim.svg" alt="Sahih Muslim" /></div><div class="meta"><strong>Sahih Muslim</strong><small>7,563 hadith · Offline</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/abudawud.svg" alt="Abu Dawood" /></div><div class="meta"><strong>Abu Dawood</strong><small>5,274 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/tirmidhi.svg" alt="Tirmidhi" /></div><div class="meta"><strong>Tirmidhi</strong><small>3,956 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/nasai.svg" alt="Nasai" /></div><div class="meta"><strong>Nasai</strong><small>5,758 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/ibnmajah.svg" alt="Ibn Majah" /></div><div class="meta"><strong>Ibn Majah</strong><small>4,341 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/malik.svg" alt="Muwatta Imam Malik" /></div><div class="meta"><strong>Muwatta Imam Malik</strong><small>1,720 hadith</small></div></div>
+            <p style="margin-top:14px;text-align:center"><a class="btn-primary" style="display:inline-block;width:auto;padding:10px 18px;text-decoration:none" href="../../preview/library/index.html#hadith">Browse offline Hadith library</a></p>
           </div>
         </div>
         <p class="screen-label">6 · Hadith Module</p>
@@ -222,6 +224,7 @@
             <p class="section-title">Ibn Kathir</p>
             <p style="font-size:14px;line-height:1.7;color:var(--text)">These are the believers who have faith in what cannot be seen — they believe in Allah, His angels, His books, and His messengers...</p>
             <span class="ref-badge">Tafsir Ibn Kathir · Vol 1</span>
+            <p style="margin-top:14px;text-align:center"><a class="btn-primary" style="display:inline-block;width:auto;padding:10px 18px;text-decoration:none" href="../../preview/library/index.html#tafsir">Open Tafsir library</a></p>
           </div>
         </div>
         <p class="screen-label">7 · Tafsir Reading</p>
@@ -452,18 +455,62 @@
     ];
     const nav = document.getElementById('nav');
     const els = document.querySelectorAll('.screen');
+
+    function goTo(id) {
+      if (!id) return;
+      const exists = Array.from(els).some(el => el.dataset.id === id);
+      if (!exists) return;
+      nav.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.id === id));
+      els.forEach(el => el.classList.toggle('active', el.dataset.id === id));
+      const active = document.querySelector('.screen.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (history.replaceState) history.replaceState(null, '', '#' + id);
+    }
+
     screens.forEach((s, i) => {
       const b = document.createElement('button');
       b.textContent = s.label;
       b.dataset.id = s.id;
       if (i === 0) b.classList.add('active');
-      b.onclick = () => {
-        nav.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        els.forEach(el => el.classList.toggle('active', el.dataset.id === s.id));
-      };
+      b.onclick = () => goTo(s.id);
       nav.appendChild(b);
     });
+
+    document.addEventListener('click', (e) => {
+      const open = e.target.closest('[data-open]');
+      if (open) {
+        window.location.href = open.getAttribute('data-open');
+        return;
+      }
+      const target = e.target.closest('[data-goto]');
+      if (!target || target.classList.contains('is-disabled')) return;
+      goTo(target.getAttribute('data-goto'));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const target = e.target.closest('[data-goto]');
+      if (!target || target.classList.contains('is-disabled')) return;
+      e.preventDefault();
+      goTo(target.getAttribute('data-goto'));
+    });
+
+    // Wire remaining bottom navs that are static in other screens
+    document.querySelectorAll('.bottom-nav .nav-item').forEach((item) => {
+      if (item.hasAttribute('data-goto')) return;
+      const label = (item.textContent || '').trim().toLowerCase();
+      const map = { home: 'home', quran: 'quran', ai: 'ai', library: 'library', more: 'more' };
+      for (const [key, id] of Object.entries(map)) {
+        if (label.includes(key)) {
+          item.setAttribute('data-goto', id);
+          break;
+        }
+      }
+    });
+
+    const hash = (location.hash || '').replace(/^#/, '');
+    if (hash) goTo(hash);
+    else goTo('home');
   </script>
 </body>
 </html>

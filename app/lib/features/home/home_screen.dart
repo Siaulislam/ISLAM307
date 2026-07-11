@@ -7,8 +7,8 @@ class HomeScreen extends StatelessWidget {
 
   static const _quick = [
     ('Quran', Icons.menu_book_rounded, '/quran'),
-    ('Hadith', Icons.auto_stories_rounded, null),
-    ('Tafsir', Icons.library_books_rounded, null),
+    ('Hadith', Icons.auto_stories_rounded, '/hadith'),
+    ('Tafsir', Icons.library_books_rounded, '/tafsir'),
     ('AI', Icons.auto_awesome_rounded, null),
     ('Prayer', Icons.mosque_rounded, null),
     ('Qibla', Icons.explore_rounded, null),
@@ -65,7 +65,7 @@ class HomeScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             _infoCard('Continue Reading', 'Al-Baqarah · Page 42 · Juz 1', onTap: () => context.push('/quran/read/2/1')),
-            _infoCard('Daily Hadith', 'Actions are judged by intentions…', subtitle: 'Sahih Bukhari · 1'),
+            _infoCard('Daily Hadith', 'Actions are judged by intentions…', subtitle: 'Sahih Bukhari · 1', onTap: () => context.push('/hadith/read/1/1')),
           ],
         ),
       ),

@@ -208,6 +208,24 @@ body {
   background: var(--bg);
   box-shadow: 0 2px 12px rgba(15,23,42,0.06);
   border: 1px solid var(--border);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.grid-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+}
+.grid-item:focus-visible {
+  outline: 2px solid var(--emerald);
+  outline-offset: 2px;
+}
+.grid-item.is-disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+.grid-item.is-disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 .grid-item .icon {
   width: 40px;
@@ -225,6 +243,22 @@ body {
   font-weight: 600;
   color: var(--text);
   line-height: 1.2;
+}
+.nav-item,
+.list-row,
+.btn-primary,
+.btn-outline {
+  cursor: pointer;
+}
+.bottom-nav .nav-item:hover {
+  color: var(--emerald);
+}
+.list-row:hover {
+  background: var(--emerald-soft);
+}
+.card[data-goto],
+.card[role="button"] {
+  cursor: pointer;
 }
 
 .top-bar {

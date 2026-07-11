@@ -6,10 +6,11 @@
 
 | Phase | Status |
 |-------|--------|
-| UI mockups | Approved |
+| UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
 | `quran.db` | Built (6,236 ayahs, Tanzil verified) |
-| Flutter app scaffold | Splash, Welcome, Home, Quran reader |
-| Hadith, AI, Prayer, etc. | Next |
+| `hadith.db` / `tafsir.db` | Bundled; Flutter screens wired |
+| Flutter app scaffold | Splash, Welcome, Home, Quran, Hadith, Tafsir |
+| AI, Prayer, etc. | Next |
 
 ## Quick start (local Chrome — same as XMONEY)
 
@@ -24,6 +25,7 @@ Then open in Chrome:
 | Page | URL |
 |------|-----|
 | **Preview hub** | http://localhost:5500/preview/ |
+| **Live library (Quran/Hadith/Tafsir)** | http://localhost:5500/preview/library/ |
 | **Phase 1 mockups (15 screens)** | http://localhost:5500/design/mockups/index.html |
 | **Phase 3 mockups (Hadith/Tafsir/AI)** | http://localhost:5500/design/mockups/phase3-mockups.html |
 
@@ -36,6 +38,7 @@ Press `Ctrl+C` in the terminal to stop the server.
 | Page | URL |
 |------|-----|
 | Preview hub | https://siaulislam.github.io/ISLAM307/preview/ |
+| Live library | https://siaulislam.github.io/ISLAM307/preview/library/ |
 | Phase 1 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/index.html |
 | Phase 3 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/phase3-mockups.html |
 | Book icons | https://siaulislam.github.io/ISLAM307/preview/icons.html |

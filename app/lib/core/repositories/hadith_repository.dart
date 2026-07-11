@@ -1,11 +1,13 @@
 import '../database/database_registry.dart';
 
-/// Offline hadith data access — authenticated sources only (Sunnah.com).
+/// Offline hadith access — supports legacy single-grade schema and authenticated multi-grade schema.
 class HadithRepository {
   HadithRepository(this._registry);
   final DatabaseRegistry _registry;
 
   static const gradeNotVerified = 'Grade not verified.';
+  bool? _hasGradeTable;
+  bool? _hasKitabNumber;
 
   Future<List<Map<String, dynamic>>> books() async {
     final db = await _registry.open('hadith');
@@ -14,7 +16,33 @@ class HadithRepository {
 
   Future<List<Map<String, dynamic>>> chapters(int bookId) async {
     final db = await _registry.open('hadith');
-    return db.query('chapters', where: 'book_id = ?', whereArgs: [bookId], orderBy: 'kitab_number, number ASC');
+    final order = await _chapterOrderBy(db);
+    return db.query('chapters', where: 'book_id = ?', whereArgs: [bookId], orderBy: order);
+  }
+
+  Future<List<Map<String, dynamic>>> hadithsForBook(int bookId, {int limit = 100, int offset = 0}) async {
+    final db = await _registry.open('hadith');
+    final rows = await db.query(
+      'hadiths',
+      where: 'book_id = ?',
+      whereArgs: [bookId],
+      orderBy: 'hadith_number ASC',
+      limit: limit,
+      offset: offset,
+    );
+    return Future.wait(rows.map(_enrich));
+  }
+
+  Future<List<Map<String, dynamic>>> hadithsForChapter(int chapterId, {int limit = 200}) async {
+    final db = await _registry.open('hadith');
+    final rows = await db.query(
+      'hadiths',
+      where: 'chapter_id = ?',
+      whereArgs: [chapterId],
+      orderBy: 'hadith_number ASC',
+      limit: limit,
+    );
+    return Future.wait(rows.map(_enrich));
   }
 
   Future<Map<String, dynamic>?> hadith(int bookId, int hadithNumber) async {
@@ -26,19 +54,24 @@ class HadithRepository {
       limit: 1,
     );
     if (rows.isEmpty) return null;
-    final row = Map<String, dynamic>.from(rows.first);
-    row['grades'] = await gradesForHadith(row['id'] as int);
-    return row;
+    return _enrich(rows.first);
   }
 
-  Future<List<Map<String, dynamic>>> gradesForHadith(int hadithId) async {
+  Future<List<Map<String, dynamic>>> gradesForHadith(int hadithId, {String? legacyGrade}) async {
     final db = await _registry.open('hadith');
-    return db.query(
-      'hadith_grades',
-      where: 'hadith_id = ?',
-      whereArgs: [hadithId],
-      orderBy: 'sort_order ASC',
-    );
+    if (await _supportsGradeTable(db)) {
+      return db.query(
+        'hadith_grades',
+        where: 'hadith_id = ?',
+        whereArgs: [hadithId],
+        orderBy: 'sort_order ASC',
+      );
+    }
+    final g = legacyGrade?.trim();
+    if (g == null || g.isEmpty) return [];
+    return [
+      {'hadith_id': hadithId, 'grade': g, 'graded_by': null, 'language': 'en', 'sort_order': 0},
+    ];
   }
 
   Future<List<Map<String, dynamic>>> search(String query, {int limit = 40}) async {
@@ -57,13 +90,41 @@ class HadithRepository {
       ''',
       [q, limit],
     );
-    final enriched = <Map<String, dynamic>>[];
-    for (final row in rows) {
-      final map = Map<String, dynamic>.from(row);
-      map['grades'] = await gradesForHadith(map['id'] as int);
-      enriched.add(map);
+    return Future.wait(rows.map(_enrich));
+  }
+
+  Future<Map<String, dynamic>> _enrich(Map<String, dynamic> row) async {
+    final map = Map<String, dynamic>.from(row);
+    map['grades'] = await gradesForHadith(
+      map['id'] as int,
+      legacyGrade: map['grade'] as String?,
+    );
+    map['reference_url'] ??= _legacyReferenceUrl(map);
+    return map;
+  }
+
+  String _legacyReferenceUrl(Map<String, dynamic> map) {
+    final bookId = map['book_id'];
+    final n = map['hadith_number'];
+    return 'https://sunnah.com/hadith:$bookId/$n';
+  }
+
+  Future<bool> _supportsGradeTable(dynamic db) async {
+    if (_hasGradeTable != null) return _hasGradeTable!;
+    final rows = await db.rawQuery(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='hadith_grades'",
+    );
+    _hasGradeTable = rows.isNotEmpty;
+    return _hasGradeTable!;
+  }
+
+  Future<String> _chapterOrderBy(dynamic db) async {
+    if (_hasKitabNumber != null) {
+      return _hasKitabNumber! ? 'kitab_number, number ASC' : 'number ASC';
     }
-    return enriched;
+    final cols = await db.rawQuery('PRAGMA table_info(chapters)');
+    _hasKitabNumber = cols.any((c) => c['name'] == 'kitab_number');
+    return _hasKitabNumber! ? 'kitab_number, number ASC' : 'number ASC';
   }
 
   /// Primary grade + scholar for AI display; never hides grading.
@@ -72,8 +133,9 @@ class HadithRepository {
   ) {
     final grades = hadithRow['grades'] as List<Map<String, dynamic>>? ?? [];
     if (grades.isEmpty) {
+      final legacy = (hadithRow['grade'] as String?)?.trim();
       return (
-        grade: gradeNotVerified,
+        grade: (legacy == null || legacy.isEmpty) ? gradeNotVerified : legacy,
         scholar: null,
         referenceUrl: hadithRow['reference_url'] as String? ?? '',
       );
@@ -90,7 +152,8 @@ class HadithRepository {
   static List<({String grade, String? scholar})> allGradings(Map<String, dynamic> hadithRow) {
     final grades = hadithRow['grades'] as List<Map<String, dynamic>>? ?? [];
     if (grades.isEmpty) {
-      return [(grade: gradeNotVerified, scholar: null)];
+      final legacy = (hadithRow['grade'] as String?)?.trim();
+      return [(grade: (legacy == null || legacy.isEmpty) ? gradeNotVerified : legacy, scholar: null)];
     }
     return grades
         .map((g) => (
