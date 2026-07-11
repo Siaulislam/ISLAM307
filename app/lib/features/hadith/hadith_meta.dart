@@ -347,6 +347,25 @@ const refLabels = {
   },
 };
 
+Map<String, dynamic>? _chapterI18n;
+
+/// Load authenticated chapter/book title localizations (call once from repository).
+void setChapterI18n(Map<String, dynamic>? data) {
+  _chapterI18n = data;
+}
+
+String _localizedChapter(String bookSlug, String chapterTitle, String lang) {
+  final chapter = chapterTitle.trim();
+  if (chapter.isEmpty) return '';
+  if (lang == 'en') return chapter;
+  final chapters = (_chapterI18n?['chapters'] as Map?)?[bookSlug];
+  if (chapters is Map && chapters[chapter] is Map) {
+    final value = '${(chapters[chapter] as Map)[lang] ?? ''}'.trim();
+    if (value.isNotEmpty) return value;
+  }
+  return chapter;
+}
+
 Map<String, dynamic> buildReferenceDetail({
   required String bookName,
   required String bookSlug,
@@ -367,7 +386,6 @@ Map<String, dynamic> buildReferenceDetail({
   final gradeRaw = (grade ?? '').trim();
   final chapter = (chapterTitle ?? '').trim();
   final chNum = chapterNumber == null ? '' : '$chapterNumber';
-  final bookAr = (bookNameAr ?? '').trim();
 
   String statusFor(String lang) {
     if (gradeRaw.isNotEmpty) return gradeRaw;
@@ -381,16 +399,21 @@ Map<String, dynamic> buildReferenceDetail({
     }[lang]!;
   }
 
+  final kitabEn = _localizedChapter(bookSlug, chapter, 'en');
+  final kitabUr = _localizedChapter(bookSlug, chapter, 'ur');
+  final kitabAr = _localizedChapter(bookSlug, chapter, 'ar');
+
   final byLang = <String, Map<String, dynamic>>{};
   for (final entry in refLabels.entries) {
     final lang = entry.key;
     final labels = entry.value;
+    final kitab = lang == 'ur' ? (kitabUr.isNotEmpty ? kitabUr : chapter) : (lang == 'ar' ? (kitabAr.isNotEmpty ? kitabAr : chapter) : (kitabEn.isNotEmpty ? kitabEn : chapter));
     final values = {
-      'kitab': chapter,
-      'baab': chapter,
+      'kitab': kitab,
+      'baab': kitab,
       'volume': volume,
-      'english_kitab': chapter,
-      'english_name': (lang == 'ar' && bookAr.isNotEmpty) ? bookAr : bookName,
+      'english_kitab': kitabEn.isNotEmpty ? kitabEn : chapter,
+      'english_name': bookName,
       'takhreej': '',
       'status': statusFor(lang),
       'wazahat': '',
@@ -403,11 +426,11 @@ Map<String, dynamic> buildReferenceDetail({
   }
 
   return {
-    'kitab': chapter,
-    'baab': chapter,
+    'kitab': kitabUr.isNotEmpty ? kitabUr : chapter,
+    'baab': kitabUr.isNotEmpty ? kitabUr : chapter,
     'baab_number': chNum,
     'volume': volume,
-    'english_kitab': chapter,
+    'english_kitab': kitabEn.isNotEmpty ? kitabEn : chapter,
     'english_name': bookName,
     'hadith_number': hadithRef,
     'takhreej': '',

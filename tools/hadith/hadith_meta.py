@@ -13,7 +13,9 @@ Rules:
 
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 
 _DIAC = re.compile(r"[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]")
 
@@ -505,6 +507,48 @@ _REF_LABELS = {
     },
 }
 
+_I18N_PATH = Path(__file__).resolve().parent / "chapter_i18n.json"
+_I18N_CACHE: dict | None = None
+
+
+def _load_chapter_i18n() -> dict:
+    global _I18N_CACHE
+    if _I18N_CACHE is not None:
+        return _I18N_CACHE
+    if _I18N_PATH.exists():
+        _I18N_CACHE = json.loads(_I18N_PATH.read_text(encoding="utf-8"))
+    else:
+        _I18N_CACHE = {"books": {}, "chapters": {}}
+    return _I18N_CACHE
+
+
+def _localized_chapter(book_slug: str, chapter_title: str, lang: str) -> str:
+    """Return chapter/kitab title in the requested language from authenticated i18n map."""
+    chapter = (chapter_title or "").strip()
+    if not chapter:
+        return ""
+    if lang == "en":
+        return chapter
+    data = _load_chapter_i18n()
+    entry = (data.get("chapters") or {}).get(book_slug, {}).get(chapter)
+    if isinstance(entry, dict):
+        value = (entry.get(lang) or "").strip()
+        if value:
+            return value
+    return chapter
+
+
+def _localized_book_name(book_slug: str, book_name_en: str, book_name_ar: str | None, lang: str) -> str:
+    data = _load_chapter_i18n()
+    entry = (data.get("books") or {}).get(book_slug) or {}
+    if lang == "en":
+        return (entry.get("en") or book_name_en or "").strip()
+    if lang == "ar":
+        return (entry.get("ar") or book_name_ar or book_name_en or "").strip()
+    if lang == "ur":
+        return (entry.get("ur") or book_name_en or "").strip()
+    return book_name_en
+
 
 def build_reference_detail(
     *,
@@ -526,7 +570,6 @@ def build_reference_detail(
     grade_raw = (grade or "").strip()
     chapter = (chapter_title or "").strip()
     ch_num = "" if chapter_number in (None, "") else str(chapter_number)
-    book_ar = (book_name_ar or "").strip()
 
     def _status(lang: str) -> str:
         if grade_raw:
@@ -535,12 +578,18 @@ def build_reference_detail(
             return {"en": "Sahih", "ur": "صحیح", "ar": "صحيح"}[lang]
         return {"en": "Not graded in source", "ur": "ماخذ میں درجہ نہیں", "ar": "غير مُصنَّف في المصدر"}[lang]
 
+    kitab_en = _localized_chapter(book_slug, chapter, "en")
+    kitab_ur = _localized_chapter(book_slug, chapter, "ur")
+    kitab_ar = _localized_chapter(book_slug, chapter, "ar")
+    # Baab: same authenticated chapter title until per-hadith baab exists in DB.
+    baab_en, baab_ur, baab_ar = kitab_en, kitab_ur, kitab_ar
+
     base = {
-        "kitab": chapter,
-        "baab": chapter,
+        "kitab": kitab_ur or chapter,
+        "baab": baab_ur or chapter,
         "baab_number": ch_num,
         "volume": volume,
-        "english_kitab": chapter,
+        "english_kitab": kitab_en,
         "english_name": book_name,
         "hadith_number": hadith_ref,
         "takhreej": "",
@@ -552,12 +601,19 @@ def build_reference_detail(
 
     by_lang: dict[str, dict] = {}
     for lang, labels in _REF_LABELS.items():
+        if lang == "ur":
+            kitab, baab = kitab_ur or chapter, baab_ur or chapter
+        elif lang == "ar":
+            kitab, baab = kitab_ar or chapter, baab_ar or chapter
+        else:
+            kitab, baab = kitab_en or chapter, baab_en or chapter
+
         values = {
-            "kitab": chapter,
-            "baab": chapter,
+            "kitab": kitab,
+            "baab": baab,
             "volume": volume,
-            "english_kitab": chapter,
-            "english_name": book_ar if lang == "ar" and book_ar else book_name,
+            "english_kitab": kitab_en,  # always English chapter title
+            "english_name": book_name,  # always English book name
             "takhreej": "",
             "status": _status(lang),
             "wazahat": "",
@@ -567,6 +623,7 @@ def build_reference_detail(
             "labels": labels,
             "values": values,
             "rows": rows,
+            "book_name": _localized_book_name(book_slug, book_name, book_name_ar, lang),
         }
 
     base["by_lang"] = by_lang

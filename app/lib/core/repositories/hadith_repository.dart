@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
+
 import '../database/database_registry.dart';
 import '../modules/module_catalog.dart';
 import '../../features/hadith/hadith_meta.dart';
@@ -13,6 +17,18 @@ class HadithRepository {
   static const gradeNotVerified = 'Grade not verified.';
   bool? _hasGradeTable;
   bool? _hasKitabNumber;
+  bool _i18nLoaded = false;
+
+  Future<void> _ensureChapterI18n() async {
+    if (_i18nLoaded) return;
+    _i18nLoaded = true;
+    try {
+      final raw = await rootBundle.loadString('assets/modules/hadith_chapter_i18n.json');
+      setChapterI18n(jsonDecode(raw) as Map<String, dynamic>);
+    } catch (_) {
+      // Optional asset — English chapter titles remain if missing.
+    }
+  }
 
   Future<List<Map<String, dynamic>>> books({bool enabledOnly = true}) async {
     final db = await _registry.open('hadith');
@@ -109,6 +125,7 @@ class HadithRepository {
   }
 
   Future<Map<String, dynamic>> _enrich(Map<String, dynamic> row) async {
+    await _ensureChapterI18n();
     final map = Map<String, dynamic>.from(row);
     map['grades'] = await gradesForHadith(map['id'] as int, legacyGrade: map['grade'] as String?);
 
