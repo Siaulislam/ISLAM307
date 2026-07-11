@@ -99,7 +99,16 @@ class _HadithScreenState extends State<HadithScreen> {
                                 final h = _results[i];
                                 return ListTile(
                                   title: Text('${h['book_name']} · ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w700)),
-                                  subtitle: Text('${h['text_en'] ?? h['text_ar'] ?? ''}', maxLines: 2, overflow: TextOverflow.ellipsis),
+                                  subtitle: Text(
+                                    [
+                                      if (((h['ravi'] as String?) ?? '').isNotEmpty) 'RAVI: ${h['ravi']}',
+                                      'Reference: ${h['reference'] ?? ''}',
+                                      '${h['text_en'] ?? h['text_ar'] ?? ''}',
+                                    ].where((e) => e.trim().isNotEmpty).join('\n'),
+                                    maxLines: 4,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  isThreeLine: true,
                                   onTap: () => context.push('/hadith/read/${h['book_id']}/${h['hadith_number']}'),
                                 );
                               },

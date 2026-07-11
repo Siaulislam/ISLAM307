@@ -396,21 +396,32 @@ function renderHadithList(slug, filter = '') {
       (h.en || '').toLowerCase().includes(q) ||
       (h.ar || '').includes(filter) ||
       (h.ur || '').includes(filter) ||
-      (h.narrator || '').toLowerCase().includes(q) ||
+      (h.ravi || h.narrator || '').toLowerCase().includes(q) ||
+      (h.reference || '').toLowerCase().includes(q) ||
+      (h.kitab || '').toLowerCase().includes(q) ||
       (h.grade || '').toLowerCase().includes(q)
     );
   }).slice(0, q ? 200 : 100);
   $('hadith-view').innerHTML = `
     <p class="status">${pack.book.en} · showing ${rows.length}${q ? ' matches' : ' (first 100 — search to find more)'}</p>
-    ${rows.map((h) => `
+    ${rows.map((h) => {
+      const ravi = (h.ravi || h.narrator || '').trim();
+      const reference = h.reference || `${pack.book.en} · Hadith ${h.n}`;
+      return `
       <div class="hadith-card">
-        <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.narrator || ''}</span></div>
+        <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.grade ? h.grade : 'Grade not verified.'}</span></div>
+        <div class="hadith-meta">
+          <div class="hadith-meta-row"><span>RAVI</span><strong>${ravi || 'Ravi not available in authenticated source'}</strong></div>
+          <div class="hadith-meta-row"><span>Reference</span><strong>${reference}</strong></div>
+          ${h.kitab ? `<div class="hadith-meta-row"><span>Kitab / Baab</span><strong>${h.kitab}</strong></div>` : ''}
+          <div class="hadith-meta-row"><span>English Name</span><strong>${pack.book.en}</strong></div>
+        </div>
         ${h.ar ? `<p class="ar">${h.ar}</p>` : ''}
         ${h.ur ? `<p class="en ur">${h.ur}</p>` : ''}
         <p class="en">${h.en || ''}</p>
-        <span class="badge">${h.grade ? h.grade : 'Grade not verified.'}</span>
-      </div>
-    `).join('') || '<p class="empty">No matches.</p>'}
+        ${h.source_url ? `<a class="ref-link" href="${h.source_url}" target="_blank" rel="noopener">Open reference</a>` : ''}
+      </div>`;
+    }).join('') || '<p class="empty">No matches.</p>'}
   `;
 }
 

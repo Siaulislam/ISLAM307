@@ -110,7 +110,38 @@ class HadithRepository {
   Future<Map<String, dynamic>> _enrich(Map<String, dynamic> row) async {
     final map = Map<String, dynamic>.from(row);
     map['grades'] = await gradesForHadith(map['id'] as int, legacyGrade: map['grade'] as String?);
-    map['reference_url'] ??= 'https://sunnah.com/${map['book_id']}:${map['hadith_number']}';
+
+    final db = await _registry.open('hadith');
+    final bookRows = await db.query('books', where: 'id = ?', whereArgs: [map['book_id']], limit: 1);
+    final book = bookRows.isEmpty ? null : bookRows.first;
+    final bookName = book?['name_en'] as String? ?? map['book_name'] as String? ?? 'Hadith';
+    final slug = book?['slug'] as String? ?? map['book_slug'] as String? ?? 'hadith';
+    final hadithNo = map['hadith_number'];
+    final refBook = map['reference_book'];
+    final refHadith = map['reference_hadith'] ?? hadithNo;
+
+    String reference = '$bookName · Hadith $refHadith';
+    if (refBook != null && '$refBook' != '0' && '$refBook'.trim().isNotEmpty) {
+      reference = '$bookName · Book $refBook · Hadith $refHadith';
+    }
+
+    String? kitab;
+    final chapterId = map['chapter_id'];
+    if (chapterId != null) {
+      final chapters = await db.query('chapters', where: 'id = ?', whereArgs: [chapterId], limit: 1);
+      if (chapters.isNotEmpty) {
+        kitab = chapters.first['title'] as String?;
+        map['kitab_number'] = chapters.first['number'];
+      }
+    }
+
+    final ravi = (map['narrator'] as String?)?.trim();
+    map['ravi'] = (ravi == null || ravi.isEmpty) ? null : ravi;
+    map['reference'] = reference;
+    map['kitab'] = kitab;
+    map['book_name'] ??= bookName;
+    map['book_slug'] ??= slug;
+    map['reference_url'] = 'https://sunnah.com/$slug:$hadithNo';
     return map;
   }
 

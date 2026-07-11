@@ -177,6 +177,40 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
   font-size: 11px;
   font-weight: 800;
 }
+.hadith-meta {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 10px 0 12px;
+}
+.hadith-meta-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.hadith-meta-row:last-child { border-bottom: 0; }
+.hadith-meta-row span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--emerald-deep);
+}
+.hadith-meta-row strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.45;
+}
+.ref-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--emerald);
+  font-weight: 700;
+  font-size: 12px;
+}
+body.dark .hadith-meta-row span { color: #6ee7b7; }
 .status { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
 .ur { direction: rtl; text-align: right; font-size: calc(17px * var(--reader-scale, 1)); }
 .ar { font-size: calc(22px * var(--reader-scale, 1)); }

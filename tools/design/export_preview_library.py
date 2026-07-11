@@ -89,23 +89,40 @@ def export_hadith() -> dict:
     write_json(OUT / "hadith" / "books.json", {"books": books, "count": sum(b["count"] for b in books)})
     totals = {}
     for book in books:
-        rows = [
-            {
-                "n": r["hadith_number"],
-                "ar": r["text_ar"] or "",
-                "en": r["text_en"] or "",
-                "ur": r["text_ur"] or "",
-                "grade": r["grade"] or "",
-                "narrator": r["narrator"] or "",
-            }
-            for r in conn.execute(
-                """
-                SELECT hadith_number, text_ar, text_en, text_ur, grade, narrator
-                FROM hadiths WHERE book_id = ? ORDER BY hadith_number
-                """,
-                (book["id"],),
+        rows = []
+        for r in conn.execute(
+            """
+            SELECT h.hadith_number, h.text_ar, h.text_en, h.text_ur, h.grade, h.narrator,
+                   h.reference_book, h.reference_hadith, c.number AS chapter_number, c.title AS chapter_title
+            FROM hadiths h
+            LEFT JOIN chapters c ON c.id = h.chapter_id
+            WHERE h.book_id = ?
+            ORDER BY h.hadith_number
+            """,
+            (book["id"],),
+        ):
+            ref_book = r["reference_book"]
+            ref_hadith = r["reference_hadith"] or r["hadith_number"]
+            reference = f"{book['en']} · Hadith {ref_hadith}"
+            if ref_book not in (None, 0, "0"):
+                reference = f"{book['en']} · Book {ref_book} · Hadith {ref_hadith}"
+            rows.append(
+                {
+                    "n": r["hadith_number"],
+                    "ar": r["text_ar"] or "",
+                    "en": r["text_en"] or "",
+                    "ur": r["text_ur"] or "",
+                    "grade": r["grade"] or "",
+                    "ravi": (r["narrator"] or "").strip(),
+                    "narrator": (r["narrator"] or "").strip(),
+                    "reference": reference,
+                    "reference_book": ref_book,
+                    "reference_hadith": ref_hadith,
+                    "kitab": r["chapter_title"] or "",
+                    "kitab_number": r["chapter_number"],
+                    "source_url": f"https://sunnah.com/{book['slug']}:{r['hadith_number']}",
+                }
             )
-        ]
         write_json_gz(OUT / "hadith" / f"{book['slug']}.json.gz", {"book": book, "hadiths": rows})
         totals[book["slug"]] = len(rows)
     return totals

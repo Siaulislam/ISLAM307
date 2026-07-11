@@ -85,7 +85,16 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                     margin: const EdgeInsets.only(bottom: 10),
                     child: ListTile(
                       title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: Text('${h['text_en'] ?? h['text_ar'] ?? ''}', maxLines: 3, overflow: TextOverflow.ellipsis),
+                      subtitle: Text(
+                        [
+                          if (((h['ravi'] as String?) ?? '').isNotEmpty) 'RAVI: ${h['ravi']}',
+                          'Reference: ${h['reference'] ?? ''}',
+                          '${h['text_en'] ?? h['text_ar'] ?? ''}',
+                        ].where((e) => e.trim().isNotEmpty).join('\n'),
+                        maxLines: 4,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      isThreeLine: true,
                       onTap: () => context.push('/hadith/read/${widget.bookId}/${h['hadith_number']}'),
                     ),
                   );
