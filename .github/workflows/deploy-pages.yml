@@ -27,6 +27,11 @@ jobs:
       - name: Build static preview site
         run: python tools/design/build_gh_pages_site.py
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
@@ -36,7 +41,48 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.verify.outputs.preview_url || steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Verify preview is publicly accessible
+        id: verify
+        env:
+          PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          echo "Deployed to: ${PAGE_URL}"
+          echo "Waiting for GitHub Pages CDN (up to ~3 minutes)…"
+          ok=0
+          for attempt in $(seq 1 12); do
+            code="$(curl -sS -o /tmp/islam307-preview.html -w '%{http_code}' -L "${PAGE_URL}preview/" || true)"
+            if [[ "$code" == "200" ]] && grep -qiE 'ISLAM 307|mockups' /tmp/islam307-preview.html; then
+              ok=1
+              break
+            fi
+            echo "Attempt ${attempt}/12 — HTTP ${code}, retrying in 15s…"
+            sleep 15
+          done
+          if [[ "$ok" != "1" ]]; then
+            echo "::error::Preview not reachable at ${PAGE_URL}preview/"
+            exit 1
+          fi
+          echo "preview_url=${PAGE_URL}" >> "$GITHUB_OUTPUT"
+          echo "Preview verified: ${PAGE_URL}preview/"
+
+      - name: Write preview URL to job summary
+        env:
+          PAGE_URL: ${{ steps.verify.outputs.preview_url }}
+        run: |
+          {
+            echo "## ISLAM 307 Live Preview"
+            echo ""
+            echo "**${PAGE_URL}preview/**"
+            echo ""
+            echo "| Page | URL |"
+            echo "|------|-----|"
+            echo "| Preview hub | ${PAGE_URL}preview/ |"
+            echo "| Phase 1 mockups | ${PAGE_URL}design/mockups/index.html |"
+            echo "| Phase 3 mockups | ${PAGE_URL}design/mockups/phase3-mockups.html |"
+          } >> "$GITHUB_STEP_SUMMARY"

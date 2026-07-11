@@ -29,6 +29,19 @@ Then open in Chrome:
 
 Press `Ctrl+C` in the terminal to stop the server.
 
+## Live preview (GitHub Pages — like XMONEY)
+
+**https://siaulislam.github.io/ISLAM307/preview/**
+
+| Page | URL |
+|------|-----|
+| Preview hub | https://siaulislam.github.io/ISLAM307/preview/ |
+| Phase 1 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/index.html |
+| Phase 3 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/phase3-mockups.html |
+| Book icons | https://siaulislam.github.io/ISLAM307/preview/icons.html |
+
+Redeploys automatically on every push to `main`.
+
 ### UI mockups (file path alternative)
 Open `design/mockups/index.html` directly in Chrome if you prefer.
 
