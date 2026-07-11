@@ -402,20 +402,18 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
-/** Kitab/book chapter name for list rows — prefer Urdu/Arabic from reference_detail. */
+/** Kitab/book chapter name for list rows — Urdu first, then Arabic, never English grade/status. */
 function localizedKitabName(hadith, pack) {
-  const lang = state.hadithLang || 'ur';
-  const by = hadith.reference_detail?.by_lang?.[lang];
-  const fromLang = by?.values?.kitab || by?.book_name;
-  if (fromLang) return fromLang;
+  const by = hadith.reference_detail?.by_lang || {};
+  const ur = by.ur?.values?.kitab || '';
+  const ar = by.ar?.values?.kitab || '';
+  const en = by.en?.values?.kitab || '';
+  // Prefer authentic Urdu; if Urdu still mirrors English, use Arabic kitab title.
+  if (ur && ur !== en) return ur;
+  if (ar) return ar;
+  if (ur) return ur;
   if (hadith.reference_detail?.kitab) return hadith.reference_detail.kitab;
   return hadith.kitab || pack?.book?.en || '';
-}
-
-function localizedHadithStatus(hadith) {
-  const lang = state.hadithLang || 'ur';
-  const by = hadith.reference_detail?.by_lang?.[lang];
-  return by?.values?.status || hadith.reference_detail?.status || '';
 }
 
 function closeHadithModal() {
@@ -678,11 +676,12 @@ function paintHadithListPage(slug, pack, reset = false) {
     btn.type = 'button';
     btn.className = 'hadith-number-row';
     btn.dataset.n = String(h.n);
-    // List subtitle = localized kitab/book name (e.g. کتاب وحی کے بیان میں), not English "Revelation".
+    // Left: Hadith N · Right: large Urdu kitab name only (no grade/status).
     const kitabName = localizedKitabName(h, pack);
-    const statusText = localizedHadithStatus(h) ? ` · ${localizedHadithStatus(h)}` : '';
-    const rtl = (state.hadithLang || 'ur') !== 'en';
-    btn.innerHTML = `<strong>Hadith ${h.n}</strong><small${rtl ? ' dir="rtl"' : ''}>${escapeHtml(kitabName)}${escapeHtml(statusText)}</small>`;
+    btn.innerHTML = `
+      <span class="hadith-n">Hadith ${h.n}</span>
+      <p class="hadith-kitab" dir="rtl">${escapeHtml(kitabName)}</p>
+    `;
     btn.onclick = () => openHadithDetail(slug, h.n);
     frag.appendChild(btn);
   }

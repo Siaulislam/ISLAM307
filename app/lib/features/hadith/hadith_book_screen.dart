@@ -112,17 +112,40 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                   }
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
-                    child: ListTile(
-                      title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: Text(
-                        kitab.isEmpty ? 'Language · Ravi · Reference' : kitab,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        textDirection: TextDirection.rtl,
-                        style: const TextStyle(height: 1.35),
-                      ),
-                      isThreeLine: kitab.length > 28,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
                       onTap: () => context.push('/hadith/read/${widget.bookId}/${h['hadith_number']}'),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              'Hadith ${h['hadith_number']}',
+                              style: const TextStyle(
+                                color: Islam307Theme.emerald,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 15,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Text(
+                                kitab.isEmpty ? '—' : kitab,
+                                textAlign: TextAlign.right,
+                                textDirection: TextDirection.rtl,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.55,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   );
                 },
