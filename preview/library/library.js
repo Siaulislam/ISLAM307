@@ -427,7 +427,6 @@ function openHadithModal(title, bodyHtml, { darkTable = false } = {}) {
 function raviCopy(lang) {
   const copy = {
     en: {
-      lead: 'Isnad only · first narrator → … → last Companion before the Prophet ﷺ (Prophet is not listed)',
       first: 'First narrator',
       mid: 'Narrated from previous',
       last: 'Last narrator · from the Prophet ﷺ',
@@ -436,7 +435,6 @@ function raviCopy(lang) {
       title: 'Ravi',
     },
     ur: {
-      lead: 'صرف سند · پہلا راوی → … → آخری صحابی نبی ﷺ سے پہلے (نبی ﷺ فہرست میں نہیں)',
       first: 'پہلا راوی',
       mid: 'پچھلے سے روایت',
       last: 'آخری راوی · نبی ﷺ سے',
@@ -445,7 +443,6 @@ function raviCopy(lang) {
       title: 'راوی',
     },
     ar: {
-      lead: 'الإسناد فقط · من أول راوٍ إلى آخر صحابي قبل النبي ﷺ (النبي ﷺ غير مدرج)',
       first: 'أول راوٍ',
       mid: 'روى عن السابق',
       last: 'آخر راوٍ · عن النبي ﷺ',
@@ -467,7 +464,7 @@ function openRaviDetail(hadith) {
   const isnads = hadith.isnad_by_lang || {};
   const isnadText = (isnads[lang] || (lang === 'ur' ? hadith.isnad_ur : hadith.isnad) || '').trim();
   const rtl = lang === 'ur' || lang === 'ar';
-  let body = `<p class="lead ravi-lead" dir="${rtl ? 'rtl' : 'ltr'}">${escapeHtml(t.lead)}</p>`;
+  let body = '';
   if (chain.length) {
     body += `
       <ol class="ravi-chain" dir="auto">

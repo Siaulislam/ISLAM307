@@ -54,7 +54,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       case 'ur':
         return {
           'title': 'راوی',
-          'lead': 'صرف سند · پہلا راوی → … → آخری صحابی نبی ﷺ سے پہلے',
           'first': 'پہلا راوی',
           'mid': 'پچھلے سے روایت',
           'last': 'آخری راوی · نبی ﷺ سے',
@@ -64,7 +63,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       case 'ar':
         return {
           'title': 'الرواة',
-          'lead': 'الإسناد فقط · من أول راوٍ إلى آخر صحابي قبل النبي ﷺ',
           'first': 'أول راوٍ',
           'mid': 'روى عن السابق',
           'last': 'آخر راوٍ · عن النبي ﷺ',
@@ -74,7 +72,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       default:
         return {
           'title': 'Ravi',
-          'lead': 'Isnad only · first narrator → … → last Companion before the Prophet ﷺ',
           'first': 'First narrator',
           'mid': 'Narrated from previous',
           'last': 'Last narrator · from the Prophet ﷺ',
@@ -126,8 +123,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('${t['title']} · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 8),
-                  Text(t['lead']!, textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, style: const TextStyle(color: Islam307Theme.textMuted, height: 1.4)),
                   const SizedBox(height: 14),
                   if (chain.isEmpty)
                     Text(t['empty']!, textDirection: rtl ? TextDirection.rtl : TextDirection.ltr)
