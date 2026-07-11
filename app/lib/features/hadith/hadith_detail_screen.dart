@@ -19,6 +19,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   Map<String, dynamic>? _hadith;
   bool _loading = true;
   String _lang = 'ur'; // ur | en | ar
+  String _audioMode = 'ibarat'; // ibarat | translation
+  bool _speaking = false;
 
   static const _langOptions = [
     ('ur', 'Urdu'),
@@ -47,6 +49,73 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     if (_lang == 'en') return (h['text_en'] as String?) ?? '';
     if (_lang == 'ar') return (h['text_ar'] as String?) ?? '';
     return (h['text_ur'] as String?) ?? '';
+  }
+
+  String _ttsLangCode(String lang) {
+    if (lang == 'ur') return 'ur-PK';
+    if (lang == 'ar') return 'ar-SA';
+    return 'en-US';
+  }
+
+  Future<void> _playAudio() async {
+    final h = _hadith;
+    if (h == null) return;
+    final ibarat = ((h['text_ar'] as String?) ?? '').trim();
+    final translation = _translation().trim();
+    final text = _audioMode == 'translation' ? translation : ibarat;
+    final voiceLang = _audioMode == 'translation' ? _lang : 'ar';
+    if (text.isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No authenticated text available for this audio mode.')),
+      );
+      return;
+    }
+    setState(() => _speaking = true);
+    try {
+      await TtsService.instance.speak(text, language: _ttsLangCode(voiceLang));
+    } finally {
+      if (mounted) setState(() => _speaking = false);
+    }
+  }
+
+  Future<void> _stopAudio() async {
+    await TtsService.instance.stop();
+    if (mounted) setState(() => _speaking = false);
+  }
+
+  Map<String, String> _audioCopy() {
+    switch (_lang) {
+      case 'ur':
+        return {
+          'title': 'آڈیو',
+          'ibarat': 'عبارت',
+          'translation': 'ترجمہ',
+          'hint': _audioMode == 'ibarat' ? 'ہمیشہ عربی · اصل حدیث کا متن' : 'منتخب زبان میں بولے گا · اردو',
+          'play': 'چلائیں',
+          'stop': 'روکیں',
+        };
+      case 'ar':
+        return {
+          'title': 'الصوت',
+          'ibarat': 'العبارة',
+          'translation': 'الترجمة',
+          'hint': _audioMode == 'ibarat' ? 'دائماً بالعربية · نص الحديث الأصلي' : 'يتحدث بلغة الترجمة المختارة · العربية',
+          'play': 'تشغيل',
+          'stop': 'إيقاف',
+        };
+      default:
+        return {
+          'title': 'Audio',
+          'ibarat': 'Ibarat',
+          'translation': 'Translation',
+          'hint': _audioMode == 'ibarat'
+              ? 'Always Arabic · original Hadith text'
+              : 'Speaks the selected language · English',
+          'play': 'Play',
+          'stop': 'Stop',
+        };
+    }
   }
 
   Map<String, String> _raviCopy() {
@@ -323,13 +392,16 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                             for (final opt in _langOptions)
                               DropdownMenuItem(value: opt.$1, child: Text(opt.$2, style: const TextStyle(fontWeight: FontWeight.w700))),
                           ],
-                          onChanged: (v) {
+                          onChanged: (v) async {
                             if (v == null) return;
+                            await _stopAudio();
                             setState(() => _lang = v);
                           },
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    _audioBox(),
                     const SizedBox(height: 16),
                     if ((h['text_ar'] as String?)?.isNotEmpty == true)
                       Text('${h['text_ar']}', textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 22))
@@ -352,27 +424,115 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                             ? Islam307Theme.arabic(size: 20)
                             : (_lang == 'ur' ? Islam307Theme.urdu() : const TextStyle(height: 1.6, color: Islam307Theme.textMuted)),
                       ),
-                    const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        if ((h['text_en'] as String?)?.isNotEmpty == true)
-                          OutlinedButton.icon(
-                            onPressed: () => TtsService.instance.speak('${h['text_en']}', language: 'en-US'),
-                            icon: const Icon(Icons.volume_up_rounded),
-                            label: const Text('Read English'),
-                          ),
-                        if ((h['text_ur'] as String?)?.isNotEmpty == true)
-                          OutlinedButton.icon(
-                            onPressed: () => TtsService.instance.speak('${h['text_ur']}', language: 'ur-PK'),
-                            icon: const Icon(Icons.volume_up_rounded),
-                            label: const Text('Read Urdu'),
-                          ),
-                      ],
-                    ),
                   ],
                 ),
+    );
+  }
+
+  Widget _audioBox() {
+    final copy = _audioCopy();
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFFFFDF7), Colors.white],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Islam307Theme.goldLight),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 16, offset: const Offset(0, 6)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(copy['title']!, style: const TextStyle(fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep)),
+                    const SizedBox(height: 4),
+                    Text(copy['hint']!, style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.35)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                onPressed: _speaking ? null : _playAudio,
+                style: FilledButton.styleFrom(
+                  backgroundColor: Islam307Theme.emerald,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                ),
+                child: Text(copy['play']!, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+              ),
+              const SizedBox(width: 6),
+              OutlinedButton(
+                onPressed: _stopAudio,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Islam307Theme.emeraldDeep,
+                  side: const BorderSide(color: Islam307Theme.cardBorder),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                ),
+                child: Text(copy['stop']!, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Row(
+              children: [
+                _audioModeChip('ibarat', copy['ibarat']!),
+                _audioModeChip('translation', copy['translation']!),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _audioModeChip(String mode, String label) {
+    final active = _audioMode == mode;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () async {
+          if (_audioMode == mode) return;
+          await _stopAudio();
+          setState(() => _audioMode = mode);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: active ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(999),
+            border: active ? Border.all(color: Islam307Theme.goldLight) : null,
+            boxShadow: active
+                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2))]
+                : null,
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+              color: active ? Islam307Theme.emeraldDeep : Islam307Theme.textMuted,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
