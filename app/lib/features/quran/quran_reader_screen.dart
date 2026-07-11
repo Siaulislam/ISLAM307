@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/repositories/quran_repository.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
+import '../../core/user/user_library_store.dart';
 import 'widgets/ayah_card.dart';
 
 class QuranReaderScreen extends ConsumerStatefulWidget {
@@ -27,6 +28,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
   List<Map<String, dynamic>> _ayahs = [];
   String _title = 'Quran';
   bool _loading = true;
+  String? _userId;
 
   @override
   void initState() {
@@ -35,11 +37,13 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
   }
 
   Future<void> _load() async {
+    final uid = await UserLibraryStore.instance.userId();
     if (widget.rukuNumber != null) {
       final ayahs = await _repo.ayahsForRuku(widget.rukuNumber!);
       final first = ayahs.isEmpty ? null : await _repo.surah(ayahs.first['surah_number'] as int);
       if (!mounted) return;
       setState(() {
+        _userId = uid;
         _ayahs = ayahs;
         _title = 'Ruku ${widget.rukuNumber}${first == null ? '' : ' · ${first['name_en']}'}';
         _loading = false;
@@ -52,6 +56,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     final surah = await _repo.surah(surahNo);
     if (!mounted) return;
     setState(() {
+      _userId = uid;
       _ayahs = ayahs;
       _title = surah == null ? 'Surah $surahNo' : '${surah['name_en']}';
       _loading = false;
@@ -67,9 +72,19 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
         actions: [
           IconButton(
+            tooltip: 'Smaller text',
+            onPressed: () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale - 0.1),
+            icon: const Icon(Icons.text_decrease_rounded),
+          ),
+          IconButton(
             tooltip: 'Larger text',
             onPressed: () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale + 0.1),
             icon: const Icon(Icons.text_increase_rounded),
+          ),
+          IconButton(
+            tooltip: 'Light / Dark',
+            onPressed: () => ref.read(appSettingsProvider.notifier).toggleTheme(),
+            icon: Icon(settings.themeMode == ThemeMode.dark ? Icons.light_mode_rounded : Icons.dark_mode_rounded),
           ),
         ],
       ),
@@ -77,14 +92,22 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
           ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
           : Column(
               children: [
+                if (_userId != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text('Personal file · $_userId', style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600)),
+                    ),
+                  ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                   child: Row(
                     children: [
-                      _langChip(context, QuranDisplayLanguage.urdu, 'Urdu'),
-                      _langChip(context, QuranDisplayLanguage.english, 'English'),
-                      _langChip(context, QuranDisplayLanguage.arabicOnly, 'Arabic Only'),
+                      _langChip(QuranDisplayLanguage.urdu, 'Urdu'),
+                      _langChip(QuranDisplayLanguage.english, 'English'),
+                      _langChip(QuranDisplayLanguage.arabicOnly, 'Arabic Only'),
                     ],
                   ),
                 ),
@@ -100,7 +123,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     );
   }
 
-  Widget _langChip(BuildContext context, QuranDisplayLanguage lang, String label) {
+  Widget _langChip(QuranDisplayLanguage lang, String label) {
     final selected = ref.watch(appSettingsProvider).quranLanguage == lang;
     return Padding(
       padding: const EdgeInsets.only(right: 8),
@@ -109,10 +132,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
         selected: selected,
         onSelected: (_) => ref.read(appSettingsProvider.notifier).setQuranLanguage(lang),
         selectedColor: Islam307Theme.emerald,
-        labelStyle: TextStyle(
-          fontWeight: FontWeight.w700,
-          color: selected ? Colors.white : null,
-        ),
+        labelStyle: TextStyle(fontWeight: FontWeight.w700, color: selected ? Colors.white : null),
       ),
     );
   }

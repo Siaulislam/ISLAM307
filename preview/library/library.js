@@ -1,3 +1,40 @@
+const RECITERS = [
+  {
+    id: 'sudais',
+    name: 'Sheikh Abdurrahman As-Sudais',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'shuraim',
+    name: 'Sheikh Saud Ash-Shuraim',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/Saood_ash-Shuraym_128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'muaiqly',
+    name: 'Sheikh Maher Al-Muaiqly',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/MaherAlMuaiqly128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'dosari',
+    name: 'Sheikh Yasser Ad-Dossari',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'hudhaify',
+    name: 'Sheikh Ali Al-Hudhaify',
+    title: 'Imam An-Nabawi · Madinah',
+    url: (s, a) => `https://everyayah.com/data/Hudhaify_128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+];
+
+function pad(n) {
+  return String(n).padStart(3, '0');
+}
+
 async function fetchJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
@@ -23,14 +60,83 @@ const state = {
   hadithCache: {},
   tafsirSources: [],
   tafsirCache: {},
+  currentSurah: null,
+  fontScale: Number(localStorage.getItem('i307_font') || 1),
+  dark: localStorage.getItem('i307_dark') === '1',
+  audio: null,
 };
 
 const $ = (id) => document.getElementById(id);
 
+function userId() {
+  let id = localStorage.getItem('islam307_user_id');
+  if (!id) {
+    id = `user_${Date.now()}`;
+    localStorage.setItem('islam307_user_id', id);
+  }
+  return id;
+}
+
+function userKey() {
+  return `islam307_user_${userId()}_library`;
+}
+
+function loadUserLibrary() {
+  try {
+    return JSON.parse(localStorage.getItem(userKey()) || '{}');
+  } catch {
+    return {};
+  }
+}
+
+function saveUserLibrary(data) {
+  data.user_id = userId();
+  data.updated_at = new Date().toISOString();
+  localStorage.setItem(userKey(), JSON.stringify(data));
+}
+
+function ensureUserLibrary() {
+  const data = loadUserLibrary();
+  if (!Array.isArray(data.bookmarks)) data.bookmarks = [];
+  if (!data.highlights || typeof data.highlights !== 'object') data.highlights = {};
+  if (!data.notes || typeof data.notes !== 'object') data.notes = {};
+  saveUserLibrary(data);
+  return data;
+}
+
+function ayahKey(s, a) {
+  return `${s}:${a}`;
+}
+
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast';
+    el.className = 'toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+function applyTheme() {
+  document.body.classList.toggle('dark', state.dark);
+  localStorage.setItem('i307_dark', state.dark ? '1' : '0');
+  document.documentElement.style.setProperty('--reader-scale', String(state.fontScale));
+  localStorage.setItem('i307_font', String(state.fontScale));
+}
+
 function setTab(tab) {
   document.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.panel').forEach((p) => p.classList.toggle('active', p.id === `panel-${tab}`));
-  if (history.replaceState) history.replaceState(null, '', `#${tab}`);
+  if (history.replaceState) {
+    const url = new URL(location.href);
+    url.hash = tab;
+    history.replaceState(null, '', url.toString());
+  }
 }
 
 document.querySelectorAll('.tabs button').forEach((btn) => {
@@ -63,6 +169,53 @@ async function ensureAyahs() {
   state.ayahsBySurah = map;
 }
 
+function readerToolbarHtml(surah) {
+  return `
+    <div class="reader-tools">
+      <button type="button" data-action="font-down">Aa −</button>
+      <button type="button" data-action="font-up">Aa +</button>
+      <button type="button" data-action="theme">${state.dark ? 'Light' : 'Dark'}</button>
+      <span class="user-pill">Personal file · ${userId()}</span>
+    </div>
+    <p class="status">${surah.en} · ${surah.ar} · ${surah.ayahs} ayahs</p>
+  `;
+}
+
+function ayahCardHtml(a, lib) {
+  const key = ayahKey(a.s, a.a);
+  const bookmarked = lib.bookmarks.includes(key);
+  const highlighted = !!lib.highlights[key];
+  const note = lib.notes[key] || '';
+  return `
+    <div class="ayah ${highlighted ? 'is-highlighted' : ''}" data-s="${a.s}" data-a="${a.a}">
+      <div class="meta-row">
+        <span>${a.s}:${a.a}${bookmarked ? ' ★' : ''}</span>
+        <span>Page ${a.p} · Juz ${a.j}</span>
+      </div>
+      <p class="ar">${a.ar}</p>
+      ${a.ur ? `<p class="en ur">${a.ur}</p>` : ''}
+      ${a.en ? `<p class="en">${a.en}</p>` : ''}
+      ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}
+      <div class="ayah-tools">
+        <button type="button" data-act="bookmark">${bookmarked ? 'Bookmarked' : 'Bookmark'}</button>
+        <button type="button" data-act="highlight">${highlighted ? 'Unhighlight' : 'Highlight'}</button>
+        <button type="button" data-act="note">Notes</button>
+        <button type="button" data-act="copy">Copy</button>
+        <button type="button" data-act="share">Share</button>
+        <button type="button" data-act="recite" class="primary">Recite</button>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+}
+
 async function openSurah(n, button) {
   await ensureAyahs();
   $('surah-list').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
@@ -73,17 +226,10 @@ async function openSurah(n, button) {
     $('ayah-view').innerHTML = `<p class="empty">Surah ${n} not found.</p>`;
     return;
   }
-  $('ayah-view').innerHTML = `
-    <p class="status">${surah.en} · ${surah.ar} · ${ayahs.length} ayahs</p>
-    ${ayahs.map((a) => `
-      <div class="ayah">
-        <div class="meta-row"><span>${a.s}:${a.a}</span><span>Page ${a.p} · Juz ${a.j}</span></div>
-        <p class="ar">${a.ar}</p>
-        ${a.ur ? `<p class="en" style="direction:rtl;text-align:right;font-size:17px;color:#334155">${a.ur}</p>` : ''}
-        ${a.en ? `<p class="en">${a.en}</p>` : ''}
-      </div>
-    `).join('')}
-  `;
+  state.currentSurah = n;
+  const lib = ensureUserLibrary();
+  $('ayah-view').innerHTML = readerToolbarHtml(surah) + ayahs.map((a) => ayahCardHtml(a, lib)).join('');
+  wireReaderEvents();
   if (history.replaceState) {
     const url = new URL(location.href);
     url.searchParams.set('surah', String(n));
@@ -91,6 +237,131 @@ async function openSurah(n, button) {
     history.replaceState(null, '', url.toString());
   }
   $('ayah-view').scrollTop = 0;
+}
+
+function wireReaderEvents() {
+  const view = $('ayah-view');
+  view.querySelectorAll('[data-action]').forEach((btn) => {
+    btn.onclick = () => {
+      const act = btn.dataset.action;
+      if (act === 'font-up') state.fontScale = Math.min(1.6, state.fontScale + 0.1);
+      if (act === 'font-down') state.fontScale = Math.max(0.85, state.fontScale - 0.1);
+      if (act === 'theme') state.dark = !state.dark;
+      applyTheme();
+      const surah = state.surahs.find((s) => s.n === state.currentSurah);
+      if (surah) {
+        const active = $('surah-list').querySelector('button.active');
+        openSurah(state.currentSurah, active);
+      }
+    };
+  });
+
+  view.querySelectorAll('.ayah').forEach((card) => {
+    const s = Number(card.dataset.s);
+    const a = Number(card.dataset.a);
+    const key = ayahKey(s, a);
+    card.querySelectorAll('[data-act]').forEach((btn) => {
+      btn.onclick = async () => {
+        const act = btn.dataset.act;
+        const lib = ensureUserLibrary();
+        const ar = card.querySelector('.ar')?.textContent || '';
+        const ur = card.querySelector('.ur')?.textContent || '';
+        const en = [...card.querySelectorAll('.en')].map((x) => x.textContent).filter((t) => t && t !== ur).join('\n');
+        if (act === 'bookmark') {
+          const i = lib.bookmarks.indexOf(key);
+          if (i >= 0) lib.bookmarks.splice(i, 1);
+          else lib.bookmarks.push(key);
+          saveUserLibrary(lib);
+          toast(i >= 0 ? 'Bookmark removed' : 'Saved to your personal bookmark file');
+          const active = $('surah-list').querySelector('button.active');
+          openSurah(s, active);
+        }
+        if (act === 'highlight') {
+          if (lib.highlights[key]) delete lib.highlights[key];
+          else lib.highlights[key] = 'gold';
+          saveUserLibrary(lib);
+          toast(lib.highlights[key] ? 'Highlighted' : 'Highlight cleared');
+          const active = $('surah-list').querySelector('button.active');
+          openSurah(s, active);
+        }
+        if (act === 'note') {
+          const next = prompt(`Note for ${key}`, lib.notes[key] || '');
+          if (next === null) return;
+          if (!next.trim()) delete lib.notes[key];
+          else lib.notes[key] = next.trim();
+          saveUserLibrary(lib);
+          toast('Note saved to your personal file');
+          const active = $('surah-list').querySelector('button.active');
+          openSurah(s, active);
+        }
+        if (act === 'copy') {
+          const text = `${key}\n${ar}\n${ur}\n${en}`.trim();
+          await navigator.clipboard.writeText(text);
+          toast('Copied');
+        }
+        if (act === 'share') {
+          const text = `ISLAM 307 · Quran ${key}\n${ar}\n${ur}\n${en}`.trim();
+          if (navigator.share) {
+            try {
+              await navigator.share({ title: `Quran ${key}`, text });
+            } catch {}
+          } else {
+            await navigator.clipboard.writeText(text);
+            toast('Share text copied');
+          }
+        }
+        if (act === 'recite') openReciterPicker(s, a);
+      };
+    });
+  });
+}
+
+function openReciterPicker(surah, ayah) {
+  const existing = document.getElementById('reciter-modal');
+  if (existing) existing.remove();
+  const modal = document.createElement('div');
+  modal.id = 'reciter-modal';
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal">
+      <h3>Choose Qari (KSA / Imam Al-Haram)</h3>
+      <p class="lead">Authentic recitation audio · ${surah}:${ayah}</p>
+      <div class="reciter-list">
+        ${RECITERS.map((r) => `
+          <button type="button" data-reciter="${r.id}">
+            <strong>${r.name}</strong>
+            <small>${r.title}</small>
+          </button>
+        `).join('')}
+      </div>
+      <button type="button" class="ghost" data-close>Close</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector('[data-close]').onclick = () => modal.remove();
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) modal.remove();
+  });
+  modal.querySelectorAll('[data-reciter]').forEach((btn) => {
+    btn.onclick = () => {
+      const reciter = RECITERS.find((r) => r.id === btn.dataset.reciter);
+      modal.remove();
+      playReciter(reciter, surah, ayah);
+    };
+  });
+}
+
+function playReciter(reciter, surah, ayah) {
+  if (!reciter) return;
+  if (state.audio) {
+    state.audio.pause();
+    state.audio = null;
+  }
+  const url = reciter.url(surah, ayah);
+  const audio = new Audio(url);
+  state.audio = audio;
+  toast(`Playing · ${reciter.name}`);
+  audio.play().catch(() => toast('Audio unavailable right now. Try another qari.'));
 }
 
 function renderHadithBooks() {
@@ -124,6 +395,7 @@ function renderHadithList(slug, filter = '') {
       String(h.n) === q ||
       (h.en || '').toLowerCase().includes(q) ||
       (h.ar || '').includes(filter) ||
+      (h.ur || '').includes(filter) ||
       (h.narrator || '').toLowerCase().includes(q) ||
       (h.grade || '').toLowerCase().includes(q)
     );
@@ -134,7 +406,7 @@ function renderHadithList(slug, filter = '') {
       <div class="hadith-card">
         <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.narrator || ''}</span></div>
         ${h.ar ? `<p class="ar">${h.ar}</p>` : ''}
-        ${h.ur ? `<p class="en" style="direction:rtl;text-align:right">${h.ur}</p>` : ''}
+        ${h.ur ? `<p class="en ur">${h.ur}</p>` : ''}
         <p class="en">${h.en || ''}</p>
         <span class="badge">${h.grade ? h.grade : 'Grade not verified.'}</span>
       </div>
@@ -169,7 +441,7 @@ async function openTafsir(source, button) {
         <div class="meta-row"><span>${source.en}</span><span>${surah}:${ayah}</span></div>
         <p class="en" style="color:var(--text);white-space:pre-wrap">${entry.text}</p>
       </div>`
-    : `<p class="empty">No tafsir entry for ${surah}:${ayah} in ${source.en}.</p>`;
+    : `<p class="empty">No authentic tafsir entry for ${surah}:${ayah} in ${source.en}. ISLAM 307 never generates tafsir with AI.</p>`;
 }
 
 $('quran-search').addEventListener('input', (e) => renderSurahList(e.target.value));
@@ -193,6 +465,8 @@ $('tafsir-go').addEventListener('click', () => {
 
 async function boot() {
   try {
+    ensureUserLibrary();
+    applyTheme();
     const [surahPack, hadithPack, tafsirPack] = await Promise.all([
       fetchJson('data/quran/surahs.json'),
       fetchJson('data/hadith/books.json'),
@@ -213,7 +487,7 @@ async function boot() {
       await openSurah(surahParam, btn || null);
     }
   } catch (err) {
-    document.querySelector('main').innerHTML = `<p class="empty">Library data missing. Run <code>python tools/design/export_preview_library.py</code> then refresh.</p><pre>${err.message}</pre>`;
+    document.querySelector('main').innerHTML = `<p class="empty">Library data missing.</p><pre>${err.message}</pre>`;
   }
 }
 

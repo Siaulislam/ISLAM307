@@ -1,32 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/audio/recitation_audio_service.dart';
-import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
 import '../../core/repositories/tafsir_repository.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
+import '../../core/user/user_library_store.dart';
 
-class AyahCard extends ConsumerWidget {
-  const AyahCard({
-    super.key,
-    required this.ayah,
-    this.surahName,
-  });
+class AyahCard extends ConsumerStatefulWidget {
+  const AyahCard({super.key, required this.ayah, this.surahName});
 
   final Map<String, dynamic> ayah;
   final String? surahName;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AyahCard> createState() => _AyahCardState();
+}
+
+class _AyahCardState extends ConsumerState<AyahCard> {
+  bool _bookmarked = false;
+  String? _highlight;
+  String? _note;
+  bool _ready = false;
+
+  int get _surah => widget.ayah['surah_number'] as int;
+  int get _ayahNo => widget.ayah['ayah_number'] as int;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPersonal();
+  }
+
+  Future<void> _loadPersonal() async {
+    final store = UserLibraryStore.instance;
+    final bookmarked = await store.isBookmarked(_surah, _ayahNo);
+    final highlight = await store.highlight(_surah, _ayahNo);
+    final note = await store.note(_surah, _ayahNo);
+    if (!mounted) return;
+    setState(() {
+      _bookmarked = bookmarked;
+      _highlight = highlight;
+      _note = note;
+      _ready = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final settings = ref.watch(appSettingsProvider);
     final scale = settings.fontScale;
     final lang = settings.quranLanguage;
-    final arabic = '${ayah['text_uthmani'] ?? ''}';
-    final urdu = '${ayah['translation_ur'] ?? ''}';
-    final english = '${ayah['translation_en'] ?? ''}';
-    final refLabel = '${ayah['surah_number']}:${ayah['ayah_number']}';
+    final arabic = '${widget.ayah['text_uthmani'] ?? ''}';
+    final urdu = '${widget.ayah['translation_ur'] ?? ''}';
+    final english = '${widget.ayah['translation_en'] ?? ''}';
+    final refLabel = '$_surah:$_ayahNo';
 
     String? translation;
     TextStyle? translationStyle;
@@ -45,8 +76,11 @@ class AyahCard extends ConsumerWidget {
         translationStyle = null;
     }
 
+    final highlighted = _highlight != null;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
+      color: highlighted ? const Color(0xFFFFF4CC) : null,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -59,8 +93,12 @@ class AyahCard extends ConsumerWidget {
                   decoration: BoxDecoration(color: Islam307Theme.emeraldSoft, borderRadius: BorderRadius.circular(8)),
                   child: Text(refLabel, style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep, fontSize: 12)),
                 ),
+                if (_bookmarked) ...[
+                  const SizedBox(width: 8),
+                  const Icon(Icons.bookmark_rounded, color: Islam307Theme.gold, size: 18),
+                ],
                 const Spacer(),
-                Text('Juz ${ayah['juz']} · Ruku ${ayah['ruku']}', style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
+                Text('Juz ${widget.ayah['juz']} · Ruku ${widget.ayah['ruku']}', style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
               ],
             ),
             const SizedBox(height: 12),
@@ -77,206 +115,182 @@ class AyahCard extends ConsumerWidget {
                   style: translationStyle,
                 ),
               ),
-            ] else if (lang == QuranDisplayLanguage.urdu) ...[
+            ],
+            if ((_note ?? '').isNotEmpty) ...[
               const SizedBox(height: 10),
-              const Text(
-                'Urdu translation unavailable for this ayah in the authenticated database.',
-                style: TextStyle(color: Colors.orange, fontWeight: FontWeight.w600),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Islam307Theme.emeraldSoft,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('Note: $_note', style: const TextStyle(fontSize: 13, height: 1.4)),
               ),
             ],
-            const SizedBox(height: 14),
+            const SizedBox(height: 12),
             Wrap(
-              spacing: 8,
-              runSpacing: 8,
+              spacing: 6,
+              runSpacing: 6,
               children: [
-                OutlinedButton.icon(
-                  onPressed: () => _openTafsir(context, ref),
-                  icon: const Icon(Icons.menu_book_outlined, size: 18),
-                  label: const Text('View Tafsir'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () => _playRecitation(context),
-                  icon: const Icon(Icons.graphic_eq_rounded, size: 18),
-                  label: const Text('Play Recitation'),
-                ),
-                OutlinedButton.icon(
-                  onPressed: translation == null
-                      ? null
-                      : () => TtsService.instance.speak(translation!, language: ttsLang),
-                  icon: const Icon(Icons.record_voice_over_rounded, size: 18),
-                  label: const Text('Play Translation'),
-                ),
+                _tool(Icons.text_increase_rounded, 'Aa', () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale + 0.1)),
+                _tool(Icons.text_decrease_rounded, 'Aa-', () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale - 0.1)),
+                _tool(Icons.dark_mode_rounded, 'Dark', () => ref.read(appSettingsProvider.notifier).toggleTheme()),
+                _tool(_bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, 'Bookmark', _toggleBookmark),
+                _tool(Icons.highlight_rounded, 'Highlight', _toggleHighlight),
+                _tool(Icons.note_alt_outlined, 'Notes', _editNote),
+                _tool(Icons.copy_rounded, 'Copy', () => _copy(arabic, translation)),
+                _tool(Icons.ios_share_rounded, 'Share', () => _share(arabic, translation, refLabel)),
+                _tool(Icons.menu_book_outlined, 'Tafsir', () => _openTafsir(context)),
                 FilledButton.tonalIcon(
-                  onPressed: () => _readAll(context, ref, arabic, translation, ttsLang),
+                  onPressed: _pickReciterAndPlay,
                   icon: const Icon(Icons.play_circle_fill_rounded, size: 18),
-                  label: const Text('Read it to me'),
+                  label: const Text('Recite'),
                 ),
               ],
             ),
+            if (!_ready) const SizedBox(height: 4),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _playRecitation(BuildContext context) async {
-    final global = ayah['global_number'] as int?;
-    if (global == null) {
-      _toast(context, 'Recitation reference missing for this ayah.');
-      return;
-    }
-    final err = await RecitationAudioService.instance.playAyah(globalNumber: global);
-    if (err != null && context.mounted) _toast(context, err);
+  Widget _tool(IconData icon, String label, VoidCallback onTap) {
+    return OutlinedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 16),
+      label: Text(label, style: const TextStyle(fontSize: 12)),
+      style: OutlinedButton.styleFrom(visualDensity: VisualDensity.compact),
+    );
   }
 
-  Future<void> _openTafsir(BuildContext context, WidgetRef ref) async {
+  Future<void> _toggleBookmark() async {
+    final on = await UserLibraryStore.instance.toggleBookmark(_surah, _ayahNo);
+    if (!mounted) return;
+    setState(() => _bookmarked = on);
+    _toast(on ? 'Bookmarked in your personal file' : 'Bookmark removed');
+  }
+
+  Future<void> _toggleHighlight() async {
+    final color = await UserLibraryStore.instance.toggleHighlight(_surah, _ayahNo);
+    if (!mounted) return;
+    setState(() => _highlight = color);
+    _toast(color == null ? 'Highlight cleared' : 'Ayah highlighted');
+  }
+
+  Future<void> _editNote() async {
+    final controller = TextEditingController(text: _note ?? '');
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Note · $_surah:$_ayahNo'),
+        content: TextField(
+          controller: controller,
+          maxLines: 5,
+          decoration: const InputDecoration(hintText: 'Write your personal note…'),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Save')),
+        ],
+      ),
+    );
+    if (result == null) return;
+    await UserLibraryStore.instance.setNote(_surah, _ayahNo, result);
+    if (!mounted) return;
+    setState(() => _note = result.trim().isEmpty ? null : result.trim());
+    _toast('Note saved to your personal file');
+  }
+
+  Future<void> _copy(String arabic, String? translation) async {
+    final text = [
+      '$_surah:$_ayahNo',
+      arabic,
+      if (translation != null) translation,
+    ].join('\n');
+    await Clipboard.setData(ClipboardData(text: text));
+    _toast('Copied');
+  }
+
+  Future<void> _share(String arabic, String? translation, String refLabel) async {
+    final text = [
+      'ISLAM 307 · Quran $refLabel',
+      arabic,
+      if (translation != null) translation,
+    ].join('\n');
+    await Share.share(text);
+  }
+
+  Future<void> _pickReciterAndPlay() async {
+    final reciters = await RecitationAudioService.instance.reciters();
+    if (!mounted) return;
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
+              child: Text('Choose Qari (KSA / Imam Al-Haram)', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            ),
+            ...reciters.map((r) => ListTile(
+                  leading: const Icon(Icons.record_voice_over_rounded, color: Islam307Theme.emerald),
+                  title: Text('${r['name_en']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  subtitle: Text('${r['title'] ?? ''} · ${r['name_ar'] ?? ''}'),
+                  onTap: () => Navigator.pop(ctx, r['id'] as String),
+                )),
+          ],
+        ),
+      ),
+    );
+    if (chosen == null) return;
+    final err = await RecitationAudioService.instance.playAyah(
+      surah: _surah,
+      ayah: _ayahNo,
+      globalNumber: widget.ayah['global_number'] as int?,
+      reciterId: chosen,
+    );
+    if (err != null) _toast(err);
+  }
+
+  Future<void> _openTafsir(BuildContext context) async {
     final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
-    final surah = ayah['surah_number'] as int;
-    final number = ayah['ayah_number'] as int;
+    final repo = TafsirRepository(DatabaseRegistry.instance);
+    final entry = await repo.entry(slug, _surah, _ayahNo);
     if (!context.mounted) return;
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      builder: (_) => _TafsirSheet(surah: surah, ayah: number, initialSlug: slug),
-    );
-  }
-
-  Future<void> _readAll(
-    BuildContext context,
-    WidgetRef ref,
-    String arabic,
-    String? translation,
-    String ttsLang,
-  ) async {
-    await _playRecitation(context);
-    if (translation != null) {
-      await TtsService.instance.speak(translation, language: ttsLang);
-    }
-    final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
-    final repo = TafsirRepository(DatabaseRegistry.instance);
-    final entry = await repo.entry(slug, ayah['surah_number'] as int, ayah['ayah_number'] as int);
-    final text = entry == null || entry['unavailable'] == true ? null : '${entry['text'] ?? ''}';
-    if (text == null || text.trim().isEmpty) {
-      if (context.mounted) {
-        _toast(context, TafsirRepository.unavailableMessage);
-      }
-      return;
-    }
-    await TtsService.instance.speak(text, language: 'en-US');
-  }
-
-  void _toast(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-}
-
-class _TafsirSheet extends StatefulWidget {
-  const _TafsirSheet({required this.surah, required this.ayah, required this.initialSlug});
-  final int surah;
-  final int ayah;
-  final String initialSlug;
-
-  @override
-  State<_TafsirSheet> createState() => _TafsirSheetState();
-}
-
-class _TafsirSheetState extends State<_TafsirSheet> {
-  final _repo = TafsirRepository(DatabaseRegistry.instance);
-  late String _slug;
-  Map<String, dynamic>? _entry;
-  List<Map<String, dynamic>> _sources = [];
-  bool _loading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _slug = widget.initialSlug;
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() => _loading = true);
-    final sources = await _repo.catalogSources();
-    final entry = await _repo.entry(_slug, widget.surah, widget.ayah);
-    if (!mounted) return;
-    setState(() {
-      _sources = sources;
-      _entry = entry;
-      _loading = false;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final unavailable = _entry == null || _entry!['unavailable'] == true;
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.viewInsetsOf(context).bottom),
-      child: SizedBox(
-        height: MediaQuery.sizeOf(context).height * 0.75,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Tafsir · ${widget.surah}:${widget.ayah}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-            const SizedBox(height: 8),
-            const Text(
-              'Only authentic classical sources. Never AI-generated.',
-              style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String>(
-              value: _slug,
-              items: _sources
-                  .map((s) => DropdownMenuItem(
-                        value: s['slug'] as String,
-                        child: Text('${s['name_en']}${s['installed'] == true ? '' : ' (not installed)'}'),
-                      ))
-                  .toList(),
-              onChanged: (v) async {
-                if (v == null) return;
-                _slug = v;
-                await _load();
-              },
-              decoration: const InputDecoration(labelText: 'Tafsir source'),
-            ),
-            const SizedBox(height: 12),
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
-                  : SingleChildScrollView(
-                      child: unavailable
-                          ? Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(_entry?['message'] as String? ?? TafsirRepository.unavailableMessage,
-                                    style: const TextStyle(fontWeight: FontWeight.w700, color: Colors.orange)),
-                                const SizedBox(height: 8),
-                                Text('${_entry?['notes'] ?? ''}', style: const TextStyle(color: Islam307Theme.textMuted)),
-                              ],
-                            )
-                          : Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('${_entry!['source_name']}', style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
-                                const SizedBox(height: 10),
-                                Text('${_entry!['text']}', style: const TextStyle(height: 1.7, fontSize: 15)),
-                                const SizedBox(height: 16),
-                                OutlinedButton.icon(
-                                  onPressed: () => TtsService.instance.speak('${_entry!['text']}', language: 'en-US'),
-                                  icon: const Icon(Icons.volume_up_rounded),
-                                  label: const Text('Play Tafsir'),
-                                ),
-                                TextButton(
-                                  onPressed: () => context.push('/tafsir/$_slug/${widget.surah}/${widget.ayah}'),
-                                  child: const Text('Open in Tafsir module'),
-                                ),
-                              ],
-                            ),
-                    ),
-            ),
-          ],
+      builder: (_) => Padding(
+        padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.viewInsetsOf(context).bottom),
+        child: SizedBox(
+          height: MediaQuery.sizeOf(context).height * 0.7,
+          child: ListView(
+            children: [
+              Text('Tafsir · $_surah:$_ayahNo', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+              const SizedBox(height: 12),
+              if (entry == null || entry['unavailable'] == true)
+                Text(entry?['message'] as String? ?? TafsirRepository.unavailableMessage,
+                    style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w700))
+              else ...[
+                Text('${entry['source_name']}', style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
+                const SizedBox(height: 10),
+                Text('${entry['text']}', style: const TextStyle(height: 1.7)),
+                TextButton(onPressed: () => context.push('/tafsir/$slug/$_surah/$_ayahNo'), child: const Text('Open in Tafsir module')),
+              ],
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  void _toast(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }

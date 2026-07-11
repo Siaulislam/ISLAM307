@@ -1,14 +1,58 @@
 {
   "module": "audio_reciters",
-  "policy": "Recitation audio must come from trusted CDN/API. Translation and tafsir playback use on-device TTS of authentic text only — never AI-generated religious content.",
-  "default_reciter": "ar.alafasy",
+  "policy": "Recitation audio must come from trusted CDN only (EveryAyah). Never synthesize Quran audio with AI.",
+  "default_reciter": "sudais",
+  "url_style": "everyayah_sss_aaa",
   "reciters": [
     {
-      "id": "ar.alafasy",
-      "name_en": "Mishary Rashid Alafasy",
-      "bitrate": 128,
-      "url_template": "https://cdn.islamic.network/quran/audio/128/ar.alafasy/{global}.mp3",
-      "source": "islamic.network CDN"
+      "id": "sudais",
+      "name_en": "Sheikh Abdurrahman As-Sudais",
+      "name_ar": "عبد الرحمن السديس",
+      "title": "Imam Al-Haram · Makkah",
+      "country": "KSA",
+      "folder": "Abdurrahmaan_As-Sudais_192kbps",
+      "url_template": "https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/{sss}{aaa}.mp3",
+      "source": "everyayah.com"
+    },
+    {
+      "id": "shuraim",
+      "name_en": "Sheikh Saud Ash-Shuraim",
+      "name_ar": "سعود الشريم",
+      "title": "Imam Al-Haram · Makkah",
+      "country": "KSA",
+      "folder": "Saood_ash-Shuraym_128kbps",
+      "url_template": "https://everyayah.com/data/Saood_ash-Shuraym_128kbps/{sss}{aaa}.mp3",
+      "source": "everyayah.com"
+    },
+    {
+      "id": "muaiqly",
+      "name_en": "Sheikh Maher Al-Muaiqly",
+      "name_ar": "ماهر المعيقلي",
+      "title": "Imam Al-Haram · Makkah",
+      "country": "KSA",
+      "folder": "MaherAlMuaiqly128kbps",
+      "url_template": "https://everyayah.com/data/MaherAlMuaiqly128kbps/{sss}{aaa}.mp3",
+      "source": "everyayah.com"
+    },
+    {
+      "id": "dosari",
+      "name_en": "Sheikh Yasser Ad-Dossari",
+      "name_ar": "ياسر الدوسري",
+      "title": "Imam Al-Haram · Makkah",
+      "country": "KSA",
+      "folder": "Yasser_Ad-Dussary_128kbps",
+      "url_template": "https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/{sss}{aaa}.mp3",
+      "source": "everyayah.com"
+    },
+    {
+      "id": "hudhaify",
+      "name_en": "Sheikh Ali Al-Hudhaify",
+      "name_ar": "علي الحذيفي",
+      "title": "Imam An-Nabawi · Madinah",
+      "country": "KSA",
+      "folder": "Hudhaify_128kbps",
+      "url_template": "https://everyayah.com/data/Hudhaify_128kbps/{sss}{aaa}.mp3",
+      "source": "everyayah.com"
     }
   ]
 }

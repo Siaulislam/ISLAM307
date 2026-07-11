@@ -178,6 +178,136 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
   font-weight: 800;
 }
 .status { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.ur { direction: rtl; text-align: right; font-size: calc(17px * var(--reader-scale, 1)); }
+.ar { font-size: calc(22px * var(--reader-scale, 1)); }
+.reader-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.reader-tools button,
+.ayah-tools button {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12px;
+}
+.ayah-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.ayah-tools .primary,
+.reader-tools .primary {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+.ayah.is-highlighted {
+  background: #fff4cc;
+  border-color: #e7c96a;
+}
+.note-box {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  font-size: 13px;
+}
+.user-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-left: auto;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+  background: #065f46;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s ease;
+  z-index: 50;
+  font-weight: 700;
+  font-size: 13px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  padding: 20px;
+}
+.modal {
+  width: min(520px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.modal h3 { margin: 0 0 6px; color: var(--emerald-deep); }
+.reciter-list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+.reciter-list button {
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+}
+.reciter-list button:hover { background: var(--emerald-soft); }
+.reciter-list strong { color: var(--emerald-deep); }
+.reciter-list small { color: var(--muted); }
+.modal .ghost {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+body.dark {
+  --bg: #121a2a;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --border: #243044;
+  --wash: linear-gradient(160deg, #0b1220, #102018 50%, #1a1408);
+}
+body.dark .list,
+body.dark .reader,
+body.dark .ayah,
+body.dark .hadith-card,
+body.dark .tafsir-card,
+body.dark .modal,
+body.dark .reader-tools button,
+body.dark .ayah-tools button,
+body.dark .reciter-list button,
+body.dark .tabs button {
+  background: #121a2a;
+  color: var(--text);
+  border-color: var(--border);
+}
+body.dark .ayah.is-highlighted { background: #3b3418; }
 
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
