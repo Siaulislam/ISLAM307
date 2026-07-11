@@ -75,7 +75,8 @@ async function openSurah(n, button) {
       <div class="ayah">
         <div class="meta-row"><span>${a.s}:${a.a}</span><span>Page ${a.p} · Juz ${a.j}</span></div>
         <p class="ar">${a.ar}</p>
-        <p class="en">${a.en}</p>
+        ${a.ur ? `<p class="en" style="direction:rtl;text-align:right;font-size:17px;color:#334155">${a.ur}</p>` : ''}
+        ${a.en ? `<p class="en">${a.en}</p>` : ''}
       </div>
     `).join('')}
   `;
@@ -122,6 +123,7 @@ function renderHadithList(slug, filter = '') {
       <div class="hadith-card">
         <div class="meta-row"><span>Hadith ${h.n}</span><span>${h.narrator || ''}</span></div>
         ${h.ar ? `<p class="ar">${h.ar}</p>` : ''}
+        ${h.ur ? `<p class="en" style="direction:rtl;text-align:right">${h.ur}</p>` : ''}
         <p class="en">${h.en || ''}</p>
         <span class="badge">${h.grade ? h.grade : 'Grade not verified.'}</span>
       </div>

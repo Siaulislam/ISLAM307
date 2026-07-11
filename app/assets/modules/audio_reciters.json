@@ -1,0 +1,14 @@
+{
+  "module": "audio_reciters",
+  "policy": "Recitation audio must come from trusted CDN/API. Translation and tafsir playback use on-device TTS of authentic text only — never AI-generated religious content.",
+  "default_reciter": "ar.alafasy",
+  "reciters": [
+    {
+      "id": "ar.alafasy",
+      "name_en": "Mishary Rashid Alafasy",
+      "bitrate": 128,
+      "url_template": "https://cdn.islamic.network/quran/audio/128/ar.alafasy/{global}.mp3",
+      "source": "islamic.network CDN"
+    }
+  ]
+}

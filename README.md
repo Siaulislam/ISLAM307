@@ -7,9 +7,12 @@
 | Phase | Status |
 |-------|--------|
 | UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
-| `quran.db` | Built (6,236 ayahs, Tanzil verified) |
-| `hadith.db` / `tafsir.db` | Bundled; Flutter screens wired |
-| Flutter app scaffold | Splash, Welcome, Home, Quran, Hadith, Tafsir |
+| `quran.db` | Built (6,236 ayahs + English + Urdu Junagarhi) |
+| `hadith.db` / `tafsir.db` | Bundled; Flutter modules wired |
+| Flutter Quran module | Surah/Ruku browse, Urdu/EN/Arabic-only, View Tafsir, audio |
+| Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
+| Flutter Tafsir module | Source/Surah/Ayah picker · authentic packs only |
+| Search + Light/Dark | Wired |
 | AI, Prayer, etc. | Next |
 
 ## Quick start (local Chrome — same as XMONEY)

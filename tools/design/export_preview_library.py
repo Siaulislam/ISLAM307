@@ -56,11 +56,14 @@ def export_quran() -> dict:
             "a": r["ayah_number"],
             "ar": r["text_uthmani"],
             "en": r["translation_en"] or "",
+            "ur": (r["translation_ur"] if "translation_ur" in r.keys() else "") or "",
             "p": r["page_madani"],
             "j": r["juz"],
+            "ruku": r["ruku"],
         }
         for r in conn.execute(
-            "SELECT surah_number, ayah_number, text_uthmani, translation_en, page_madani, juz FROM ayahs ORDER BY global_number"
+            "SELECT surah_number, ayah_number, text_uthmani, translation_en, "
+            "IFNULL(translation_ur,'') AS translation_ur, page_madani, juz, ruku FROM ayahs ORDER BY global_number"
         )
     ]
     write_json(OUT / "quran" / "surahs.json", {"surahs": surahs, "count": len(surahs)})
@@ -79,7 +82,8 @@ def export_hadith() -> dict:
             "count": r["hadith_count"],
         }
         for r in conn.execute(
-            "SELECT id, slug, name_en, name_ar, hadith_count FROM books ORDER BY sort_order"
+            "SELECT id, slug, name_en, name_ar, hadith_count FROM books "
+            "WHERE slug IN ('bukhari','muslim','tirmidhi','abudawud') ORDER BY sort_order"
         )
     ]
     write_json(OUT / "hadith" / "books.json", {"books": books, "count": sum(b["count"] for b in books)})
@@ -90,12 +94,13 @@ def export_hadith() -> dict:
                 "n": r["hadith_number"],
                 "ar": r["text_ar"] or "",
                 "en": r["text_en"] or "",
+                "ur": r["text_ur"] or "",
                 "grade": r["grade"] or "",
                 "narrator": r["narrator"] or "",
             }
             for r in conn.execute(
                 """
-                SELECT hadith_number, text_ar, text_en, grade, narrator
+                SELECT hadith_number, text_ar, text_en, text_ur, grade, narrator
                 FROM hadiths WHERE book_id = ? ORDER BY hadith_number
                 """,
                 (book["id"],),

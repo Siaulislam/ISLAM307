@@ -3,13 +3,16 @@ import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/welcome/welcome_screen.dart';
 import '../../features/home/home_screen.dart';
-import '../../features/quran/quran_screen.dart';
+import '../../features/quran/quran_hub_screen.dart';
+import '../../features/quran/quran_surah_list_screen.dart';
+import '../../features/quran/quran_ruku_list_screen.dart';
 import '../../features/quran/quran_reader_screen.dart';
 import '../../features/hadith/hadith_screen.dart';
 import '../../features/hadith/hadith_book_screen.dart';
 import '../../features/hadith/hadith_detail_screen.dart';
 import '../../features/tafsir/tafsir_screen.dart';
 import '../../features/tafsir/tafsir_reader_screen.dart';
+import '../../features/search/search_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -18,7 +21,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/splash', builder: (_, __) => const SplashScreen()),
       GoRoute(path: '/welcome', builder: (_, __) => const WelcomeScreen()),
       GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
-      GoRoute(path: '/quran', builder: (_, __) => const QuranScreen()),
+      GoRoute(path: '/search', builder: (_, __) => const SearchScreen()),
+      GoRoute(path: '/quran', builder: (_, __) => const QuranHubScreen()),
+      GoRoute(path: '/quran/surahs', builder: (_, __) => const QuranSurahListScreen()),
+      GoRoute(path: '/quran/rukus', builder: (_, __) => const QuranRukuListScreen()),
+      GoRoute(
+        path: '/quran/ruku/:ruku',
+        builder: (_, state) {
+          final ruku = int.parse(state.pathParameters['ruku']!);
+          return QuranReaderScreen(rukuNumber: ruku);
+        },
+      ),
       GoRoute(
         path: '/quran/read/:surah/:ayah',
         builder: (_, state) {

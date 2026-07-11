@@ -6,7 +6,6 @@ import '../../core/theme/islam307_theme.dart';
 
 class HadithBookScreen extends StatefulWidget {
   const HadithBookScreen({super.key, required this.bookId});
-
   final int bookId;
 
   @override
@@ -20,7 +19,7 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
   bool _loading = true;
   bool _loadingMore = false;
   int _offset = 0;
-  static const _pageSize = 50;
+  static const _pageSize = 40;
 
   @override
   void initState() {
@@ -29,11 +28,11 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
   }
 
   Future<void> _load() async {
-    final books = await _repo.books();
-    final book = books.cast<Map<String, dynamic>?>().firstWhere(
-          (b) => b?['id'] == widget.bookId,
-          orElse: () => null,
-        );
+    final books = await _repo.books(enabledOnly: false);
+    Map<String, dynamic>? book;
+    for (final b in books) {
+      if (b['id'] == widget.bookId) book = b;
+    }
     final rows = await _repo.hadithsForBook(widget.bookId, limit: _pageSize, offset: 0);
     if (!mounted) return;
     setState(() {
@@ -60,7 +59,6 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
   Widget build(BuildContext context) {
     final title = _book?['name_en']?.toString() ?? 'Hadith';
     return Scaffold(
-      backgroundColor: Islam307Theme.white,
       appBar: AppBar(
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.w800)),
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
@@ -69,9 +67,7 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
           ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
           : NotificationListener<ScrollNotification>(
               onNotification: (n) {
-                if (n.metrics.pixels > n.metrics.maxScrollExtent - 240) {
-                  _loadMore();
-                }
+                if (n.metrics.pixels > n.metrics.maxScrollExtent - 240) _loadMore();
                 return false;
               },
               child: ListView.builder(
@@ -85,17 +81,11 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                     );
                   }
                   final h = _items[i];
-                  final grade = HadithRepository.gradingSummary(h);
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: ListTile(
                       title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
-                      subtitle: Text(
-                        '${h['text_en'] ?? h['text_ar'] ?? ''}',
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      trailing: Text(grade.grade, style: const TextStyle(fontSize: 11, color: Islam307Theme.gold, fontWeight: FontWeight.w700)),
+                      subtitle: Text('${h['text_en'] ?? h['text_ar'] ?? ''}', maxLines: 3, overflow: TextOverflow.ellipsis),
                       onTap: () => context.push('/hadith/read/${widget.bookId}/${h['hadith_number']}'),
                     ),
                   );

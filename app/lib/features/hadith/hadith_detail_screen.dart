@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
 import '../../core/repositories/hadith_repository.dart';
 import '../../core/theme/islam307_theme.dart';
 
 class HadithDetailScreen extends StatefulWidget {
   const HadithDetailScreen({super.key, required this.bookId, required this.hadithNumber});
-
   final int bookId;
   final int hadithNumber;
 
@@ -39,7 +39,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final h = _hadith;
     final grade = h == null ? null : HadithRepository.gradingSummary(h);
     return Scaffold(
-      backgroundColor: Islam307Theme.white,
       appBar: AppBar(
         title: Text('Hadith ${widget.hadithNumber}', style: const TextStyle(fontWeight: FontWeight.w800)),
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
@@ -47,7 +46,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
           : h == null
-              ? const Center(child: Text('Hadith not found'))
+              ? const Center(child: Text('Authentic hadith not found in offline database.'))
               : ListView(
                   padding: const EdgeInsets.all(20),
                   children: [
@@ -55,36 +54,44 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                       Text('Narrated ${h['narrator']}', style: const TextStyle(fontWeight: FontWeight.w700, color: Islam307Theme.emeraldDeep)),
                     const SizedBox(height: 12),
                     if ((h['text_ar'] as String?)?.isNotEmpty == true)
-                      Text(
-                        '${h['text_ar']}',
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(fontSize: 22, height: 1.9),
-                      ),
-                    const SizedBox(height: 14),
-                    if ((h['text_en'] as String?)?.isNotEmpty == true)
+                      Text('${h['text_ar']}', textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 22)),
+                    const SizedBox(height: 16),
+                    if ((h['text_ur'] as String?)?.isNotEmpty == true) ...[
+                      const Text('اردو', style: TextStyle(fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 6),
+                      Text('${h['text_ur']}', textAlign: TextAlign.right, textDirection: TextDirection.rtl, style: Islam307Theme.urdu()),
+                      const SizedBox(height: 16),
+                    ] else
+                      const Text('Urdu translation unavailable for this hadith in the authenticated database.', style: TextStyle(color: Colors.orange)),
+                    if ((h['text_en'] as String?)?.isNotEmpty == true) ...[
+                      const Text('English', style: TextStyle(fontWeight: FontWeight.w800)),
+                      const SizedBox(height: 6),
                       Container(
                         padding: const EdgeInsets.only(left: 12),
                         decoration: const BoxDecoration(border: Border(left: BorderSide(color: Islam307Theme.gold, width: 3))),
                         child: Text('${h['text_en']}', style: const TextStyle(height: 1.6, color: Islam307Theme.textMuted)),
                       ),
+                    ],
                     const SizedBox(height: 16),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
                       children: [
-                        Chip(
-                          label: Text(grade?.grade ?? HadithRepository.gradeNotVerified),
-                          backgroundColor: Islam307Theme.goldLight.withValues(alpha: 0.45),
-                        ),
-                        if ((grade?.scholar ?? '').isNotEmpty) Chip(label: Text(grade!.scholar!)),
+                        Chip(label: Text(grade?.grade ?? HadithRepository.gradeNotVerified), backgroundColor: Islam307Theme.goldLight.withValues(alpha: 0.45)),
+                        if ((h['text_en'] as String?)?.isNotEmpty == true)
+                          OutlinedButton.icon(
+                            onPressed: () => TtsService.instance.speak('${h['text_en']}', language: 'en-US'),
+                            icon: const Icon(Icons.volume_up_rounded),
+                            label: const Text('Read English'),
+                          ),
+                        if ((h['text_ur'] as String?)?.isNotEmpty == true)
+                          OutlinedButton.icon(
+                            onPressed: () => TtsService.instance.speak('${h['text_ur']}', language: 'ur-PK'),
+                            icon: const Icon(Icons.volume_up_rounded),
+                            label: const Text('Read Urdu'),
+                          ),
                       ],
                     ),
-                    if ((h['text_ur'] as String?)?.isNotEmpty == true) ...[
-                      const SizedBox(height: 18),
-                      const Text('Urdu', style: TextStyle(fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 8),
-                      Text('${h['text_ur']}', textAlign: TextAlign.right, style: const TextStyle(height: 1.8)),
-                    ],
                   ],
                 ),
     );

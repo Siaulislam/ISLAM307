@@ -49,25 +49,21 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
     });
   }
 
-  void _go(int surah, int ayah) {
-    context.go('/tafsir/${widget.sourceSlug}/$surah/$ayah');
-  }
+  void _go(int surah, int ayah) => context.go('/tafsir/${widget.sourceSlug}/$surah/$ayah');
 
   @override
   Widget build(BuildContext context) {
+    final unavailable = _entry == null || _entry!['unavailable'] == true;
     return Scaffold(
-      backgroundColor: Islam307Theme.white,
       appBar: AppBar(
         title: Text('${widget.sourceSlug} · ${widget.surah}:${widget.ayah}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
         leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
         actions: [
           IconButton(
-            tooltip: 'Previous ayah',
             onPressed: widget.ayah > 1 ? () => _go(widget.surah, widget.ayah - 1) : null,
             icon: const Icon(Icons.chevron_left_rounded),
           ),
           IconButton(
-            tooltip: 'Next ayah',
             onPressed: () => _go(widget.surah, widget.ayah + 1),
             icon: const Icon(Icons.chevron_right_rounded),
           ),
@@ -75,24 +71,24 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
-          : _entry == null
-              ? const Center(child: Text('No tafsir found for this ayah'))
-              : ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    Text(
-                      '${_entry!['source_name'] ?? widget.sourceSlug}',
-                      style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Surah ${_entry!['surah_number']} · Ayah ${_entry!['ayah_number']}',
-                      style: const TextStyle(color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 16),
-                    Text('${_entry!['text']}', style: const TextStyle(height: 1.7, fontSize: 15)),
-                  ],
-                ),
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                if (unavailable) ...[
+                  Text(_entry?['message'] as String? ?? TafsirRepository.unavailableMessage,
+                      style: const TextStyle(fontWeight: FontWeight.w800, color: Colors.orange)),
+                  const SizedBox(height: 8),
+                  Text('${_entry?['notes'] ?? ''}', style: const TextStyle(color: Islam307Theme.textMuted)),
+                ] else ...[
+                  Text('${_entry!['source_name']}', style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
+                  const SizedBox(height: 8),
+                  Text('Surah ${_entry!['surah_number']} · Ayah ${_entry!['ayah_number']}',
+                      style: const TextStyle(color: Islam307Theme.textMuted, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 16),
+                  Text('${_entry!['text']}', style: const TextStyle(height: 1.7, fontSize: 15)),
+                ],
+              ],
+            ),
     );
   }
 }

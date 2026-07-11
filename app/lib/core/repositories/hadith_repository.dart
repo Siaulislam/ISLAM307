@@ -1,17 +1,24 @@
 import '../database/database_registry.dart';
+import '../modules/module_catalog.dart';
 
-/// Offline hadith access — supports legacy single-grade schema and authenticated multi-grade schema.
+/// Offline hadith access — authenticated database rows only.
 class HadithRepository {
-  HadithRepository(this._registry);
+  HadithRepository(this._registry, {ModuleCatalog? catalog})
+      : _catalog = catalog ?? ModuleCatalog.instance;
+
   final DatabaseRegistry _registry;
+  final ModuleCatalog _catalog;
 
   static const gradeNotVerified = 'Grade not verified.';
   bool? _hasGradeTable;
   bool? _hasKitabNumber;
 
-  Future<List<Map<String, dynamic>>> books() async {
+  Future<List<Map<String, dynamic>>> books({bool enabledOnly = true}) async {
     final db = await _registry.open('hadith');
-    return db.query('books', orderBy: 'sort_order ASC');
+    final rows = await db.query('books', orderBy: 'sort_order ASC');
+    if (!enabledOnly) return rows;
+    final allowed = (await _catalog.enabledHadithSlugs()).toSet();
+    return rows.where((b) => allowed.contains(b['slug'])).toList();
   }
 
   Future<List<Map<String, dynamic>>> chapters(int bookId) async {
@@ -29,18 +36,6 @@ class HadithRepository {
       orderBy: 'hadith_number ASC',
       limit: limit,
       offset: offset,
-    );
-    return Future.wait(rows.map(_enrich));
-  }
-
-  Future<List<Map<String, dynamic>>> hadithsForChapter(int chapterId, {int limit = 200}) async {
-    final db = await _registry.open('hadith');
-    final rows = await db.query(
-      'hadiths',
-      where: 'chapter_id = ?',
-      whereArgs: [chapterId],
-      orderBy: 'hadith_number ASC',
-      limit: limit,
     );
     return Future.wait(rows.map(_enrich));
   }
@@ -78,35 +73,45 @@ class HadithRepository {
     final q = query.trim();
     if (q.isEmpty) return [];
     final db = await _registry.open('hadith');
+    final allowed = await _catalog.enabledHadithSlugs();
+    final placeholders = List.filled(allowed.length, '?').join(',');
+    final number = int.tryParse(q);
+
+    if (number != null) {
+      final rows = await db.rawQuery(
+        '''
+        SELECT h.*, b.slug AS book_slug, b.name_en AS book_name
+        FROM hadiths h
+        JOIN books b ON b.id = h.book_id
+        WHERE h.hadith_number = ? AND b.slug IN ($placeholders)
+        ORDER BY h.book_id, h.hadith_number
+        LIMIT ?
+        ''',
+        [number, ...allowed, limit],
+      );
+      return Future.wait(rows.map(_enrich));
+    }
+
     final rows = await db.rawQuery(
       '''
       SELECT h.*, b.slug AS book_slug, b.name_en AS book_name
       FROM hadith_fts f
       JOIN hadiths h ON h.id = f.hadith_id
       JOIN books b ON b.id = h.book_id
-      WHERE hadith_fts MATCH ?
+      WHERE hadith_fts MATCH ? AND b.slug IN ($placeholders)
       ORDER BY h.book_id, h.hadith_number
       LIMIT ?
       ''',
-      [q, limit],
+      [q, ...allowed, limit],
     );
     return Future.wait(rows.map(_enrich));
   }
 
   Future<Map<String, dynamic>> _enrich(Map<String, dynamic> row) async {
     final map = Map<String, dynamic>.from(row);
-    map['grades'] = await gradesForHadith(
-      map['id'] as int,
-      legacyGrade: map['grade'] as String?,
-    );
-    map['reference_url'] ??= _legacyReferenceUrl(map);
+    map['grades'] = await gradesForHadith(map['id'] as int, legacyGrade: map['grade'] as String?);
+    map['reference_url'] ??= 'https://sunnah.com/${map['book_id']}:${map['hadith_number']}';
     return map;
-  }
-
-  String _legacyReferenceUrl(Map<String, dynamic> map) {
-    final bookId = map['book_id'];
-    final n = map['hadith_number'];
-    return 'https://sunnah.com/hadith:$bookId/$n';
   }
 
   Future<bool> _supportsGradeTable(dynamic db) async {
@@ -127,7 +132,6 @@ class HadithRepository {
     return _hasKitabNumber! ? 'kitab_number, number ASC' : 'number ASC';
   }
 
-  /// Primary grade + scholar for AI display; never hides grading.
   static ({String grade, String? scholar, String referenceUrl}) gradingSummary(
     Map<String, dynamic> hadithRow,
   ) {
@@ -146,20 +150,5 @@ class HadithRepository {
       scholar: (primary['graded_by'] as String?)?.trim(),
       referenceUrl: hadithRow['reference_url'] as String? ?? '',
     );
-  }
-
-  /// All gradings when multiple scholars graded the same hadith.
-  static List<({String grade, String? scholar})> allGradings(Map<String, dynamic> hadithRow) {
-    final grades = hadithRow['grades'] as List<Map<String, dynamic>>? ?? [];
-    if (grades.isEmpty) {
-      final legacy = (hadithRow['grade'] as String?)?.trim();
-      return [(grade: (legacy == null || legacy.isEmpty) ? gradeNotVerified : legacy, scholar: null)];
-    }
-    return grades
-        .map((g) => (
-              grade: (g['grade'] as String?)?.trim() ?? gradeNotVerified,
-              scholar: (g['graded_by'] as String?)?.trim(),
-            ))
-        .toList();
   }
 }
