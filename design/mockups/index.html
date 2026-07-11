@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISLAM 307 — UI Mockups</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="gallery-header">
+    <h1>ISLAM 307 — UI Mockups</h1>
+    <p>Original premium offline-first design. White · Emerald · Gold. Review every screen below. After your approval, development begins.</p>
+  </header>
+
+  <nav class="screen-nav" id="nav"></nav>
+
+  <div class="mockup-stage">
+    <div>
+      <!-- 1 SPLASH -->
+      <div class="screen active" data-id="splash">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">ISLAM 307</div>
+          <div class="splash-center">
+            <div class="logo-mark"><div><span>307</span><small>ISLAM</small></div></div>
+            <h2>ISLAM 307</h2>
+            <p>Your complete offline Islamic companion</p>
+            <div style="margin-top:40px;width:48px;height:4px;background:var(--gold);border-radius:4px;animation:pulse 1.5s infinite"></div>
+          </div>
+        </div>
+        <p class="screen-label">1 · Splash Screen</p>
+      </div>
+
+      <!-- 2 WELCOME -->
+      <div class="screen" data-id="welcome">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Welcome</div>
+          <div class="screen-body" style="padding-top:48px">
+            <div class="logo-mark" style="width:72px;height:72px;border-radius:20px"><div><span style="font-size:18px">307</span></div></div>
+            <h2 style="text-align:center;margin-top:20px;font-size:24px;color:var(--emerald-deep)">Welcome to ISLAM 307</h2>
+            <p style="text-align:center;color:var(--muted);margin-top:8px;font-size:14px">100% offline · Quran · Hadith · Prayer</p>
+            <p style="text-align:center;margin-top:24px;font-size:13px;font-weight:700;color:var(--muted)">Choose language</p>
+            <div class="lang-pills">
+              <span class="lang-pill">العربية</span>
+              <span class="lang-pill active">English</span>
+              <span class="lang-pill">اردو</span>
+            </div>
+            <div style="margin-top:32px">
+              <button class="btn-primary">Get Started</button>
+              <button class="btn-outline">Continue as Guest</button>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">2 · Welcome Screen</p>
+      </div>
+
+      <!-- 3 HOME -->
+      <div class="screen" data-id="home">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Home</div>
+          <div class="screen-body">
+            <div class="top-bar">
+              <div class="avatar">ZS</div>
+              <div style="display:flex;gap:8px">
+                <div class="icon-btn">🔍</div>
+                <div class="icon-btn">🔔</div>
+              </div>
+            </div>
+            <div class="card card-gold">
+              <span class="chip">Today's Verse</span>
+              <p class="ayah-block" style="font-size:18px;margin-top:10px">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+              <p style="font-size:13px;color:var(--muted);line-height:1.5">In the name of Allah, the Entirely Merciful, the Especially Merciful.</p>
+              <p style="margin-top:10px;font-size:12px;font-weight:700;color:var(--emerald)">Al-Fatiha · 1:1 → Read More</p>
+            </div>
+            <div class="card card-emerald">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                <strong style="color:var(--emerald-deep)">Prayer Times</strong>
+                <span class="chip">Karachi</span>
+              </div>
+              <div class="prayer-row"><span>Fajr</span><span class="time">05:12</span></div>
+              <div class="prayer-row active"><span>Dhuhr</span><span class="time">12:45</span></div>
+              <div class="prayer-row"><span>Asr</span><span class="time">16:20</span></div>
+              <div class="prayer-row"><span>Maghrib</span><span class="time">18:52</span></div>
+              <div class="prayer-row"><span>Isha</span><span class="time">20:15</span></div>
+            </div>
+            <p class="section-title">Quick Access</p>
+            <div class="grid-4">
+              <div class="grid-item"><div class="icon">📖</div><span>Quran</span></div>
+              <div class="grid-item"><div class="icon">📜</div><span>Hadith</span></div>
+              <div class="grid-item"><div class="icon">📚</div><span>Tafsir</span></div>
+              <div class="grid-item"><div class="icon">✨</div><span>AI</span></div>
+              <div class="grid-item"><div class="icon">🕌</div><span>Prayer</span></div>
+              <div class="grid-item"><div class="icon">🧭</div><span>Qibla</span></div>
+              <div class="grid-item"><div class="icon">📿</div><span>Azkar</span></div>
+              <div class="grid-item"><div class="icon">🤲</div><span>Duas</span></div>
+              <div class="grid-item"><div class="icon">📕</div><span>Library</span></div>
+              <div class="grid-item"><div class="icon">🎧</div><span>Audio</span></div>
+              <div class="grid-item"><div class="icon">🎬</div><span>Videos</span></div>
+              <div class="grid-item"><div class="icon">⬇️</div><span>Downloads</span></div>
+            </div>
+            <div class="card" style="margin-top:14px">
+              <strong style="font-size:13px">Continue Reading</strong>
+              <p style="font-size:12px;color:var(--muted);margin-top:4px">Al-Baqarah · Page 42 · Juz 1</p>
+            </div>
+            <div class="card">
+              <strong style="font-size:13px">Daily Hadith</strong>
+              <p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Actions are judged by intentions...</p>
+              <span class="ref-badge">Sahih Bukhari · 1</span>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item active"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item"><div class="ni">✨</div>AI</div>
+            <div class="nav-item"><div class="ni">📕</div>Library</div>
+            <div class="nav-item"><div class="ni">☰</div>More</div>
+          </nav>
+        </div>
+        <p class="screen-label">3 · Home Dashboard</p>
+      </div>
+
+      <!-- 4 QURAN INDEX -->
+      <div class="screen" data-id="quran">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Quran</div>
+          <div class="screen-body">
+            <div class="top-bar">
+              <strong style="font-size:18px;color:var(--emerald-deep)">Al-Quran</strong>
+              <div class="icon-btn">⚙️</div>
+            </div>
+            <div class="search-bar">🔍 Search surah, ayah, page, juz...</div>
+            <div style="display:flex;gap:8px;margin-bottom:16px">
+              <span class="lang-pill active" style="font-size:11px;padding:8px 14px">Surah</span>
+              <span class="lang-pill" style="font-size:11px;padding:8px 14px">Juz</span>
+              <span class="lang-pill" style="font-size:11px;padding:8px 14px">Page</span>
+            </div>
+            <div class="list-row"><div class="num">1</div><div class="meta"><strong>Al-Fatiha</strong><small>الفاتحة · 7 Ayahs · Page 1</small></div><span style="color:var(--gold)">★</span></div>
+            <div class="list-row"><div class="num">2</div><div class="meta"><strong>Al-Baqarah</strong><small>البقرة · 286 Ayahs · Page 2</small></div></div>
+            <div class="list-row"><div class="num">3</div><div class="meta"><strong>Al-Imran</strong><small>آل عمران · 200 Ayahs · Page 50</small></div></div>
+            <div class="list-row"><div class="num">36</div><div class="meta"><strong>Yasin</strong><small>يس · 83 Ayahs · Page 440</small></div><span style="color:var(--gold)">★</span></div>
+            <p style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center">13-Line Uthmani · Offline · 114 Surahs</p>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item active"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item"><div class="ni">✨</div>AI</div>
+            <div class="nav-item"><div class="ni">📕</div>Library</div>
+            <div class="nav-item"><div class="ni">☰</div>More</div>
+          </nav>
+        </div>
+        <p class="screen-label">4 · Quran — Surah List</p>
+      </div>
+
+      <!-- 5 QURAN READER -->
+      <div class="screen" data-id="quran-reader">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Al-Baqarah · Page 42</div>
+          <div class="screen-body">
+            <div class="toolbar">
+              <span class="tool">Aa Size</span>
+              <span class="tool">🌙 Dark</span>
+              <span class="tool">🔖 Bookmark</span>
+              <span class="tool">🖍 Highlight</span>
+              <span class="tool">📝 Notes</span>
+              <span class="tool">📋 Copy</span>
+              <span class="tool">↗ Share</span>
+              <span class="tool">▶ Recite</span>
+            </div>
+            <p class="ayah-block">الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنفِقُونَ</p>
+            <p class="translation">Who believe in the unseen, establish prayer, and spend from what We have provided them.</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+              <span class="ref-badge">2:3</span>
+              <span class="chip">Word Meaning</span>
+              <span class="chip">Tafsir</span>
+            </div>
+            <div class="card" style="margin-top:16px;background:#fffbeb;border-color:var(--gold-light)">
+              <strong style="font-size:12px;color:var(--gold)">Word: يُؤْمِنُونَ</strong>
+              <p style="font-size:12px;color:var(--muted);margin-top:4px">They believe — from iman (faith)</p>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">5 · Quran — Reader (13-Line Uthmani)</p>
+      </div>
+
+      <!-- 6 HADITH -->
+      <div class="screen" data-id="hadith">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Hadith</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Hadith Collections</strong>
+            <div class="search-bar" style="margin-top:12px">🔍 Search hadith...</div>
+            <div class="list-row"><div class="num" style="background:var(--gold-soft);color:var(--gold)">📗</div><div class="meta"><strong>Sahih Bukhari</strong><small>7,563 hadith · Offline</small></div></div>
+            <div class="list-row"><div class="num" style="background:var(--gold-soft);color:var(--gold)">📗</div><div class="meta"><strong>Sahih Muslim</strong><small>7,563 hadith · Offline</small></div></div>
+            <div class="list-row"><div class="num">📘</div><div class="meta"><strong>Abu Dawood</strong><small>5,274 hadith</small></div></div>
+            <div class="list-row"><div class="num">📘</div><div class="meta"><strong>Tirmidhi</strong><small>3,956 hadith</small></div></div>
+            <div class="list-row"><div class="num">📘</div><div class="meta"><strong>Nasai</strong><small>5,758 hadith</small></div></div>
+            <div class="list-row"><div class="num">📘</div><div class="meta"><strong>Ibn Majah</strong><small>4,341 hadith</small></div></div>
+            <div class="list-row"><div class="num">📘</div><div class="meta"><strong>Muwatta Imam Malik</strong><small>1,720 hadith</small></div></div>
+          </div>
+        </div>
+        <p class="screen-label">6 · Hadith Module</p>
+      </div>
+
+      <!-- 7 TAFSIR -->
+      <div class="screen" data-id="tafsir">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Tafsir · Al-Baqarah 2:3</div>
+          <div class="screen-body">
+            <div class="toolbar">
+              <span class="tool">🔖</span>
+              <span class="tool">📋 Copy</span>
+              <span class="tool">↗ Share</span>
+            </div>
+            <p class="ayah-block" style="font-size:16px">الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ...</p>
+            <p class="section-title">Ibn Kathir</p>
+            <p style="font-size:14px;line-height:1.7;color:var(--text)">These are the believers who have faith in what cannot be seen — they believe in Allah, His angels, His books, and His messengers...</p>
+            <span class="ref-badge">Tafsir Ibn Kathir · Vol 1</span>
+          </div>
+        </div>
+        <p class="screen-label">7 · Tafsir Reading</p>
+      </div>
+
+      <!-- 8 AI -->
+      <div class="screen" data-id="ai">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">AI Assistant</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Islamic AI Assistant</strong>
+            <div class="ai-warning">⚠ Answers ONLY from Quran, Hadith &amp; Tafsir in your offline library. Never invented. If no reference: "No authentic reference found."</div>
+            <div class="search-bar">Ask about prayer, fasting, charity...</div>
+            <div class="card card-emerald">
+              <p style="font-size:13px;font-weight:600;color:var(--emerald-deep)">You asked:</p>
+              <p style="font-size:14px;margin-top:4px">What is the reward of establishing prayer?</p>
+            </div>
+            <div class="card">
+              <p style="font-size:13px;line-height:1.6">Indeed, prayer prohibits immorality and wrongdoing...</p>
+              <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+                <span class="ref-badge">Quran · Al-Ankabut · 29:45</span>
+                <span class="ref-badge">Hadith · Sahih Muslim · 223</span>
+                <span class="ref-badge">Tafsir · Ibn Kathir</span>
+              </div>
+            </div>
+            <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Offline AI Search · Source-verified</p>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item active"><div class="ni">✨</div>AI</div>
+            <div class="nav-item"><div class="ni">📕</div>Library</div>
+            <div class="nav-item"><div class="ni">☰</div>More</div>
+          </nav>
+        </div>
+        <p class="screen-label">8 · AI Islamic Assistant</p>
+      </div>
+
+      <!-- 9 PRAYER -->
+      <div class="screen" data-id="prayer">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Prayer</div>
+          <div class="screen-body">
+            <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto">
+              <span class="lang-pill active" style="font-size:11px">Times</span>
+              <span class="lang-pill" style="font-size:11px">Qibla</span>
+              <span class="lang-pill" style="font-size:11px">Tasbeeh</span>
+              <span class="lang-pill" style="font-size:11px">Hijri</span>
+            </div>
+            <div class="card card-emerald">
+              <p style="text-align:center;font-size:13px;color:var(--muted)">Next prayer</p>
+              <p style="text-align:center;font-size:32px;font-weight:900;color:var(--emerald-deep)">Dhuhr · 12:45</p>
+              <p style="text-align:center;font-size:12px;color:var(--muted)">in 2h 14m</p>
+            </div>
+            <div class="card">
+              <div class="prayer-row"><span>Fajr</span><span class="time">05:12</span></div>
+              <div class="prayer-row active"><span>Dhuhr</span><span class="time">12:45</span></div>
+              <div class="prayer-row"><span>Asr</span><span class="time">16:20</span></div>
+              <div class="prayer-row"><span>Maghrib</span><span class="time">18:52</span></div>
+              <div class="prayer-row"><span>Isha</span><span class="time">20:15</span></div>
+            </div>
+            <div class="qibla-ring"><span>Qibla<br><small style="font-size:12px">258° W</small></span></div>
+            <p class="section-title" style="text-align:center">Tasbeeh</p>
+            <p class="tasbeeh-count">33</p>
+            <p style="text-align:center;font-size:14px;color:var(--muted)">SubhanAllah</p>
+            <div class="card" style="text-align:center;margin-top:12px">
+              <span class="chip">Hijri · 12 Ramadan 1447</span>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">9 · Prayer (Times · Qibla · Tasbeeh · Hijri)</p>
+      </div>
+
+      <!-- 10 LIBRARY -->
+      <div class="screen" data-id="library">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Library</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Islamic Library</strong>
+            <div class="search-bar" style="margin-top:12px">🔍 Search books...</div>
+            <p class="section-title">Categories</p>
+            <div class="grid-4" style="grid-template-columns:repeat(2,1fr)">
+              <div class="grid-item" style="padding:16px"><div class="icon">📖</div><span>Seerah</span></div>
+              <div class="grid-item" style="padding:16px"><div class="icon">⚖️</div><span>Fiqh</span></div>
+              <div class="grid-item" style="padding:16px"><div class="icon">💡</div><span>Aqeedah</span></div>
+              <div class="grid-item" style="padding:16px"><div class="icon">🤲</div><span>Duas</span></div>
+            </div>
+            <div class="list-row"><div class="num">📕</div><div class="meta"><strong>Riyad us Saliheen</strong><small>Downloaded · Offline</small></div></div>
+            <div class="list-row"><div class="num">📕</div><div class="meta"><strong>Fortress of the Muslim</strong><small>Downloaded · Offline</small></div></div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item"><div class="ni">✨</div>AI</div>
+            <div class="nav-item active"><div class="ni">📕</div>Library</div>
+            <div class="nav-item"><div class="ni">☰</div>More</div>
+          </nav>
+        </div>
+        <p class="screen-label">10 · Library</p>
+      </div>
+
+      <!-- 11 AUDIO -->
+      <div class="screen" data-id="audio">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Audio</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Quran Recitation</strong>
+            <div class="card card-gold" style="margin-top:16px">
+              <p style="font-size:12px;color:var(--muted)">Now playing</p>
+              <p style="font-size:16px;font-weight:800;margin-top:4px">Surah Al-Mulk · Mishary Alafasy</p>
+              <div style="height:4px;background:var(--border);border-radius:4px;margin:12px 0"><div style="width:45%;height:100%;background:var(--emerald);border-radius:4px"></div></div>
+              <div style="display:flex;justify-content:center;gap:24px;font-size:24px">⏮ ▶ ⏭</div>
+            </div>
+            <p class="section-title">Reciters (Offline)</p>
+            <div class="list-row"><div class="num">🎧</div><div class="meta"><strong>Mishary Alafasy</strong><small>114 surahs downloaded</small></div></div>
+            <div class="list-row"><div class="num">🎧</div><div class="meta"><strong>Abdul Basit</strong><small>Available offline</small></div></div>
+            <div class="list-row"><div class="num">🎧</div><div class="meta"><strong>Al-Sudais</strong><small>Available offline</small></div></div>
+          </div>
+        </div>
+        <p class="screen-label">11 · Audio</p>
+      </div>
+
+      <!-- 12 VIDEOS -->
+      <div class="screen" data-id="videos">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Videos</div>
+          <div class="screen-body">
+            <div class="future-badge">
+              <span class="chip">Coming in online version</span>
+              <div style="font-size:48px;margin:20px 0">🎬</div>
+              <strong style="font-size:18px;color:var(--emerald-deep)">Islamic Videos</strong>
+              <p style="margin-top:12px;font-size:14px;line-height:1.6">Reserved for future online release.<br>Offline app focuses on Quran, Hadith, Prayer &amp; Library.</p>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">12 · Videos (Future)</p>
+      </div>
+
+      <!-- 13 DOWNLOADS -->
+      <div class="screen" data-id="downloads">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Downloads</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Manage Downloads</strong>
+            <p style="font-size:12px;color:var(--muted);margin-top:4px">1.2 GB used · All offline</p>
+            <div class="list-row"><div class="meta"><strong>Quran Database</strong><small>quran.db · 48 MB</small></div><span style="color:#ef4444;font-size:12px;font-weight:700">Delete</span></div>
+            <div class="list-row"><div class="meta"><strong>Hadith Pack</strong><small>hadith.db · 120 MB</small></div><span style="color:#ef4444;font-size:12px;font-weight:700">Delete</span></div>
+            <div class="list-row"><div class="meta"><strong>Mishary Recitation</strong><small>audio · 890 MB</small></div><span style="color:#ef4444;font-size:12px;font-weight:700">Delete</span></div>
+            <button class="btn-outline" style="margin-top:24px">Export Backup</button>
+          </div>
+        </div>
+        <p class="screen-label">13 · Downloads Manager</p>
+      </div>
+
+      <!-- 14 SETTINGS -->
+      <div class="screen" data-id="settings">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Settings</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Settings</strong>
+            <div class="card" style="margin-top:16px">
+              <div class="setting-row"><span>Theme</span><span style="color:var(--muted)">Light ▾</span></div>
+              <div class="setting-row"><span>Language</span><span style="color:var(--muted)">English ▾</span></div>
+              <div class="setting-row"><span>Quran Font Size</span><span style="color:var(--muted)">Medium ▾</span></div>
+              <div class="setting-row"><span>Offline Data</span><div class="toggle"></div></div>
+              <div class="setting-row"><span>Backup</span><span style="color:var(--emerald);font-weight:700">Export</span></div>
+              <div class="setting-row"><span>Restore</span><span style="color:var(--emerald);font-weight:700">Import</span></div>
+              <div class="setting-row" style="border:none"><span>About ISLAM 307</span><span>→</span></div>
+            </div>
+            <p style="text-align:center;margin-top:24px;font-size:12px;color:var(--muted)">Version 1.0 · 100% Offline · SQLite</p>
+          </div>
+        </div>
+        <p class="screen-label">14 · Settings</p>
+      </div>
+
+      <!-- 15 MORE -->
+      <div class="screen" data-id="more">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">More</div>
+          <div class="screen-body">
+            <div class="list-row"><div class="num">🕌</div><div class="meta"><strong>Prayer &amp; Qibla</strong></div><span>→</span></div>
+            <div class="list-row"><div class="num">📿</div><div class="meta"><strong>Azkar</strong></div><span>→</span></div>
+            <div class="list-row"><div class="num">🤲</div><div class="meta"><strong>Duas</strong></div><span>→</span></div>
+            <div class="list-row"><div class="num">🔖</div><div class="meta"><strong>Bookmarks</strong></div><span>→</span></div>
+            <div class="list-row"><div class="num">📜</div><div class="meta"><strong>Reading History</strong></div><span>→</span></div>
+            <div class="list-row"><div class="num">⬇️</div><div class="meta"><strong>Downloads</strong></div><span>→</span></div>
+            <div class="list-row"><div class="num">⚙️</div><div class="meta"><strong>Settings</strong></div><span>→</span></div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item"><div class="ni">✨</div>AI</div>
+            <div class="nav-item"><div class="ni">📕</div>Library</div>
+            <div class="nav-item active"><div class="ni">☰</div>More</div>
+          </nav>
+        </div>
+        <p class="screen-label">15 · More Menu</p>
+      </div>
+    </div>
+  </div>
+
+  <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
+  <script>
+    const screens = [
+      { id: 'splash', label: 'Splash' },
+      { id: 'welcome', label: 'Welcome' },
+      { id: 'home', label: 'Home' },
+      { id: 'quran', label: 'Quran' },
+      { id: 'quran-reader', label: 'Quran Reader' },
+      { id: 'hadith', label: 'Hadith' },
+      { id: 'tafsir', label: 'Tafsir' },
+      { id: 'ai', label: 'AI Assistant' },
+      { id: 'prayer', label: 'Prayer' },
+      { id: 'library', label: 'Library' },
+      { id: 'audio', label: 'Audio' },
+      { id: 'videos', label: 'Videos' },
+      { id: 'downloads', label: 'Downloads' },
+      { id: 'settings', label: 'Settings' },
+      { id: 'more', label: 'More' },
+    ];
+    const nav = document.getElementById('nav');
+    const els = document.querySelectorAll('.screen');
+    screens.forEach((s, i) => {
+      const b = document.createElement('button');
+      b.textContent = s.label;
+      b.dataset.id = s.id;
+      if (i === 0) b.classList.add('active');
+      b.onclick = () => {
+        nav.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        els.forEach(el => el.classList.toggle('active', el.dataset.id === s.id));
+      };
+      nav.appendChild(b);
+    });
+  </script>
+</body>
+</html>
