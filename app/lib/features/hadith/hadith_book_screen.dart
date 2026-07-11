@@ -91,23 +91,37 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                     );
                   }
                   final h = _items[i];
-                  final kitab = (h['kitab'] ?? h['chapter_title'] ?? '').toString();
-                  final grade = (h['grade'] ?? '').toString();
-                  final subtitle = [
-                    if (kitab.isNotEmpty) kitab,
-                    if (grade.isNotEmpty) grade,
-                    'Language · Ravi · Reference',
-                  ].join(' · ');
+                  // Prefer localized kitab (Urdu default), e.g. کتاب وحی کے بیان میں — not English "Revelation".
+                  final detail = h['reference_detail'];
+                  String kitab = '';
+                  if (detail is Map) {
+                    kitab = (detail['kitab'] ?? '').toString();
+                    final byLang = detail['by_lang'];
+                    if (byLang is Map) {
+                      final ur = byLang['ur'];
+                      if (ur is Map) {
+                        final values = ur['values'];
+                        if (values is Map && (values['kitab']?.toString().isNotEmpty ?? false)) {
+                          kitab = values['kitab'].toString();
+                        }
+                      }
+                    }
+                  }
+                  if (kitab.isEmpty) {
+                    kitab = (h['kitab'] ?? h['chapter_title'] ?? '').toString();
+                  }
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: ListTile(
                       title: Text('Hadith ${h['hadith_number']}', style: const TextStyle(fontWeight: FontWeight.w800)),
                       subtitle: Text(
-                        subtitle,
+                        kitab.isEmpty ? 'Language · Ravi · Reference' : kitab,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
+                        textDirection: TextDirection.rtl,
+                        style: const TextStyle(height: 1.35),
                       ),
-                      isThreeLine: true,
+                      isThreeLine: kitab.length > 28,
                       onTap: () => context.push('/hadith/read/${widget.bookId}/${h['hadith_number']}'),
                     ),
                   );

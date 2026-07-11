@@ -249,7 +249,7 @@ main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
 }
 .hadith-number-row:hover { background: var(--emerald-soft); border-color: var(--emerald); }
 .hadith-number-row strong { color: var(--emerald-deep); font-size: 15px; }
-.hadith-number-row small { color: var(--muted); font-size: 12px; }
+.hadith-number-row small { color: var(--muted); font-size: 12px; line-height: 1.45; }
 .hadith-detail-top {
   display: grid;
   gap: 8px;

@@ -402,6 +402,22 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
+/** Kitab/book chapter name for list rows — prefer Urdu/Arabic from reference_detail. */
+function localizedKitabName(hadith, pack) {
+  const lang = state.hadithLang || 'ur';
+  const by = hadith.reference_detail?.by_lang?.[lang];
+  const fromLang = by?.values?.kitab || by?.book_name;
+  if (fromLang) return fromLang;
+  if (hadith.reference_detail?.kitab) return hadith.reference_detail.kitab;
+  return hadith.kitab || pack?.book?.en || '';
+}
+
+function localizedHadithStatus(hadith) {
+  const lang = state.hadithLang || 'ur';
+  const by = hadith.reference_detail?.by_lang?.[lang];
+  return by?.values?.status || hadith.reference_detail?.status || '';
+}
+
 function closeHadithModal() {
   const existing = document.getElementById('hadith-detail-modal');
   if (existing) existing.remove();
@@ -662,8 +678,11 @@ function paintHadithListPage(slug, pack, reset = false) {
     btn.type = 'button';
     btn.className = 'hadith-number-row';
     btn.dataset.n = String(h.n);
-    const statusText = h.reference_detail?.status ? ` · ${h.reference_detail.status}` : '';
-    btn.innerHTML = `<strong>Hadith ${h.n}</strong><small>${escapeHtml(h.kitab || pack.book.en)}${escapeHtml(statusText)}</small>`;
+    // List subtitle = localized kitab/book name (e.g. کتاب وحی کے بیان میں), not English "Revelation".
+    const kitabName = localizedKitabName(h, pack);
+    const statusText = localizedHadithStatus(h) ? ` · ${localizedHadithStatus(h)}` : '';
+    const rtl = (state.hadithLang || 'ur') !== 'en';
+    btn.innerHTML = `<strong>Hadith ${h.n}</strong><small${rtl ? ' dir="rtl"' : ''}>${escapeHtml(kitabName)}${escapeHtml(statusText)}</small>`;
     btn.onclick = () => openHadithDetail(slug, h.n);
     frag.appendChild(btn);
   }
