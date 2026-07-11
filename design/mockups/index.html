@@ -88,9 +88,9 @@
             </div>
             <p class="section-title">Quick Access</p>
             <div class="grid-4">
-              <div class="grid-item" role="button" tabindex="0" data-goto="quran"><div class="icon">📖</div><span>Quran</span></div>
-              <div class="grid-item" role="button" tabindex="0" data-goto="hadith"><div class="icon">📜</div><span>Hadith</span></div>
-              <div class="grid-item" role="button" tabindex="0" data-goto="tafsir"><div class="icon">📚</div><span>Tafsir</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#quran"><div class="icon">📖</div><span>Quran</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#hadith"><div class="icon">📜</div><span>Hadith</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#tafsir"><div class="icon">📚</div><span>Tafsir</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="ai"><div class="icon">✨</div><span>AI</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🕌</div><span>Prayer</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🧭</div><span>Qibla</span></div>
@@ -130,30 +130,27 @@
           <div class="screen-body">
             <div class="top-bar">
               <strong style="font-size:18px;color:var(--emerald-deep)">Al-Quran</strong>
-              <div class="icon-btn">⚙️</div>
+              <a class="icon-btn" href="../../preview/library/index.html#quran" title="Open full library" style="text-decoration:none;display:flex;align-items:center;justify-content:center">↗</a>
             </div>
-            <div class="search-bar">🔍 Search surah, ayah, page, juz...</div>
-            <div style="display:flex;gap:8px;margin-bottom:16px">
+            <input id="mockup-quran-search" class="search-bar" type="search" placeholder="🔍 Search all 114 surahs..." style="width:100%;border:0;outline:none;font:inherit" />
+            <div style="display:flex;gap:8px;margin-bottom:12px">
               <span class="lang-pill active" style="font-size:11px;padding:8px 14px">Surah</span>
-              <span class="lang-pill" style="font-size:11px;padding:8px 14px">Juz</span>
-              <span class="lang-pill" style="font-size:11px;padding:8px 14px">Page</span>
+              <a class="lang-pill" style="font-size:11px;padding:8px 14px;text-decoration:none" href="../../preview/library/index.html#quran">Full Reader</a>
             </div>
-            <div class="list-row" data-goto="quran-reader"><div class="num">1</div><div class="meta"><strong>Al-Fatiha</strong><small>الفاتحة · 7 Ayahs · Page 1</small></div><span style="color:var(--gold)">★</span></div>
-            <div class="list-row" data-goto="quran-reader"><div class="num">2</div><div class="meta"><strong>Al-Baqarah</strong><small>البقرة · 286 Ayahs · Page 2</small></div></div>
-            <div class="list-row" data-goto="quran-reader"><div class="num">3</div><div class="meta"><strong>Al-Imran</strong><small>آل عمران · 200 Ayahs · Page 50</small></div></div>
-            <div class="list-row" data-goto="quran-reader"><div class="num">36</div><div class="meta"><strong>Yasin</strong><small>يس · 83 Ayahs · Page 440</small></div><span style="color:var(--gold)">★</span></div>
-            <p style="margin-top:12px;text-align:center"><a class="btn-primary" style="display:inline-block;width:auto;padding:10px 18px;text-decoration:none" href="../../preview/library/index.html">Open full Quran library</a></p>
-            <p style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center">13-Line Uthmani · Offline · 114 Surahs</p>
+            <div id="mockup-surah-list">
+              <p style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0">Loading 114 surahs…</p>
+            </div>
+            <p style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center">Tap any surah to open Arabic + Urdu + English</p>
           </div>
           <nav class="bottom-nav">
             <div class="nav-item" data-goto="home"><div class="ni">🏠</div>Home</div>
             <div class="nav-item active" data-goto="quran"><div class="ni">📖</div>Quran</div>
-            <div class="nav-item" data-goto="ai"><div class="ni">✨</div>AI</div>
-            <div class="nav-item"><div class="ni">📕</div>Library</div>
-            <div class="nav-item"><div class="ni">☰</div>More</div>
+            <div class="nav-item" data-open="../../preview/library/index.html#hadith"><div class="ni">📜</div>Hadith</div>
+            <div class="nav-item" data-open="../../preview/library/index.html#tafsir"><div class="ni">📚</div>Tafsir</div>
+            <div class="nav-item" data-goto="more"><div class="ni">☰</div>More</div>
           </nav>
         </div>
-        <p class="screen-label">4 · Quran — Surah List</p>
+        <p class="screen-label">4 · Quran — All 114 Surahs (live)</p>
       </div>
 
       <!-- 5 QURAN READER -->
@@ -497,7 +494,7 @@
 
     // Wire remaining bottom navs that are static in other screens
     document.querySelectorAll('.bottom-nav .nav-item').forEach((item) => {
-      if (item.hasAttribute('data-goto')) return;
+      if (item.hasAttribute('data-goto') || item.hasAttribute('data-open')) return;
       const label = (item.textContent || '').trim().toLowerCase();
       const map = { home: 'home', quran: 'quran', ai: 'ai', library: 'library', more: 'more' };
       for (const [key, id] of Object.entries(map)) {
@@ -507,6 +504,48 @@
         }
       }
     });
+
+    // Live-load all 114 surahs into the Quran mockup screen
+    let allSurahs = [];
+    const surahListEl = document.getElementById('mockup-surah-list');
+    const surahSearch = document.getElementById('mockup-quran-search');
+
+    function renderMockupSurahs(filter = '') {
+      if (!surahListEl) return;
+      const q = filter.trim().toLowerCase();
+      const rows = allSurahs.filter((s) =>
+        !q ||
+        String(s.n) === q ||
+        (s.en || '').toLowerCase().includes(q) ||
+        (s.ar || '').includes(filter)
+      );
+      surahListEl.innerHTML = rows.map((s) => `
+        <a class="list-row" href="../../preview/library/index.html?surah=${s.n}#quran" style="text-decoration:none;color:inherit">
+          <div class="num">${s.n}</div>
+          <div class="meta"><strong>${s.en}</strong><small>${s.ar} · ${s.ayahs} Ayahs · ${s.place || ''}</small></div>
+          <span style="color:var(--emerald);font-weight:800">→</span>
+        </a>
+      `).join('') || '<p style="text-align:center;color:var(--muted);padding:16px">No surah match</p>';
+    }
+
+    async function loadMockupSurahs() {
+      if (!surahListEl) return;
+      try {
+        const res = await fetch('../../preview/library/data/quran/surahs.json');
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        allSurahs = data.surahs || [];
+        renderMockupSurahs();
+      } catch (err) {
+        surahListEl.innerHTML = `<p style="text-align:center;color:#b45309;padding:16px">Could not load surahs. <a href="../../preview/library/index.html#quran">Open full library</a></p>`;
+      }
+    }
+
+    if (surahSearch) {
+      surahSearch.addEventListener('input', (e) => renderMockupSurahs(e.target.value));
+      surahSearch.addEventListener('click', (e) => e.stopPropagation());
+    }
+    loadMockupSurahs();
 
     const hash = (location.hash || '').replace(/^#/, '');
     if (hash) goTo(hash);

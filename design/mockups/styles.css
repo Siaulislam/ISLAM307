@@ -260,6 +260,17 @@ body {
 .card[role="button"] {
   cursor: pointer;
 }
+#mockup-surah-list {
+  max-height: 420px;
+  overflow: auto;
+  padding-right: 2px;
+}
+#mockup-surah-list .list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
 
 .top-bar {
   display: flex;

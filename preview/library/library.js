@@ -69,6 +69,10 @@ async function openSurah(n, button) {
   if (button) button.classList.add('active');
   const surah = state.surahs.find((s) => s.n === n);
   const ayahs = state.ayahsBySurah.get(n) || [];
+  if (!surah) {
+    $('ayah-view').innerHTML = `<p class="empty">Surah ${n} not found.</p>`;
+    return;
+  }
   $('ayah-view').innerHTML = `
     <p class="status">${surah.en} · ${surah.ar} · ${ayahs.length} ayahs</p>
     ${ayahs.map((a) => `
@@ -80,6 +84,13 @@ async function openSurah(n, button) {
       </div>
     `).join('')}
   `;
+  if (history.replaceState) {
+    const url = new URL(location.href);
+    url.searchParams.set('surah', String(n));
+    url.hash = 'quran';
+    history.replaceState(null, '', url.toString());
+  }
+  $('ayah-view').scrollTop = 0;
 }
 
 function renderHadithBooks() {
@@ -193,8 +204,14 @@ async function boot() {
     renderSurahList();
     renderHadithBooks();
     renderTafsirSources();
+    const params = new URLSearchParams(location.search);
+    const surahParam = Number(params.get('surah') || 0);
     const tab = (location.hash || '#quran').replace(/^#/, '');
     setTab(['quran', 'hadith', 'tafsir'].includes(tab) ? tab : 'quran');
+    if (surahParam >= 1 && surahParam <= 114) {
+      const btn = Array.from($('surah-list').children).find((el) => el.textContent.startsWith(`${surahParam}.`));
+      await openSurah(surahParam, btn || null);
+    }
   } catch (err) {
     document.querySelector('main').innerHTML = `<p class="empty">Library data missing. Run <code>python tools/design/export_preview_library.py</code> then refresh.</p><pre>${err.message}</pre>`;
   }
