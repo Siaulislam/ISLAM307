@@ -117,6 +117,58 @@ class HadithRepository {
     return _enrich(rows.first);
   }
 
+  /// Lightweight ordered numbers for a chapter (Hadith Reader navigation).
+  Future<List<int>> hadithNumbersForChapter(int bookId, int chapterId) async {
+    final db = await _registry.open('hadith');
+    final rows = await db.query(
+      'hadiths',
+      columns: ['hadith_number'],
+      where: 'book_id = ? AND chapter_id = ?',
+      whereArgs: [bookId, chapterId],
+      orderBy: 'hadith_number ASC',
+    );
+    return rows.map((r) => r['hadith_number'] as int).toList();
+  }
+
+  /// First hadith number in a chapter, if any.
+  Future<int?> firstHadithNumberForChapter(int bookId, int chapterId) async {
+    final nums = await hadithNumbersForChapter(bookId, chapterId);
+    return nums.isEmpty ? null : nums.first;
+  }
+
+  Future<int?> adjacentHadithNumber(
+    int bookId,
+    int hadithNumber, {
+    required bool next,
+    int? chapterId,
+  }) async {
+    final db = await _registry.open('hadith');
+    if (chapterId != null) {
+      final rows = await db.query(
+        'hadiths',
+        columns: ['hadith_number'],
+        where: next
+            ? 'book_id = ? AND chapter_id = ? AND hadith_number > ?'
+            : 'book_id = ? AND chapter_id = ? AND hadith_number < ?',
+        whereArgs: [bookId, chapterId, hadithNumber],
+        orderBy: next ? 'hadith_number ASC' : 'hadith_number DESC',
+        limit: 1,
+      );
+      if (rows.isEmpty) return null;
+      return rows.first['hadith_number'] as int;
+    }
+    final rows = await db.query(
+      'hadiths',
+      columns: ['hadith_number'],
+      where: next ? 'book_id = ? AND hadith_number > ?' : 'book_id = ? AND hadith_number < ?',
+      whereArgs: [bookId, hadithNumber],
+      orderBy: next ? 'hadith_number ASC' : 'hadith_number DESC',
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return rows.first['hadith_number'] as int;
+  }
+
   Future<List<Map<String, dynamic>>> gradesForHadith(int hadithId, {String? legacyGrade}) async {
     final db = await _registry.open('hadith');
     if (await _supportsGradeTable(db)) {

@@ -11,6 +11,10 @@ class TtsService {
   final FlutterTts _tts = FlutterTts();
   bool _ready = false;
   List<dynamic> _languages = const [];
+  double _rateMultiplier = 1.0;
+  bool _paused = false;
+
+  bool get isPaused => _paused;
 
   Future<void> _ensure() async {
     if (_ready) return;
@@ -23,7 +27,39 @@ class TtsService {
     _ready = true;
   }
 
-  Future<void> stop() => _tts.stop();
+  /// Multiplier applied on top of a calm base rate (0.75 / 1 / 1.25 / 1.5).
+  Future<void> setRateMultiplier(double multiplier) async {
+    _rateMultiplier = multiplier.clamp(0.5, 2.0);
+    await _ensure();
+    try {
+      await _tts.setSpeechRate(_effectiveRate(forArabic: false));
+    } catch (_) {}
+  }
+
+  double _effectiveRate({required bool forArabic}) {
+    final base = forArabic ? 0.34 : 0.42;
+    return (base * _rateMultiplier).clamp(0.2, 0.9);
+  }
+
+  Future<void> stop() async {
+    _paused = false;
+    await _tts.stop();
+  }
+
+  Future<void> pause() async {
+    try {
+      await _tts.pause();
+      _paused = true;
+    } catch (_) {
+      await stop();
+    }
+  }
+
+  Future<void> resume() async {
+    // flutter_tts has no universal resume; re-speak is handled by callers when needed.
+    // On platforms that support pause, speaking may continue after pause() returns speaking.
+    _paused = false;
+  }
 
   Future<bool> isLanguageAvailable(String language) async {
     await _ensure();
@@ -46,21 +82,33 @@ class TtsService {
   }
 
   /// Returns false when the offline voice appears missing.
-  Future<bool> speakOffline(String text, {String language = 'en-US'}) async {
+  Future<bool> speakOffline(
+    String text, {
+    String language = 'en-US',
+    double? rateMultiplier,
+  }) async {
     final clean = text.trim();
     if (clean.isEmpty) return true;
     await _ensure();
     final available = await isLanguageAvailable(language);
     if (!available) return false;
+    if (rateMultiplier != null) {
+      _rateMultiplier = rateMultiplier.clamp(0.5, 2.0);
+    }
+    final forArabic = language.toLowerCase().startsWith('ar');
     await _tts.stop();
+    _paused = false;
     await _tts.setLanguage(language);
-    await _tts.setSpeechRate(0.42);
+    await _tts.setSpeechRate(_effectiveRate(forArabic: forArabic));
+    try {
+      await _tts.setPitch(forArabic ? 0.95 : 1.0);
+    } catch (_) {}
     await _tts.speak(clean);
     return true;
   }
 
-  Future<void> speak(String text, {String language = 'en-US'}) async {
-    await speakOffline(text, language: language);
+  Future<void> speak(String text, {String language = 'en-US', double? rateMultiplier}) async {
+    await speakOffline(text, language: language, rateMultiplier: rateMultiplier);
   }
 
   Future<void> speakSequence(List<({String text, String language})> parts) async {
@@ -96,6 +144,7 @@ class TtsService {
     final code = language.toLowerCase();
     if (code.startsWith('ar')) return 'Arabic';
     if (code.startsWith('ur')) return 'Urdu';
+    if (code.startsWith('hi')) return 'Hindi';
     if (code.startsWith('en')) return 'English';
     return language;
   }

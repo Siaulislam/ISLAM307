@@ -58,7 +58,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) {
           final bookId = int.parse(state.pathParameters['bookId']!);
           final hadithNumber = int.parse(state.pathParameters['hadithNumber']!);
-          return HadithDetailScreen(bookId: bookId, hadithNumber: hadithNumber);
+          final chapterId = int.tryParse(state.uri.queryParameters['chapterId'] ?? '');
+          return HadithDetailScreen(
+            bookId: bookId,
+            hadithNumber: hadithNumber,
+            chapterId: chapterId,
+          );
         },
       ),
       GoRoute(path: '/tafsir', builder: (_, __) => const TafsirScreen()),

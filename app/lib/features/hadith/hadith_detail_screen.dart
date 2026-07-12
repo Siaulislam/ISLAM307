@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
 import '../../core/repositories/hadith_repository.dart';
 import '../../core/theme/islam307_theme.dart';
 
+/// Full Hadith Reader — opens directly after selecting a book/topic.
+/// Arabic always visible; translation language is independent; separate Arabic vs translation audio.
 class HadithDetailScreen extends StatefulWidget {
-  const HadithDetailScreen({super.key, required this.bookId, required this.hadithNumber});
+  const HadithDetailScreen({
+    super.key,
+    required this.bookId,
+    required this.hadithNumber,
+    this.chapterId,
+  });
+
   final int bookId;
   final int hadithNumber;
+  final int? chapterId;
 
   @override
   State<HadithDetailScreen> createState() => _HadithDetailScreenState();
@@ -16,50 +28,145 @@ class HadithDetailScreen extends StatefulWidget {
 
 class _HadithDetailScreenState extends State<HadithDetailScreen> {
   final _repo = HadithRepository(DatabaseRegistry.instance);
+  final _scroll = ScrollController();
+
   Map<String, dynamic>? _hadith;
+  List<int> _numbers = const [];
+  int _index = 0;
   bool _loading = true;
-  String _lang = 'ur'; // ur | en | ar
+  String _lang = 'ur'; // ur | en | hi
   String _audioMode = 'ibarat'; // ibarat | translation
   bool _speaking = false;
+  bool _paused = false;
+  double _speechRate = 1.0;
+  bool _bookmarked = false;
+  String _note = '';
+  int? _prevNumber;
+  int? _nextNumber;
 
   static const _langOptions = [
     ('ur', 'Urdu'),
     ('en', 'English'),
-    ('ar', 'Arabic'),
+    ('hi', 'Hindi'),
   ];
+
+  static const _rates = [0.75, 1.0, 1.25, 1.5];
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _bootstrap();
   }
 
-  Future<void> _load() async {
+  @override
+  void dispose() {
+    TtsService.instance.stop();
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(covariant HadithDetailScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.hadithNumber != widget.hadithNumber ||
+        oldWidget.bookId != widget.bookId ||
+        oldWidget.chapterId != widget.chapterId) {
+      _loadCurrent();
+    }
+  }
+
+  Future<void> _bootstrap() async {
+    final prefs = await SharedPreferences.getInstance();
+    _lang = prefs.getString('i307_hadith_lang') ?? 'ur';
+    if (_lang != 'ur' && _lang != 'en' && _lang != 'hi') _lang = 'ur';
+    _audioMode = prefs.getString('i307_hadith_audio_mode') ?? 'ibarat';
+    _speechRate = prefs.getDouble('i307_hadith_rate') ?? 1.0;
+    if (!_rates.contains(_speechRate)) _speechRate = 1.0;
+
+    if (widget.chapterId != null) {
+      _numbers = await _repo.hadithNumbersForChapter(widget.bookId, widget.chapterId!);
+      final i = _numbers.indexOf(widget.hadithNumber);
+      _index = i >= 0 ? i : 0;
+    }
+    await _loadCurrent();
+  }
+
+  Future<void> _loadCurrent() async {
+    setState(() => _loading = true);
     final row = await _repo.hadith(widget.bookId, widget.hadithNumber);
+    final chapterId = widget.chapterId ?? (row?['chapter_id'] as int?);
+
+    if (widget.chapterId != null && _numbers.isNotEmpty) {
+      final i = _numbers.indexOf(widget.hadithNumber);
+      _index = i >= 0 ? i : 0;
+      _prevNumber = _index > 0 ? _numbers[_index - 1] : null;
+      _nextNumber = _index < _numbers.length - 1 ? _numbers[_index + 1] : null;
+    } else {
+      _prevNumber = await _repo.adjacentHadithNumber(
+        widget.bookId,
+        widget.hadithNumber,
+        next: false,
+        chapterId: chapterId,
+      );
+      _nextNumber = await _repo.adjacentHadithNumber(
+        widget.bookId,
+        widget.hadithNumber,
+        next: true,
+        chapterId: chapterId,
+      );
+      if (chapterId != null && _numbers.isEmpty) {
+        _numbers = await _repo.hadithNumbersForChapter(widget.bookId, chapterId);
+        final i = _numbers.indexOf(widget.hadithNumber);
+        _index = i >= 0 ? i : 0;
+      }
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final key = _bookmarkKey(widget.bookId, widget.hadithNumber);
+    _bookmarked = prefs.getBool(key) ?? false;
+    _note = prefs.getString('${key}_note') ?? '';
+
     if (!mounted) return;
     setState(() {
       _hadith = row;
       _loading = false;
+      _speaking = false;
+      _paused = false;
     });
+    if (_scroll.hasClients) _scroll.jumpTo(0);
   }
+
+  String _bookmarkKey(int bookId, int n) => 'hadith_bm_${bookId}_$n';
 
   String _translation() {
     final h = _hadith;
     if (h == null) return '';
     if (_lang == 'en') return (h['text_en'] as String?) ?? '';
-    if (_lang == 'ar') return (h['text_ar'] as String?) ?? '';
+    if (_lang == 'hi') return (h['text_hi'] as String?) ?? (h['text_hindi'] as String?) ?? '';
     return (h['text_ur'] as String?) ?? '';
   }
 
   String _ttsLangCode(String lang) {
     if (lang == 'ur') return 'ur-PK';
     if (lang == 'ar') return 'ar-SA';
+    if (lang == 'hi') return 'hi-IN';
     return 'en-US';
   }
 
-  Future<void> _playAudio() async {
+  Future<void> _persistLang() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('i307_hadith_lang', _lang);
+    await prefs.setString('i307_hadith_audio_mode', _audioMode);
+    await prefs.setDouble('i307_hadith_rate', _speechRate);
+  }
+
+  Future<void> _playAudio({bool replay = false}) async {
     final h = _hadith;
     if (h == null) return;
+    if (_paused && !replay) {
+      // Device TTS often cannot resume; restart current track.
+      _paused = false;
+    }
     final ibarat = ((h['text_ar'] as String?) ?? '').trim();
     final translation = _translation().trim();
     final text = _audioMode == 'translation' ? translation : ibarat;
@@ -67,108 +174,123 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     if (text.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No authenticated text available for this audio mode.')),
+        const SnackBar(content: Text('No authentic reference found.')),
       );
       return;
     }
-    setState(() => _speaking = true);
+    setState(() {
+      _speaking = true;
+      _paused = false;
+    });
     try {
-      await TtsService.instance.speak(text, language: _ttsLangCode(voiceLang));
+      final ok = await TtsService.instance.speakOffline(
+        text,
+        language: _ttsLangCode(voiceLang),
+        rateMultiplier: _speechRate,
+      );
+      if (!ok && mounted) {
+        await TtsService.instance.showInstallVoiceGuide(context, _ttsLangCode(voiceLang));
+      }
     } finally {
-      if (mounted) setState(() => _speaking = false);
+      if (mounted) {
+        setState(() {
+          _speaking = false;
+          _paused = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _pauseAudio() async {
+    await TtsService.instance.pause();
+    if (mounted) {
+      setState(() {
+        _paused = true;
+        _speaking = false;
+      });
     }
   }
 
   Future<void> _stopAudio() async {
     await TtsService.instance.stop();
-    if (mounted) setState(() => _speaking = false);
-  }
-
-  Map<String, String> _audioCopy() {
-    switch (_lang) {
-      case 'ur':
-        return {
-          'title': 'آڈیو',
-          'ibarat': 'عبارت',
-          'translation': 'ترجمہ',
-          'hint': _audioMode == 'ibarat' ? 'ہمیشہ عربی · اصل حدیث کا متن' : 'منتخب زبان میں بولے گا · اردو',
-          'play': 'چلائیں',
-          'stop': 'روکیں',
-        };
-      case 'ar':
-        return {
-          'title': 'الصوت',
-          'ibarat': 'العبارة',
-          'translation': 'الترجمة',
-          'hint': _audioMode == 'ibarat' ? 'دائماً بالعربية · نص الحديث الأصلي' : 'يتحدث بلغة الترجمة المختارة · العربية',
-          'play': 'تشغيل',
-          'stop': 'إيقاف',
-        };
-      default:
-        return {
-          'title': 'Audio',
-          'ibarat': 'Ibarat',
-          'translation': 'Translation',
-          'hint': _audioMode == 'ibarat'
-              ? 'Always Arabic · original Hadith text'
-              : 'Speaks the selected language · English',
-          'play': 'Play',
-          'stop': 'Stop',
-        };
+    if (mounted) {
+      setState(() {
+        _speaking = false;
+        _paused = false;
+      });
     }
   }
 
-  Map<String, String> _raviCopy() {
-    switch (_lang) {
-      case 'ur':
-        return {
-          'title': 'راوی',
-          'first': 'پہلا راوی',
-          'mid': 'پچھلے سے روایت',
-          'last': 'آخری راوی · نبی ﷺ سے',
-          'empty': 'اس حدیث کی مکمل سند ماخذ میں دستیاب نہیں۔',
-          'isnad': 'سند (مستند)',
-        };
-      case 'ar':
-        return {
-          'title': 'الرواة',
-          'first': 'أول راوٍ',
-          'mid': 'روى عن السابق',
-          'last': 'آخر راوٍ · عن النبي ﷺ',
-          'empty': 'سلسلة الرواة الكاملة غير متوفرة في الإسناد الموثق لهذا الحديث.',
-          'isnad': 'الإسناد (موثق)',
-        };
-      default:
-        return {
-          'title': 'Ravi',
-          'first': 'First narrator',
-          'mid': 'Narrated from previous',
-          'last': 'Last narrator · from the Prophet ﷺ',
-          'empty': 'Full ravi chain is not available in the authenticated isnad for this hadith.',
-          'isnad': 'Isnad (authenticated)',
-        };
-    }
+  void _goTo(int number) {
+    final chapter = widget.chapterId ?? _hadith?['chapter_id'];
+    final q = chapter == null ? '' : '?chapterId=$chapter';
+    context.replace('/hadith/read/${widget.bookId}/$number$q');
   }
 
-  List<String> _raviChain() {
-    final h = _hadith;
-    if (h == null) return const [];
-    final byLang = h['ravi_by_lang'];
-    if (byLang is Map && byLang[_lang] is List) {
-      return (byLang[_lang] as List).map((e) => '$e').where((e) => e.isNotEmpty).toList();
-    }
-    return (h['ravi_chain'] as List?)?.map((e) => '$e').toList() ?? const [];
+  Future<void> _toggleBookmark() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = _bookmarkKey(widget.bookId, widget.hadithNumber);
+    final next = !_bookmarked;
+    await prefs.setBool(key, next);
+    if (!mounted) return;
+    setState(() => _bookmarked = next);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(next ? 'Bookmarked' : 'Bookmark removed')),
+    );
   }
 
-  String _isnadText() {
+  Future<void> _editNote() async {
+    final controller = TextEditingController(text: _note);
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Note · Hadith ${widget.hadithNumber}'),
+        content: TextField(
+          controller: controller,
+          maxLines: 5,
+          decoration: const InputDecoration(hintText: 'Personal note (offline)'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Save')),
+        ],
+      ),
+    );
+    if (result == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    final key = '${_bookmarkKey(widget.bookId, widget.hadithNumber)}_note';
+    final trimmed = result.trim();
+    if (trimmed.isEmpty) {
+      await prefs.remove(key);
+    } else {
+      await prefs.setString(key, trimmed);
+    }
+    if (!mounted) return;
+    setState(() => _note = trimmed);
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Note saved')));
+  }
+
+  String _copyShareText() {
     final h = _hadith;
     if (h == null) return '';
-    final byLang = h['isnad_by_lang'];
-    if (byLang is Map && byLang[_lang] != null) {
-      return '${byLang[_lang]}'.trim();
-    }
-    if (_lang == 'ur') return (h['isnad_ur'] as String?)?.trim() ?? '';
-    return (h['isnad'] as String?)?.trim() ?? '';
+    return [
+      '${h['book_name'] ?? 'Hadith'} · Hadith ${widget.hadithNumber}',
+      h['kitab'] ?? '',
+      h['text_ar'] ?? '',
+      _translation(),
+      h['reference'] ?? '',
+    ].where((e) => '$e'.trim().isNotEmpty).join('\n\n');
+  }
+
+  Future<void> _copy() async {
+    await Clipboard.setData(ClipboardData(text: _copyShareText()));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied')));
+  }
+
+  Future<void> _share() async {
+    final text = _copyShareText();
+    await Share.share(text, subject: 'Hadith ${widget.hadithNumber}');
   }
 
   void _openRaviSheet() {
@@ -176,8 +298,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     if (h == null) return;
     final chain = _raviChain();
     final isnad = _isnadText();
-    final t = _raviCopy();
-    final rtl = _lang == 'ur' || _lang == 'ar';
+    final rtl = _lang == 'ur';
 
     showModalBottomSheet<void>(
       context: context,
@@ -191,10 +312,13 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${t['title']} · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  Text('Narrator / Ravi · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                   const SizedBox(height: 14),
                   if (chain.isEmpty)
-                    Text(t['empty']!, textDirection: rtl ? TextDirection.rtl : TextDirection.ltr)
+                    Text(
+                      'Full ravi chain is not available in the authenticated isnad for this hadith.',
+                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                    )
                   else
                     ...[
                       for (var i = 0; i < chain.length; i++)
@@ -216,19 +340,10 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      chain[i],
-                                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                                      style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
-                                    ),
-                                    Text(
-                                      i == 0 ? t['first']! : (i == chain.length - 1 ? t['last']! : t['mid']!),
-                                      style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
+                                child: Text(
+                                  chain[i],
+                                  textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                                  style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
                                 ),
                               ),
                             ],
@@ -237,15 +352,13 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                     ],
                   if (isnad.isNotEmpty) ...[
                     const SizedBox(height: 8),
-                    Text(t['isnad']!, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+                    const Text('Isnad (authenticated)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
                     const SizedBox(height: 8),
                     Text(
                       isnad,
                       textAlign: rtl ? TextAlign.right : TextAlign.left,
                       textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                      style: _lang == 'ar'
-                          ? Islam307Theme.arabic(size: 18)
-                          : (_lang == 'ur' ? Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)) : const TextStyle(height: 1.5)),
+                      style: _lang == 'ur' ? Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)) : const TextStyle(height: 1.5),
                     ),
                   ],
                 ],
@@ -262,8 +375,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     if (h == null) return;
     final detail = h['reference_detail'];
     List<(String, String)> rows = [];
-    if (detail is Map && detail['by_lang'] is Map && (detail['by_lang'] as Map)[_lang] is Map) {
-      final localized = Map<String, dynamic>.from((detail['by_lang'] as Map)[_lang] as Map);
+    if (detail is Map && detail['by_lang'] is Map && (detail['by_lang'] as Map)[_lang == 'hi' ? 'en' : _lang] is Map) {
+      final localized = Map<String, dynamic>.from((detail['by_lang'] as Map)[_lang == 'hi' ? 'en' : _lang] as Map);
       final rawRows = localized['rows'];
       if (rawRows is List) {
         for (final row in rawRows) {
@@ -287,8 +400,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       ];
     }
 
-    final title = {'en': 'Reference', 'ur': 'حوالہ', 'ar': 'المرجع'}[_lang] ?? 'Reference';
-
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -302,7 +413,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('$title · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white)),
+                  Text('Reference · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white)),
                   const SizedBox(height: 14),
                   Container(
                     decoration: BoxDecoration(
@@ -349,88 +460,325 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     );
   }
 
+  List<String> _raviChain() {
+    final h = _hadith;
+    if (h == null) return const [];
+    final byLang = h['ravi_by_lang'];
+    final langKey = _lang == 'hi' ? 'en' : _lang;
+    if (byLang is Map && byLang[langKey] is List) {
+      return (byLang[langKey] as List).map((e) => '$e').where((e) => e.isNotEmpty).toList();
+    }
+    return (h['ravi_chain'] as List?)?.map((e) => '$e').toList() ?? const [];
+  }
+
+  String _isnadText() {
+    final h = _hadith;
+    if (h == null) return '';
+    final byLang = h['isnad_by_lang'];
+    final langKey = _lang == 'hi' ? 'en' : _lang;
+    if (byLang is Map && byLang[langKey] != null) {
+      return '${byLang[langKey]}'.trim();
+    }
+    if (_lang == 'ur') return (h['isnad_ur'] as String?)?.trim() ?? '';
+    return (h['isnad'] as String?)?.trim() ?? '';
+  }
+
   @override
   Widget build(BuildContext context) {
     final h = _hadith;
     final translation = _translation();
-    final rtl = _lang == 'ur' || _lang == 'ar';
-    final raviLabel = {'en': 'Ravi', 'ur': 'راوی', 'ar': 'الرواة'}[_lang]!;
-    final refLabel = {'en': 'Reference', 'ur': 'حوالہ', 'ar': 'المرجع'}[_lang]!;
+    final rtl = _lang == 'ur' || _lang == 'hi';
+    final total = _numbers.isNotEmpty ? _numbers.length : 1;
+    final pos = _numbers.isNotEmpty ? (_index + 1) : 1;
+    final progress = pos / total;
+    final bookName = h?['book_name']?.toString() ?? 'Hadith';
+    final kitab = h?['kitab']?.toString() ?? '';
+    final grading = h == null ? null : HadithRepository.gradingSummary(h);
+    final narrator = (h?['ravi'] ?? h?['narrator'] ?? '').toString().trim();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Hadith ${widget.hadithNumber}', style: const TextStyle(fontWeight: FontWeight.w800)),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
-          : h == null
-              ? const Center(child: Text('Authentic hadith not found in offline database.'))
-              : ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+      body: SafeArea(
+        child: _loading
+            ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
+            : h == null
+                ? const Center(child: Text('Authentic hadith not found in offline database.'))
+                : GestureDetector(
+                    onHorizontalDragEnd: (details) {
+                      final v = details.primaryVelocity ?? 0;
+                      if (v < -400 && _nextNumber != null) {
+                        _stopAudio();
+                        _goTo(_nextNumber!);
+                      } else if (v > 400 && _prevNumber != null) {
+                        _stopAudio();
+                        _goTo(_prevNumber!);
+                      }
+                    },
+                    child: Column(
                       children: [
-                        FilledButton.tonal(onPressed: _openRaviSheet, child: Text(raviLabel)),
-                        FilledButton.tonal(onPressed: _openReferenceSheet, child: Text(refLabel)),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+                          child: Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                                onPressed: () => context.pop(),
+                              ),
+                              const Spacer(),
+                              IconButton(
+                                tooltip: 'Bookmark',
+                                onPressed: _toggleBookmark,
+                                icon: Icon(_bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded),
+                              ),
+                              IconButton(tooltip: 'Share', onPressed: _share, icon: const Icon(Icons.ios_share_rounded)),
+                              IconButton(
+                                tooltip: 'Search',
+                                onPressed: () => context.push('/search'),
+                                icon: const Icon(Icons.search_rounded),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView(
+                            controller: _scroll,
+                            padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                            children: [
+                              Text(
+                                bookName,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.04,
+                                  color: Islam307Theme.textMuted,
+                                ),
+                              ),
+                              if (kitab.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Text(
+                                  kitab,
+                                  textAlign: TextAlign.right,
+                                  textDirection: TextDirection.rtl,
+                                  style: Islam307Theme.arabic(size: 26, weight: FontWeight.w700, color: Islam307Theme.emeraldDeep, height: 1.55),
+                                ),
+                              ],
+                              const SizedBox(height: 6),
+                              Text(
+                                'Hadith $pos of $total',
+                                style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emerald, fontSize: 13),
+                              ),
+                              const SizedBox(height: 10),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(999),
+                                child: LinearProgressIndicator(
+                                  value: progress,
+                                  minHeight: 6,
+                                  backgroundColor: const Color(0xFFE2E8F0),
+                                  color: Islam307Theme.emerald,
+                                ),
+                              ),
+                              const SizedBox(height: 22),
+                              if ((h['text_ar'] as String?)?.isNotEmpty == true)
+                                Text(
+                                  '${h['text_ar']}',
+                                  textAlign: TextAlign.right,
+                                  textDirection: TextDirection.rtl,
+                                  style: Islam307Theme.arabic(size: 26, height: 2.15),
+                                )
+                              else
+                                const Text('Arabic text unavailable in authenticated source.', style: TextStyle(color: Colors.orange)),
+                              const SizedBox(height: 20),
+                              InputDecorator(
+                                decoration: const InputDecoration(
+                                  labelText: 'Translation',
+                                  border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                ),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<String>(
+                                    value: _lang,
+                                    isExpanded: true,
+                                    items: [
+                                      for (final opt in _langOptions)
+                                        DropdownMenuItem(value: opt.$1, child: Text(opt.$2, style: const TextStyle(fontWeight: FontWeight.w700))),
+                                    ],
+                                    onChanged: (v) async {
+                                      if (v == null) return;
+                                      await _stopAudio();
+                                      setState(() => _lang = v);
+                                      await _persistLang();
+                                    },
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                              if (translation.isEmpty)
+                                const Text('No authentic reference found.', style: TextStyle(color: Colors.orange, fontWeight: FontWeight.w700))
+                              else
+                                Text(
+                                  translation,
+                                  textAlign: rtl ? TextAlign.right : TextAlign.left,
+                                  textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                                  style: _lang == 'ur'
+                                      ? Islam307Theme.urdu(size: 18)
+                                      : const TextStyle(height: 1.7, fontSize: 16, fontWeight: FontWeight.w600, color: Islam307Theme.textPrimary),
+                                ),
+                              const SizedBox(height: 18),
+                              _audioBox(),
+                              const SizedBox(height: 18),
+                              _metaGrid(
+                                narrator: narrator.isEmpty ? '—' : narrator,
+                                grade: grading?.grade ?? HadithRepository.gradeNotVerified,
+                                scholar: grading?.scholar ?? '—',
+                                reference: h['reference']?.toString() ?? '—',
+                                book: bookName,
+                                chapter: kitab.isEmpty ? '—' : kitab,
+                                number: '${widget.hadithNumber}',
+                                source: h['reference_url']?.toString() ?? '',
+                              ),
+                              const SizedBox(height: 14),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: [
+                                  FilledButton.tonal(onPressed: _openRaviSheet, child: const Text('Ravi')),
+                                  FilledButton.tonal(onPressed: _openReferenceSheet, child: const Text('Reference')),
+                                  FilledButton.tonal(onPressed: _copy, child: const Text('Copy')),
+                                  FilledButton.tonal(onPressed: _share, child: const Text('Share')),
+                                  FilledButton.tonal(onPressed: _toggleBookmark, child: Text(_bookmarked ? 'Bookmarked' : 'Bookmark')),
+                                  FilledButton.tonal(onPressed: _editNote, child: Text(_note.isEmpty ? 'Notes' : 'Edit note')),
+                                ],
+                              ),
+                              if (_note.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Islam307Theme.emeraldSoft,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(_note, style: const TextStyle(color: Islam307Theme.emeraldDeep, height: 1.45)),
+                                ),
+                              ],
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: OutlinedButton(
+                                      onPressed: _prevNumber == null
+                                          ? null
+                                          : () {
+                                              _stopAudio();
+                                              _goTo(_prevNumber!);
+                                            },
+                                      style: OutlinedButton.styleFrom(
+                                        minimumSize: const Size.fromHeight(52),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                      ),
+                                      child: const Text('◀ Previous Hadith', style: TextStyle(fontWeight: FontWeight.w800)),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: FilledButton(
+                                      onPressed: _nextNumber == null
+                                          ? null
+                                          : () {
+                                              _stopAudio();
+                                              _goTo(_nextNumber!);
+                                            },
+                                      style: FilledButton.styleFrom(
+                                        minimumSize: const Size.fromHeight(52),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                      ),
+                                      child: const Text('Next Hadith ▶', style: TextStyle(fontWeight: FontWeight.w800)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Swipe left / right to navigate · Offline',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    InputDecorator(
-                      decoration: const InputDecoration(
-                        labelText: 'Language',
-                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(14))),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _lang,
-                          isExpanded: true,
-                          items: [
-                            for (final opt in _langOptions)
-                              DropdownMenuItem(value: opt.$1, child: Text(opt.$2, style: const TextStyle(fontWeight: FontWeight.w700))),
-                          ],
-                          onChanged: (v) async {
-                            if (v == null) return;
-                            await _stopAudio();
-                            setState(() => _lang = v);
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _audioBox(),
-                    const SizedBox(height: 16),
-                    if ((h['text_ar'] as String?)?.isNotEmpty == true)
-                      Text('${h['text_ar']}', textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 22))
-                    else
-                      const Text('Arabic text unavailable in authenticated source.', style: TextStyle(color: Colors.orange)),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 12),
-                    if (translation.isEmpty)
-                      Text(
-                        '${_lang.toUpperCase()} translation unavailable in authenticated source.',
-                        style: const TextStyle(color: Colors.orange),
-                      )
-                    else
-                      Text(
-                        translation,
-                        textAlign: rtl ? TextAlign.right : TextAlign.left,
-                        textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                        style: _lang == 'ar'
-                            ? Islam307Theme.arabic(size: 20)
-                            : (_lang == 'ur' ? Islam307Theme.urdu() : const TextStyle(height: 1.6, color: Islam307Theme.textMuted)),
-                      ),
-                  ],
+                  ),
+      ),
+    );
+  }
+
+  Widget _metaGrid({
+    required String narrator,
+    required String grade,
+    required String scholar,
+    required String reference,
+    required String book,
+    required String chapter,
+    required String number,
+    required String source,
+  }) {
+    final items = [
+      ('Narrator', narrator),
+      ('Grade', grade),
+      ('Scholar', scholar.isEmpty ? '—' : scholar),
+      ('Reference', reference),
+      ('Book', book),
+      ('Chapter', chapter),
+      ('Hadith Number', number),
+      ('Source', source.isEmpty ? 'sunnah.com' : 'sunnah.com'),
+    ];
+    return GridView.count(
+      crossAxisCount: 2,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 2.2,
+      children: [
+        for (final item in items)
+          Container(
+            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: Islam307Theme.cardBorder),
+              gradient: const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFFF8FAFC), Colors.white],
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.$1.toUpperCase(),
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.04, color: Islam307Theme.textMuted),
                 ),
+                const SizedBox(height: 4),
+                Expanded(
+                  child: Text(
+                    item.$2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textDirection: item.$1 == 'Chapter' || item.$1 == 'Narrator' ? TextDirection.rtl : TextDirection.ltr,
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, height: 1.3),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
     );
   }
 
   Widget _audioBox() {
-    final copy = _audioCopy();
+    final isTranslation = _audioMode == 'translation';
+    final langLabel = _lang == 'ur' ? 'Urdu' : (_lang == 'hi' ? 'Hindi' : 'English');
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
@@ -448,40 +796,13 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(copy['title']!, style: const TextStyle(fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep)),
-                    const SizedBox(height: 4),
-                    Text(copy['hint']!, style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.35)),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              FilledButton(
-                onPressed: _speaking ? null : _playAudio,
-                style: FilledButton.styleFrom(
-                  backgroundColor: Islam307Theme.emerald,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-                ),
-                child: Text(copy['play']!, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-              ),
-              const SizedBox(width: 6),
-              OutlinedButton(
-                onPressed: _stopAudio,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Islam307Theme.emeraldDeep,
-                  side: const BorderSide(color: Islam307Theme.cardBorder),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-                ),
-                child: Text(copy['stop']!, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-              ),
-            ],
+          const Text('Audio', style: TextStyle(fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep)),
+          const SizedBox(height: 4),
+          Text(
+            isTranslation
+                ? 'Translation audio · $langLabel only'
+                : 'Arabic audio · reads Arabic text only · clear & slow',
+            style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.35),
           ),
           const SizedBox(height: 10),
           Container(
@@ -492,10 +813,79 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
             ),
             child: Row(
               children: [
-                _audioModeChip('ibarat', copy['ibarat']!),
-                _audioModeChip('translation', copy['translation']!),
+                _audioModeChip('ibarat', 'Arabic Audio'),
+                _audioModeChip('translation', 'Translation Audio'),
               ],
             ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilledButton(
+                onPressed: _speaking ? null : () => _playAudio(),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Islam307Theme.emerald,
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                ),
+                child: Text(_paused ? '▶ Resume' : '▶ Play', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+              ),
+              OutlinedButton(
+                onPressed: _pauseAudio,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                ),
+                child: const Text('Pause', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+              ),
+              OutlinedButton(
+                onPressed: _stopAudio,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                ),
+                child: const Text('Stop', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+              ),
+              OutlinedButton(
+                onPressed: () => _playAudio(replay: true),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: Size.zero,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
+                ),
+                child: const Text('Replay', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              const Text('Speed', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+              for (final r in _rates)
+                ChoiceChip(
+                  label: Text('${r}×'),
+                  selected: _speechRate == r,
+                  onSelected: (_) async {
+                    await _stopAudio();
+                    setState(() => _speechRate = r);
+                    await _persistLang();
+                    await TtsService.instance.setRateMultiplier(r);
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Offline device TTS · highest-quality installed voice',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Islam307Theme.textMuted),
           ),
         ],
       ),
@@ -510,6 +900,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
           if (_audioMode == mode) return;
           await _stopAudio();
           setState(() => _audioMode = mode);
+          await _persistLang();
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 180),

@@ -66,6 +66,11 @@ const state = {
   hadithBrowseMode: localStorage.getItem('i307_hadith_browse') || 'topics',
   hadithTopicKey: null,
   hadithTopicTitle: '',
+  hadithTopicEn: '',
+  hadithReaderRows: [],
+  hadithReaderIndex: 0,
+  hadithSpeechRate: Number(localStorage.getItem('i307_hadith_rate') || 1),
+  hadithSpeechPaused: false,
   hadithListRows: [],
   hadithListShown: 0,
   // Paint in chunks so the full book (Bukhari/Muslim 7563, etc.) appears without a fake 120 cap.
@@ -551,17 +556,34 @@ function setHadithBrowseMode(mode) {
 }
 
 function openHadithTopic(slug, topic) {
+  const pack = state.hadithCache[slug];
+  if (!pack) return;
   state.hadithTopicKey = topic.key;
-  state.hadithTopicTitle = topic.title;
-  setHadithBrowseMode('topic');
-  renderHadithList(slug, state.hadithFilter);
+  state.hadithTopicTitle = topic.title || '';
+  state.hadithTopicEn = topic.en || '';
+  setHadithBrowseMode('topics');
+  const rows = (pack.hadiths || []).filter((h) => kitabTopicKey(h) === topic.key);
+  openHadithReader(slug, rows, 0);
 }
 
 function clearHadithTopic(slug) {
+  stopHadithSpeech();
   state.hadithTopicKey = null;
   state.hadithTopicTitle = '';
+  state.hadithTopicEn = '';
+  state.hadithReaderRows = [];
+  state.hadithReaderIndex = 0;
   setHadithBrowseMode('topics');
   renderHadithList(slug, state.hadithFilter);
+}
+
+function openHadithBookReader(slug) {
+  const pack = state.hadithCache[slug];
+  if (!pack) return;
+  state.hadithTopicKey = null;
+  state.hadithTopicTitle = '';
+  state.hadithTopicEn = '';
+  openHadithReader(slug, pack.hadiths || [], 0);
 }
 
 function closeHadithModal() {
@@ -689,17 +711,36 @@ function openReferenceDetail(hadith, book) {
 function translationFor(hadith, lang) {
   if (lang === 'en') return hadith.en || '';
   if (lang === 'ar') return hadith.ar || '';
+  if (lang === 'hi') return hadith.hi || hadith.hindi || '';
   return hadith.ur || '';
 }
 
 function stopHadithSpeech() {
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   state.ttsUtterance = null;
+  state.hadithSpeechPaused = false;
+}
+
+function pauseHadithSpeech() {
+  if (!window.speechSynthesis) return;
+  if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+    window.speechSynthesis.pause();
+    state.hadithSpeechPaused = true;
+  }
+}
+
+function resumeHadithSpeech() {
+  if (!window.speechSynthesis) return;
+  if (window.speechSynthesis.paused) {
+    window.speechSynthesis.resume();
+    state.hadithSpeechPaused = false;
+  }
 }
 
 function ttsLocaleFor(lang) {
   if (lang === 'ur') return 'ur-PK';
   if (lang === 'ar') return 'ar-SA';
+  if (lang === 'hi') return 'hi-IN';
   return 'en-US';
 }
 
@@ -707,17 +748,24 @@ function pickVoice(locale) {
   if (!window.speechSynthesis) return null;
   const voices = window.speechSynthesis.getVoices() || [];
   const primary = locale.slice(0, 2).toLowerCase();
-  return (
-    voices.find((v) => (v.lang || '').toLowerCase() === locale.toLowerCase()) ||
-    voices.find((v) => (v.lang || '').toLowerCase().startsWith(primary)) ||
-    null
-  );
+  const ranked = voices
+    .filter((v) => {
+      const code = (v.lang || '').toLowerCase();
+      return code === locale.toLowerCase() || code.startsWith(primary);
+    })
+    .sort((a, b) => {
+      const as = `${a.name} ${a.voiceURI}`.toLowerCase();
+      const bs = `${b.name} ${b.voiceURI}`.toLowerCase();
+      const score = (s) => (/(enhanced|premium|neural|natural|offline)/.test(s) ? 0 : 1);
+      return score(as) - score(bs);
+    });
+  return ranked[0] || null;
 }
 
 function speakHadithText(text, lang) {
   const clean = String(text || '').trim();
   if (!clean) {
-    toast('No authenticated text available for this audio mode.');
+    toast('No authentic reference found.');
     return;
   }
   if (!window.speechSynthesis) {
@@ -727,148 +775,248 @@ function speakHadithText(text, lang) {
   stopHadithSpeech();
   const utter = new SpeechSynthesisUtterance(clean);
   utter.lang = ttsLocaleFor(lang);
-  utter.rate = lang === 'ar' ? 0.88 : 0.95;
+  const speed = Number(state.hadithSpeechRate) || 1;
+  const base = lang === 'ar' ? 0.78 : 0.92;
+  utter.rate = Math.max(0.5, Math.min(1.6, base * speed));
+  utter.pitch = lang === 'ar' ? 0.95 : 1;
   const voice = pickVoice(utter.lang);
   if (voice) utter.voice = voice;
+  utter.onend = () => {
+    state.hadithSpeechPaused = false;
+    state.ttsUtterance = null;
+  };
   state.ttsUtterance = utter;
   window.speechSynthesis.speak(utter);
 }
 
-function audioModeCopy(lang) {
-  const map = {
-    en: {
-      title: 'Audio',
-      ibarat: 'Ibarat',
-      translation: 'Translation',
-      hintIbarat: 'Always Arabic · original Hadith text',
-      hintTranslation: `Speaks the selected language · ${lang === 'en' ? 'English' : (lang === 'ur' ? 'Urdu' : 'Arabic')}`,
-      play: 'Play',
-      stop: 'Stop',
-    },
-    ur: {
-      title: 'آڈیو',
-      ibarat: 'عبارت',
-      translation: 'ترجمہ',
-      hintIbarat: 'ہمیشہ عربی · اصل حدیث کا متن',
-      hintTranslation: 'منتخب زبان میں بولے گا · اردو',
-      play: 'چلائیں',
-      stop: 'روکیں',
-    },
-    ar: {
-      title: 'الصوت',
-      ibarat: 'العبارة',
-      translation: 'الترجمة',
-      hintIbarat: 'دائماً بالعربية · نص الحديث الأصلي',
-      hintTranslation: 'يتحدث بلغة الترجمة المختارة',
-      play: 'تشغيل',
-      stop: 'إيقاف',
-    },
+function openHadithReader(slug, rows, index) {
+  const pack = state.hadithCache[slug];
+  if (!pack || !rows.length) {
+    $('hadith-view').innerHTML = '<p class="empty">No authentic reference found.</p>';
+    return;
+  }
+  const safeIndex = Math.max(0, Math.min(index, rows.length - 1));
+  state.hadithSlug = slug;
+  state.hadithReaderRows = rows;
+  state.hadithReaderIndex = safeIndex;
+  const hadith = rows[safeIndex];
+  if (!['ur', 'en', 'hi'].includes(state.hadithLang)) state.hadithLang = 'ur';
+  const translationLang = state.hadithLang;
+  const translation = translationFor(hadith, translationLang);
+  const rtl = translationLang === 'ur' || translationLang === 'hi';
+  const total = rows.length;
+  const pos = safeIndex + 1;
+  const topicTitle = state.hadithTopicTitle || localizedKitabName(hadith, pack);
+  const topicEn = state.hadithTopicEn || hadith.kitab || '';
+  const grade = hadith.grade || hadith.reference_detail?.status || 'Grade not verified.';
+  const scholar = hadith.reference_detail?.scholar || hadith.reference_detail?.graded_by || '';
+  const narrator = (hadith.ravi || hadith.narrator || '').trim();
+  const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
+  const source = hadith.source_url || hadith.reference_detail?.source_url || `https://sunnah.com/${slug}:${hadith.n}`;
+  const progress = Math.round((pos / total) * 100);
+  const rates = [0.75, 1, 1.25, 1.5];
+  const audioMode = state.hadithAudioMode === 'translation' ? 'translation' : 'ibarat';
+
+  $('hadith-view').innerHTML = `
+    <article class="hadith-reader" id="hadith-reader">
+      <header class="hadith-reader-top">
+        <button type="button" class="ghost back-hadith" data-back>← Back</button>
+        <div class="hadith-reader-actions">
+          <button type="button" class="icon-btn" data-act="bookmark" title="Bookmark">Bookmark</button>
+          <button type="button" class="icon-btn" data-act="share" title="Share">Share</button>
+          <button type="button" class="icon-btn" data-act="search" title="Search">Search</button>
+        </div>
+      </header>
+      <div class="hadith-reader-heading">
+        <p class="hadith-reader-book">${escapeHtml(pack.book.en)}</p>
+        <h2 class="hadith-reader-kitab" dir="rtl">${escapeHtml(topicTitle)}</h2>
+        ${topicEn ? `<p class="hadith-reader-kitab-en">${escapeHtml(topicEn)}</p>` : ''}
+        <p class="hadith-reader-count">Hadith ${pos} of ${total}</p>
+        <div class="hadith-progress" aria-hidden="true"><span style="width:${progress}%"></span></div>
+      </div>
+
+      <section class="hadith-reader-arabic">
+        <p class="ar hadith-arabic" dir="rtl">${hadith.ar ? escapeHtml(hadith.ar) : 'Arabic text unavailable in authenticated source.'}</p>
+      </section>
+
+      <section class="hadith-reader-translation">
+        <label class="lang-dropdown">
+          <span>Translation</span>
+          <select id="hadith-lang-select" aria-label="Translation language">
+            <option value="ur" ${translationLang === 'ur' ? 'selected' : ''}>Urdu</option>
+            <option value="en" ${translationLang === 'en' ? 'selected' : ''}>English</option>
+            <option value="hi" ${translationLang === 'hi' ? 'selected' : ''}>Hindi</option>
+          </select>
+        </label>
+        <div class="hadith-translation ${rtl ? 'rtl' : ''}" dir="${rtl ? 'rtl' : 'ltr'}">
+          ${translation
+            ? `<p class="${translationLang === 'ur' ? 'ur' : 'en'}">${escapeHtml(translation)}</p>`
+            : '<p class="empty">No authentic reference found.</p>'}
+        </div>
+      </section>
+
+      <section class="hadith-audio-box hadith-reader-audio" aria-label="Hadith audio">
+        <div class="hadith-audio-head">
+          <div>
+            <strong>Audio</strong>
+            <p class="hadith-audio-hint">${audioMode === 'ibarat'
+              ? 'Arabic audio · reads Arabic text only · clear & slow'
+              : `Translation audio · ${translationLang === 'ur' ? 'Urdu' : (translationLang === 'hi' ? 'Hindi' : 'English')} only`}</p>
+          </div>
+        </div>
+        <div class="hadith-audio-modes" role="tablist" aria-label="Audio track">
+          <button type="button" role="tab" class="hadith-audio-mode ${audioMode === 'ibarat' ? 'active' : ''}" data-audio-mode="ibarat">Arabic Audio</button>
+          <button type="button" role="tab" class="hadith-audio-mode ${audioMode === 'translation' ? 'active' : ''}" data-audio-mode="translation">Translation Audio</button>
+        </div>
+        <div class="hadith-audio-actions hadith-audio-controls">
+          <button type="button" class="hadith-audio-play" data-audio="play">▶ Play</button>
+          <button type="button" class="hadith-audio-stop" data-audio="pause">Pause</button>
+          <button type="button" class="hadith-audio-stop" data-audio="stop">Stop</button>
+          <button type="button" class="hadith-audio-play" data-audio="replay">Replay</button>
+        </div>
+        <div class="hadith-speed" role="group" aria-label="Audio speed">
+          <span>Speed</span>
+          ${rates.map((r) => `<button type="button" class="speed-btn ${Number(state.hadithSpeechRate) === r ? 'active' : ''}" data-rate="${r}">${r}×</button>`).join('')}
+        </div>
+        <p class="hadith-audio-offline">Offline device TTS · highest-quality installed voice</p>
+      </section>
+
+      <section class="hadith-meta-grid">
+        <div><span>Narrator</span><strong dir="auto">${escapeHtml(narrator || '—')}</strong></div>
+        <div><span>Grade</span><strong>${escapeHtml(grade)}</strong></div>
+        <div><span>Scholar</span><strong>${escapeHtml(scholar || '—')}</strong></div>
+        <div><span>Reference</span><strong>${escapeHtml(ref)}</strong></div>
+        <div><span>Book</span><strong>${escapeHtml(pack.book.en)}</strong></div>
+        <div><span>Chapter</span><strong dir="auto">${escapeHtml(topicTitle)}</strong></div>
+        <div><span>Hadith Number</span><strong>${hadith.n}</strong></div>
+        <div><span>Source</span><strong><a href="${escapeHtml(source)}" target="_blank" rel="noopener">sunnah.com</a></strong></div>
+      </section>
+
+      <div class="hadith-reader-tools">
+        <button type="button" class="hadith-action" data-act="ravi">Ravi</button>
+        <button type="button" class="hadith-action" data-act="reference">Reference</button>
+        <button type="button" class="hadith-action" data-act="copy">Copy</button>
+        <button type="button" class="hadith-action" data-act="share">Share</button>
+        <button type="button" class="hadith-action" data-act="bookmark">Bookmark</button>
+        <button type="button" class="hadith-action" data-act="notes">Notes</button>
+      </div>
+
+      <nav class="hadith-nav">
+        <button type="button" class="hadith-nav-btn" data-nav="prev" ${safeIndex <= 0 ? 'disabled' : ''}>◀ Previous Hadith</button>
+        <button type="button" class="hadith-nav-btn primary" data-nav="next" ${safeIndex >= total - 1 ? 'disabled' : ''}>Next Hadith ▶</button>
+      </nav>
+    </article>
+  `;
+
+  const root = $('hadith-reader');
+  const rerender = (nextIndex) => openHadithReader(slug, rows, nextIndex);
+  root.querySelector('[data-back]').onclick = () => clearHadithTopic(slug);
+
+  root.querySelector('#hadith-lang-select').onchange = (e) => {
+    state.hadithLang = e.target.value;
+    localStorage.setItem('i307_hadith_lang', state.hadithLang);
+    stopHadithSpeech();
+    rerender(safeIndex);
   };
-  const base = map[lang] || map.en;
-  if (lang === 'ur') return base;
-  if (lang === 'ar') return base;
-  return {
-    ...map.en,
-    hintTranslation: `Speaks the selected language · ${lang === 'en' ? 'English' : (lang === 'ar' ? 'Arabic' : 'Urdu')}`,
+
+  root.querySelectorAll('[data-audio-mode]').forEach((btn) => {
+    btn.onclick = () => {
+      state.hadithAudioMode = btn.getAttribute('data-audio-mode') || 'ibarat';
+      localStorage.setItem('i307_hadith_audio_mode', state.hadithAudioMode);
+      stopHadithSpeech();
+      rerender(safeIndex);
+    };
+  });
+
+  const playCurrent = () => {
+    if (state.hadithAudioMode === 'translation') speakHadithText(translationFor(hadith, state.hadithLang), state.hadithLang);
+    else speakHadithText(hadith.ar || '', 'ar');
+  };
+  root.querySelector('[data-audio="play"]').onclick = () => {
+    if (state.hadithSpeechPaused) resumeHadithSpeech();
+    else playCurrent();
+  };
+  root.querySelector('[data-audio="pause"]').onclick = () => pauseHadithSpeech();
+  root.querySelector('[data-audio="stop"]').onclick = () => stopHadithSpeech();
+  root.querySelector('[data-audio="replay"]').onclick = () => playCurrent();
+  root.querySelectorAll('[data-rate]').forEach((btn) => {
+    btn.onclick = () => {
+      state.hadithSpeechRate = Number(btn.getAttribute('data-rate')) || 1;
+      localStorage.setItem('i307_hadith_rate', String(state.hadithSpeechRate));
+      stopHadithSpeech();
+      rerender(safeIndex);
+    };
+  });
+
+  root.querySelector('[data-nav="prev"]').onclick = () => {
+    if (safeIndex > 0) { stopHadithSpeech(); rerender(safeIndex - 1); $('hadith-view').scrollTop = 0; }
+  };
+  root.querySelector('[data-nav="next"]').onclick = () => {
+    if (safeIndex < total - 1) { stopHadithSpeech(); rerender(safeIndex + 1); $('hadith-view').scrollTop = 0; }
+  };
+
+  root.querySelector('[data-act="ravi"]').onclick = () => openRaviDetail(hadith);
+  root.querySelector('[data-act="reference"]').onclick = () => openReferenceDetail(hadith, pack.book);
+
+  const copyShareText = () => [
+    `${pack.book.en} · Hadith ${hadith.n}`,
+    topicTitle,
+    hadith.ar || '',
+    translation || '',
+    ref,
+  ].filter(Boolean).join('\n\n');
+
+  root.querySelectorAll('[data-act="copy"]').forEach((btn) => {
+    btn.onclick = async () => { await navigator.clipboard.writeText(copyShareText()); toast('Copied'); };
+  });
+  root.querySelectorAll('[data-act="share"]').forEach((btn) => {
+    btn.onclick = async () => {
+      const text = copyShareText();
+      if (navigator.share) { try { await navigator.share({ title: `${pack.book.en} ${hadith.n}`, text }); } catch {} }
+      else { await navigator.clipboard.writeText(text); toast('Share text copied'); }
+    };
+  });
+  root.querySelectorAll('[data-act="bookmark"]').forEach((btn) => {
+    btn.onclick = () => {
+      const lib = ensureUserLibrary();
+      const key = `hadith:${slug}:${hadith.n}`;
+      const i = lib.bookmarks.indexOf(key);
+      if (i >= 0) lib.bookmarks.splice(i, 1); else lib.bookmarks.push(key);
+      saveUserLibrary(lib);
+      toast(i >= 0 ? 'Bookmark removed' : 'Bookmarked');
+    };
+  });
+  root.querySelector('[data-act="notes"]').onclick = () => {
+    const lib = ensureUserLibrary();
+    const key = `hadith:${slug}:${hadith.n}`;
+    const next = prompt(`Note for ${pack.book.en} ${hadith.n}`, lib.notes[key] || '');
+    if (next === null) return;
+    if (!next.trim()) delete lib.notes[key]; else lib.notes[key] = next.trim();
+    saveUserLibrary(lib);
+    toast('Note saved');
+  };
+  root.querySelector('[data-act="search"]').onclick = () => { const input = $('hadith-search'); if (input) input.focus(); };
+
+  let touchX = null;
+  root.ontouchstart = (e) => { touchX = e.changedTouches[0].screenX; };
+  root.ontouchend = (e) => {
+    if (touchX == null) return;
+    const dx = e.changedTouches[0].screenX - touchX;
+    touchX = null;
+    if (Math.abs(dx) < 60) return;
+    if (dx < 0 && safeIndex < total - 1) { stopHadithSpeech(); rerender(safeIndex + 1); $('hadith-view').scrollTop = 0; }
+    else if (dx > 0 && safeIndex > 0) { stopHadithSpeech(); rerender(safeIndex - 1); $('hadith-view').scrollTop = 0; }
   };
 }
 
 function openHadithDetail(slug, hadithNumber) {
   const pack = state.hadithCache[slug];
   if (!pack) return;
-  const hadith = pack.hadiths.find((h) => Number(h.n) === Number(hadithNumber));
-  if (!hadith) {
-    $('hadith-view').innerHTML = `<p class="empty">Hadith ${hadithNumber} not found in authenticated source.</p>`;
-    return;
-  }
-  const lang = state.hadithLang;
-  const audioMode = state.hadithAudioMode === 'translation' ? 'translation' : 'ibarat';
-  const translation = translationFor(hadith, lang);
-  const rtl = lang === 'ur' || lang === 'ar';
-  const raviLabel = { en: 'Ravi', ur: 'راوی', ar: 'الرواة' }[lang] || 'Ravi';
-  const refLabel = { en: 'Reference', ur: 'حوالہ', ar: 'المرجع' }[lang] || 'Reference';
-  const a = audioModeCopy(lang);
-  const audioHint = audioMode === 'ibarat' ? a.hintIbarat : (
-    lang === 'ur' ? 'منتخب زبان میں بولے گا · اردو'
-      : (lang === 'ar' ? 'يتحدث بلغة الترجمة المختارة · العربية' : 'Speaks the selected language · English')
-  );
-  $('hadith-view').innerHTML = `
-    <div class="hadith-detail">
-      <div class="hadith-detail-top">
-        <button type="button" class="ghost back-hadith" data-back>&larr; ${escapeHtml(pack.book.en)} list</button>
-        <div class="meta-row"><span>Hadith ${hadith.n}</span><span>${hadith.grade ? escapeHtml(hadith.grade) : (hadith.reference_detail?.status || 'Grade not verified.')}</span></div>
-      </div>
-      <div class="hadith-actions">
-        <button type="button" class="hadith-action" data-act="ravi">${escapeHtml(raviLabel)}</button>
-        <button type="button" class="hadith-action" data-act="reference">${escapeHtml(refLabel)}</button>
-      </div>
-      <div class="hadith-control-row">
-        <label class="lang-dropdown">
-          <span>Language</span>
-          <select id="hadith-lang-select" aria-label="Hadith language">
-            <option value="ur" ${lang === 'ur' ? 'selected' : ''}>Urdu</option>
-            <option value="en" ${lang === 'en' ? 'selected' : ''}>English</option>
-            <option value="ar" ${lang === 'ar' ? 'selected' : ''}>Arabic</option>
-          </select>
-        </label>
-      </div>
-      <section class="hadith-audio-box" aria-label="Hadith audio">
-        <div class="hadith-audio-head">
-          <div>
-            <strong>${escapeHtml(a.title)}</strong>
-            <p class="hadith-audio-hint" id="hadith-audio-hint">${escapeHtml(audioHint)}</p>
-          </div>
-          <div class="hadith-audio-actions">
-            <button type="button" class="hadith-audio-play" id="hadith-audio-play" aria-label="Play">${escapeHtml(a.play)}</button>
-            <button type="button" class="hadith-audio-stop" id="hadith-audio-stop" aria-label="Stop">${escapeHtml(a.stop)}</button>
-          </div>
-        </div>
-        <div class="hadith-audio-modes" role="tablist" aria-label="Audio mode">
-          <button type="button" role="tab" class="hadith-audio-mode ${audioMode === 'ibarat' ? 'active' : ''}" data-audio-mode="ibarat" aria-selected="${audioMode === 'ibarat'}">${escapeHtml(a.ibarat)}</button>
-          <button type="button" role="tab" class="hadith-audio-mode ${audioMode === 'translation' ? 'active' : ''}" data-audio-mode="translation" aria-selected="${audioMode === 'translation'}">${escapeHtml(a.translation)}</button>
-        </div>
-      </section>
-      ${hadith.ar ? `<p class="ar hadith-arabic" dir="rtl">${escapeHtml(hadith.ar)}</p>` : '<p class="empty">Arabic text unavailable in authenticated source.</p>'}
-      <div class="hadith-translation ${rtl ? 'rtl' : ''}" dir="${rtl ? 'rtl' : 'ltr'}">
-        ${translation
-          ? `<p class="${lang === 'ar' ? 'ar' : (lang === 'ur' ? 'ur' : 'en')}">${escapeHtml(translation)}</p>`
-          : `<p class="empty">${lang.toUpperCase()} translation unavailable in authenticated source.</p>`}
-      </div>
-    </div>
-  `;
-  $('hadith-view').querySelector('[data-back]').onclick = () => {
-    stopHadithSpeech();
-    renderHadithList(slug, state.hadithFilter);
-  };
-  const langSelect = $('hadith-view').querySelector('#hadith-lang-select');
-  langSelect.onchange = () => {
-    state.hadithLang = langSelect.value;
-    localStorage.setItem('i307_hadith_lang', state.hadithLang);
-    stopHadithSpeech();
-    openHadithDetail(slug, hadithNumber);
-  };
-  $('hadith-view').querySelectorAll('[data-audio-mode]').forEach((btn) => {
-    btn.onclick = () => {
-      state.hadithAudioMode = btn.getAttribute('data-audio-mode') || 'ibarat';
-      localStorage.setItem('i307_hadith_audio_mode', state.hadithAudioMode);
-      stopHadithSpeech();
-      openHadithDetail(slug, hadithNumber);
-    };
-  });
-  const playBtn = $('hadith-audio-play');
-  const stopBtn = $('hadith-audio-stop');
-  if (playBtn) {
-    playBtn.onclick = () => {
-      if (state.hadithAudioMode === 'translation') {
-        speakHadithText(translationFor(hadith, state.hadithLang), state.hadithLang);
-      } else {
-        speakHadithText(hadith.ar || '', 'ar');
-      }
-    };
-  }
-  if (stopBtn) stopBtn.onclick = () => stopHadithSpeech();
-  $('hadith-view').querySelector('[data-act="ravi"]').onclick = () => openRaviDetail(hadith);
-  $('hadith-view').querySelector('[data-act="reference"]').onclick = () => openReferenceDetail(hadith, pack.book);
+  const rows = state.hadithTopicKey
+    ? (pack.hadiths || []).filter((h) => kitabTopicKey(h) === state.hadithTopicKey)
+    : (state.hadithReaderRows && state.hadithReaderRows.length ? state.hadithReaderRows : pack.hadiths);
+  const idx = rows.findIndex((h) => Number(h.n) === Number(hadithNumber));
+  openHadithReader(slug, rows.length ? rows : pack.hadiths, idx >= 0 ? idx : 0);
 }
 
 function renderHadithList(slug, filter = '') {
@@ -878,48 +1026,17 @@ function renderHadithList(slug, filter = '') {
   state.hadithFilter = filter;
   const q = filter.trim().toLowerCase();
 
-  // Topics hub: show every کتاب as a professional topic card.
-  if (state.hadithBrowseMode === 'topics' && !state.hadithTopicKey) {
-    let topics = buildKitabTopics(pack);
-    if (q) {
-      topics = topics.filter((t) =>
-        String(t.kitab_number || '').includes(q) ||
-        (t.title || '').toLowerCase().includes(q) ||
-        (t.title || '').includes(filter) ||
-        (t.en || '').toLowerCase().includes(q)
-      );
-    }
-    paintHadithTopics(slug, pack, topics);
-    return;
-  }
-
-  const rows = pack.hadiths.filter((h) => {
-    if (state.hadithTopicKey && kitabTopicKey(h) !== state.hadithTopicKey) return false;
-    if (!q) return true;
-    const chain = Array.isArray(h.ravi_chain) ? h.ravi_chain.join(' ') : '';
-    const byLang = h.ravi_by_lang || {};
-    const urChain = Array.isArray(byLang.ur) ? byLang.ur.join(' ') : '';
-    const kitabName = localizedKitabName(h, pack);
-    return (
-      String(h.n) === q ||
-      (h.en || '').toLowerCase().includes(q) ||
-      (h.ar || '').includes(filter) ||
-      (h.ur || '').includes(filter) ||
-      (h.ravi || h.narrator || '').toLowerCase().includes(q) ||
-      chain.toLowerCase().includes(q) ||
-      urChain.includes(filter) ||
-      (h.reference || '').toLowerCase().includes(q) ||
-      (h.kitab || '').toLowerCase().includes(q) ||
-      kitabName.includes(filter) ||
-      kitabName.toLowerCase().includes(q) ||
-      (h.grade || '').toLowerCase().includes(q)
+  // Always show Topics hub. Selecting a topic opens the full Hadith Reader directly.
+  let topics = buildKitabTopics(pack);
+  if (q) {
+    topics = topics.filter((t) =>
+      String(t.kitab_number || '').includes(q) ||
+      (t.title || '').toLowerCase().includes(q) ||
+      (t.title || '').includes(filter) ||
+      (t.en || '').toLowerCase().includes(q)
     );
-  });
-  state.hadithListRows = rows;
-  // Always paint the complete book/filter set (chunked) — never stop at 120.
-  state.hadithListShown = Math.min(state.hadithListPage, rows.length);
-  paintHadithListPage(slug, pack, true);
-  scheduleFillAllHadith(slug);
+  }
+  paintHadithTopics(slug, pack, topics);
 }
 
 function paintHadithTopics(slug, pack, topics) {
@@ -932,24 +1049,13 @@ function paintHadithTopics(slug, pack, topics) {
         <h2 class="hadith-browse-title" dir="rtl">موضوعات · کتب</h2>
         <p class="hadith-browse-sub">${topics.length.toLocaleString()} topics · ${totalAll.toLocaleString()} hadith${q ? ` · filter “${escapeHtml(q)}”` : ''}</p>
       </div>
-      <div class="hadith-mode-toggle" role="tablist" aria-label="Browse mode">
-        <button type="button" class="active" data-hadith-mode="topics" aria-selected="true">Topics</button>
-        <button type="button" data-hadith-mode="numbers" aria-selected="false">All numbers</button>
-      </div>
+      <button type="button" class="hadith-action" data-act="read-all">Read all ▶</button>
     </div>
-    <p class="hadith-list-hint">Tap a topic such as <strong dir="rtl">کتاب وحی کے بیان میں</strong> to open every related hadith in that کتاب.</p>
+    <p class="hadith-list-hint">Tap a topic such as <strong dir="rtl">کتاب وحی کے بیان میں</strong> to open the full Hadith Reader immediately — no number list.</p>
     <div class="hadith-topic-grid" id="hadith-topic-grid"></div>
   `;
   $('hadith-view').onscroll = null;
-  $('hadith-view').querySelectorAll('[data-hadith-mode]').forEach((btn) => {
-    btn.onclick = () => {
-      const mode = btn.getAttribute('data-hadith-mode');
-      state.hadithTopicKey = null;
-      state.hadithTopicTitle = '';
-      setHadithBrowseMode(mode === 'numbers' ? 'numbers' : 'topics');
-      renderHadithList(slug, state.hadithFilter);
-    };
-  });
+  $('hadith-view').querySelector('[data-act="read-all"]').onclick = () => openHadithBookReader(slug);
 
   const grid = $('hadith-topic-grid');
   if (!topics.length) {
@@ -966,12 +1072,12 @@ function paintHadithTopics(slug, pack, topics) {
       <div class="hadith-topic-main">
         <p class="hadith-topic-title" dir="rtl">${escapeHtml(t.title || t.en || '—')}</p>
         ${t.en ? `<p class="hadith-topic-en">${escapeHtml(t.en)}</p>` : ''}
-        <p class="hadith-topic-meta">Hadith ${t.first}–${t.last}</p>
+        <p class="hadith-topic-meta">Hadith ${t.first}–${t.last} · ${t.count} hadith</p>
       </div>
       <div class="hadith-topic-side">
         <span class="hadith-topic-count">${t.count.toLocaleString()}</span>
-        <span class="hadith-topic-count-label">hadith</span>
-        <span class="hadith-topic-go" aria-hidden="true">←</span>
+        <span class="hadith-topic-count-label">open</span>
+        <span class="hadith-topic-go" aria-hidden="true">▶</span>
       </div>
     `;
     card.onclick = () => openHadithTopic(slug, t);
