@@ -1,1 +1,1 @@
-{"quran": {"surahs": 114, "ayahs": 6236}, "hadith": {"bukhari": 7563, "muslim": 7563, "abudawud": 5274, "tirmidhi": 3956}, "tafsir": {"ibn-kathir": 6009}, "narrators": {"bukhari-1": {"book": "bukhari", "hadith": 1, "chain_length": 8}}}
+{"quran": {"surahs": 114, "ayahs": 6236}, "hadith": {"bukhari": 7563, "muslim": 7563, "abudawud": 5274, "tirmidhi": 3956}, "tafsir": {"ibn-kathir": 6009}, "narrators": {"catalog": {"narrators": 26510, "primary_mappings": 24068}, "bukhari-1": {"book": "bukhari", "hadith": 1, "chain_length": 8}}}

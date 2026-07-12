@@ -17,8 +17,8 @@
     "installed": true,
     "has_biography_rows": true,
     "has_hadith_mappings": true,
-    "notes": "Includes Bukhari Hadith 1 sanad import (8 narrators) verified against Arabic isnad. Additional biographies require further licensed imports.",
-    "last_import_batch": "bukhari_1_ibarat_import_2026-07-12"
+    "notes": "Authenticated identity scaffold for 26510 narrators across four Hadith books. Classical biography fields populated only where licensed/research import exists (currently 8 rows, including Bukhari Hadith 1). Never AI-invented.",
+    "last_import_batch": "authenticated_attribution_scaffold_2026-07-12"
   },
   "approved_sources": [
     {
@@ -89,6 +89,27 @@
       "name_en": "Al-Jarh wa al-Ta'dil",
       "name_ar": "الجرح والتعديل",
       "author": "Ibn Abi Hatim",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-istiab",
+      "name_en": "Al-Isti'ab fi Ma'rifat al-Ashab",
+      "name_ar": "الاستيعاب في معرفة الأصحاب",
+      "author": "Ibn Abd al-Barr",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "usd-al-ghabah",
+      "name_en": "Usd al-Ghabah fi Ma'rifat al-Sahabah",
+      "name_ar": "أسد الغابة في معرفة الصحابة",
+      "author": "Ibn al-Athir",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "fath-al-bari",
+      "name_en": "Fath al-Bari",
+      "name_ar": "فتح الباري شرح صحيح البخاري",
+      "author": "Imam Ibn Hajar al-Asqalani",
       "license_status": "permission_required"
     }
   ],

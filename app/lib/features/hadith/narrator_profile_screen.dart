@@ -181,21 +181,35 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
 
     return [
       '${p['id'] ?? ''}',
-      '${p['name_ar'] ?? ''}'.trim().isNotEmpty ? '${p['name_ar']}' : '${p['full_name'] ?? ''}',
-      '${p['name_ur'] ?? ''}'.trim().isNotEmpty ? '${p['name_ur']}' : '${p['full_name'] ?? ''}',
+      () {
+        final ar = '${p['name_ar'] ?? ''}'.trim();
+        if (ar.isNotEmpty) return ar;
+        final full = '${p['full_name'] ?? ''}'.trim();
+        // Prefer Arabic full name when present; never invent.
+        if (full.isNotEmpty && RegExp(r'[\u0600-\u06FF]').hasMatch(full)) return full;
+        return '';
+      }(),
+      () {
+        final ur = '${p['name_ur'] ?? ''}'.trim();
+        if (ur.isNotEmpty) return ur;
+        final full = '${p['full_name'] ?? ''}'.trim();
+        if (full.isNotEmpty && RegExp(r'[\u0600-\u06FF]').hasMatch(full)) return full;
+        // Authenticated English attribution from hadith pack (identity only).
+        return '${p['name_en'] ?? ''}'.trim();
+      }(),
       '${p['kunyah'] ?? ''}',
       '${p['laqab'] ?? ''}',
       '${p['nasab'] ?? ''}',
-      '', // قبیلہ — reserved for later authenticated import
+      '', // قبیلہ — empty until classical import
       birthHijri,
       deathHijri,
       '${p['city'] ?? ''}',
-      '', // وفات کا مقام — reserved for later authenticated import
+      '', // وفات کا مقام — empty until classical import
       status(),
       '${p['generation'] ?? ''}',
-      '', // شغل — reserved for later authenticated import
+      '', // شغل — empty until classical import
       joinReliability(p['reliability'] as List?),
-      '', // مشہور کیوں ہیں — reserved for later authenticated import
+      '', // مشہور کیوں ہیں — empty until classical import
       joinPeople(p['teachers'] as List?, const ['teacher_name_ar', 'teacher_name_en']),
       joinPeople(p['students'] as List?, const ['student_name_ar', 'student_name_en']),
       joinBooks(p['books_mentioned'] as List?),

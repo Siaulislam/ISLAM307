@@ -489,6 +489,7 @@ async function openHadithBook(book, button) {
   state.hadithTopicTitle = '';
   if (state.hadithBrowseMode === 'topic') setHadithBrowseMode('topics');
   $('hadith-view').innerHTML = `<p class="status">Loading ${book.en}…</p>`;
+  loadNarratorCatalog(); // warm narrator detail catalog (authenticated identities)
   if (!state.hadithCache[book.slug]) {
     state.hadithCache[book.slug] = await fetchJsonGz(`data/hadith/${book.slug}.json.gz`);
   }
@@ -692,14 +693,51 @@ function narratorCardHtml(name) {
 }
 
 const narratorPackCache = {};
+let narratorCatalogPromise = null;
+let narratorCatalog = null;
+
+function normalizeNarratorKey(raw) {
+  return String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[ʼ'`´]/g, "'")
+    .replace(/[^\w\u0600-\u06ff\s-]/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+async function loadNarratorCatalog() {
+  if (narratorCatalog) return narratorCatalog;
+  if (narratorCatalogPromise) return narratorCatalogPromise;
+  narratorCatalogPromise = (async () => {
+    try {
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-15`);
+      return narratorCatalog;
+    } catch (_) {
+      narratorCatalog = null;
+      return null;
+    }
+  })();
+  return narratorCatalogPromise;
+}
+
+function catalogEntryByName(name) {
+  if (!narratorCatalog || !name) return null;
+  const key = normalizeNarratorKey(name);
+  const id = narratorCatalog.aliases?.[key];
+  if (!id) return null;
+  const row = narratorCatalog.narrators?.[String(id)];
+  if (!row) return null;
+  return { ...row, narrator_id: row.id, order: null, role: null };
+}
 
 async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   const key = `${bookSlug}:${hadithNumber}`;
   if (narratorPackCache[key] !== undefined) return narratorPackCache[key];
-  // Only packs that have been imported into preview/data/narrators/ are loadable.
+  // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-14`);
+    const res = await fetch(`${path}?v=hadith-reader-15`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -730,18 +768,25 @@ function narratorDetailValues(entry) {
   if (!entry) {
     return NARRATOR_PROFILE.fieldLabels.map(() => '');
   }
-  const status = entry.is_companion ? 'صحابی' : (entry.role === 'prophet' ? 'رسول اللہ ﷺ' : (entry.role === 'compiler' ? 'امام' : ''));
+  const hasAr = (s) => /[\u0600-\u06FF]/.test(String(s || ''));
+  const nameAr = entry.name_ar || (hasAr(entry.full_name) ? entry.full_name : '');
+  const nameUr = entry.name_ur || (hasAr(entry.full_name) ? entry.full_name : '') || entry.name_en || '';
+  const status = entry.is_companion
+    ? 'صحابی'
+    : (entry.role === 'prophet'
+      ? 'رسول اللہ ﷺ'
+      : (entry.role === 'compiler' ? 'امام' : ''));
   return [
-    entry.narrator_id != null ? String(entry.narrator_id) : '',
-    entry.name_ar || '',
-    entry.name_ur || entry.full_name || '',
+    entry.narrator_id != null ? String(entry.narrator_id) : (entry.id != null ? String(entry.id) : ''),
+    nameAr || '',
+    nameUr || '',
     entry.kunyah || '',
     entry.laqab || '',
     entry.nasab || '',
     '',
-    entry.birth_text || '',
-    entry.death_text || '',
-    '',
+    entry.birth_hijri || entry.birth_text || '',
+    entry.death_hijri || entry.death_text || '',
+    entry.city || '',
     '',
     status,
     entry.generation || '',
@@ -751,7 +796,7 @@ function narratorDetailValues(entry) {
     '',
     '',
     '',
-    '',
+    entry.timeline_notes || '',
   ];
 }
 
@@ -801,10 +846,12 @@ async function openNarratorMore(name, hadith) {
   const clean = String(name || '').trim();
   if (!clean) return;
   const slug = state.hadithSlug || '';
+  await loadNarratorCatalog();
   const pack = await loadNarratorSanadPack(slug, hadith?.n);
   const entry = findImportedNarrator(pack, clean)
     || (pack?.chain || []).find((n) => Number(n.order) && String(n.name_en).toLowerCase() === clean.toLowerCase())
-    || (pack?.chain || []).find((n) => Number(n.narrator_id) && String(n.narrator_id) === clean);
+    || (pack?.chain || []).find((n) => Number(n.narrator_id) && String(n.narrator_id) === clean)
+    || catalogEntryByName(clean);
   openNarratorDetailPage(clean, hadith, entry || null);
 }
 

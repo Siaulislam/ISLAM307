@@ -86,10 +86,35 @@ class NarratorRepository {
         FROM hadith_relations hr
         JOIN narrators n ON n.id = hr.narrator_id
         WHERE hr.book_slug = ? AND hr.hadith_number = ?
+          AND hr.isnad_position IS NOT NULL
         ORDER BY hr.isnad_position ASC
         ''',
         [bookSlug, hadithNumber],
       );
+      if (rows.isEmpty) {
+        // Fallback: primary attribution only (authenticated narrator field).
+        final primaryRows = await db.rawQuery(
+          '''
+          SELECT hr.isnad_position, hr.role, hr.narrator_id,
+                 n.slug, n.name_ar, n.name_ur, n.name_en, n.full_name,
+                 n.kunyah, n.laqab, n.nasab, n.generation,
+                 n.is_companion, n.is_tabii, n.is_tab_tabii
+          FROM hadith_relations hr
+          JOIN narrators n ON n.id = hr.narrator_id
+          WHERE hr.book_slug = ? AND hr.hadith_number = ? AND hr.role = 'primary'
+          LIMIT 1
+          ''',
+          [bookSlug, hadithNumber],
+        );
+        return primaryRows.map((r) {
+          final map = Map<String, dynamic>.from(r);
+          map['display_name'] = _displayName(map, lang);
+          map['is_companion'] = r['is_companion'] == 1;
+          map['is_tabii'] = r['is_tabii'] == 1;
+          map['is_tab_tabii'] = r['is_tab_tabii'] == 1;
+          return map;
+        }).toList();
+      }
       return rows.map((r) {
         final map = Map<String, dynamic>.from(r);
         map['display_name'] = _displayName(map, lang);
