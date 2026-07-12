@@ -684,7 +684,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Only packs that have been imported into preview/data/narrators/ are loadable.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-10`);
+    const res = await fetch(`${path}?v=hadith-reader-11`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1053,8 +1053,6 @@ function openHadithReader(slug, rows, index) {
   const topicTitle = state.hadithTopicTitle || localizedKitabName(hadith, pack);
   const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
   const progress = Math.round((pos / total) * 100);
-  const rates = [0.75, 1, 1.25, 1.5];
-  const audioMode = state.hadithAudioMode === 'translation' ? 'translation' : 'ibarat';
 
   $('hadith-view').innerHTML = `
     <article class="hadith-reader" id="hadith-reader">
@@ -1095,16 +1093,7 @@ function openHadithReader(slug, rows, index) {
 
       <section class="hadith-audio-box hadith-reader-audio" aria-label="Hadith audio">
         <div class="hadith-audio-head">
-          <div>
-            <strong>Audio</strong>
-            <p class="hadith-audio-hint">${audioMode === 'ibarat'
-              ? 'Arabic audio · male KSA/Egyptian scholar voice · clear & slow'
-              : `Translation audio · ${translationLang === 'ur' ? 'Pakistani male Urdu' : (translationLang === 'hi' ? 'Hindi male' : 'Pakistani/Indian male English')} · clear pace`}</p>
-          </div>
-        </div>
-        <div class="hadith-audio-modes" role="tablist" aria-label="Audio track">
-          <button type="button" role="tab" class="hadith-audio-mode ${audioMode === 'ibarat' ? 'active' : ''}" data-audio-mode="ibarat">Arabic Audio</button>
-          <button type="button" role="tab" class="hadith-audio-mode ${audioMode === 'translation' ? 'active' : ''}" data-audio-mode="translation">Translation Audio</button>
+          <strong>Audio</strong>
         </div>
         <div class="hadith-audio-actions hadith-audio-controls">
           <button type="button" class="hadith-audio-play" data-audio="play">▶ Play</button>
@@ -1112,11 +1101,6 @@ function openHadithReader(slug, rows, index) {
           <button type="button" class="hadith-audio-stop" data-audio="stop">Stop</button>
           <button type="button" class="hadith-audio-play" data-audio="replay">Replay</button>
         </div>
-        <div class="hadith-speed" role="group" aria-label="Audio speed">
-          <span>Speed</span>
-          ${rates.map((r) => `<button type="button" class="speed-btn ${Number(state.hadithSpeechRate) === r ? 'active' : ''}" data-rate="${r}">${r}×</button>`).join('')}
-        </div>
-        <p class="hadith-audio-offline">Offline device TTS · prefers male scholar voices when installed</p>
       </section>
 
       <div class="hadith-reader-tools">
@@ -1146,18 +1130,8 @@ function openHadithReader(slug, rows, index) {
     rerender(safeIndex);
   };
 
-  root.querySelectorAll('[data-audio-mode]').forEach((btn) => {
-    btn.onclick = () => {
-      state.hadithAudioMode = btn.getAttribute('data-audio-mode') || 'ibarat';
-      localStorage.setItem('i307_hadith_audio_mode', state.hadithAudioMode);
-      stopHadithSpeech();
-      rerender(safeIndex);
-    };
-  });
-
   const playCurrent = () => {
-    if (state.hadithAudioMode === 'translation') speakHadithText(translationFor(hadith, state.hadithLang), state.hadithLang);
-    else speakHadithText(hadith.ar || '', 'ar');
+    speakHadithText(hadith.ar || '', 'ar');
   };
   root.querySelector('[data-audio="play"]').onclick = () => {
     if (state.hadithSpeechPaused) resumeHadithSpeech();
@@ -1166,14 +1140,6 @@ function openHadithReader(slug, rows, index) {
   root.querySelector('[data-audio="pause"]').onclick = () => pauseHadithSpeech();
   root.querySelector('[data-audio="stop"]').onclick = () => stopHadithSpeech();
   root.querySelector('[data-audio="replay"]').onclick = () => playCurrent();
-  root.querySelectorAll('[data-rate]').forEach((btn) => {
-    btn.onclick = () => {
-      state.hadithSpeechRate = Number(btn.getAttribute('data-rate')) || 1;
-      localStorage.setItem('i307_hadith_rate', String(state.hadithSpeechRate));
-      stopHadithSpeech();
-      rerender(safeIndex);
-    };
-  });
 
   root.querySelector('[data-nav="prev"]').onclick = () => {
     if (safeIndex > 0) { stopHadithSpeech(); rerender(safeIndex - 1); $('hadith-view').scrollTop = 0; }

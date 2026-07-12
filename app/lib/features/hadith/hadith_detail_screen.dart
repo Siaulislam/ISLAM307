@@ -333,9 +333,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       _paused = false;
     }
     final ibarat = ((h['text_ar'] as String?) ?? '').trim();
-    final translation = _translation().trim();
-    final text = _audioMode == 'translation' ? translation : ibarat;
-    final voiceLang = _audioMode == 'translation' ? _lang : 'ar';
+    final text = ibarat;
+    final voiceLang = 'ar';
     if (text.isEmpty) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -770,49 +769,17 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   }
 
   Widget _audioBox() {
-    final isTranslation = _audioMode == 'translation';
-    final langHint = _lang == 'ur'
-        ? 'Pakistani male Urdu'
-        : (_lang == 'hi' ? 'Hindi male' : 'Pakistani/Indian male English · clear pace');
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFFFFDF7), Colors.white],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Islam307Theme.goldLight),
-        boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 16, offset: const Offset(0, 6)),
-        ],
+        border: Border.all(color: Islam307Theme.cardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('Audio', style: TextStyle(fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep)),
-          const SizedBox(height: 4),
-          Text(
-            isTranslation
-                ? 'Translation audio · $langHint'
-                : 'Arabic audio · male KSA/Egyptian scholar voice · clear & slow',
-            style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.35),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF1F5F9),
-              borderRadius: BorderRadius.circular(999),
-            ),
-            child: Row(
-              children: [
-                _audioModeChip('ibarat', 'Arabic Audio'),
-                _audioModeChip('translation', 'Translation Audio'),
-              ],
-            ),
-          ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -857,67 +824,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              const Text('Speed', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
-              for (final r in _rates)
-                ChoiceChip(
-                  label: Text('${r}×'),
-                  selected: _speechRate == r,
-                  onSelected: (_) async {
-                    await _stopAudio();
-                    setState(() => _speechRate = r);
-                    await _persistLang();
-                    await TtsService.instance.setRateMultiplier(r);
-                  },
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Offline device TTS · prefers male scholar voices when installed',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Islam307Theme.textMuted),
-          ),
         ],
-      ),
-    );
-  }
-
-  Widget _audioModeChip(String mode, String label) {
-    final active = _audioMode == mode;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () async {
-          if (_audioMode == mode) return;
-          await _stopAudio();
-          setState(() => _audioMode = mode);
-          await _persistLang();
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(999),
-            border: active ? Border.all(color: Islam307Theme.goldLight) : null,
-            boxShadow: active
-                ? [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 2))]
-                : null,
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              fontSize: 13,
-              color: active ? Islam307Theme.emeraldDeep : Islam307Theme.textMuted,
-            ),
-          ),
-        ),
       ),
     );
   }
