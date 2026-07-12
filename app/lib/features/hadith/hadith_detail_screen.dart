@@ -205,7 +205,27 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                   ),
                   const SizedBox(height: 14),
                   if (primary.isNotEmpty) ...[
-                    Text(primary, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, height: 1.4)),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        final primaryId = imported.cast<Map<String, dynamic>?>().firstWhere(
+                          (e) => e?['role'] == 'primary',
+                          orElse: () => null,
+                        )?['narrator_id'] as int?;
+                        _openNarratorProfile(primary, primaryId);
+                      },
+                      child: Text(
+                        primary,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          height: 1.4,
+                          color: Islam307Theme.emeraldDeep,
+                          decoration: TextDecoration.underline,
+                          decorationColor: Islam307Theme.emerald,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     FilledButton(
                       onPressed: () {
@@ -256,10 +276,24 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    chain[i],
-                                    textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                                    style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.pop(ctx);
+                                      final id = imported.isNotEmpty ? imported[i]['narrator_id'] as int? : null;
+                                      _openNarratorProfile(chain[i], id);
+                                    },
+                                    child: Text(
+                                      chain[i],
+                                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        height: 1.45,
+                                        fontSize: 15,
+                                        color: Islam307Theme.emeraldDeep,
+                                        decoration: TextDecoration.underline,
+                                        decorationColor: Islam307Theme.emerald,
+                                      ),
+                                    ),
                                   ),
                                   if (imported.isNotEmpty) ...[
                                     Text(

@@ -653,25 +653,42 @@ function authenticatedNarratorName(hadith) {
 
 /**
  * Narrator (Rijāl) Knowledge seam.
- * Profiles stay empty until authenticated datasets are imported into narrators.db.
+ * Profiles use the standard راوی معلومات table template.
+ * Values stay empty until authenticated datasets are imported.
  * Never invent. Never assume classical data is "unavailable".
  */
 const NARRATOR_PROFILE = {
   notImportedMessage: 'This narrator profile has not been imported into the local database yet.',
   policy: 'ISLAM 307 never generates narrator biographies with AI. Profiles appear only after authenticated narrator datasets are imported.',
-  emptyFields: [
-    'Arabic Name', 'Urdu Name', 'English Name', 'Full Name', 'Kunyah', 'Laqab', 'Nasab',
-    'Birth', 'Death', 'City', 'Country', 'Generation', 'Companion', "Tabi'i", "Tabi' al-Tabi'in",
-    'Teachers', 'Students', 'Reliability', 'Jarḥ wa Taʿdīl',
-    'Books where biography appears', 'Hadith Collections narrated in', 'Timeline', 'References',
+  fieldLabels: [
+    'راوی آئی ڈی',
+    'پورا نام (عربی)',
+    'پورا نام (اردو)',
+    'کنیت',
+    'لقب',
+    'نسب / نسبت',
+    'قبیلہ',
+    'ولادت (ہجری)',
+    'وفات (ہجری)',
+    'ولادت کا مقام',
+    'وفات کا مقام',
+    'حالت',
+    'طبقہ (دور)',
+    'شغل',
+    'وثاقت',
+    'مشہور کیوں ہیں',
+    'اہم اساتذہ',
+    'اہم شاگرد',
+    'اہم کتب',
+    'اضافی نوٹس',
   ],
 };
 
 function narratorCardHtml(name) {
   return `
     <div class="narrator-card">
-      <p class="narrator-kicker">👤 Narrator</p>
-      <p class="narrator-name" dir="auto">${escapeHtml(name)}</p>
+      <p class="narrator-kicker">Narrator</p>
+      <button type="button" class="narrator-name-link" data-narrator="${escapeHtml(name)}">${escapeHtml(name)}</button>
       <button type="button" class="narrator-more-btn primary" data-narrator="${escapeHtml(name)}">More about this Narrator</button>
     </div>`;
 }
@@ -684,7 +701,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Only packs that have been imported into preview/data/narrators/ are loadable.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-11`);
+    const res = await fetch(`${path}?v=hadith-reader-12`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -703,43 +720,83 @@ function findImportedNarrator(pack, name) {
   const needle = String(name || '').trim().toLowerCase();
   if (!needle) return null;
   return pack.chain.find((n) => {
-    const keys = [n.name_ar, n.name_en, n.name_ur, n.full_name, n.kunyah, n.laqab]
+    const keys = [n.name_ar, n.name_en, n.name_ur, n.full_name, n.kunyah, n.laqab, n.slug]
       .filter(Boolean)
       .map((s) => String(s).toLowerCase());
     return keys.some((k) => k === needle || k.includes(needle) || needle.includes(k));
   }) || null;
 }
 
-function importedProfileHtml(entry) {
-  const rows = [
-    ['Order in sanad', entry.order],
-    ['Role', entry.role],
-    ['Arabic Name', entry.name_ar],
-    ['English Name', entry.name_en],
-    ['Urdu Name', entry.name_ur],
-    ['Full Name', entry.full_name],
-    ['Kunyah', entry.kunyah],
-    ['Laqab', entry.laqab],
-    ['Nasab / Nisbah', entry.nasab],
-    ['Generation', entry.generation],
-    ['Birth', entry.birth_text],
-    ['Death', entry.death_text],
-    ['Narrator ID', entry.narrator_id],
-    ['Sunnah.com ID', entry.sunnah_com_id || '—'],
-    ['Sunnah.com URL', entry.sunnah_com_url || '—'],
+/** Build the standard راوی معلومات table values from an imported entry (or empty). */
+function narratorDetailValues(entry) {
+  if (!entry) {
+    return NARRATOR_PROFILE.fieldLabels.map(() => '');
+  }
+  const status = entry.is_companion ? 'صحابی' : (entry.role === 'prophet' ? 'رسول اللہ ﷺ' : (entry.role === 'compiler' ? 'امام' : ''));
+  return [
+    entry.narrator_id != null ? String(entry.narrator_id) : '',
+    entry.name_ar || '',
+    entry.name_ur || entry.full_name || '',
+    entry.kunyah || '',
+    entry.laqab || '',
+    entry.nasab || '',
+    '',
+    entry.birth_text || '',
+    entry.death_text || '',
+    '',
+    '',
+    status,
+    entry.generation || '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
   ];
+}
+
+function narratorDetailTableHtml(values) {
+  const rows = NARRATOR_PROFILE.fieldLabels.map((label, i) => `
+    <tr>
+      <th scope="row">${escapeHtml(label)}</th>
+      <td dir="auto">${escapeHtml(values[i] || '')}</td>
+    </tr>`).join('');
   return `
-    <div class="narrator-profile-preview imported">
-      <p class="narrator-offline-msg">Imported from authenticated Arabic isnad + classical research file. Never AI-generated.</p>
-      <div class="narrator-empty-grid">
-        ${rows.map(([label, value]) => `
-          <div class="narrator-empty-field">
-            <span>${escapeHtml(String(label))}</span>
-            <strong dir="auto">${escapeHtml(value == null || value === '' ? '—' : String(value))}</strong>
-          </div>`).join('')}
+    <table class="rawi-info-table" dir="rtl">
+      <thead>
+        <tr><th colspan="2">راوی معلومات</th></tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+function openNarratorDetailPage(name, hadith, entry) {
+  const clean = String(name || '').trim() || 'Narrator';
+  const values = narratorDetailValues(entry || null);
+  const slug = state.hadithSlug || '';
+  const rows = state.hadithReaderRows || [];
+  const index = state.hadithReaderIndex || 0;
+
+  $('hadith-view').innerHTML = `
+    <article class="narrator-detail-page" id="narrator-detail-page">
+      <header class="hadith-reader-top">
+        <button type="button" class="ghost back-hadith" data-back-narrator>← Back</button>
+      </header>
+      <div class="narrator-detail-wrap">
+        ${narratorDetailTableHtml(values)}
       </div>
-      <p class="narrator-policy">${escapeHtml(NARRATOR_PROFILE.policy)}</p>
-    </div>`;
+    </article>`;
+
+  const root = $('narrator-detail-page');
+  root.querySelector('[data-back-narrator]').onclick = () => {
+    if (rows.length) openHadithReader(slug, rows, index);
+    else if (hadith && slug) {
+      // Fallback: reopen reader for current hadith if chain available.
+      openHadithReader(slug, [hadith], 0);
+    }
+  };
 }
 
 async function openNarratorMore(name, hadith) {
@@ -748,23 +805,9 @@ async function openNarratorMore(name, hadith) {
   const slug = state.hadithSlug || '';
   const pack = await loadNarratorSanadPack(slug, hadith?.n);
   const entry = findImportedNarrator(pack, clean)
-    || (pack?.chain || []).find((n) => Number(n.order) && String(n.name_en).toLowerCase() === clean.toLowerCase());
-  if (entry) {
-    openHadithModal(entry.name_en || entry.name_ar || clean, importedProfileHtml(entry));
-    return;
-  }
-  const fields = NARRATOR_PROFILE.emptyFields.map((label) => `
-    <div class="narrator-empty-field">
-      <span>${escapeHtml(label)}</span>
-      <strong>—</strong>
-    </div>`).join('');
-  const body = `
-    <div class="narrator-profile-preview">
-      <p class="narrator-offline-msg">${escapeHtml(NARRATOR_PROFILE.notImportedMessage)}</p>
-      <div class="narrator-empty-grid">${fields}</div>
-      <p class="narrator-policy">${escapeHtml(NARRATOR_PROFILE.policy)}</p>
-    </div>`;
-  openHadithModal(clean || 'Narrator Profile', body);
+    || (pack?.chain || []).find((n) => Number(n.order) && String(n.name_en).toLowerCase() === clean.toLowerCase())
+    || (pack?.chain || []).find((n) => Number(n.narrator_id) && String(n.narrator_id) === clean);
+  openNarratorDetailPage(clean, hadith, entry || null);
 }
 
 async function openRaviDetail(hadith, book) {
@@ -803,7 +846,7 @@ async function openRaviDetail(hadith, book) {
           return `<li class="${isLast ? 'is-last-rawi' : ''}">
             <span class="ravi-step">${meta ? meta.order : (i + 1)}</span>
             <div>
-              <strong>${escapeHtml(name)}</strong>
+              <button type="button" class="narrator-name-link" data-narrator="${escapeHtml(key)}">${escapeHtml(name)}</button>
               <small>${escapeHtml(heard)}</small>
               <button type="button" class="narrator-more-btn" data-narrator="${escapeHtml(key)}">More about this Narrator</button>
             </div>
@@ -819,7 +862,10 @@ async function openRaviDetail(hadith, book) {
   openHadithModal(`${t.title} · Hadith ${hadith.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');
   modal?.querySelectorAll('[data-narrator]').forEach((btn) => {
-    btn.onclick = () => openNarratorMore(btn.getAttribute('data-narrator') || '', hadith);
+    btn.onclick = () => {
+      closeHadithModal();
+      openNarratorMore(btn.getAttribute('data-narrator') || '', hadith);
+    };
   });
 }
 

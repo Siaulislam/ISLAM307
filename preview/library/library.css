@@ -1271,3 +1271,102 @@ body.dark .narrator-empty-field {
   background: #121a2a;
   border-color: #334155;
 }
+
+/* —— Standard راوی معلومات table (exact template) —— */
+.narrator-name-link {
+  display: block;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 4px;
+  color: var(--emerald-deep);
+  font: inherit;
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1.45;
+  text-align: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.narrator-card .narrator-name-link {
+  font-size: 18px;
+}
+.narrator-detail-page {
+  display: grid;
+  gap: 12px;
+}
+.narrator-detail-wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 4px 0 24px;
+}
+.rawi-info-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+  direction: rtl;
+  table-layout: fixed;
+}
+.rawi-info-table thead th {
+  background: #f0f4f8;
+  color: #1e293b;
+  font-family: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.rawi-info-table tbody th,
+.rawi-info-table tbody td {
+  border-top: 1px solid #e0e0e0;
+  padding: 12px;
+  vertical-align: middle;
+  font-family: "Noto Nastaliq Urdu", "Noto Naskh Arabic", serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #1e293b;
+  text-align: right;
+  word-break: break-word;
+}
+.rawi-info-table tbody th {
+  width: 38%;
+  font-weight: 700;
+  background: #fff;
+  border-left: 1px solid #e0e0e0;
+}
+.rawi-info-table tbody td {
+  width: 62%;
+  font-weight: 600;
+  background: #fff;
+  min-height: 44px;
+}
+body.dark .rawi-info-table {
+  border-color: #334155;
+  background: #121a2a;
+}
+body.dark .rawi-info-table thead th {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-bottom-color: #334155;
+}
+body.dark .rawi-info-table tbody th,
+body.dark .rawi-info-table tbody td {
+  border-top-color: #334155;
+  color: #e2e8f0;
+  background: #121a2a;
+}
+body.dark .rawi-info-table tbody th {
+  border-left-color: #334155;
+}
+@media (max-width: 560px) {
+  .rawi-info-table tbody th { width: 42%; }
+  .rawi-info-table tbody th,
+  .rawi-info-table tbody td {
+    font-size: 14px;
+    padding: 10px 8px;
+  }
+}
