@@ -50,6 +50,7 @@ final _txFind = RegExp(
   unicode: true,
 );
 
+// Opening "قال ابن شهاب / قالت أسماء" — name ends at punctuation, عن, or tx verb.
 final _qalaName = RegExp(
   r'(?:^|[\s،,;:]+)'
   r'(?<verb>قال|قالت)\s+'
@@ -58,9 +59,45 @@ final _qalaName = RegExp(
   r'حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن\s'
   r')'
   r'(?<name>[^،,;:\n"«»‏]{2,80}?)'
-  r'(?=\s*(?:،|,|:|و(?:اخبر|حدث|انبان)|$))',
+  r'(?=\s*(?:'
+  r'،|,|:|'
+  r'و?(?:حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت)|'
+  r'عن\b|'
+  r'و(?:اخبر|حدث|انبان)|'
+  r'$'
+  r'))',
   unicode: true,
 );
+
+/// Transmission / connector tokens that are NEVER part of a narrator name.
+const _connectorTokens = {
+  'عن',
+  'قال',
+  'قالت',
+  'قالا',
+  'قالوا',
+  'يقول',
+  'يقولون',
+  'تقول',
+  'ذكر',
+  'ذكرت',
+  'حدثنا',
+  'حدثني',
+  'اخبرنا',
+  'اخبرني',
+  'انبانا',
+  'انباني',
+  'سمعت',
+  'سمع',
+  'نا',
+  'ثم',
+  'ان',
+  'فان',
+  'انه',
+  'انها',
+  'انهما',
+  'انهم',
+};
 
 final _matnNoise = RegExp(
   r'(?:'
@@ -156,44 +193,67 @@ bool _looksLikePersonName(String name) {
 String _cleanNameAr(String raw) {
   var name = raw.replaceAll(_honorificAr, ' ').replaceAll('ـ', ' ');
   name = _norm(_stripDiac(name)).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
-  var folded = _foldAr(name);
-  for (final verb in [..._txVerbs, 'عن', 'ان']) {
-    if (folded == verb || folded.startsWith('$verb ')) {
-      name = _norm(name.substring(verb.length)).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
-      folded = _foldAr(name);
-      break;
+
+  // Iteratively strip leading/trailing connector tokens (عن، قال، قالت، …).
+  for (var i = 0; i < 8; i++) {
+    final folded = _foldAr(name);
+    final tokens = folded.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    if (tokens.isEmpty) return '';
+    final parts = name.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+    if (tokens.first == 'و' && tokens.length > 1 && _connectorTokens.contains(tokens[1])) {
+      name = _norm(parts.skip(2).join(' ')).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
+      continue;
     }
+    if (_connectorTokens.contains(tokens.first)) {
+      name = _norm(parts.skip(1).join(' ')).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
+      continue;
+    }
+    if (_connectorTokens.contains(tokens.last)) {
+      name = _norm(parts.take(parts.length - 1).join(' ')).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
+      continue;
+    }
+    break;
   }
-  name = name.split(RegExp(r'\s+(?:قال|قالت|يقول|يحدث|تحدث|في\s+قوله|في\s+قول|على\s+المنبر)\b')).first;
+
+  // Cut at first internal speech/matn verb (keep the person name before it).
+  final foldedFull = _foldAr(name);
+  final cut = RegExp(
+    r'\s+(?:قال|قالت|قالا|قالوا|يقول|يقولون|تقول|يحدث|تحدث|ذكر|ذكرت|'
+    r'في\s+قوله|في\s+قول|على\s+المنبر)\b',
+    unicode: true,
+  ).firstMatch(foldedFull);
+  if (cut != null) {
+    name = name.substring(0, cut.start);
+  }
+
   name = _norm(name).replaceAll(RegExp(r'\s+(?:قال|قالت|يقول)\s*$'), '');
   name = name.replaceAll(RegExp(r'(?:،|\s)+في\s*$'), '');
-  name = _norm(name).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
-  // Remove dangling انه / انها ONLY — never bare ان (breaks سفيان).
-  name = name.replaceAll(RegExp(r'\s*,?\s*انه(?:ا)?\s*$'), '');
   name = name.replaceAll(
-    RegExp(r'\s+(?:أخبره|أخبرها|أخبرهما|اخبره|اخبرها|اخبرهما|يقول|يقوله)\s*$'),
+    RegExp(r'\s+(?:أخبره|أخبرها|أخبرهما|اخبره|اخبرها|اخبرهما)\s*$'),
     '',
   );
   name = _norm(name).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
+
+  var folded = _foldAr(name);
   if (name.isEmpty ||
-      {
-        'قال',
-        'قالت',
-        'ان',
-        'عن',
-        'و',
-        'ه',
-        'ها',
-        'انه',
-        'انها',
-        'في',
-        'اخبره',
-        'أخبره',
-      }.contains(name)) {
+      _connectorTokens.contains(folded) ||
+      {'و', 'ه', 'ها', 'في', 'اخبره', 'أخبره'}.contains(folded)) {
     return '';
   }
   if (_isProphetToken(name)) return '';
-  if (RegExp(r'يحدث|تحدث', unicode: true).hasMatch(_foldAr(name))) return '';
+  if (RegExp(r'يحدث|تحدث', unicode: true).hasMatch(folded)) return '';
+  // Remove any remaining standalone connector words inside the name.
+  final nameParts = name.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+  final foldParts = folded.split(RegExp(r'\s+')).where((t) => t.isNotEmpty).toList();
+  if (nameParts.length == foldParts.length && foldParts.any(_connectorTokens.contains)) {
+    final kept = <String>[];
+    for (var i = 0; i < nameParts.length; i++) {
+      if (!_connectorTokens.contains(foldParts[i])) kept.add(nameParts[i]);
+    }
+    name = _norm(kept.join(' '));
+    folded = _foldAr(name);
+    if (name.isEmpty || _connectorTokens.contains(folded)) return '';
+  }
   if (name.length > 90) return '';
   return name;
 }
@@ -282,10 +342,11 @@ List<String> _extractNamesFromArIsnad(String isnad) {
   final display = prepared.$1;
   final search = prepared.$2;
 
-  final names = <String>[];
+  // (start_offset, name) — sorted into document order at the end.
+  final ordered = <(int, String)>[];
   final seen = <String>{};
 
-  bool add(String raw) {
+  bool add(String raw, int pos) {
     var name = _cleanNameAr(raw);
     if (name.isEmpty || _isProphetToken(name) || _isMatnNoise(name) || !_looksLikePersonName(name)) {
       return false;
@@ -297,13 +358,15 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     // Split apposition "أبو النعمان، عارم بن الفضل".
     if (name.contains('،') || name.contains(',')) {
       var addedAny = false;
+      var partPos = pos;
       for (final partRaw in name.split(RegExp(r'[،,]'))) {
         var part = _cleanNameAr(partRaw);
         if (part.isEmpty || !_looksLikePersonName(part)) continue;
         final key = _foldAr(part).replaceAll(' ', '');
         if (seen.contains(key)) continue;
         seen.add(key);
-        names.add(part);
+        ordered.add((partPos, part));
+        partPos += 1;
         addedAny = true;
       }
       return addedAny;
@@ -312,7 +375,7 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     final key = _foldAr(name).replaceAll(' ', '');
     if (seen.contains(key)) return false;
     seen.add(key);
-    names.add(name);
+    ordered.add((pos, name));
     return true;
   }
 
@@ -325,7 +388,7 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     if (_matnAfterQala.hasMatch(folded)) continue;
     if (folded.split(RegExp(r'\s+')).length > 5 || folded.length > 40) continue;
     if (folded.startsWith('قال ') || folded.startsWith('قلت ')) continue;
-    add(candidate);
+    add(candidate, nameStart);
   }
 
   final matches = _txFind.allMatches(search).toList();
@@ -365,13 +428,15 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     ).firstMatch(foldedChunk);
     if (speech != null) {
       chunk = display.substring(start, start + speech.start).replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
-      add(chunk);
+      add(chunk, start);
       break;
     }
 
-    add(chunk);
+    add(chunk, start);
   }
-  return names;
+
+  ordered.sort((a, b) => a.$1.compareTo(b.$1));
+  return [for (final item in ordered) item.$2];
 }
 
 String _cutIsnadEn(String textEn) {

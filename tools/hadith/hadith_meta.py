@@ -78,7 +78,8 @@ _TX_FIND = re.compile(
     re.UNICODE,
 )
 
-# Opening "قال ابن شهاب / قال أبو …" — NOT قال حدثنا / قال أخبرنا.
+# Opening "قال ابن شهاب / قالت أسماء / قال أبو …" — NOT قال حدثنا / قال أخبرنا.
+# Name ends at punctuation, next transmission verb, عن, or end of isnad.
 _QALA_NAME = re.compile(
     r"(?:^|[\s،,;:]+)"
     r"(?P<verb>قال|قالت)\s+"
@@ -87,7 +88,13 @@ _QALA_NAME = re.compile(
     r"حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن\s"
     r")"
     r"(?P<name>[^،,;:\n\"«»‏]{2,80}?)"
-    r"(?=\s*(?:،|,|:|و(?:اخبر|حدث|انبان)|$))",
+    r"(?=\s*(?:"
+    r"،|,|:|"
+    r"و?(?:حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت)|"
+    r"عن\b|"
+    r"و(?:اخبر|حدث|انبان)|"
+    r"$"
+    r"))",
     re.UNICODE,
 )
 
@@ -167,46 +174,99 @@ def _is_prophet_token(name: str) -> bool:
     return False
 
 
+# Transmission / connector tokens that are NEVER part of a narrator name.
+_CONNECTOR_TOKENS = (
+    "عن",
+    "قال",
+    "قالت",
+    "قالا",
+    "قالوا",
+    "يقول",
+    "يقولون",
+    "تقول",
+    "ذكر",
+    "ذكرت",
+    "حدثنا",
+    "حدثني",
+    "اخبرنا",
+    "اخبرني",
+    "انبانا",
+    "انباني",
+    "سمعت",
+    "سمع",
+    "نا",
+    "ثم",
+    "ان",
+    "فان",
+    "انه",
+    "انها",
+    "انهما",
+    "انهم",
+)
+
+
 def _clean_name_ar(raw: str) -> str:
-    """Preserve ibn/bin/bint/Abu/Umm/al-/ibn Abi; strip honorifics and matn tails."""
+    """Preserve ibn/bin/bint/Abu/Umm/al-/ibn Abi; strip connectors and matn tails.
+
+    Transmission words (عن، قال، قالت، حدثنا، …) are never part of a name.
+    """
     name = _HONORIFIC_AR.sub(" ", raw or "")
     name = name.replace("ـ", " ")
     name = _strip_diac(name)
     name = _normalize_ws(name).strip(" ،,;:.-")
 
-    folded = _fold_ar(name)
-    for verb in (*_TX_VERBS, "عن", "ان"):
-        if folded == verb or folded.startswith(verb + " "):
-            name = _normalize_ws(name[len(verb) :]).strip(" ،,;:.-")
-            folded = _fold_ar(name)
+    # Iteratively strip leading/trailing connector tokens.
+    connectors = set(_CONNECTOR_TOKENS)
+    for _ in range(8):
+        folded = _fold_ar(name)
+        tokens = folded.split()
+        if not tokens:
+            return ""
+        changed = False
+        # Leading connector
+        if tokens[0] in connectors:
+            # Drop the matching leading word from display name (same token count).
+            parts = name.split()
+            name = _normalize_ws(" ".join(parts[1:])).strip(" ،,;:.-")
+            changed = True
+            continue
+        # Trailing connector
+        if tokens[-1] in connectors:
+            parts = name.split()
+            name = _normalize_ws(" ".join(parts[:-1])).strip(" ،,;:.-")
+            changed = True
+            continue
+        # Leading multi-word verbs already covered; also strip "و" + connector
+        if tokens[0] == "و" and len(tokens) > 1 and tokens[1] in connectors:
+            parts = name.split()
+            name = _normalize_ws(" ".join(parts[2:])).strip(" ،,;:.-")
+            changed = True
+            continue
+        if not changed:
             break
 
-    # Cut matn / tafsir / location leftovers (not part of the person name).
-    name = re.split(
-        r"\s+(?:قال|قالت|يقول|يحدث|تحدث|في\s+قوله|في\s+قول|على\s+المنبر)\b",
-        name,
-        maxsplit=1,
-    )[0]
+    # Cut at first internal speech/matn verb (keep the person name before it).
+    folded_full = _fold_ar(name)
+    m_cut = re.search(
+        r"\s+(?:قال|قالت|قالا|قالوا|يقول|يقولون|تقول|يحدث|تحدث|ذكر|ذكرت|"
+        r"في\s+قوله|في\s+قول|على\s+المنبر)\b",
+        folded_full,
+    )
+    if m_cut:
+        name = name[: m_cut.start()]
+
     name = _TRAILING_SPEECH.sub("", name)
     name = re.sub(r"(?:،|\s)+في\s*$", "", name)
+    # Strip trailing "أخبره / أخبرها"
+    name = re.sub(r"\s+(?:أخبره|أخبرها|أخبرهما|اخبره|اخبرها|اخبرهما)\s*$", "", name)
     name = _normalize_ws(name).strip(" ،,;:.-")
 
-    # Remove dangling "انه" / "انها" ONLY — never bare "ان" (breaks سفيان).
-    name = re.sub(r"\s*,?\s*انه(?:ا)?\s*$", "", name)
-    # Strip trailing "أخبره / أخبرها / يقول" leftovers from أن Fulān أخبره.
-    name = re.sub(r"\s+(?:أخبره|أخبرها|أخبرهما|اخبره|اخبرها|اخبرهما|يقول|يقوله)\s*$", "", name)
-    name = _normalize_ws(name).strip(" ،,;:.-")
-
-    if not name or name in {
-        "قال",
-        "قالت",
-        "ان",
-        "عن",
+    # Final pass: reject pure connectors
+    folded = _fold_ar(name)
+    if not name or folded in connectors or folded in {
         "و",
         "ه",
         "ها",
-        "انه",
-        "انها",
         "في",
         "اخبره",
         "أخبره",
@@ -214,8 +274,16 @@ def _clean_name_ar(raw: str) -> str:
         return ""
     if _is_prophet_token(name):
         return ""
-    if re.search(r"يحدث|تحدث", _fold_ar(name)):
+    if re.search(r"يحدث|تحدث", folded):
         return ""
+    # Name must not still contain a connector token as a standalone word.
+    if any(tok in connectors for tok in folded.split()):
+        # Remove any remaining connector words inside (should be rare).
+        kept = [p for p, f in zip(name.split(), folded.split()) if f not in connectors]
+        name = _normalize_ws(" ".join(kept))
+        folded = _fold_ar(name)
+        if not name or folded in connectors:
+            return ""
     if len(name) > 90:
         return ""
     return name
@@ -350,18 +418,20 @@ def _looks_like_person_name(name: str) -> bool:
 def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
     """
     Parse authenticated Arabic isnad only:
-      حدثنا / حدثني / أخبرنا / أخبرني / عن / سمعت / قال حدثنا … + FULL NAME
-    Collect every narrator until the Prophet ﷺ boundary (already cut).
+      حدثنا / حدثني / أخبرنا / أخبرني / عن / سمعت / قال / قالت … + FULL NAME
+    Collect every narrator in document order until the Prophet ﷺ boundary.
     Never invent names; never take Matn phrases as rawi.
+    Transmission connectors are stripped from names via _clean_name_ar.
     """
     if not isnad:
         return []
 
     display, search = _prepare_isnad_display(isnad)
-    names: list[str] = []
+    # (start_offset, name) — sorted into document order at the end.
+    ordered: list[tuple[int, str]] = []
     seen: set[str] = set()
 
-    def add(raw: str) -> bool:
+    def add(raw: str, pos: int) -> bool:
         name = _clean_name_ar(raw)
         if not name or _is_prophet_token(name) or _is_matn_noise(name):
             return False
@@ -372,7 +442,7 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
         name = _clean_name_ar(name)
         if not name or _is_matn_noise(name) or not _looks_like_person_name(name):
             return False
-        # Split apposition "أبو النعمان، عارم بن الفضل" into two display names when both ok.
+        # Split apposition "أبو النعمان، عارم بن الفضل" into two display names.
         if "،" in name or "," in name:
             parts = re.split(r"[،,]", name)
             added_any = False
@@ -384,17 +454,18 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
                 if key in seen:
                     continue
                 seen.add(key)
-                names.append(part)
+                ordered.append((pos, part))
                 added_any = True
+                pos += 1  # keep relative order of apposition parts
             return added_any
         key = _fold_ar(name).replace(" ", "")
         if key in seen:
             return False
         seen.add(key)
-        names.append(name)
+        ordered.append((pos, name))
         return True
 
-    # 1) Leading قال / قالت <Name> (e.g. قال ابن شهاب) — skip matn speech.
+    # 1) قال / قالت <Name> (e.g. قالت أسماء، قال ابن شهاب) — skip matn speech.
     for m in _QALA_NAME.finditer(search):
         candidate = display[m.start("name") : m.end("name")]
         folded = _fold_ar(candidate)
@@ -405,8 +476,9 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
             continue
         if folded.startswith("قال ") or folded.startswith("قلت "):
             continue
-        add(candidate)
+        add(candidate, m.start("name"))
 
+    # 2) Transmission markers: حدثنا / عن / سمعت / …
     matches = list(_TX_FIND.finditer(search))
     for i, m in enumerate(matches):
         verb = m.group("verb")
@@ -447,12 +519,13 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
         )
         if m_speech:
             chunk = display[start : start + m_speech.start()].strip(" ،,;:")
-            add(chunk)
+            add(chunk, start)
             break
 
-        add(chunk)
+        add(chunk, start)
 
-    return names
+    ordered.sort(key=lambda x: x[0])
+    return [name for _, name in ordered]
 
 
 def _cut_isnad_en(text_en: str) -> str:
