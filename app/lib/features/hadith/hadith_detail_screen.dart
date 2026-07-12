@@ -196,23 +196,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Narrator · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 6),
-                  Text(
-                    imported.isNotEmpty
-                        ? 'Complete sanad imported from Arabic ibarat (verified). Never AI-generated.'
-                        : 'Names come only from the authenticated hadith source. Never invented with AI.',
-                    style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.4),
-                  ),
                   const SizedBox(height: 14),
-                  if (primary.isNotEmpty) ...[
+                  if (chain.isEmpty && primary.isNotEmpty) ...[
                     InkWell(
                       onTap: () {
                         Navigator.pop(ctx);
-                        final primaryId = imported.cast<Map<String, dynamic>?>().firstWhere(
-                          (e) => e?['role'] == 'primary',
-                          orElse: () => null,
-                        )?['narrator_id'] as int?;
-                        _openNarratorProfile(primary, primaryId);
+                        _openNarratorProfile(primary, null);
                       },
                       child: Text(
                         primary,
@@ -234,11 +223,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                       textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
                     )
                   else if (chain.isNotEmpty) ...[
-                    Text(
-                      imported.isNotEmpty ? 'Isnad chain (Arabic ibarat order)' : 'Isnad chain (authenticated)',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted),
-                    ),
-                    const SizedBox(height: 10),
                     for (var i = 0; i < chain.length; i++)
                       Container(
                         margin: const EdgeInsets.only(bottom: 8),

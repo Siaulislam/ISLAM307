@@ -699,7 +699,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Only packs that have been imported into preview/data/narrators/ are loadable.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-13`);
+    const res = await fetch(`${path}?v=hadith-reader-14`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -826,13 +826,9 @@ async function openRaviDetail(hadith, book) {
   const isnadText = (isnads[lang] || (lang === 'ur' ? hadith.isnad_ur : hadith.isnad) || '').trim();
   const rtl = lang === 'ur' || lang === 'ar';
   const primary = authenticatedNarratorName(hadith);
-  let body = `
-    <p class="narrator-policy">Names come only from the authenticated hadith source / imported sanad pack. Never invented with AI.</p>
-    ${primary ? narratorCardHtml(primary) : ''}
-  `;
+  let body = '';
   if (chain.length) {
     body += `
-      <p class="narrator-chain-label">Isnad chain (authenticated)</p>
       <ol class="ravi-chain" dir="auto">
         ${chain.map((name, i) => {
           const meta = chainMeta ? chainMeta[i] : null;
@@ -850,7 +846,9 @@ async function openRaviDetail(hadith, book) {
           </li>`;
         }).join('')}
       </ol>`;
-  } else if (!primary) {
+  } else if (primary) {
+    body += narratorCardHtml(primary);
+  } else {
     body += `<p class="empty" dir="${rtl ? 'rtl' : 'ltr'}">${escapeHtml(t.empty)}</p>`;
   }
   if (isnadText) {
