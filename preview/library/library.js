@@ -741,34 +741,36 @@ function openRaviDetail(hadith, book) {
 }
 
 function openReferenceDetail(hadith, book) {
-  const lang = state.hadithLang || 'ur';
-  const d = hadith.reference_detail || {};
-  const localized = (d.by_lang && d.by_lang[lang]) || null;
-  const rows = localized && Array.isArray(localized.rows)
-    ? localized.rows
-    : [
-        ['Kitab', d.kitab || hadith.kitab || ''],
-        ['Baab', d.baab || hadith.kitab || ''],
-        ['Volume', d.volume || ''],
-        ['English Kitab', d.english_kitab || hadith.kitab || ''],
-        ['English Name', d.english_name || book.en || ''],
-        ['Takhreej', d.takhreej || ''],
-        ['Status', d.status || hadith.grade || ''],
-        ['Wazahat', d.wazahat || ''],
-      ];
-  const title = { en: 'Reference', ur: 'حوالہ', ar: 'المرجع' }[lang] || 'Reference';
+  const grade = hadith.grade || hadith.reference_detail?.status || 'Grade not verified.';
+  const chapter = hadith.kitab || state.hadithTopicTitle || '';
+  const url = hadith.source_url || hadith.reference_url || `https://sunnah.com/${state.hadithSlug || book?.slug || ''}:${hadith.n}`;
+  const provider = hadith.source_provider || 'fawazahmed0/hadith-api@1';
+  const rows = [
+    ['Book', book?.en || ''],
+    ['Chapter', chapter],
+    ['Hadith Number', String(hadith.n)],
+    ['Grade', grade],
+    ['Reference URL', url],
+    ['Source Provider', provider],
+  ];
   const body = `
     <table class="ref-table ref-table-shot">
       <tbody>
         ${rows.map(([label, value]) => `
           <tr>
             <th>${escapeHtml(label)}</th>
-            <td dir="auto">${escapeHtml(value)}</td>
+            <td dir="auto">${escapeHtml(value || '—')}</td>
           </tr>`).join('')}
       </tbody>
     </table>
   `;
-  openHadithModal(`${title} · Hadith ${hadith.n}`, body, { darkTable: true });
+  openHadithModal(`Reference · Hadith ${hadith.n}`, body, { darkTable: true });
+}
+
+function hasAuthenticatedArabic(text) {
+  const t = String(text || '').trim();
+  if (!t) return false;
+  return /[\u0600-\u06FF]/.test(t);
 }
 
 function translationFor(hadith, lang) {
@@ -989,7 +991,7 @@ function openHadithReader(slug, rows, index) {
       </div>
 
       <section class="hadith-reader-arabic">
-        <p class="ar hadith-arabic" dir="rtl">${hadith.ar ? escapeHtml(hadith.ar) : 'Arabic text unavailable in authenticated source.'}</p>
+        <p class="ar hadith-arabic" dir="rtl">${hasAuthenticatedArabic(hadith.ar) ? escapeHtml(hadith.ar) : 'Arabic text unavailable in authenticated source.'}</p>
       </section>
 
       <section class="hadith-reader-translation">
@@ -1032,16 +1034,6 @@ function openHadithReader(slug, rows, index) {
           ${rates.map((r) => `<button type="button" class="speed-btn ${Number(state.hadithSpeechRate) === r ? 'active' : ''}" data-rate="${r}">${r}×</button>`).join('')}
         </div>
         <p class="hadith-audio-offline">Offline device TTS · prefers male scholar voices when installed</p>
-      </section>
-
-      <section class="hadith-narrator-section" aria-label="Narrator">
-        ${(() => {
-          const primary = authenticatedNarratorName(hadith);
-          if (!primary) {
-            return '<p class="empty">Narrator is not available in the authenticated source for this hadith.</p>';
-          }
-          return narratorCardHtml(primary);
-        })()}
       </section>
 
       <div class="hadith-reader-tools">
@@ -1109,9 +1101,6 @@ function openHadithReader(slug, rows, index) {
 
   root.querySelector('[data-act="ravi"]').onclick = () => openRaviDetail(hadith, pack.book);
   root.querySelector('[data-act="reference"]').onclick = () => openReferenceDetail(hadith, pack.book);
-  root.querySelectorAll('.hadith-narrator-section [data-narrator]').forEach((btn) => {
-    btn.onclick = () => openNarratorMore(btn.getAttribute('data-narrator') || '', hadith);
-  });
 
   const copyShareText = () => [
     `${pack.book.en} · Hadith ${hadith.n}`,
@@ -1226,12 +1215,11 @@ function paintHadithTopics(slug, pack, topics) {
       <div class="hadith-topic-index">${String(t.kitab_number || idx + 1).padStart(2, '0')}</div>
       <div class="hadith-topic-main">
         <p class="hadith-topic-title" dir="rtl">${escapeHtml(t.title || t.en || '—')}</p>
-        <p class="hadith-topic-meta">Hadith ${t.first}–${t.last} · ${t.count} hadith</p>
+        <p class="hadith-topic-meta">Hadith ${t.first} to ${t.last}</p>
       </div>
       <div class="hadith-topic-side">
         <span class="hadith-topic-count">${t.count.toLocaleString()}</span>
-        <span class="hadith-topic-count-label">open</span>
-        <span class="hadith-topic-go" aria-hidden="true">▶</span>
+        <span class="hadith-topic-count-label">Hadith</span>
       </div>
     `;
     card.onclick = () => openHadithTopic(slug, t);

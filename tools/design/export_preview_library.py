@@ -82,7 +82,12 @@ def export_quran() -> dict:
 
 
 def export_hadith() -> dict:
+    import re
+    ar_re = re.compile(r"[\u0600-\u06FF]")
     conn = connect_gz(HADITH_GZ)
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(hadiths)")}
+    has_ref_url = "reference_url" in cols
+    has_provider = "source_provider" in cols
     books = [
         {
             "id": r["id"],
@@ -100,10 +105,16 @@ def export_hadith() -> dict:
     totals = {}
     for book in books:
         rows = []
+        select_extra = ""
+        if has_ref_url:
+            select_extra += ", h.reference_url"
+        if has_provider:
+            select_extra += ", h.source_provider"
         for r in conn.execute(
-            """
+            f"""
             SELECT h.hadith_number, h.text_ar, h.text_en, h.text_ur, h.grade, h.narrator,
                    h.reference_book, h.reference_hadith, c.number AS chapter_number, c.title AS chapter_title
+                   {select_extra}
             FROM hadiths h
             LEFT JOIN chapters c ON c.id = h.chapter_id
             WHERE h.book_id = ?
@@ -117,13 +128,16 @@ def export_hadith() -> dict:
             if ref_book not in (None, 0, "0"):
                 reference = f"{book['en']} · Book {ref_book} · Hadith {ref_hadith}"
             ravi_primary = (r["narrator"] or "").strip()
+            text_ar = (r["text_ar"] or "").strip()
+            if text_ar and not ar_re.search(text_ar):
+                text_ar = ""
             ravi_by_lang = extract_ravi_by_lang(
-                r["text_ar"] or "",
+                text_ar,
                 ravi_primary,
                 r["text_en"] or "",
                 r["text_ur"] or "",
             )
-            isnads = isnad_by_lang(r["text_ar"] or "", r["text_en"] or "", r["text_ur"] or "")
+            isnads = isnad_by_lang(text_ar, r["text_en"] or "", r["text_ur"] or "")
             ref_detail = build_reference_detail(
                 book_name=book["en"],
                 book_slug=book["slug"],
@@ -135,10 +149,20 @@ def export_hadith() -> dict:
                 chapter_number=r["chapter_number"],
                 grade=r["grade"],
             )
+            source_url = ""
+            if has_ref_url:
+                source_url = (r["reference_url"] or "").strip()
+            if not source_url:
+                source_url = ref_detail["source_url"]
+            provider = ""
+            if has_provider:
+                provider = (r["source_provider"] or "").strip()
+            if not provider:
+                provider = "fawazahmed0/hadith-api@1"
             rows.append(
                 {
                     "n": r["hadith_number"],
-                    "ar": r["text_ar"] or "",
+                    "ar": text_ar,
                     "en": r["text_en"] or "",
                     "ur": r["text_ur"] or "",
                     "grade": r["grade"] or "",
@@ -155,7 +179,9 @@ def export_hadith() -> dict:
                     "reference_hadith": ref_hadith,
                     "kitab": r["chapter_title"] or "",
                     "kitab_number": r["chapter_number"],
-                    "source_url": ref_detail["source_url"],
+                    "source_url": source_url,
+                    "reference_url": source_url,
+                    "source_provider": provider,
                 }
             )
         write_json_gz(OUT / "hadith" / f"{book['slug']}.json.gz", {"book": book, "hadiths": rows})

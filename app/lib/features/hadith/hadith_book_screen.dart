@@ -88,6 +88,17 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
     return ur.isNotEmpty ? ur : (en.isEmpty ? '—' : en);
   }
 
+  String _topicRangeLabel(Map<String, dynamic> topic) {
+    final start = topic['hadith_start'] ?? topic['first'];
+    final end = topic['hadith_end'] ?? topic['last'];
+    if (start != null && end != null && '$start'.isNotEmpty && '$end'.isNotEmpty) {
+      return 'Hadith $start to $end';
+    }
+    final count = topic['hadith_count'];
+    if (count != null) return '$count Hadith';
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = _book?['name_en']?.toString() ?? 'Hadith';
@@ -191,6 +202,11 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                             textDirection: TextDirection.rtl,
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1.5),
                           ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _topicRangeLabel(topic),
+                            style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w700),
+                          ),
                         ],
                       ),
                     ),
@@ -202,7 +218,7 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                           '$count',
                           style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep),
                         ),
-                        const Text('open ▶', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emerald)),
+                        const Text('Hadith', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emerald)),
                       ],
                     ),
                   ],

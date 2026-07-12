@@ -53,7 +53,9 @@ class HadithRepository {
     final rows = await db.rawQuery(
       '''
       SELECT c.id, c.book_id, c.number, c.title, c.hadith_start, c.hadith_end,
-             COUNT(h.id) AS hadith_count
+             COUNT(h.id) AS hadith_count,
+             MIN(h.hadith_number) AS first_hadith,
+             MAX(h.hadith_number) AS last_hadith
       FROM chapters c
       LEFT JOIN hadiths h ON h.chapter_id = c.id
       WHERE c.book_id = ? AND TRIM(IFNULL(c.title, '')) != ''
@@ -70,6 +72,8 @@ class HadithRepository {
       map['title_en'] = titleEn;
       map['title_ur'] = localizedChapterTitle(slug, titleEn, 'ur');
       map['title_ar'] = localizedChapterTitle(slug, titleEn, 'ar');
+      map['hadith_start'] = map['hadith_start'] ?? map['first_hadith'];
+      map['hadith_end'] = map['hadith_end'] ?? map['last_hadith'];
       return map;
     }).toList();
   }
@@ -256,9 +260,14 @@ class HadithRepository {
     }
 
     final ravi = (map['narrator'] as String?)?.trim();
-    final textAr = map['text_ar'] as String?;
+    var textAr = (map['text_ar'] as String?)?.trim();
     final textEn = map['text_en'] as String?;
     final textUr = map['text_ur'] as String?;
+    // Never treat Latin/English placeholders as Arabic — only authenticated Arabic script.
+    if (textAr != null && textAr.isNotEmpty && !_containsArabicScript(textAr)) {
+      textAr = null;
+      map['text_ar'] = null;
+    }
     final bookNameAr = book?['name_ar'] as String?;
     map['ravi'] = (ravi == null || ravi.isEmpty) ? null : ravi;
     final raviByLang = extractRaviByLang(textAr, primary: ravi, textEn: textEn, textUr: textUr);
@@ -270,9 +279,13 @@ class HadithRepository {
     map['isnad_ur'] = isnads['ur'] ?? '';
     map['reference'] = reference;
     map['kitab'] = kitab;
+    map['chapter'] = kitab;
     map['book_name'] ??= bookName;
     map['book_slug'] ??= slug;
     map['book_name_ar'] ??= bookNameAr;
+    map['source_provider'] = (map['source_provider'] as String?)?.trim().isNotEmpty == true
+        ? map['source_provider']
+        : 'fawazahmed0/hadith-api@1';
     map['reference_detail'] = buildReferenceDetail(
       bookName: bookName,
       bookSlug: slug,
@@ -285,8 +298,14 @@ class HadithRepository {
       grade: map['grade'] as String?,
     );
     map['reference_url'] =
-        (map['reference_detail'] as Map)['source_url']?.toString() ?? 'https://sunnah.com/$slug:$hadithNo';
+        (map['reference_url'] as String?)?.trim().isNotEmpty == true
+            ? map['reference_url']
+            : ((map['reference_detail'] as Map)['source_url']?.toString() ?? 'https://sunnah.com/$slug:$hadithNo');
     return map;
+  }
+
+  static bool _containsArabicScript(String text) {
+    return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
   }
 
   Future<bool> _supportsGradeTable(dynamic db) async {

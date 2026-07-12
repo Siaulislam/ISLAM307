@@ -147,6 +147,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     return chain.isEmpty ? '' : chain.first;
   }
 
+  bool _hasAuthenticatedArabic(Object? raw) {
+    final text = '$raw'.trim();
+    if (text.isEmpty) return false;
+    return RegExp(r'[\u0600-\u06FF]').hasMatch(text);
+  }
+
   String _bookSlug() => (_hadith?['book_slug'] ?? '').toString();
 
   void _openNarratorProfile([String? name]) {
@@ -430,32 +436,15 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   void _openReferenceSheet() {
     final h = _hadith;
     if (h == null) return;
-    final detail = h['reference_detail'];
-    List<(String, String)> rows = [];
-    if (detail is Map && detail['by_lang'] is Map && (detail['by_lang'] as Map)[_lang == 'hi' ? 'en' : _lang] is Map) {
-      final localized = Map<String, dynamic>.from((detail['by_lang'] as Map)[_lang == 'hi' ? 'en' : _lang] as Map);
-      final rawRows = localized['rows'];
-      if (rawRows is List) {
-        for (final row in rawRows) {
-          if (row is List && row.length >= 2) {
-            rows.add(('${row[0]}', '${row[1]}'));
-          }
-        }
-      }
-    }
-    if (rows.isEmpty) {
-      final d = Map<String, String>.from((detail as Map?)?.map((k, v) => MapEntry('$k', '$v')) ?? {});
-      rows = [
-        ('Kitab', d['kitab'] ?? h['kitab']?.toString() ?? ''),
-        ('Baab', d['baab'] ?? h['kitab']?.toString() ?? ''),
-        ('Volume', d['volume'] ?? ''),
-        ('English Kitab', d['english_kitab'] ?? ''),
-        ('English Name', d['english_name'] ?? h['book_name']?.toString() ?? ''),
-        ('Takhreej', d['takhreej'] ?? ''),
-        ('Status', d['status'] ?? ''),
-        ('Wazahat', d['wazahat'] ?? ''),
-      ];
-    }
+    final grading = HadithRepository.gradingSummary(h);
+    final rows = <(String, String)>[
+      ('Book', h['book_name']?.toString() ?? ''),
+      ('Chapter', h['kitab']?.toString() ?? h['chapter']?.toString() ?? ''),
+      ('Hadith Number', '${widget.hadithNumber}'),
+      ('Grade', grading.grade),
+      ('Reference URL', h['reference_url']?.toString() ?? ''),
+      ('Source Provider', h['source_provider']?.toString() ?? ''),
+    ];
 
     showModalBottomSheet<void>(
       context: context,
@@ -496,9 +485,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(
-                                    rows[i].$2,
+                                    rows[i].$2.isEmpty ? '—' : rows[i].$2,
                                     textAlign: TextAlign.right,
-                                    textDirection: TextDirection.rtl,
                                     style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, height: 1.4),
                                   ),
                                 ),
@@ -632,7 +620,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 ),
                               ),
                               const SizedBox(height: 22),
-                              if ((h['text_ar'] as String?)?.isNotEmpty == true)
+                              if (_hasAuthenticatedArabic(h['text_ar']))
                                 Text(
                                   '${h['text_ar']}',
                                   textAlign: TextAlign.right,
@@ -679,8 +667,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 ),
                               const SizedBox(height: 18),
                               _audioBox(),
-                              const SizedBox(height: 14),
-                              _narratorSection(name: _primaryNarratorName()),
                               const SizedBox(height: 14),
                               Wrap(
                                 spacing: 8,
@@ -754,47 +740,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                       ],
                     ),
                   ),
-      ),
-    );
-  }
-
-  Widget _narratorSection({required String name}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Islam307Theme.cardBorder),
-        gradient: const LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color(0xFFF8FAFC), Colors.white],
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('👤 Narrator', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep)),
-          const SizedBox(height: 8),
-          if (name.isEmpty)
-            const Text(
-              'Narrator is not available in the authenticated source for this hadith.',
-              style: TextStyle(fontWeight: FontWeight.w600, height: 1.45),
-            )
-          else ...[
-            Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1.45)),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed: () => _openNarratorProfile(name),
-              style: FilledButton.styleFrom(
-                backgroundColor: Islam307Theme.emerald,
-                minimumSize: const Size.fromHeight(46),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800)),
-            ),
-          ],
-        ],
       ),
     );
   }
