@@ -358,11 +358,96 @@ def _cut_isnad_en(text_en: str) -> str:
     return plain[: m.start()].strip(" ,;:")
 
 
+_EN_NARRATOR_NOISE = re.compile(
+    r"^(?:it|this|the above|another|a tradition|a hadith|narrated|reported|one|some|people|"
+    r"he|she|they|we|i|and|or|from|that|when|while|after|before|also|same|"
+    r"the prophet|allah|messenger|narrator not mentioned|see translation|"
+    r"the same|the like)\b",
+    re.I,
+)
+
+# Authenticated English companion / attributed-narrator patterns (never invent).
+_EN_NARRATOR_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(r"^\s*Narrated\s+(.+?)(?:\s*:|\s*\(|\s*$)", re.I | re.S),
+    re.compile(r"^\s*It (?:is|was) narrated on the authority of\s+(.+?)(?:\s+that\b|\s*:)", re.I),
+    re.compile(r"^\s*It (?:is|was) reported on the authority of\s+(.+?)(?:\s+that\b|\s*:)", re.I),
+    re.compile(
+        r"^\s*It has been (?:narrated|reported|related|transmitted) on the authority of\s+(.+?)"
+        r"(?:\s+that\b|\s*:|\s+who\b|\s*,|\s*\.)",
+        re.I,
+    ),
+    re.compile(
+        r"^\s*(?:This hadith|A hadith like this|The above hadith|The same hadith)"
+        r"[^.!?]{0,120}?\bon the authority of\s+(.+?)"
+        r"(?:\s+with\b|\s+that\b|\s+from\b|\s+through\b|\s*,|\s*\.|$)",
+        re.I,
+    ),
+    re.compile(
+        r"^\s*(?:This hadith|A hadith like this)"
+        r"[^.!?]{0,80}?\b(?:narrated|reported|transmitted)\s+by\s+(.+?)"
+        r"(?:\s+with\b|\s+through\b|\s+on\b|\s*,|\s*\.|$)",
+        re.I,
+    ),
+    re.compile(r"^\s*It was narrated from\s+(.+?)(?:\s+that\b|\s*,\s*who\b|\s*:)", re.I),
+    re.compile(r"^\s*It was narrated that\s+(.+?)(?:\s+said\b|\s*:)", re.I),
+    re.compile(r"^\s*(.+?)\s+narrated\s+that\s*:?", re.I),
+    re.compile(r"^\s*(.+?)\s+narrated\s*:", re.I),
+    re.compile(r"^\s*(.+?)\s+narrated\s+on the authority of\b", re.I),
+    re.compile(r"^\s*(.+?)\s+reported\s*:", re.I),
+    re.compile(r"^\s*(.+?)\s+reported\s+that\b", re.I),
+    re.compile(r"^\s*(.+?)\s+reported\s+on the authority of\b", re.I),
+    re.compile(r"^\s*(.+?)\s+reported\s+Allah'?s\s+(?:Messenger|Apostle)\b", re.I),
+    re.compile(r"^\s*(.+?)\s*\(\s*Allah be pleased[^)]*\)\s*reported\b", re.I),
+    re.compile(r"^\s*(.+?)\s+said\s*:", re.I),
+]
+
+_ON_AUTH_EN = re.compile(r"on(?: the)? authority of\s+([^,.\n]+)", re.I)
+
+
+def _looks_like_en_narrator(name: str) -> bool:
+    name = (name or "").strip(" '\"`")
+    if not name or len(name) < 2 or len(name) > 90:
+        return False
+    if _EN_NARRATOR_NOISE.match(name):
+        return False
+    if not re.search(r"[A-Za-z]", name):
+        return False
+    if re.search(
+        r"\bnarrated\b|\breported\b|\btradition\b|\bchain\b|\babove\b|\bmentioned\b|"
+        r"\bhadith\b|\btransmitted\b|\btranslation\b",
+        name,
+        re.I,
+    ):
+        return False
+    if len(re.split(r"\s+", name)) > 12:
+        return False
+    if _is_prophet_token(name):
+        return False
+    return True
+
+
 def _extract_narrated_en(text_en: str | None) -> list[str]:
-    """English 'Narrated X:' companion label when Arabic isnad is unavailable."""
+    """Extract attributed narrator from authenticated English text only (never invent)."""
     text = (text_en or "").strip()
     if not text:
         return []
+    for pat in _EN_NARRATOR_PATTERNS:
+        m = pat.match(text)
+        if not m:
+            continue
+        name = _clean_name_en(m.group(1))
+        name = re.sub(r"\s*\(.*$", "", name).strip()
+        if _looks_like_en_narrator(name):
+            return [name]
+    matches = list(_ON_AUTH_EN.finditer(text))
+    if matches:
+        head = [m for m in matches if m.start() < 520] or matches
+        for m in reversed(head):
+            name = _clean_name_en(m.group(1))
+            name = re.sub(r"\s*\(.*$", "", name).strip()
+            if _looks_like_en_narrator(name):
+                return [name]
+    # Legacy Bukhari-style head cut fallback
     head = _cut_isnad_en(text) if _PROPHET_EN.search(text) else text.split(".", 1)[0]
     m = re.match(
         r"^\s*Narrated\s+(.+?)(?:\s*[:.\n]|\s+that\b|\s+said\b|\s+reported\b)",
@@ -372,7 +457,7 @@ def _extract_narrated_en(text_en: str | None) -> list[str]:
     if not m:
         return []
     name = _clean_name_en(m.group(1))
-    return [name] if name else []
+    return [name] if name and _looks_like_en_narrator(name) else []
 
 
 def extract_ravi_chain(

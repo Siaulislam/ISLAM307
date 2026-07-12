@@ -2,6 +2,12 @@
 
 Generated: `2026-07-12T12:05:48.279213+00:00`
 
+> **Narrator follow-up (second forensic report):** see
+> [`HADITH_FORENSIC_AUDIT_NARRATORS.md`](HADITH_FORENSIC_AUDIT_NARRATORS.md) and
+> [`HADITH_FORENSIC_AUDIT_NARRATORS.csv`](HADITH_FORENSIC_AUDIT_NARRATORS.csv).
+> Narrators newly recovered from authenticated editions: **12,101**.
+> Rebuild detail: [`NARRATOR_REBUILD_REPORT.md`](NARRATOR_REBUILD_REPORT.md).
+
 ## Policy
 
 - Never invent Arabic, translation, narrator, grade, or reference with AI.

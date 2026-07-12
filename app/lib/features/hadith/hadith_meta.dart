@@ -300,18 +300,89 @@ String _cutIsnadEn(String textEn) {
   return textEn.substring(0, m.start).replaceAll(RegExp(r'[ ,;:]+$'), '');
 }
 
+final _enNarratorNoise = RegExp(
+  r'^(?:it|this|the above|another|a tradition|a hadith|narrated|reported|one|some|people|'
+  r'he|she|they|we|i|and|or|from|that|when|while|after|before|also|same|'
+  r'the prophet|allah|messenger|narrator not mentioned|see translation|'
+  r'the same|the like)\b',
+  caseSensitive: false,
+);
+
+/// Authenticated English attributed-narrator patterns only (never invent names).
+final _enNarratorPatterns = <RegExp>[
+  RegExp(r'^\s*Narrated\s+(.+?)(?:\s*:|\s*\(|\s*$)', caseSensitive: false, dotAll: true),
+  RegExp(r'^\s*It (?:is|was) narrated on the authority of\s+(.+?)(?:\s+that\b|\s*:)', caseSensitive: false),
+  RegExp(r'^\s*It (?:is|was) reported on the authority of\s+(.+?)(?:\s+that\b|\s*:)', caseSensitive: false),
+  RegExp(
+    r'^\s*It has been (?:narrated|reported|related|transmitted) on the authority of\s+(.+?)'
+    r'(?:\s+that\b|\s*:|\s+who\b|\s*,|\s*\.)',
+    caseSensitive: false,
+  ),
+  RegExp(
+    r'^\s*(?:This hadith|A hadith like this|The above hadith|The same hadith)'
+    r'[^.!?]{0,120}?\bon the authority of\s+(.+?)'
+    r'(?:\s+with\b|\s+that\b|\s+from\b|\s+through\b|\s*,|\s*\.|$)',
+    caseSensitive: false,
+  ),
+  RegExp(
+    r'^\s*(?:This hadith|A hadith like this)'
+    r'[^.!?]{0,80}?\b(?:narrated|reported|transmitted)\s+by\s+(.+?)'
+    r'(?:\s+with\b|\s+through\b|\s+on\b|\s*,|\s*\.|$)',
+    caseSensitive: false,
+  ),
+  RegExp(r'^\s*It was narrated from\s+(.+?)(?:\s+that\b|\s*,\s*who\b|\s*:)', caseSensitive: false),
+  RegExp(r'^\s*It was narrated that\s+(.+?)(?:\s+said\b|\s*:)', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+narrated\s+that\s*:?', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+narrated\s*:', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+narrated\s+on the authority of\b', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+reported\s*:', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+reported\s+that\b', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+reported\s+on the authority of\b', caseSensitive: false),
+  RegExp(r"^\s*(.+?)\s+reported\s+Allah'?s\s+(?:Messenger|Apostle)\b", caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s*\(\s*Allah be pleased[^)]*\)\s*reported\b', caseSensitive: false),
+  RegExp(r'^\s*(.+?)\s+said\s*:', caseSensitive: false),
+];
+
+final _onAuthEn = RegExp(r'on(?: the)? authority of\s+([^,.\n]+)', caseSensitive: false);
+
+bool _looksLikeEnNarrator(String name) {
+  final n = name.trim();
+  if (n.isEmpty || n.length < 2 || n.length > 90) return false;
+  if (_enNarratorNoise.hasMatch(n)) return false;
+  if (!RegExp(r'[A-Za-z]').hasMatch(n)) return false;
+  if (RegExp(
+    r'\bnarrated\b|\breported\b|\btradition\b|\bchain\b|\babove\b|\bmentioned\b|'
+    r'\bhadith\b|\btransmitted\b|\btranslation\b',
+    caseSensitive: false,
+  ).hasMatch(n)) {
+    return false;
+  }
+  if (n.split(RegExp(r'\s+')).length > 12) return false;
+  if (_isProphetToken(n)) return false;
+  return true;
+}
+
 List<String> _extractNarratedEn(String? textEn) {
   final text = (textEn ?? '').trim();
   if (text.isEmpty) return [];
-  final head = _prophetEn.hasMatch(text) ? _cutIsnadEn(text) : text.split('.').first;
-  final m = RegExp(
-    r'^\s*Narrated\s+(.+?)(?:\s*[:.\n]|\s+that\b|\s+said\b|\s+reported\b)',
-    caseSensitive: false,
-    dotAll: true,
-  ).firstMatch(head);
-  if (m == null) return [];
-  final name = _cleanNameEn(m.group(1)!);
-  return name.isEmpty ? [] : [name];
+  for (final pat in _enNarratorPatterns) {
+    final m = pat.firstMatch(text);
+    if (m == null) continue;
+    var name = _cleanNameEn(m.group(1)!);
+    name = name.replaceFirst(RegExp(r'\s*\(.*$'), '').trim();
+    if (_looksLikeEnNarrator(name)) return [name];
+  }
+  final matches = _onAuthEn.allMatches(text).toList();
+  if (matches.isNotEmpty) {
+    final head = matches.where((m) => m.start < 520).toList();
+    final pool = head.isEmpty ? matches : head;
+    for (final m in pool.reversed) {
+      var name = _cleanNameEn(m.group(1)!);
+      name = name.replaceFirst(RegExp(r'\s*\(.*$'), '').trim();
+      if (_looksLikeEnNarrator(name)) return [name];
+    }
+  }
+  return [];
 }
 
 List<String> extractRaviChain(String? textAr, {String? primary, String? textEn, String? textUr}) {

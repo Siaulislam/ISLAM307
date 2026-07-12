@@ -1,0 +1,123 @@
+{
+  "generated_at": "2026-07-12T12:27:07.436438+00:00",
+  "policy": [
+    "Never invent narrator names with AI.",
+    "Every narrator verified against authenticated fawazahmed0/hadith-api@1 editions.",
+    "Unverifiable narrators left empty."
+  ],
+  "source": "fawazahmed0/hadith-api@1",
+  "rebuild_totals": {
+    "total_hadith": 24356,
+    "before_present": 11954,
+    "after_present": 24055,
+    "after_missing": 301,
+    "recovered_new": 12101,
+    "kept_existing_same": 11035,
+    "replaced_with_authenticated": 919,
+    "cleared_unverified": 0,
+    "still_missing_unverifiable": 301,
+    "methods": {
+      "en:narrated_colon": 11926,
+      "ar:arabic_isnad_companion": 2352,
+      "en:x_said_colon": 1662,
+      "en:x_narrated_that": 1022,
+      "en:x_narrated_colon": 633,
+      "en:last_on_authority": 203,
+      "en:auth_narrated": 181,
+      "en:x_reported_colon": 1813,
+      "en:this_hadith_auth": 859,
+      "en:auth_reported": 56,
+      "en:this_hadith_by": 230,
+      "en:it_has_been_auth": 229,
+      "en:x_narrated_auth": 96,
+      "en:x_reported_auth": 291,
+      "en:x_reported_that": 1465,
+      "en:it_was_from": 19,
+      "en:x_reported_messenger": 982,
+      "en:it_was_that": 6,
+      "en:x_honor_reported": 30
+    }
+  },
+  "totals": {
+    "total_hadith": 24356,
+    "narrator_present": 24055,
+    "narrator_absent": 301,
+    "verified_match": 24055,
+    "mismatch": 0,
+    "missing_unverifiable": 301,
+    "missing_but_source_has": 0,
+    "verification_status_counts": {
+      "VERIFIED_MATCH": 24055,
+      "MISSING_UNVERIFIABLE": 301
+    },
+    "narrators_recovered_new": 12101
+  },
+  "books": {
+    "bukhari": {
+      "book": "Sahih Bukhari",
+      "slug": "bukhari",
+      "total": 7563,
+      "narrator_present": 7547,
+      "narrator_absent": 16,
+      "verified_match": 7547,
+      "mismatch": 0,
+      "missing_unverifiable": 16,
+      "missing_but_source_has": 0,
+      "arabic_present": 7554,
+      "translation_present": 7557,
+      "reference_present": 7563,
+      "grade_present": 0
+    },
+    "muslim": {
+      "book": "Sahih Muslim",
+      "slug": "muslim",
+      "total": 7563,
+      "narrator_present": 7358,
+      "narrator_absent": 205,
+      "verified_match": 7358,
+      "mismatch": 0,
+      "missing_unverifiable": 205,
+      "missing_but_source_has": 0,
+      "arabic_present": 7360,
+      "translation_present": 7481,
+      "reference_present": 7563,
+      "grade_present": 0
+    },
+    "abudawud": {
+      "book": "Sunan Abu Dawood",
+      "slug": "abudawud",
+      "total": 5274,
+      "narrator_present": 5270,
+      "narrator_absent": 4,
+      "verified_match": 5270,
+      "mismatch": 0,
+      "missing_unverifiable": 4,
+      "missing_but_source_has": 0,
+      "arabic_present": 5272,
+      "translation_present": 5274,
+      "reference_present": 5274,
+      "grade_present": 5274
+    },
+    "tirmidhi": {
+      "book": "Jami' at-Tirmidhi",
+      "slug": "tirmidhi",
+      "total": 3956,
+      "narrator_present": 3880,
+      "narrator_absent": 76,
+      "verified_match": 3880,
+      "mismatch": 0,
+      "missing_unverifiable": 76,
+      "missing_but_source_has": 0,
+      "arabic_present": 3885,
+      "translation_present": 3947,
+      "reference_present": 3956,
+      "grade_present": 3927
+    }
+  },
+  "artifacts": {
+    "csv": "reports/verification/HADITH_FORENSIC_AUDIT_NARRATORS.csv",
+    "json": "reports/verification/HADITH_FORENSIC_AUDIT_NARRATORS.json",
+    "md": "reports/verification/HADITH_FORENSIC_AUDIT_NARRATORS.md",
+    "rebuild_report": "reports/verification/NARRATOR_REBUILD_REPORT.md"
+  }
+}
