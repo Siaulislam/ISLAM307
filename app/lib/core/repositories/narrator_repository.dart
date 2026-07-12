@@ -4,11 +4,12 @@ import '../modules/module_catalog.dart';
 /// Narrator (Rijāl) Knowledge — authenticated classical sources only.
 ///
 /// NEVER invent names, biographies, teachers, students, dates, or reliability.
-/// NEVER use AI, Wikipedia, blogs, forums, or unapproved websites.
+/// NEVER assume a biography is "unavailable" in classical literature.
 ///
-/// Primary hadith narrator *display names* still come from [HadithRepository]
-/// (authenticated hadith pack). Full profiles and hadith→narrator IDs come only
-/// from licensed imports into `narrators.db`.
+/// If a narrator row is not in the local `narrators.db` yet, return
+/// [statusNotImported] so the UI can show an empty profile shell.
+/// When authenticated datasets are imported later, the same APIs return
+/// full profiles automatically — no UI rewrite required.
 class NarratorRepository {
   NarratorRepository(this._registry, {ModuleCatalog? catalog})
       : _catalog = catalog ?? ModuleCatalog.instance;
@@ -16,16 +17,16 @@ class NarratorRepository {
   final DatabaseRegistry _registry;
   final ModuleCatalog _catalog;
 
-  /// Exact product copy when verified rijāl data is absent.
-  static const verifiedUnavailableMessage = 'Verified narrator biography is not available.';
+  static const statusImported = 'imported';
+  static const statusNotImported = 'not_imported';
+
+  /// Shown only when this narrator has not been imported into local narrators.db yet.
+  static const notImportedMessage =
+      'This narrator profile has not been imported into the local database yet.';
 
   static const policyNeverInvent =
       'ISLAM 307 never generates narrator biographies with AI. '
-      'Only approved classical Sunni references are used, and only with license/permission. '
-      'Opinions from different books are never merged.';
-
-  @Deprecated('Use verifiedUnavailableMessage')
-  static const offlineUnavailableMessage = verifiedUnavailableMessage;
+      'Profiles appear only after authenticated narrator datasets are imported into narrators.db.';
 
   Future<Map<String, dynamic>> catalog() => _catalog.narratorSources();
 
@@ -47,11 +48,6 @@ class NarratorRepository {
     }
   }
 
-  Future<bool> hasBiographyRows() async {
-    final m = await meta();
-    return m['biography_rows'] != null && m['biography_rows'] != '0';
-  }
-
   /// Resolve verified narrator ID for a hadith (mapping table only — never AI).
   Future<int?> narratorIdForHadith(String bookSlug, int hadithNumber) async {
     if (!await isPackRegistered()) return null;
@@ -71,44 +67,36 @@ class NarratorRepository {
     }
   }
 
-  /// Full profile by narrator ID. Returns unavailable map when missing.
   Future<Map<String, dynamic>> profileById(int narratorId, {String lang = 'en'}) async {
     if (!await isPackRegistered()) {
-      return _unavailable(name: null, notes: 'narrators.db is not registered.');
+      return _notImported(name: null);
     }
     try {
       final db = await _registry.open('narrators');
       final rows = await db.query('narrators', where: 'id = ?', whereArgs: [narratorId], limit: 1);
-      if (rows.isEmpty) {
-        return _unavailable(name: null, notes: 'No verified narrator row for id=$narratorId.');
-      }
+      if (rows.isEmpty) return _notImported(name: null);
       return _assembleProfile(Map<String, dynamic>.from(rows.first), lang: lang);
     } catch (_) {
-      return _unavailable(name: null, notes: 'Narrator database could not be opened.');
+      return _notImported(name: null);
     }
   }
 
-  /// Profile by slug.
   Future<Map<String, dynamic>> profileBySlug(String slug, {String lang = 'en'}) async {
     final clean = slug.trim();
-    if (clean.isEmpty) return _unavailable(name: null, notes: 'Empty slug.');
-    if (!await isPackRegistered()) {
-      return _unavailable(name: clean, notes: 'narrators.db is not registered.');
-    }
+    if (clean.isEmpty) return _notImported(name: null);
+    if (!await isPackRegistered()) return _notImported(name: clean);
     try {
       final db = await _registry.open('narrators');
       final rows = await db.query('narrators', where: 'slug = ?', whereArgs: [clean], limit: 1);
-      if (rows.isEmpty) {
-        return _unavailable(name: clean, notes: 'No verified narrator for this slug.');
-      }
+      if (rows.isEmpty) return _notImported(name: clean);
       return _assembleProfile(Map<String, dynamic>.from(rows.first), lang: lang);
     } catch (_) {
-      return _unavailable(name: clean, notes: 'Narrator database could not be opened.');
+      return _notImported(name: clean);
     }
   }
 
-  /// Lookup by display name via aliases, or by verified hadith mapping when provided.
-  /// Never invents a match with AI / prediction beyond exact normalized alias.
+  /// Lookup by verified hadith mapping first, then exact alias match.
+  /// Never invents a match. Missing local row → [statusNotImported].
   Future<Map<String, dynamic>> lookup(
     String displayName, {
     String lang = 'en',
@@ -122,13 +110,9 @@ class NarratorRepository {
       if (id != null) return profileById(id, lang: lang);
     }
 
-    if (name.isEmpty) {
-      return _unavailable(name: null, notes: 'No authenticated narrator name was provided for this hadith.');
-    }
+    if (name.isEmpty) return _notImported(name: null);
 
-    if (!await isPackRegistered()) {
-      return _unavailable(name: name, notes: 'narrators.db is not registered.');
-    }
+    if (!await isPackRegistered()) return _notImported(name: name);
 
     try {
       final db = await _registry.open('narrators');
@@ -143,15 +127,10 @@ class NarratorRepository {
         ''',
         [normalized],
       );
-      if (rows.isEmpty) {
-        return _unavailable(
-          name: name,
-          notes: 'No licensed biography matched this authenticated narrator name.',
-        );
-      }
+      if (rows.isEmpty) return _notImported(name: name);
       return profileById(rows.first['id'] as int, lang: lang);
     } catch (_) {
-      return _unavailable(name: name, notes: 'Narrator database could not be opened.');
+      return _notImported(name: name);
     }
   }
 
@@ -215,22 +194,19 @@ class NarratorRepository {
       [id],
     );
 
-    final hasAnyDetail = teachers.isNotEmpty ||
-        students.isNotEmpty ||
-        reliability.isNotEmpty ||
-        cites.isNotEmpty ||
-        books.isNotEmpty ||
-        _hasIdentityContent(row);
-
-    if (!hasAnyDetail) {
-      return _unavailable(
-        name: _displayName(row, lang),
-        notes: 'Narrator row exists but no verified biography fields were imported yet.',
-      );
+    // Row exists but no imported biography content yet → treat as not imported.
+    if (!_hasIdentityContent(row) &&
+        teachers.isEmpty &&
+        students.isEmpty &&
+        reliability.isEmpty &&
+        cites.isEmpty &&
+        books.isEmpty) {
+      return _notImported(name: _displayName(row, lang));
     }
 
     return {
-      'unavailable': false,
+      'status': statusImported,
+      'imported': true,
       'id': id,
       'slug': row['slug'],
       'name_ar': row['name_ar'],
@@ -299,12 +275,36 @@ class NarratorRepository {
     return (row['name_ar'] as String?)?.trim();
   }
 
-  Map<String, dynamic> _unavailable({required String? name, required String notes}) {
+  Map<String, dynamic> _notImported({required String? name}) {
     return {
-      'unavailable': true,
-      'message': verifiedUnavailableMessage,
+      'status': statusNotImported,
+      'imported': false,
+      'message': notImportedMessage,
       'name': name,
-      'notes': notes,
+      'display_name': name,
+      // Empty profile shell — fields fill automatically after import.
+      'name_ar': null,
+      'name_ur': null,
+      'name_en': null,
+      'full_name': null,
+      'kunyah': null,
+      'laqab': null,
+      'nasab': null,
+      'birth_text': null,
+      'death_text': null,
+      'city': null,
+      'country': null,
+      'generation': null,
+      'is_companion': false,
+      'is_tabii': false,
+      'is_tab_tabii': false,
+      'timeline_notes': null,
+      'teachers': const <Map<String, dynamic>>[],
+      'students': const <Map<String, dynamic>>[],
+      'reliability': const <Map<String, dynamic>>[],
+      'references': const <Map<String, dynamic>>[],
+      'books_mentioned': const <Map<String, dynamic>>[],
+      'hadith_collections': const <Map<String, dynamic>>[],
       'policy': policyNeverInvent,
     };
   }

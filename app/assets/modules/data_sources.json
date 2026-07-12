@@ -86,7 +86,7 @@
       "title": "Narrator (Rijāl) Knowledge System",
       "purpose": "Display authenticated hadith narrator names and, when licensed, classical rijāl biographies from approved Sunni references only.",
       "license": "Narrator names: same provenance as hadith packs (e.g. Sunnah.com). Biographies: ONLY from approved classical works with license/permission — never AI, Wikipedia, blogs, or forums.",
-      "attribution": "Approved references (permission required to import text): Tahdhib al-Kamal (al-Mizzi), Tahdhib al-Tahdhib & Taqrib al-Tahdhib & Al-Isabah & Lisan al-Mizan (Ibn Hajar), Siyar A'lam al-Nubala & Mizan al-I'tidal (al-Dhahabi), Tabaqat Ibn Sa'd, Tarikh al-Kabir (al-Bukhari), Al-Jarh wa al-Ta'dil (Ibn Abi Hatim). If verified biography is missing: “Verified narrator biography is not available.”",
+      "attribution": "Approved references (permission required to import text): Tahdhib al-Kamal (al-Mizzi), Tahdhib al-Tahdhib & Taqrib al-Tahdhib & Al-Isabah & Lisan al-Mizan (Ibn Hajar), Siyar A'lam al-Nubala & Mizan al-I'tidal (al-Dhahabi), Tabaqat Ibn Sa'd, Tarikh al-Kabir (al-Bukhari), Al-Jarh wa al-Ta'dil (Ibn Abi Hatim). Until a narrator is imported into narrators.db: “This narrator profile has not been imported into the local database yet.” Never invent biographies with AI.",
       "url": "https://sunnah.com",
       "notes": "narrators.db ships schema + approved-source catalog with zero biography rows until a licensed import. See assets/modules/narrators_sources.json and tools/narrators/."
     },

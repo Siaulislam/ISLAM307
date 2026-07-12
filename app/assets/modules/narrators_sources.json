@@ -3,11 +3,11 @@
   "policy": [
     "Never generate narrator names, biographies, teachers, students, birth/death, or reliability with AI.",
     "Never scrape Wikipedia, blogs, forums, or unapproved websites.",
-    "Use ONLY the approved classical Sunni references listed below, and only when license/permission allows.",
-    "If verified data is missing, display: Verified narrator biography is not available.",
-    "Never invent. Never guess. Never merge opinions from different books. Cite volume/page/entry for every statement."
+    "Use ONLY approved classical Sunni references, and only when license/permission allows.",
+    "If a narrator has not been imported into local narrators.db yet, show: This narrator profile has not been imported into the local database yet.",
+    "Never assume classical data is unavailable. Never invent. Never merge opinions from different books."
   ],
-  "offline_unavailable_message": "Verified narrator biography is not available.",
+  "not_imported_message": "This narrator profile has not been imported into the local database yet.",
   "database": "narrators",
   "database_asset": "assets/databases/narrators.db.gz",
   "schema_version": "1_rijal",
@@ -17,7 +17,7 @@
     "installed": true,
     "has_biography_rows": false,
     "has_hadith_mappings": false,
-    "notes": "Schema and approved-source catalog are bundled. Biography rows and hadith→narrator IDs are empty until a licensed import is added."
+    "notes": "Schema and approved-source catalog are bundled. Biography rows and hadith→narrator IDs stay empty until a licensed import is added. UI fills automatically when rows appear."
   },
   "approved_sources": [
     {
@@ -98,6 +98,7 @@
     "Forums",
     "User-generated content",
     "Unapproved websites",
-    "Guessing or merging classical opinions"
+    "Guessing or merging classical opinions",
+    "Hardcoding that classical biographies are unavailable"
   ]
 }

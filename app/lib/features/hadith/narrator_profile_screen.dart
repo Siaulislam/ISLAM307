@@ -4,8 +4,11 @@ import '../../core/database/database_registry.dart';
 import '../../core/repositories/narrator_repository.dart';
 import '../../core/theme/islam307_theme.dart';
 
-/// Full Narrator (Rijāl) profile — authenticated classical sources only.
-/// Never invents fields. Missing verified data shows the policy message.
+/// Narrator (Rijāl) profile shell.
+///
+/// Empty until an authenticated narrator dataset is imported into narrators.db.
+/// The same screen fills automatically when rows exist — no UI rewrite required.
+/// Never invents biography content with AI.
 class NarratorProfileScreen extends StatefulWidget {
   const NarratorProfileScreen({
     super.key,
@@ -60,11 +63,16 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
     });
   }
 
+  bool get _imported => _profile?['imported'] == true;
+
   @override
   Widget build(BuildContext context) {
-    final title = widget.displayName?.trim().isNotEmpty == true
-        ? widget.displayName!
-        : (_profile?['display_name'] as String?) ?? 'Narrator';
+    final authenticatedName = (widget.displayName ?? '').trim();
+    final title = authenticatedName.isNotEmpty
+        ? authenticatedName
+        : ((_profile?['display_name'] as String?)?.trim().isNotEmpty == true
+            ? _profile!['display_name'] as String
+            : 'Narrator');
 
     return Scaffold(
       appBar: AppBar(
@@ -82,21 +90,29 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
                 Text(title, textAlign: TextAlign.center, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, height: 1.35)),
                 const SizedBox(height: 8),
                 const Text(
-                  'Authenticated classical Sunni references only · Never AI-generated',
+                  'Narrator (Rijāl) · Authenticated imports only · Never AI-generated',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.textMuted, height: 1.4),
                 ),
                 const SizedBox(height: 18),
-                if (_profile?['unavailable'] == true)
-                  _unavailableBox(_profile!)
-                else
+                if (!_imported) ...[
+                  _notImportedBanner(),
+                  const SizedBox(height: 20),
+                  // Empty profile architecture — same sections fill after import.
+                  _emptyProfileShell(),
+                ] else
                   ..._profileSections(_profile!),
+                const SizedBox(height: 20),
+                Text(
+                  NarratorRepository.policyNeverInvent,
+                  style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, height: 1.4, fontWeight: FontWeight.w600),
+                ),
               ],
             ),
     );
   }
 
-  Widget _unavailableBox(Map<String, dynamic> p) {
+  Widget _notImportedBanner() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -105,33 +121,71 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
         border: Border.all(color: Islam307Theme.cardBorder),
         color: Islam307Theme.fieldFill,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            p['message'] as String? ?? NarratorRepository.verifiedUnavailableMessage,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, height: 1.45),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            NarratorRepository.policyNeverInvent,
-            style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, height: 1.45, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
-          const Text(
-            'Approved sources (license/permission required to import text): '
-            'Tahdhib al-Kamal, Tahdhib al-Tahdhib, Taqrib al-Tahdhib, Siyar A\'lam al-Nubala, '
-            'Al-Isabah, Mizan al-I\'tidal, Lisan al-Mizan, Tabaqat Ibn Sa\'d, '
-            'Tarikh al-Kabir, Al-Jarh wa al-Ta\'dil.',
-            style: TextStyle(fontSize: 12, height: 1.5, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
-          ),
-        ],
+      child: const Text(
+        NarratorRepository.notImportedMessage,
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, height: 1.45),
       ),
     );
   }
 
+  /// Empty field scaffolding — remains blank until narrators.db import fills rows.
+  Widget _emptyProfileShell() {
+    const labels = [
+      'Arabic Name',
+      'Urdu Name',
+      'English Name',
+      'Full Name',
+      'Kunyah',
+      'Laqab',
+      'Nasab',
+      'Birth',
+      'Death',
+      'City',
+      'Country',
+      'Generation',
+      'Companion',
+      "Tabi'i",
+      "Tabi' al-Tabi'in",
+      'Teachers',
+      'Students',
+      'Reliability',
+      'Jarḥ wa Taʿdīl',
+      'Books where biography appears',
+      'Hadith Collections narrated in',
+      'Timeline',
+      'References',
+    ];
+    return Column(
+      children: [
+        for (final label in labels)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Islam307Theme.cardBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label.toUpperCase(),
+                    style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.04, color: Islam307Theme.textMuted),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text('—', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Islam307Theme.textMuted)),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   List<Widget> _profileSections(Map<String, dynamic> p) {
-    final widgets = <Widget>[
+    return [
       _field('Arabic Name', p['name_ar']),
       _field('Urdu Name', p['name_ur']),
       _field('English Name', p['name_en']),
@@ -155,13 +209,7 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
       _opinionList('Books where biography appears', p['books_mentioned'] as List? ?? const [], nameKeys: const ['source_name']),
       _opinionList('References', p['references'] as List? ?? const [], nameKeys: const ['text_ar', 'text_en', 'text_ur']),
       _hadithCollections(p['hadith_collections'] as List? ?? const []),
-      const SizedBox(height: 16),
-      Text(
-        NarratorRepository.policyNeverInvent,
-        style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, height: 1.4, fontWeight: FontWeight.w600),
-      ),
     ];
-    return widgets;
   }
 
   Widget _field(String label, Object? value) {
@@ -182,7 +230,7 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
 
   Widget _boolField(String label, bool value) {
     if (!value) return const SizedBox.shrink();
-    return _field(label, 'Yes (authenticated source)');
+    return _field(label, 'Yes');
   }
 
   Widget _opinionList(String title, List rows, {required List<String> nameKeys}) {

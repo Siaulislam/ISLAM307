@@ -653,25 +653,17 @@ function authenticatedNarratorName(hadith) {
 
 /**
  * Narrator (Rijāl) Knowledge seam.
- * Biographies ONLY from approved classical sources via licensed import.
- * Never invent. Never Wikipedia/blogs/forums/AI.
+ * Profiles stay empty until authenticated datasets are imported into narrators.db.
+ * Never invent. Never assume classical data is "unavailable".
  */
-const NARRATOR_BIO = {
-  packInstalled: true,
-  hasBiographyRows: false,
-  offlineMessage: 'Verified narrator biography is not available.',
-  policy: 'ISLAM 307 never generates narrator biographies with AI. Only approved classical Sunni references are used, with license/permission. Opinions from different books are never merged.',
-  approved: [
-    'Tahdhib al-Kamal',
-    'Tahdhib al-Tahdhib',
-    'Taqrib al-Tahdhib',
-    "Siyar A'lam al-Nubala",
-    'Al-Isabah fi Tamyiz al-Sahabah',
-    "Mizan al-I'tidal",
-    'Lisan al-Mizan',
-    "Tabaqat Ibn Sa'd",
-    'Tarikh al-Kabir',
-    "Al-Jarh wa al-Ta'dil",
+const NARRATOR_PROFILE = {
+  notImportedMessage: 'This narrator profile has not been imported into the local database yet.',
+  policy: 'ISLAM 307 never generates narrator biographies with AI. Profiles appear only after authenticated narrator datasets are imported.',
+  emptyFields: [
+    'Arabic Name', 'Urdu Name', 'English Name', 'Full Name', 'Kunyah', 'Laqab', 'Nasab',
+    'Birth', 'Death', 'City', 'Country', 'Generation', 'Companion', "Tabi'i", "Tabi' al-Tabi'in",
+    'Teachers', 'Students', 'Reliability', 'Jarḥ wa Taʿdīl',
+    'Books where biography appears', 'Hadith Collections narrated in', 'Timeline', 'References',
   ],
 };
 
@@ -687,17 +679,18 @@ function narratorCardHtml(name) {
 function openNarratorMore(name, hadith) {
   const clean = String(name || '').trim();
   if (!clean) return;
-  /* Future: resolve verified narrator_id from hadith_relations, then load profile fields.
-     Until licensed import exists, show the strict unavailable message — never invent. */
+  /* Future: resolve verified narrator_id from hadith_relations / aliases, then render imported fields.
+     Until that row exists in local narrators.db, show empty profile shell — never invent content. */
+  const fields = NARRATOR_PROFILE.emptyFields.map((label) => `
+    <div class="narrator-empty-field">
+      <span>${escapeHtml(label)}</span>
+      <strong>—</strong>
+    </div>`).join('');
   const body = `
     <div class="narrator-profile-preview">
-      <p class="narrator-offline-msg">${escapeHtml(NARRATOR_BIO.offlineMessage)}</p>
-      <p class="narrator-policy">${escapeHtml(NARRATOR_BIO.policy)}</p>
-      <p class="narrator-chain-label">Approved classical sources (license/permission required)</p>
-      <ul class="narrator-approved-list">
-        ${NARRATOR_BIO.approved.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}
-      </ul>
-      ${hadith ? `<p class="narrator-policy">Hadith reference: ${escapeHtml((hadith.reference || `Hadith ${hadith.n}`))}</p>` : ''}
+      <p class="narrator-offline-msg">${escapeHtml(NARRATOR_PROFILE.notImportedMessage)}</p>
+      <div class="narrator-empty-grid">${fields}</div>
+      <p class="narrator-policy">${escapeHtml(NARRATOR_PROFILE.policy)}</p>
     </div>`;
   openHadithModal(clean || 'Narrator Profile', body);
 }

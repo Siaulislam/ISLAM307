@@ -58,8 +58,8 @@ def main() -> int:
             (
                 "policy",
                 "Never invent narrator data with AI. Approved classical Sunni sources only. "
-                "If a field is missing from licensed imports, leave it empty and show: "
-                "Verified narrator biography is not available.",
+                "If a narrator row is not in this database yet, the app shows: "
+                "This narrator profile has not been imported into the local database yet.",
             ),
         )
         conn.execute(
