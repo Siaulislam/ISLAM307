@@ -6,6 +6,11 @@ Full hadith-reader style snapshots for Sahih Bukhari **Knowledge** chapter.
 - Local numbers: **Hadith 1–76 of 76**
 - Each item has matching HTML + PNG (full Arabic text)
 
+## Download all together
+
+- ZIP: [bukhari-ilm-snapshots.zip](bukhari-ilm-snapshots.zip) (~14 MB)
+- Live: https://siaulislam.github.io/ISLAM307/preview/snapshots/bukhari-ilm/bukhari-ilm-snapshots.zip
+
 ## Local path (on this machine / repo)
 
 ```
