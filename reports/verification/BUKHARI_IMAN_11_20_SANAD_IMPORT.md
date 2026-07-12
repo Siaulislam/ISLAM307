@@ -1,13 +1,19 @@
 # Bukhari Kitab al-Iman Hadith 11–20 Sanad Import
 
-Batch: `bukhari_iman_11_20_sanad_2026-07-12`
+Batch: `bukhari_iman_11_20_sanad_rev2_2026-07-12`
 
 Local Iman N → absolute Bukhari (7+N).
 
 ## Note
 
-Iman 18: user wrote `ابوروح عبادہ بن عباد`; Arabic ibarat has `أبو روح الحرمي بن عمارة`.
-Stored display name: **ابوروح حرمی بن عمارہ**.
+Revision 2 from updated user list.
+
+- Iman 13: user omitted `عبدہ`; Arabic has `عبدة` → **kept عبدہ**.
+- Iman 16/17/19: display shortened to `ابن شہاب` (same person as زہری).
+- Iman 18: user wrote `ابو روح عبادہ`; Arabic has `أبو روح الحرمي بن عمارة` → **ابوروح حرمی بن عمارہ**.
+- Iman 18: user omitted `ابوہ`; Arabic has `أبي` → **kept ابوہ**.
+- Iman 18 primary display: `ابن عمرؓ`.
+- Iman 19: display `سعید بن المسیب`.
 
 Generic `ابوہ` / `أبيه` labels keep user display text but resolve to distinct father identities.
 
@@ -74,7 +80,7 @@ Generic `ابوہ` / `أبيه` labels keep user display text but resolve to dis
 2. محمد بن عبیداللہ (`in_isnad`, id=23110)
 3. ابراہیم بن سعد (`in_isnad`, id=7983)
 4. صالح (`in_isnad`, id=15783)
-5. ابن شہاب الزہری (`in_isnad`, id=8958)
+5. ابن شہاب (`in_isnad`, id=8958)
 6. ابو امامہ بن سہل (`in_isnad`, id=5449)
 7. ابوسعید خدریؓ (`primary`, id=5893)
 
@@ -83,7 +89,7 @@ Generic `ابوہ` / `أبيه` labels keep user display text but resolve to dis
 1. امام بخاریؒ (`compiler`, id=1)
 2. عبداللہ بن یوسف (`in_isnad`, id=17672)
 3. امام مالک (`in_isnad`, id=22313)
-4. ابن شہاب الزہری (`in_isnad`, id=8958)
+4. ابن شہاب (`in_isnad`, id=8958)
 5. سالم بن عبداللہ (`in_isnad`, id=14514)
 6. عبداللہ بن عمرؓ (`primary`, id=89)
 
@@ -95,7 +101,7 @@ Generic `ابوہ` / `أبيه` labels keep user display text but resolve to dis
 4. شعبہ (`in_isnad`, id=15655)
 5. واقد بن محمد (`in_isnad`, id=25053)
 6. ابوہ (`in_isnad`, id=22887)
-7. عبداللہ بن عمرؓ (`primary`, id=89)
+7. ابن عمرؓ (`primary`, id=89)
 
 ### Iman 19 / Absolute 26
 
@@ -103,8 +109,8 @@ Generic `ابوہ` / `أبيه` labels keep user display text but resolve to dis
 2. احمد بن یونس (`in_isnad`, id=7055)
 3. موسیٰ بن اسماعیل (`in_isnad`, id=24218)
 4. ابراہیم بن سعد (`in_isnad`, id=7983)
-5. ابن شہاب الزہری (`in_isnad`, id=8958)
-6. سعید بن مسیب (`in_isnad`, id=14699)
+5. ابن شہاب (`in_isnad`, id=8958)
+6. سعید بن المسیب (`in_isnad`, id=14699)
 7. ابوہریرہؓ (`primary`, id=774)
 
 ### Iman 20 / Absolute 27

@@ -2,8 +2,11 @@
 """Import Sahih Bukhari Kitab al-Iman Hadith 11–20 (absolute nos. 18–27).
 
 POLICY: user-provided Urdu sanad; Arabic-verified; no AI bios.
-Note: Iman 18 transmitter corrected to الحرمي بن عمارة per Arabic ibarat
-(user wrote عبادہ بن عباد).
+
+Arabic overrides applied on re-import (2026-07-12 revision):
+- Iman 13: keep عبدہ (Arabic عبدة); user list omitted it.
+- Iman 18: keep ابوروح حرمی بن عمارہ (Arabic أبو روح الحرمي بن عمارة);
+  user wrote ابو روح عبادہ. Also keep ابوہ (Arabic أبي); user omitted it.
 """
 
 from __future__ import annotations
@@ -26,7 +29,7 @@ PREVIEW_NARR = ROOT / "preview" / "library" / "data" / "narrators"
 CATALOG = PREVIEW_NARR / "catalog.json.gz"
 MANIFEST = ROOT / "preview" / "library" / "data" / "manifest.json"
 REPORT = ROOT / "reports" / "verification" / "BUKHARI_IMAN_11_20_SANAD_IMPORT.md"
-BATCH = "bukhari_iman_11_20_sanad_2026-07-12"
+BATCH = "bukhari_iman_11_20_sanad_rev2_2026-07-12"
 BUKHARI_ID = 1
 
 CHAINS: dict[int, list[dict]] = {
@@ -54,7 +57,7 @@ CHAINS: dict[int, list[dict]] = {
         },
         {"ur": "ابوسعید خدریؓ", "role": "primary", "ar_frag": "أبي سعيد الخدري", "en": "Abu Said al-Khudri"},
     ],
-    20: [  # Iman 13
+    20: [  # Iman 13 — Arabic includes عبدة (kept though omitted in latest user list)
         {"ur": "امام بخاریؒ", "role": "compiler", "narrator_id": BUKHARI_ID},
         {"ur": "محمد بن سلام", "role": "in_isnad", "ar_frag": "محمد بن سلام"},
         {"ur": "عبدہ", "role": "in_isnad", "ar_frag": "عبدة"},
@@ -96,7 +99,7 @@ CHAINS: dict[int, list[dict]] = {
         {"ur": "محمد بن عبیداللہ", "role": "in_isnad", "ar_frag": "محمد بن عبيد الله"},
         {"ur": "ابراہیم بن سعد", "role": "in_isnad", "ar_frag": "إبراهيم بن سعد"},
         {"ur": "صالح", "role": "in_isnad", "ar_frag": "صالح"},
-        {"ur": "ابن شہاب الزہری", "role": "in_isnad", "ar_frag": "ابن شهاب"},
+        {"ur": "ابن شہاب", "role": "in_isnad", "ar_frag": "ابن شهاب", "person_key": "ibn-shihab-al-zuhri"},
         {"ur": "ابو امامہ بن سہل", "role": "in_isnad", "ar_frag": "أبي أمامة بن سهل"},
         {"ur": "ابوسعید خدریؓ", "role": "primary", "ar_frag": "أبا سعيد الخدري", "en": "Abu Said al-Khudri"},
     ],
@@ -104,11 +107,11 @@ CHAINS: dict[int, list[dict]] = {
         {"ur": "امام بخاریؒ", "role": "compiler", "narrator_id": BUKHARI_ID},
         {"ur": "عبداللہ بن یوسف", "role": "in_isnad", "ar_frag": "عبد الله بن يوسف"},
         {"ur": "امام مالک", "role": "in_isnad", "ar_frag": "مالك بن أنس"},
-        {"ur": "ابن شہاب الزہری", "role": "in_isnad", "ar_frag": "ابن شهاب"},
+        {"ur": "ابن شہاب", "role": "in_isnad", "ar_frag": "ابن شهاب", "person_key": "ibn-shihab-al-zuhri"},
         {"ur": "سالم بن عبداللہ", "role": "in_isnad", "ar_frag": "سالم بن عبد الله"},
         {"ur": "عبداللہ بن عمرؓ", "role": "primary", "ar_frag": "أبيه", "en": "Abdullah ibn Umar"},
     ],
-    25: [  # Iman 18 — Arabic: أبو روح الحرمي بن عمارة (not عبادہ بن عباد)
+    25: [  # Iman 18 — Arabic: أبو روح الحرمي بن عمارة + أبي (not عبادہ; ابوہ kept)
         {"ur": "امام بخاریؒ", "role": "compiler", "narrator_id": BUKHARI_ID},
         {"ur": "عبداللہ بن محمد المسندی", "role": "in_isnad", "ar_frag": "عبد الله بن محمد المسندي"},
         {"ur": "ابوروح حرمی بن عمارہ", "role": "in_isnad", "ar_frag": "أبو روح الحرمي بن عمارة"},
@@ -123,22 +126,22 @@ CHAINS: dict[int, list[dict]] = {
             "identity_ur": "محمد بن زید",
             "match": ["محمد بن زيد", "Muhammad bin Zaid bin `Abdullah bin `Umar"],
         },
-        {"ur": "عبداللہ بن عمرؓ", "role": "primary", "ar_frag": "ابن عمر", "en": "Abdullah ibn Umar"},
+        {"ur": "ابن عمرؓ", "role": "primary", "ar_frag": "ابن عمر", "en": "Abdullah ibn Umar", "person_key": "abdullah-ibn-umar"},
     ],
     26: [  # Iman 19 — parallel: Ahmad + Musa
         {"ur": "امام بخاریؒ", "role": "compiler", "narrator_id": BUKHARI_ID},
         {"ur": "احمد بن یونس", "role": "in_isnad", "ar_frag": "أحمد بن يونس"},
         {"ur": "موسیٰ بن اسماعیل", "role": "in_isnad", "ar_frag": "موسى بن إسماعيل"},
         {"ur": "ابراہیم بن سعد", "role": "in_isnad", "ar_frag": "إبراهيم بن سعد"},
-        {"ur": "ابن شہاب الزہری", "role": "in_isnad", "ar_frag": "ابن شهاب"},
-        {"ur": "سعید بن مسیب", "role": "in_isnad", "ar_frag": "سعيد بن المسيب"},
+        {"ur": "ابن شہاب", "role": "in_isnad", "ar_frag": "ابن شهاب", "person_key": "ibn-shihab-al-zuhri"},
+        {"ur": "سعید بن المسیب", "role": "in_isnad", "ar_frag": "سعيد بن المسيب"},
         {"ur": "ابوہریرہؓ", "role": "primary", "ar_frag": "أبي هريرة", "en": "Abu Huraira"},
     ],
     27: [  # Iman 20
         {"ur": "امام بخاریؒ", "role": "compiler", "narrator_id": BUKHARI_ID},
         {"ur": "ابوالیمان", "role": "in_isnad", "ar_frag": "أبو اليمان"},
         {"ur": "شعیب", "role": "in_isnad", "ar_frag": "شعيب"},
-        {"ur": "ابن شہاب الزہری", "role": "in_isnad", "ar_frag": "الزهري"},
+        {"ur": "ابن شہاب الزہری", "role": "in_isnad", "ar_frag": "الزهري", "person_key": "ibn-shihab-al-zuhri"},
         {"ur": "عامر بن سعد بن ابی وقاص", "role": "in_isnad", "ar_frag": "عامر بن سعد بن أبي وقاص"},
         {"ur": "سعد بن ابی وقاصؓ", "role": "primary", "ar_frag": "سعد", "en": "Sad ibn Abi Waqqas"},
     ],
@@ -150,9 +153,11 @@ SHARED = {
     "ابوہریرہؓ": "abu-huraira",
     "انس بن مالکؓ": "anas-ibn-malik",
     "عبداللہ بن عمرؓ": "abdullah-ibn-umar",
+    "ابن عمرؓ": "abdullah-ibn-umar",
     "ابوالیمان": "abu-al-yaman",
     "شعیب": "shuayb",
     "ابن شہاب الزہری": "ibn-shihab-al-zuhri",
+    "ابن شہاب": "ibn-shihab-al-zuhri",
     "امام مالک": "malik-ibn-anas",
     "ابوسعید خدریؓ": "abu-said-al-khudri",
     "حضرت عائشہؓ": "aisha",
@@ -162,6 +167,8 @@ SHARED = {
     "عبداللہ بن یوسف": "abdullah-ibn-yusuf",
     "موسیٰ بن اسماعیل": "musa-ibn-ismail",
     "عروہ": "urwah-ibn-al-zubayr",
+    "سعید بن المسیب": "saeed-ibn-al-musayyib",
+    "سعید بن مسیب": "saeed-ibn-al-musayyib",
 }
 
 GENERIC_MATCH = {"أبيه", "أبي", "ابوه", "ابوہ", "ابيه"}
@@ -393,7 +400,7 @@ def main() -> int:
                     "absolute_hadiths": list(CHAINS.keys()),
                     "local_iman": list(range(11, 21)),
                     "arabic_missing": missing,
-                    "note": "Iman 18: display name corrected to حرمی بن عمارہ per Arabic ibarat",
+                    "note": "rev2: keep عبدہ (13); حرمی بن عمارہ + ابوہ (18); display ابن شہاب / ابن عمرؓ / سعید بن المسیب",
                 },
                 ensure_ascii=False,
             ),
@@ -478,8 +485,14 @@ def main() -> int:
         "",
         "## Note",
         "",
-        "Iman 18: user wrote `ابوروح عبادہ بن عباد`; Arabic ibarat has `أبو روح الحرمي بن عمارة`.",
-        "Stored display name: **ابوروح حرمی بن عمارہ**.",
+        "Revision 2 from updated user list.",
+        "",
+        "- Iman 13: user omitted `عبدہ`; Arabic has `عبدة` → **kept عبدہ**.",
+        "- Iman 16/17/19: display shortened to `ابن شہاب` (same person as زہری).",
+        "- Iman 18: user wrote `ابو روح عبادہ`; Arabic has `أبو روح الحرمي بن عمارة` → **ابوروح حرمی بن عمارہ**.",
+        "- Iman 18: user omitted `ابوہ`; Arabic has `أبي` → **kept ابوہ**.",
+        "- Iman 18 primary display: `ابن عمرؓ`.",
+        "- Iman 19: display `سعید بن المسیب`.",
         "",
         "Generic `ابوہ` / `أبيه` labels keep user display text but resolve to distinct father identities.",
         "",
