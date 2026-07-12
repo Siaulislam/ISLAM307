@@ -100,7 +100,7 @@ class NarratorRepository {
       final db = await _registry.open('narrators');
       final rows = await db.rawQuery(
         '''
-        SELECT hr.isnad_position, hr.role, hr.narrator_id,
+        SELECT hr.isnad_position, hr.role, hr.narrator_id, hr.display_name_ur,
                n.slug, n.name_ar, n.name_ur, n.name_en, n.full_name,
                n.kunyah, n.laqab, n.nasab, n.generation,
                n.is_companion, n.is_tabii, n.is_tab_tabii
@@ -116,7 +116,7 @@ class NarratorRepository {
         // Fallback: primary attribution only (authenticated narrator field).
         final primaryRows = await db.rawQuery(
           '''
-          SELECT hr.isnad_position, hr.role, hr.narrator_id,
+          SELECT hr.isnad_position, hr.role, hr.narrator_id, hr.display_name_ur,
                  n.slug, n.name_ar, n.name_ur, n.name_en, n.full_name,
                  n.kunyah, n.laqab, n.nasab, n.generation,
                  n.is_companion, n.is_tabii, n.is_tab_tabii
@@ -127,26 +127,27 @@ class NarratorRepository {
           ''',
           [bookSlug, hadithNumber],
         );
-        return primaryRows.map((r) {
-          final map = Map<String, dynamic>.from(r);
-          map['display_name'] = _displayName(map, lang);
-          map['is_companion'] = r['is_companion'] == 1;
-          map['is_tabii'] = r['is_tabii'] == 1;
-          map['is_tab_tabii'] = r['is_tab_tabii'] == 1;
-          return map;
-        }).toList();
+        return primaryRows.map((r) => _mapIsnadRow(r, lang)).toList();
       }
-      return rows.map((r) {
-        final map = Map<String, dynamic>.from(r);
-        map['display_name'] = _displayName(map, lang);
-        map['is_companion'] = r['is_companion'] == 1;
-        map['is_tabii'] = r['is_tabii'] == 1;
-        map['is_tab_tabii'] = r['is_tab_tabii'] == 1;
-        return map;
-      }).toList();
+      return rows.map((r) => _mapIsnadRow(r, lang)).toList();
     } catch (_) {
       return const [];
     }
+  }
+
+  Map<String, dynamic> _mapIsnadRow(Map<String, Object?> r, String lang) {
+    final map = Map<String, dynamic>.from(r);
+    final overrideUr = '${r['display_name_ur'] ?? ''}'.trim();
+    if (overrideUr.isNotEmpty && (lang == 'ur' || lang == 'hi')) {
+      map['display_name'] = overrideUr;
+      map['name_ur'] = overrideUr;
+    } else {
+      map['display_name'] = _displayName(map, lang);
+    }
+    map['is_companion'] = r['is_companion'] == 1;
+    map['is_tabii'] = r['is_tabii'] == 1;
+    map['is_tab_tabii'] = r['is_tab_tabii'] == 1;
+    return map;
   }
 
   Future<Map<String, dynamic>> profileById(int narratorId, {String lang = 'en'}) async {

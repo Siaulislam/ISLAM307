@@ -185,6 +185,7 @@ CREATE TABLE IF NOT EXISTS hadith_relations (
   role TEXT NOT NULL DEFAULT 'primary', -- primary | in_isnad
   isnad_position INTEGER,
   mapping_source TEXT NOT NULL, -- e.g. 'licensed_import:batch_1'
+  display_name_ur TEXT, -- optional per-hadith Urdu display override (authenticated list)
   UNIQUE (book_slug, hadith_number, narrator_id, role)
 );
 
