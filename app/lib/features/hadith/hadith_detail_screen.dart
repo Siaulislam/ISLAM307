@@ -150,7 +150,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     if (lang == 'ur') return 'ur-PK';
     if (lang == 'ar') return 'ar-SA';
     if (lang == 'hi') return 'hi-IN';
-    return 'en-US';
+    /* Prefer South-Asian English clarity over fast British/US female defaults. */
+    return 'en-IN';
   }
 
   Future<void> _persistLang() async {
@@ -493,8 +494,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final progress = pos / total;
     final bookName = h?['book_name']?.toString() ?? 'Hadith';
     final kitab = h?['kitab']?.toString() ?? '';
-    final grading = h == null ? null : HadithRepository.gradingSummary(h);
-    final narrator = (h?['ravi'] ?? h?['narrator'] ?? '').toString().trim();
 
     return Scaffold(
       body: SafeArea(
@@ -624,17 +623,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 ),
                               const SizedBox(height: 18),
                               _audioBox(),
-                              const SizedBox(height: 18),
-                              _metaGrid(
-                                narrator: narrator.isEmpty ? '—' : narrator,
-                                grade: grading?.grade ?? HadithRepository.gradeNotVerified,
-                                scholar: grading?.scholar ?? '—',
-                                reference: h['reference']?.toString() ?? '—',
-                                book: bookName,
-                                chapter: kitab.isEmpty ? '—' : kitab,
-                                number: '${widget.hadithNumber}',
-                                source: h['reference_url']?.toString() ?? '',
-                              ),
                               const SizedBox(height: 14),
                               Wrap(
                                 spacing: 8,
@@ -712,73 +700,11 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     );
   }
 
-  Widget _metaGrid({
-    required String narrator,
-    required String grade,
-    required String scholar,
-    required String reference,
-    required String book,
-    required String chapter,
-    required String number,
-    required String source,
-  }) {
-    final items = [
-      ('Narrator', narrator),
-      ('Grade', grade),
-      ('Scholar', scholar.isEmpty ? '—' : scholar),
-      ('Reference', reference),
-      ('Book', book),
-      ('Chapter', chapter),
-      ('Hadith Number', number),
-      ('Source', source.isEmpty ? 'sunnah.com' : 'sunnah.com'),
-    ];
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
-      childAspectRatio: 2.2,
-      children: [
-        for (final item in items)
-          Container(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Islam307Theme.cardBorder),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFF8FAFC), Colors.white],
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.$1.toUpperCase(),
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.04, color: Islam307Theme.textMuted),
-                ),
-                const SizedBox(height: 4),
-                Expanded(
-                  child: Text(
-                    item.$2,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    textDirection: item.$1 == 'Chapter' || item.$1 == 'Narrator' ? TextDirection.rtl : TextDirection.ltr,
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, height: 1.3),
-                  ),
-                ),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-
   Widget _audioBox() {
     final isTranslation = _audioMode == 'translation';
-    final langLabel = _lang == 'ur' ? 'Urdu' : (_lang == 'hi' ? 'Hindi' : 'English');
+    final langHint = _lang == 'ur'
+        ? 'Pakistani male Urdu'
+        : (_lang == 'hi' ? 'Hindi male' : 'Pakistani/Indian male English · clear pace');
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       decoration: BoxDecoration(
@@ -800,8 +726,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
           const SizedBox(height: 4),
           Text(
             isTranslation
-                ? 'Translation audio · $langLabel only'
-                : 'Arabic audio · reads Arabic text only · clear & slow',
+                ? 'Translation audio · $langHint'
+                : 'Arabic audio · male KSA/Egyptian scholar voice · clear & slow',
             style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.35),
           ),
           const SizedBox(height: 10),
@@ -884,7 +810,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Offline device TTS · highest-quality installed voice',
+            'Offline device TTS · prefers male scholar voices when installed',
             style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Islam307Theme.textMuted),
           ),
         ],

@@ -71,6 +71,7 @@ const state = {
   hadithReaderIndex: 0,
   hadithSpeechRate: Number(localStorage.getItem('i307_hadith_rate') || 1),
   hadithSpeechPaused: false,
+  hadithSpeechWatch: null,
   hadithListRows: [],
   hadithListShown: 0,
   // Paint in chunks so the full book (Bukhari/Muslim 7563, etc.) appears without a fake 120 cap.
@@ -715,7 +716,90 @@ function translationFor(hadith, lang) {
   return hadith.ur || '';
 }
 
+function ttsLocaleCandidates(lang) {
+  if (lang === 'ur') return ['ur-PK', 'ur'];
+  if (lang === 'ar') return ['ar-SA', 'ar-EG', 'ar'];
+  if (lang === 'hi') return ['hi-IN', 'hi'];
+  /* English: prefer South-Asian male clarity over fast British/US female voices. */
+  return ['en-IN', 'en-PK', 'en-GB', 'en-US', 'en'];
+}
+
+function ttsLocaleFor(lang) {
+  return ttsLocaleCandidates(lang)[0];
+}
+
+function ensureVoicesLoaded() {
+  return new Promise((resolve) => {
+    if (!window.speechSynthesis) {
+      resolve([]);
+      return;
+    }
+    const existing = window.speechSynthesis.getVoices() || [];
+    if (existing.length) {
+      resolve(existing);
+      return;
+    }
+    const done = () => {
+      window.speechSynthesis.removeEventListener('voiceschanged', done);
+      resolve(window.speechSynthesis.getVoices() || []);
+    };
+    window.speechSynthesis.addEventListener('voiceschanged', done);
+    setTimeout(done, 400);
+  });
+}
+
+function voiceGenderScore(name) {
+  const s = String(name || '').toLowerCase();
+  if (/(female|woman|girl|zira|susan|samantha|karen|moira|tessa|fiona|veena|lekha|nicky|helena|linda|hazel|serena|allison|ava|kathy|victoria|salli)/.test(s)) {
+    return 80;
+  }
+  if (/(male|man|boy|maged|naayf|najib|khaled|khalid|omar|ahmed|mohamed|mohammed|hassan|hussain|ravi|asif|farhan|daniel|david|mark|george|thomas|james|ryan|alex|google uk english male|google us english)/.test(s)) {
+    return 0;
+  }
+  /* Unknown gender — slight penalty vs known male. */
+  return 25;
+}
+
+function pickVoice(lang) {
+  if (!window.speechSynthesis) return null;
+  const voices = window.speechSynthesis.getVoices() || [];
+  if (!voices.length) return null;
+  const locales = ttsLocaleCandidates(lang).map((l) => l.toLowerCase());
+  const primary = locales[0].slice(0, 2);
+
+  const scored = voices
+    .map((v) => {
+      const code = (v.lang || '').toLowerCase();
+      const label = `${v.name || ''} ${v.voiceURI || ''}`.toLowerCase();
+      let score = 1000;
+      const exact = locales.findIndex((l) => code === l || code.replace('_', '-') === l);
+      if (exact >= 0) score = exact * 10;
+      else if (code.startsWith(primary)) score = 40 + locales.length;
+      else return null;
+
+      score += voiceGenderScore(label);
+      if (/(enhanced|premium|neural|natural|offline|compact|quality)/.test(label)) score -= 5;
+      if (lang === 'ar' && /(saudi|egypt|egyptian|ksa|maged|naayf)/.test(label + code)) score -= 8;
+      if (lang === 'ur' && /(pakistan|urdu)/.test(label + code)) score -= 8;
+      if (lang === 'en' && /(india|pakistan|hindi)/.test(label + code)) score -= 6;
+      if (lang === 'en' && /(british|uk english female|zira|samantha)/.test(label)) score += 30;
+      return { v, score };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.score - b.score);
+
+  return scored.length ? scored[0].v : null;
+}
+
+function clearHadithSpeechWatch() {
+  if (state.hadithSpeechWatch) {
+    clearInterval(state.hadithSpeechWatch);
+    state.hadithSpeechWatch = null;
+  }
+}
+
 function stopHadithSpeech() {
+  clearHadithSpeechWatch();
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   state.ttsUtterance = null;
   state.hadithSpeechPaused = false;
@@ -737,32 +821,7 @@ function resumeHadithSpeech() {
   }
 }
 
-function ttsLocaleFor(lang) {
-  if (lang === 'ur') return 'ur-PK';
-  if (lang === 'ar') return 'ar-SA';
-  if (lang === 'hi') return 'hi-IN';
-  return 'en-US';
-}
-
-function pickVoice(locale) {
-  if (!window.speechSynthesis) return null;
-  const voices = window.speechSynthesis.getVoices() || [];
-  const primary = locale.slice(0, 2).toLowerCase();
-  const ranked = voices
-    .filter((v) => {
-      const code = (v.lang || '').toLowerCase();
-      return code === locale.toLowerCase() || code.startsWith(primary);
-    })
-    .sort((a, b) => {
-      const as = `${a.name} ${a.voiceURI}`.toLowerCase();
-      const bs = `${b.name} ${b.voiceURI}`.toLowerCase();
-      const score = (s) => (/(enhanced|premium|neural|natural|offline)/.test(s) ? 0 : 1);
-      return score(as) - score(bs);
-    });
-  return ranked[0] || null;
-}
-
-function speakHadithText(text, lang) {
+async function speakHadithText(text, lang) {
   const clean = String(text || '').trim();
   if (!clean) {
     toast('No authentic reference found.');
@@ -773,20 +832,58 @@ function speakHadithText(text, lang) {
     return;
   }
   stopHadithSpeech();
+  await ensureVoicesLoaded();
+  /* Chrome cancels if speak() is called in the same tick as cancel(). */
+  await new Promise((r) => setTimeout(r, 60));
+
   const utter = new SpeechSynthesisUtterance(clean);
-  utter.lang = ttsLocaleFor(lang);
+  const voice = pickVoice(lang);
+  if (voice) {
+    utter.voice = voice;
+    utter.lang = voice.lang || ttsLocaleFor(lang);
+  } else {
+    utter.lang = ttsLocaleFor(lang);
+  }
   const speed = Number(state.hadithSpeechRate) || 1;
-  const base = lang === 'ar' ? 0.78 : 0.92;
-  utter.rate = Math.max(0.5, Math.min(1.6, base * speed));
-  utter.pitch = lang === 'ar' ? 0.95 : 1;
-  const voice = pickVoice(utter.lang);
-  if (voice) utter.voice = voice;
+  /* Calm scholarly pace — English especially kept slower for clarity. */
+  const base = lang === 'ar' ? 0.72 : (lang === 'en' ? 0.82 : 0.88);
+  utter.rate = Math.max(0.55, Math.min(1.35, base * speed));
+  utter.pitch = 0.92;
   utter.onend = () => {
+    clearHadithSpeechWatch();
+    state.hadithSpeechPaused = false;
+    state.ttsUtterance = null;
+  };
+  utter.onerror = () => {
+    clearHadithSpeechWatch();
     state.hadithSpeechPaused = false;
     state.ttsUtterance = null;
   };
   state.ttsUtterance = utter;
   window.speechSynthesis.speak(utter);
+
+  /* Keep speech continuous: resume if Chrome auto-pauses; nudge if it stalls. */
+  clearHadithSpeechWatch();
+  let ticks = 0;
+  state.hadithSpeechWatch = setInterval(() => {
+    if (!window.speechSynthesis) return;
+    if (!window.speechSynthesis.speaking && !window.speechSynthesis.pending) {
+      clearHadithSpeechWatch();
+      return;
+    }
+    if (state.hadithSpeechPaused) return;
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+      return;
+    }
+    ticks += 1;
+    if (ticks % 24 === 0) {
+      try {
+        window.speechSynthesis.pause();
+        window.speechSynthesis.resume();
+      } catch (_) { /* ignore */ }
+    }
+  }, 500);
 }
 
 function openHadithReader(slug, rows, index) {
@@ -807,12 +904,7 @@ function openHadithReader(slug, rows, index) {
   const total = rows.length;
   const pos = safeIndex + 1;
   const topicTitle = state.hadithTopicTitle || localizedKitabName(hadith, pack);
-  const topicEn = state.hadithTopicEn || hadith.kitab || '';
-  const grade = hadith.grade || hadith.reference_detail?.status || 'Grade not verified.';
-  const scholar = hadith.reference_detail?.scholar || hadith.reference_detail?.graded_by || '';
-  const narrator = (hadith.ravi || hadith.narrator || '').trim();
   const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
-  const source = hadith.source_url || hadith.reference_detail?.source_url || `https://sunnah.com/${slug}:${hadith.n}`;
   const progress = Math.round((pos / total) * 100);
   const rates = [0.75, 1, 1.25, 1.5];
   const audioMode = state.hadithAudioMode === 'translation' ? 'translation' : 'ibarat';
@@ -830,7 +922,6 @@ function openHadithReader(slug, rows, index) {
       <div class="hadith-reader-heading">
         <p class="hadith-reader-book">${escapeHtml(pack.book.en)}</p>
         <h2 class="hadith-reader-kitab" dir="rtl">${escapeHtml(topicTitle)}</h2>
-        ${topicEn ? `<p class="hadith-reader-kitab-en">${escapeHtml(topicEn)}</p>` : ''}
         <p class="hadith-reader-count">Hadith ${pos} of ${total}</p>
         <div class="hadith-progress" aria-hidden="true"><span style="width:${progress}%"></span></div>
       </div>
@@ -860,8 +951,8 @@ function openHadithReader(slug, rows, index) {
           <div>
             <strong>Audio</strong>
             <p class="hadith-audio-hint">${audioMode === 'ibarat'
-              ? 'Arabic audio · reads Arabic text only · clear & slow'
-              : `Translation audio · ${translationLang === 'ur' ? 'Urdu' : (translationLang === 'hi' ? 'Hindi' : 'English')} only`}</p>
+              ? 'Arabic audio · male KSA/Egyptian scholar voice · clear & slow'
+              : `Translation audio · ${translationLang === 'ur' ? 'Pakistani male Urdu' : (translationLang === 'hi' ? 'Hindi male' : 'Pakistani/Indian male English')} · clear pace`}</p>
           </div>
         </div>
         <div class="hadith-audio-modes" role="tablist" aria-label="Audio track">
@@ -878,18 +969,7 @@ function openHadithReader(slug, rows, index) {
           <span>Speed</span>
           ${rates.map((r) => `<button type="button" class="speed-btn ${Number(state.hadithSpeechRate) === r ? 'active' : ''}" data-rate="${r}">${r}×</button>`).join('')}
         </div>
-        <p class="hadith-audio-offline">Offline device TTS · highest-quality installed voice</p>
-      </section>
-
-      <section class="hadith-meta-grid">
-        <div><span>Narrator</span><strong dir="auto">${escapeHtml(narrator || '—')}</strong></div>
-        <div><span>Grade</span><strong>${escapeHtml(grade)}</strong></div>
-        <div><span>Scholar</span><strong>${escapeHtml(scholar || '—')}</strong></div>
-        <div><span>Reference</span><strong>${escapeHtml(ref)}</strong></div>
-        <div><span>Book</span><strong>${escapeHtml(pack.book.en)}</strong></div>
-        <div><span>Chapter</span><strong dir="auto">${escapeHtml(topicTitle)}</strong></div>
-        <div><span>Hadith Number</span><strong>${hadith.n}</strong></div>
-        <div><span>Source</span><strong><a href="${escapeHtml(source)}" target="_blank" rel="noopener">sunnah.com</a></strong></div>
+        <p class="hadith-audio-offline">Offline device TTS · prefers male scholar voices when installed</p>
       </section>
 
       <div class="hadith-reader-tools">
@@ -1071,7 +1151,6 @@ function paintHadithTopics(slug, pack, topics) {
       <div class="hadith-topic-index">${String(t.kitab_number || idx + 1).padStart(2, '0')}</div>
       <div class="hadith-topic-main">
         <p class="hadith-topic-title" dir="rtl">${escapeHtml(t.title || t.en || '—')}</p>
-        ${t.en ? `<p class="hadith-topic-en">${escapeHtml(t.en)}</p>` : ''}
         <p class="hadith-topic-meta">Hadith ${t.first}–${t.last} · ${t.count} hadith</p>
       </div>
       <div class="hadith-topic-side">

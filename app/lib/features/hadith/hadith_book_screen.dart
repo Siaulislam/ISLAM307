@@ -191,11 +191,6 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                             textDirection: TextDirection.rtl,
                             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1.5),
                           ),
-                          const SizedBox(height: 2),
-                          Text(
-                            '${topic['title_en'] ?? ''}',
-                            style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
-                          ),
                         ],
                       ),
                     ),
