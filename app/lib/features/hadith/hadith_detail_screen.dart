@@ -226,18 +226,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 10),
-                    FilledButton(
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                        final primaryId = imported.cast<Map<String, dynamic>?>().firstWhere(
-                          (e) => e?['role'] == 'primary',
-                          orElse: () => null,
-                        )?['narrator_id'] as int?;
-                        _openNarratorProfile(primary, primaryId);
-                      },
-                      child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800)),
-                    ),
                     const SizedBox(height: 16),
                   ],
                   if (chain.isEmpty && primary.isEmpty)
@@ -304,14 +292,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                       style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, height: 1.35),
                                     ),
                                   ],
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(ctx);
-                                      final id = imported.isNotEmpty ? imported[i]['narrator_id'] as int? : null;
-                                      _openNarratorProfile(chain[i], id);
-                                    },
-                                    child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-                                  ),
                                 ],
                               ),
                             ),

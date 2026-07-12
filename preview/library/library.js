@@ -687,9 +687,7 @@ const NARRATOR_PROFILE = {
 function narratorCardHtml(name) {
   return `
     <div class="narrator-card">
-      <p class="narrator-kicker">Narrator</p>
       <button type="button" class="narrator-name-link" data-narrator="${escapeHtml(name)}">${escapeHtml(name)}</button>
-      <button type="button" class="narrator-more-btn primary" data-narrator="${escapeHtml(name)}">More about this Narrator</button>
     </div>`;
 }
 
@@ -701,7 +699,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Only packs that have been imported into preview/data/narrators/ are loadable.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-12`);
+    const res = await fetch(`${path}?v=hadith-reader-13`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -848,7 +846,6 @@ async function openRaviDetail(hadith, book) {
             <div>
               <button type="button" class="narrator-name-link" data-narrator="${escapeHtml(key)}">${escapeHtml(name)}</button>
               <small>${escapeHtml(heard)}</small>
-              <button type="button" class="narrator-more-btn" data-narrator="${escapeHtml(key)}">More about this Narrator</button>
             </div>
           </li>`;
         }).join('')}
