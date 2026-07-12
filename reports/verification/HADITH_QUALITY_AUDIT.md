@@ -2,6 +2,12 @@
 
 Generated: `2026-07-12T11:49:37.109546+00:00`
 
+> **Forensic follow-up (exact counts + CSV):** see
+> [`HADITH_FORENSIC_AUDIT.md`](HADITH_FORENSIC_AUDIT.md) and
+> [`HADITH_FORENSIC_AUDIT.csv`](HADITH_FORENSIC_AUDIT.csv).
+> The “0 imported” figure below is explained there: **24,071** already had matching Arabic;
+> **285** have no Arabic in the authenticated source; **0** mapping failures; **0** import failures.
+
 ## Policy
 
 - Never invent Arabic, translation, narrator, grade, or reference with AI.
@@ -13,11 +19,11 @@ Generated: `2026-07-12T11:49:37.109546+00:00`
 ## Totals
 
 - Total Hadith checked: **24356**
-- Arabic imported from authenticated source: **0**
+- Arabic imported from authenticated source: **0** (see forensic breakdown — not a silent skip)
 - Non-Arabic placeholders cleared from text_ar: **2**
 - Narrators corrected from authenticated English: **0**
 - References corrected (URL + provider): **24356**
-- Missing authenticated Arabic (empty in source too): **283**
+- Missing authenticated Arabic (empty in source too): **283** at repair time; forensic current absent count **285** (includes the 2 cleared placeholders)
 
 ## Per book
 

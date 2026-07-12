@@ -1,0 +1,155 @@
+{
+  "generated_at": "2026-07-12T12:05:48.279213+00:00",
+  "policy": [
+    "Never invent Arabic/translation/narrator/grade/reference with AI.",
+    "Forensic comparison against authenticated fawazahmed0/hadith-api@1 editions only.",
+    "CSV is the manual-verification artifact — one row per hadith."
+  ],
+  "source": "fawazahmed0/hadith-api@1",
+  "totals": {
+    "total_hadith": 24356,
+    "arabic_present": 24071,
+    "arabic_absent": 285,
+    "narrator_present": 11954,
+    "narrator_absent": 12402,
+    "translation_present": 24259,
+    "translation_absent": 97,
+    "reference_present": 24356,
+    "reference_absent": 0,
+    "grade_present": 9201,
+    "grade_absent": 15155,
+    "arabic_reason_code_counts": {
+      "ARABIC_ALREADY_EXISTED_MATCHES_SOURCE": 24071,
+      "SOURCE_HAS_NO_ARABIC": 285
+    },
+    "why_arabic_was_not_imported_overall": {
+      "arabic_already_existed": 24071,
+      "source_has_no_arabic": 285,
+      "mapping_failed": 0,
+      "import_failed": 0
+    }
+  },
+  "books": {
+    "bukhari": {
+      "book": "Sahih Bukhari",
+      "slug": "bukhari",
+      "total_hadith": 7563,
+      "arabic_present": 7554,
+      "arabic_absent": 9,
+      "narrator_present": 7403,
+      "narrator_absent": 160,
+      "translation_present": 7557,
+      "translation_absent": 6,
+      "reference_present": 7563,
+      "reference_absent": 0,
+      "grade_present": 0,
+      "grade_absent": 7563,
+      "source_arabic_edition_count": 7563,
+      "source_english_edition_count": 7563,
+      "arabic_reason_counts": {
+        "ARABIC_ALREADY_EXISTED_MATCHES_SOURCE": 7554,
+        "SOURCE_HAS_NO_ARABIC": 9
+      },
+      "why_arabic_not_imported": {
+        "arabic_already_existed": 7554,
+        "source_has_no_arabic": 9,
+        "mapping_failed": 0,
+        "import_failed": 0
+      },
+      "critical_import_failures": [],
+      "mapping_failures": []
+    },
+    "muslim": {
+      "book": "Sahih Muslim",
+      "slug": "muslim",
+      "total_hadith": 7563,
+      "arabic_present": 7360,
+      "arabic_absent": 203,
+      "narrator_present": 5,
+      "narrator_absent": 7558,
+      "translation_present": 7481,
+      "translation_absent": 82,
+      "reference_present": 7563,
+      "reference_absent": 0,
+      "grade_present": 0,
+      "grade_absent": 7563,
+      "source_arabic_edition_count": 7563,
+      "source_english_edition_count": 7563,
+      "arabic_reason_counts": {
+        "SOURCE_HAS_NO_ARABIC": 203,
+        "ARABIC_ALREADY_EXISTED_MATCHES_SOURCE": 7360
+      },
+      "why_arabic_not_imported": {
+        "arabic_already_existed": 7360,
+        "source_has_no_arabic": 203,
+        "mapping_failed": 0,
+        "import_failed": 0
+      },
+      "critical_import_failures": [],
+      "mapping_failures": []
+    },
+    "abudawud": {
+      "book": "Sunan Abu Dawood",
+      "slug": "abudawud",
+      "total_hadith": 5274,
+      "arabic_present": 5272,
+      "arabic_absent": 2,
+      "narrator_present": 2953,
+      "narrator_absent": 2321,
+      "translation_present": 5274,
+      "translation_absent": 0,
+      "reference_present": 5274,
+      "reference_absent": 0,
+      "grade_present": 5274,
+      "grade_absent": 0,
+      "source_arabic_edition_count": 5274,
+      "source_english_edition_count": 5274,
+      "arabic_reason_counts": {
+        "ARABIC_ALREADY_EXISTED_MATCHES_SOURCE": 5272,
+        "SOURCE_HAS_NO_ARABIC": 2
+      },
+      "why_arabic_not_imported": {
+        "arabic_already_existed": 5272,
+        "source_has_no_arabic": 2,
+        "mapping_failed": 0,
+        "import_failed": 0
+      },
+      "critical_import_failures": [],
+      "mapping_failures": []
+    },
+    "tirmidhi": {
+      "book": "Jami' at-Tirmidhi",
+      "slug": "tirmidhi",
+      "total_hadith": 3956,
+      "arabic_present": 3885,
+      "arabic_absent": 71,
+      "narrator_present": 1593,
+      "narrator_absent": 2363,
+      "translation_present": 3947,
+      "translation_absent": 9,
+      "reference_present": 3956,
+      "reference_absent": 0,
+      "grade_present": 3927,
+      "grade_absent": 29,
+      "source_arabic_edition_count": 3956,
+      "source_english_edition_count": 3956,
+      "arabic_reason_counts": {
+        "ARABIC_ALREADY_EXISTED_MATCHES_SOURCE": 3885,
+        "SOURCE_HAS_NO_ARABIC": 71
+      },
+      "why_arabic_not_imported": {
+        "arabic_already_existed": 3885,
+        "source_has_no_arabic": 71,
+        "mapping_failed": 0,
+        "import_failed": 0
+      },
+      "critical_import_failures": [],
+      "mapping_failures": []
+    }
+  },
+  "artifacts": {
+    "csv": "reports/verification/HADITH_FORENSIC_AUDIT.csv",
+    "json": "reports/verification/HADITH_FORENSIC_AUDIT.json",
+    "md": "reports/verification/HADITH_FORENSIC_AUDIT.md"
+  }
+}
