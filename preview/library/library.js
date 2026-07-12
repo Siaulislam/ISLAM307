@@ -500,13 +500,15 @@ function kitabTopicKey(hadith) {
 function buildKitabTopics(pack) {
   const map = new Map();
   for (const h of pack.hadiths || []) {
+    const title = localizedKitabName(h, pack);
+    if (!title || !String(title).trim()) continue;
     const key = kitabTopicKey(h);
     if (!map.has(key)) {
       map.set(key, {
         key,
         kitab_number: h.kitab_number,
         en: h.kitab || '',
-        title: localizedKitabName(h, pack),
+        title,
         count: 0,
         first: h.n,
         last: h.n,
@@ -515,7 +517,7 @@ function buildKitabTopics(pack) {
     const row = map.get(key);
     row.count += 1;
     row.last = h.n;
-    if (!row.title) row.title = localizedKitabName(h, pack);
+    if (!row.title) row.title = title;
   }
   return [...map.values()].sort((a, b) => {
     const an = a.kitab_number == null ? 9999 : Number(a.kitab_number);
