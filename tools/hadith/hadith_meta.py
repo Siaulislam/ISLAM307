@@ -3,12 +3,16 @@
 Extract authentic isnad (rawi / narrator chain) and reference detail.
 
 Rules:
-- Narrators come ONLY from the Isnad, never from the Matn.
-- Chain = first transmitter → … → last Companion before the Prophet ﷺ.
+- Narrators = every personal name from the start of the Arabic text until the
+  first mention of the Prophet ﷺ.
+- Stop immediately at the first of:
+    النبي صلى الله عليه وسلم / رسول الله صلى الله عليه وسلم / محمد صلى الله عليه وسلم
+    (and common orthographic / ﷺ variants).
 - Do NOT include Prophet Muhammad ﷺ in the rawi list.
+- Everything after that marker is Matn — never treated as narrators.
+- Capture the full dynamic chain (no fixed narrator count).
 - Preserve full names (ibn / bin / bint / Abu / Umm / al- / ibn Abi / ibn al-).
 - Never invent names; parse authenticated Arabic/English source text only.
-- English is used internally for "Narrated X" labels and Prophet/matn boundaries.
 """
 
 from __future__ import annotations
@@ -19,12 +23,16 @@ from pathlib import Path
 
 _DIAC = re.compile(r"[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]")
 
+# Boundary marker: first mention of the Prophet ﷺ (not bare اسم "محمد" alone).
 _PROPHET_AR = re.compile(
     r"(?:"
-    r"رسول\s*الله|رسول\s*اللہ|"
-    r"النبي\b|النبی\b|"
-    r"نبي\s*الله|نبی\s*اللہ|"
-    r"محمد\s*(?:صلى|صلی|ﷺ)"
+    r"رسول\s*الله\s*(?:صلى|صلی|ﷺ)?"
+    r"|رسول\s*اللہ\s*(?:صلى|صلی|ﷺ)?"
+    r"|النبي\s*(?:صلى|صلی|ﷺ)?"
+    r"|النبی\s*(?:صلى|صلی|ﷺ)?"
+    r"|نبي\s*الله\s*(?:صلى|صلی|ﷺ)?"
+    r"|نبی\s*اللہ\s*(?:صلى|صلی|ﷺ)?"
+    r"|محمد\s*(?:صلى|صلی|ﷺ)"
     r")",
     re.UNICODE,
 )
@@ -97,13 +105,30 @@ _MATN_NOISE = re.compile(
     re.UNICODE,
 )
 
+# Whole-token prophet titles only. Bare "محمد" is a common narrator short-name
+# (e.g. محمد بن سيرين) and must NOT stop the chain.
 _PROPHET_NAME_ONLY = re.compile(
     r"^(?:"
-    r"رسول\s*الله|رسول\s*اللہ|النبي|النبی|نبي\s*الله|نبی\s*اللہ|"
-    r"محمد(?:\s*صلى.*)?|"
-    r"allah'?s\s+messenger|the\s+prophet|messenger\s+of\s+allah|prophet\s+muhammad"
+    r"رسول\s*الله(?:\s*صلى.*)?"
+    r"|رسول\s*اللہ(?:\s*صلى.*)?"
+    r"|النبي(?:\s*صلى.*)?"
+    r"|النبی(?:\s*صلى.*)?"
+    r"|نبي\s*الله(?:\s*صلى.*)?"
+    r"|نبی\s*اللہ(?:\s*صلى.*)?"
+    r"|محمد\s*(?:صلى|صلی|ﷺ).*"
+    r"|allah'?s\s+messenger|the\s+prophet|messenger\s+of\s+allah|prophet\s+muhammad"
     r")$",
     re.IGNORECASE | re.UNICODE,
+)
+
+# Clear matn openings after a companion "قال …" (not person names).
+_MATN_AFTER_QALA = re.compile(
+    r"^(?:"
+    r"تخلف|بينما|بينا|كان|كنت|كنا|ذكر|ذكرت|خطب|جاء|جاءت|بعث|كتب|"
+    r"يسروا|تسموا|حفظت|اقبلت|بت\s|ضمني|عقلت|اتي|اتيت|سئل|سال|"
+    r"ان\s+رسول|ان\s+النبي|سمعت\s+النبي|سمعت\s+رسول"
+    r")",
+    re.UNICODE,
 )
 
 
@@ -168,9 +193,24 @@ def _clean_name_ar(raw: str) -> str:
 
     # Remove dangling "انه" / "انها" ONLY — never bare "ان" (breaks سفيان).
     name = re.sub(r"\s*,?\s*انه(?:ا)?\s*$", "", name)
+    # Strip trailing "أخبره / أخبرها / يقول" leftovers from أن Fulān أخبره.
+    name = re.sub(r"\s+(?:أخبره|أخبرها|أخبرهما|اخبره|اخبرها|اخبرهما|يقول|يقوله)\s*$", "", name)
     name = _normalize_ws(name).strip(" ،,;:.-")
 
-    if not name or name in {"قال", "قالت", "ان", "عن", "و", "ه", "ها", "انه", "انها", "في"}:
+    if not name or name in {
+        "قال",
+        "قالت",
+        "ان",
+        "عن",
+        "و",
+        "ه",
+        "ها",
+        "انه",
+        "انها",
+        "في",
+        "اخبره",
+        "أخبره",
+    }:
         return ""
     if _is_prophet_token(name):
         return ""
@@ -199,9 +239,11 @@ def _clean_name_en(raw: str) -> str:
 
 
 def _cut_isnad_ar(text_ar: str) -> str:
-    """Arabic isnad only: start → last narrator, before Prophet / matn.
+    """Arabic isnad only: start → last narrator, immediately before Prophet ﷺ.
 
-    Returns diacritic-stripped text (hamza preserved) for name display.
+    Primary stop: first النبي / رسول الله / محمد صلى الله عليه وسلم (or ﷺ).
+    Secondary stop: clear companion matn speech (قال كان / بينما / …) that begins
+    before the Prophet marker — still excludes Matn from the narrator list.
     """
     display = _strip_diac(text_ar)
     plain = _fold_ar(display)
@@ -210,64 +252,50 @@ def _cut_isnad_ar(text_ar: str) -> str:
 
     candidates: list[int] = []
 
-    # 0) Explicit matn / speech openings inside Bukhari-style reports
-    for pat in (
-        r"وهو\s+يحدث",
-        r"فقال\s+في\s+حديثه",
-        r"قال\s+في\s+حديثه",
-        r"بينا\s+انا",
-        r"بينما\s+انا",
-        r"يحدث\s+عن\s+فترة",
-    ):
-        m = re.search(pat, plain)
-        if m and m.start() > 12:
-            candidates.append(m.start())
-
-    # 1) Companion begins speaking: انها قالت / انه قال (not انه سمع)
-    for m in re.finditer(r"انها\s+قالت|انه\s+قال", plain):
+    # 1) Primary: first Prophet ﷺ marker (user rule).
+    m = _PROPHET_AR.search(plain)
+    if m:
         candidates.append(m.start())
 
-    # 2) ان <person> … Prophet  (matn, e.g. ان الحارث … سال رسول الله)
-    for m in re.finditer(r"\sان\s+(?!ه\s+سمع)", plain):
-        if _PROPHET_AR.search(plain[m.start() :]):
-            if re.search(r"(?:حدثنا|حدثني|اخبرنا|عن|قال\s+\S)", plain[: m.start()]):
-                candidates.append(m.start())
-
-    # 3) Direct report from the Prophet
-    for m in re.finditer(
-        r"(?:قال|قالت|سمعت|سمع|عن|ان|كان|سال)\s+(?:رسول\s*الله|النبي|نبي\s*الله)",
+    # 2) Companion matn speech after isnad (before / without waiting for Prophet).
+    #    Never cut on "قال حدثنا / قال أخبرنا / قال سمعت".
+    for m2 in re.finditer(
+        r"(?:^|[\s،,;:])(?P<qala>قال(?:ت)?)\s+"
+        r"(?!حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن\s)"
+        r"(?=كان|كنت|كنا|بينما|بينا|تخلف|ذكر|خطب|جاء|جاءت|بعث|كتب|"
+        r"يسروا|تسموا|حفظت|اقبلت|ضمني|عقلت|اتي|اتيت|سئل)",
         plain,
     ):
-        candidates.append(m.start())
+        if re.search(r"(?:حدثنا|حدثني|اخبرنا|عن)", plain[: m2.start()]):
+            candidates.append(m2.start("qala"))
 
-    # 4) First prophet token after a chain exists
-    for m in _PROPHET_AR.finditer(plain):
-        if re.search(r"(?:حدثنا|حدثني|اخبرنا|عن|قال\s+\S)", plain[: m.start()]):
-            candidates.append(m.start())
-            break
-
-    # 5) Quran citation / opening quote (matn)
-    for m in re.finditer(r"[\"«»\{]|قوله\s*تعالي|قوله\s*تعالى", plain):
-        if m.start() > 20:
-            candidates.append(m.start())
+    # 3) Fallback matn openers when neither above matched early enough
+    if not candidates:
+        for pat in (
+            r"وهو\s+يحدث",
+            r"بينا\s+انا",
+            r"بينما\s+انا",
+            r"[\"«»\{]|قوله\s*تعالي|قوله\s*تعالى",
+        ):
+            m3 = re.search(pat, plain)
+            if m3 and m3.start() > 20:
+                candidates.append(m3.start())
+                break
 
     if not candidates:
-        m = re.search(r"[\"«»\{]|قوله\s*تعالي", plain)
-        cut = m.start() if m else min(500, len(plain))
+        cut = min(len(plain), 800)
     else:
-        positive = [c for c in candidates if c > 0]
-        cut = min(positive) if positive else min(candidates)
+        cut = min(c for c in candidates if c >= 0)
 
-    # Offsets align between display and plain (1:1 folding).
     return display[:cut].strip(" ،,;:")
 
 
 def _prepare_isnad_display(isnad: str) -> tuple[str, str]:
     """Return (display_text, search_text) with aligned offsets (1:1 folding)."""
     display = _strip_diac(isnad)
-    # Normalize "أنه سمع" / "انه سمع" → سمعت (isnad continuation). Avoid \b (breaks on Arabic).
+    # Normalize "أنه سمع" / "انه سمع" → سمعت (isnad continuation).
     display = re.sub(r"أن(?:ه|ها)?\s+سمع\s+|ان(?:ه|ها)?\s+سمع\s+", " سمعت ", display)
-    # Bukhari parallel isnad marker "ح وحدثنا" → clean chain break (keep authentic names only).
+    # Bukhari parallel isnad marker "ح وحدثنا" → chain break (keep authentic names).
     display = re.sub(r"\s*ح\s*و\s*(?=حدثنا|حدثني)", " . ", display)
     # Drop "نحوه" (commentary pointer, not a person).
     display = re.sub(r"،?\s*نحوه\s*", " ", display)
@@ -279,15 +307,51 @@ def _is_matn_noise(name: str) -> bool:
     n = _fold_ar(name)
     if _MATN_NOISE.search(n):
         return True
-    if re.search(r"^(?:في|وهو|فقال|بينا|بينما|فترة|حديثه|نحوه)\b", n):
+    if re.search(r"^(?:في|وهو|فقال|بينا|بينما|فترة|حديثه|نحوه|تخلف|ذكر)\b", n):
+        return True
+    if _MATN_AFTER_QALA.match(n):
         return True
     return False
+
+
+def _looks_like_person_name(name: str) -> bool:
+    """Reject clear matn / verb phrases mistaken for names."""
+    n = _fold_ar(name)
+    if not n or _is_matn_noise(n):
+        return False
+    if _MATN_AFTER_QALA.match(n):
+        return False
+    # Too long to be a single person name.
+    if len(n) > 70 or len(n.split()) > 12:
+        return False
+    # Reject commentary / speech crumbs.
+    if re.search(
+        r"(?:يمنعني|يزعم|تمارى|البعوث|في\s+المسجد|عدو\s+الله|خطيبا|"
+        r"^قال\s|^قلت\s|^قيل\s|^ح$|^حدث$|^انه$|^انها$|^رجلا$|^سئل$|^اشهد|"
+        r"^رايت$|^استيقظ$|^صلى\s|^لما\s|^احدثكم|"
+        r"صحبت\s|فلم\s+اسمعه|كذب\s|لعمرو|لابن|"
+        r"اخواننا|يشغلهم|يلزم\s+رسول|بذلك|كان\s+يلزم)",
+        n,
+    ):
+        return False
+    # Reject if name still contains matn verb "كان/كنت" mid-phrase.
+    if re.search(r"\sكان\s|\sكنت\s|\sكنا\s", n):
+        return False
+    tokens = [
+        t
+        for t in re.findall(r"\w+", n)
+        if t not in _TX_VERBS and t not in {"عن", "ان", "قال", "قالت", "ح"}
+    ]
+    if not tokens:
+        return False
+    return True
 
 
 def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
     """
     Parse authenticated Arabic isnad only:
-      قال <Name> / حدثنا / أخبرنا / أن / عن / سمعت + FULL NAME
+      حدثنا / حدثني / أخبرنا / أخبرني / عن / سمعت / قال حدثنا … + FULL NAME
+    Collect every narrator until the Prophet ﷺ boundary (already cut).
     Never invent names; never take Matn phrases as rawi.
     """
     if not isnad:
@@ -301,11 +365,28 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
         name = _clean_name_ar(raw)
         if not name or _is_prophet_token(name) or _is_matn_noise(name):
             return False
+        if not _looks_like_person_name(name):
+            return False
         # Strip leftover parallel-chain crumbs.
         name = re.split(r"\s+\.\s+", name)[0].strip(" ،,;:")
         name = _clean_name_ar(name)
-        if not name or _is_matn_noise(name):
+        if not name or _is_matn_noise(name) or not _looks_like_person_name(name):
             return False
+        # Split apposition "أبو النعمان، عارم بن الفضل" into two display names when both ok.
+        if "،" in name or "," in name:
+            parts = re.split(r"[،,]", name)
+            added_any = False
+            for part in parts:
+                part = _clean_name_ar(part)
+                if not part or not _looks_like_person_name(part):
+                    continue
+                key = _fold_ar(part).replace(" ", "")
+                if key in seen:
+                    continue
+                seen.add(key)
+                names.append(part)
+                added_any = True
+            return added_any
         key = _fold_ar(name).replace(" ", "")
         if key in seen:
             return False
@@ -313,10 +394,18 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
         names.append(name)
         return True
 
-    # 1) Leading قال / قالت <Name> (e.g. قال ابن شهاب)
+    # 1) Leading قال / قالت <Name> (e.g. قال ابن شهاب) — skip matn speech.
     for m in _QALA_NAME.finditer(search):
-        # Map offsets: search and display are 1:1 after fold.
-        add(display[m.start("name") : m.end("name")])
+        candidate = display[m.start("name") : m.end("name")]
+        folded = _fold_ar(candidate)
+        if _MATN_AFTER_QALA.match(folded):
+            continue
+        # Only keep short person-like qala-names (ابن / أبو / single ism).
+        if len(folded.split()) > 5 or len(folded) > 40:
+            continue
+        if folded.startswith("قال ") or folded.startswith("قلت "):
+            continue
+        add(candidate)
 
     matches = list(_TX_FIND.finditer(search))
     for i, m in enumerate(matches):
@@ -338,14 +427,30 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
             continue
 
         folded_chunk = _fold_ar(chunk)
-        if re.match(r"^(?:انها\s+قالت|انه\s+قال|قال\s+رسول|قالت\s+رسول|وهو\s+يحدث|فقال\s+في)", folded_chunk):
+        # Companion begins matn speech after قال — stop (do not treat as narrator).
+        if re.match(r"^(?:انها\s+قالت|انه\s+قال)", folded_chunk):
             break
-        if _is_prophet_token(chunk) or _is_matn_noise(chunk):
+        if _MATN_AFTER_QALA.match(folded_chunk):
+            break
+        if re.match(r"^(?:قال\s+رسول|قالت\s+رسول|وهو\s+يحدث|فقال\s+في)", folded_chunk):
+            break
+        # Bare prophet titles (with salawat) end the chain; bare محمد does not.
+        if _is_prophet_token(chunk):
+            break
+        if _is_matn_noise(chunk):
+            break
+
+        # If chunk is "<name> قال <matn…>", keep only the name before قال.
+        m_speech = re.search(
+            r"\s+قال(?:ت)?\s+(?=تخلف|بينما|بينا|كان|كنت|كنا|ذكر|خطب|جاء|بعث|كتب|يسروا|تسموا|حفظت)",
+            folded_chunk,
+        )
+        if m_speech:
+            chunk = display[start : start + m_speech.start()].strip(" ،,;:")
+            add(chunk)
             break
 
         add(chunk)
-        if len(names) >= 16:
-            break
 
     return names
 

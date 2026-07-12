@@ -1,11 +1,27 @@
 /// Extract authentic isnad (rawi chain) from offline hadith rows.
-/// Narrators come ONLY from the Isnad (never Matn). Prophet ﷺ is excluded.
-/// Preserve ibn/bin/bint/Abu/Umm/al-/ibn Abi. Never invent names.
+///
+/// Rules:
+/// - Narrators = every personal name from the start of the Arabic text until the
+///   first mention of the Prophet ﷺ.
+/// - Stop at النبي / رسول الله / محمد صلى الله عليه وسلم (and ﷺ variants).
+/// - Do NOT include Prophet Muhammad ﷺ in the rawi list.
+/// - Everything after that marker is Matn.
+/// - Capture the full dynamic chain (no fixed narrator count).
+/// - Preserve ibn/bin/bint/Abu/Umm/al-/ibn Abi. Never invent names.
 
 final _diac = RegExp(r'[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]');
 
+// Boundary marker: first Prophet ﷺ (not bare اسم "محمد").
 final _prophetAr = RegExp(
-  r'(?:رسول\s*الله|رسول\s*اللہ|النبي\b|النبی\b|نبي\s*الله|نبی\s*اللہ|محمد\s*(?:صلى|صلی|ﷺ))',
+  r'(?:'
+  r'رسول\s*الله\s*(?:صلى|صلی|ﷺ)?'
+  r'|رسول\s*اللہ\s*(?:صلى|صلی|ﷺ)?'
+  r'|النبي\s*(?:صلى|صلی|ﷺ)?'
+  r'|النبی\s*(?:صلى|صلی|ﷺ)?'
+  r'|نبي\s*الله\s*(?:صلى|صلی|ﷺ)?'
+  r'|نبی\s*اللہ\s*(?:صلى|صلی|ﷺ)?'
+  r'|محمد\s*(?:صلى|صلی|ﷺ)'
+  r')',
   unicode: true,
 );
 
@@ -26,7 +42,6 @@ final _honorificEn = RegExp(
 
 const _txVerbs = ['حدثنا', 'حدثني', 'اخبرنا', 'اخبرني', 'انبانا', 'انباني', 'سمعت'];
 
-// Optional leading و (واخبرني / وحدثنا); include ان as transmission.
 final _txFind = RegExp(
   r'(?:^|[\s،,;:]+|(?:قال|قالت)\s*:?\s*)'
   r'و?'
@@ -35,7 +50,6 @@ final _txFind = RegExp(
   unicode: true,
 );
 
-// قال <Name> / قالت <Name> — NOT قال حدثنا / قال أخبرنا / Prophet titles.
 final _qalaName = RegExp(
   r'(?:^|[\s،,;:]+)'
   r'(?<verb>قال|قالت)\s+'
@@ -59,6 +73,15 @@ final _matnNoise = RegExp(
   unicode: true,
 );
 
+final _matnAfterQala = RegExp(
+  r'^(?:'
+  r'تخلف|بينما|بينا|كان|كنت|كنا|ذكر|ذكرت|خطب|جاء|جاءت|بعث|كتب|'
+  r'يسروا|تسموا|حفظت|اقبلت|بت\s|ضمني|عقلت|اتي|اتيت|سئل|سال|'
+  r'ان\s+رسول|ان\s+النبي|سمعت\s+النبي|سمعت\s+رسول'
+  r')',
+  unicode: true,
+);
+
 String _stripDiac(String text) => text.replaceAll(_diac, '');
 
 String _foldAr(String text) {
@@ -77,9 +100,16 @@ String _norm(String text) => text.replaceAll(RegExp(r'\s+'), ' ').trim();
 bool _isProphetToken(String name) {
   final n = _norm(_foldAr(name));
   if (n.isEmpty) return false;
+  // Bare "محمد" is a common narrator short-name — require salawat/ﷺ.
   if (RegExp(
-        r'^(?:رسول\s*الله|رسول\s*اللہ|النبي|النبی|نبي\s*الله|نبی\s*اللہ|محمد(?:\s*صلى.*)?|'
-        r"allah'?s\s+messenger|the\s+prophet|messenger\s+of\s+allah|prophet\s+muhammad)$",
+        r'^(?:رسول\s*الله(?:\s*صلى.*)?'
+        r'|رسول\s*اللہ(?:\s*صلى.*)?'
+        r'|النبي(?:\s*صلى.*)?'
+        r'|النبی(?:\s*صلى.*)?'
+        r'|نبي\s*الله(?:\s*صلى.*)?'
+        r'|نبی\s*اللہ(?:\s*صلى.*)?'
+        r'|محمد\s*(?:صلى|صلی|ﷺ).*'
+        r"|allah'?s\s+messenger|the\s+prophet|messenger\s+of\s+allah|prophet\s+muhammad)$",
         caseSensitive: false,
         unicode: true,
       ).hasMatch(n)) {
@@ -93,10 +123,34 @@ bool _isProphetToken(String name) {
 bool _isMatnNoise(String name) {
   final n = _foldAr(name);
   if (_matnNoise.hasMatch(n)) return true;
-  if (RegExp(r'^(?:في|وهو|فقال|بينا|بينما|فترة|حديثه|نحوه)\b', unicode: true).hasMatch(n)) {
+  if (RegExp(r'^(?:في|وهو|فقال|بينا|بينما|فترة|حديثه|نحوه|تخلف|ذكر)\b', unicode: true).hasMatch(n)) {
     return true;
   }
+  if (_matnAfterQala.hasMatch(n)) return true;
   return false;
+}
+
+bool _looksLikePersonName(String name) {
+  final n = _foldAr(name);
+  if (n.isEmpty || _isMatnNoise(n)) return false;
+  if (_matnAfterQala.hasMatch(n)) return false;
+  if (n.length > 70 || n.split(RegExp(r'\s+')).length > 12) return false;
+  if (RegExp(
+    r'(?:يمنعني|يزعم|تمارى|البعوث|في\s+المسجد|عدو\s+الله|خطيبا|'
+    r'^قال\s|^قلت\s|^قيل\s|^ح$|^حدث$|^انه$|^انها$|^رجلا$|^سئل$|^اشهد|'
+    r'^رايت$|^استيقظ$|^صلى\s|^لما\s|^احدثكم|'
+    r'صحبت\s|فلم\s+اسمعه|كذب\s|لعمرو|لابن|'
+    r'اخواننا|يشغلهم|يلزم\s+رسول|بذلك)',
+    unicode: true,
+  ).hasMatch(n)) {
+    return false;
+  }
+  final tokens = RegExp(r'\w+', unicode: true)
+      .allMatches(n)
+      .map((m) => m.group(0)!)
+      .where((t) => !_txVerbs.contains(t) && !{'عن', 'ان', 'قال', 'قالت', 'ح'}.contains(t))
+      .toList();
+  return tokens.isNotEmpty;
 }
 
 String _cleanNameAr(String raw) {
@@ -116,9 +170,26 @@ String _cleanNameAr(String raw) {
   name = _norm(name).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
   // Remove dangling انه / انها ONLY — never bare ان (breaks سفيان).
   name = name.replaceAll(RegExp(r'\s*,?\s*انه(?:ا)?\s*$'), '');
+  name = name.replaceAll(
+    RegExp(r'\s+(?:أخبره|أخبرها|أخبرهما|اخبره|اخبرها|اخبرهما|يقول|يقوله)\s*$'),
+    '',
+  );
   name = _norm(name).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
   if (name.isEmpty ||
-      {'قال', 'قالت', 'ان', 'عن', 'و', 'ه', 'ها', 'انه', 'انها', 'في'}.contains(name)) {
+      {
+        'قال',
+        'قالت',
+        'ان',
+        'عن',
+        'و',
+        'ه',
+        'ها',
+        'انه',
+        'انها',
+        'في',
+        'اخبره',
+        'أخبره',
+      }.contains(name)) {
     return '';
   }
   if (_isProphetToken(name)) return '';
@@ -145,63 +216,46 @@ String _cutIsnadAr(String textAr) {
 
   final candidates = <int>[];
 
-  // Explicit matn / speech openings inside Bukhari-style reports
-  for (final pat in [
-    r'وهو\s+يحدث',
-    r'فقال\s+في\s+حديثه',
-    r'قال\s+في\s+حديثه',
-    r'بينا\s+انا',
-    r'بينما\s+انا',
-    r'يحدث\s+عن\s+فترة',
-  ]) {
-    final m = RegExp(pat, unicode: true).firstMatch(plain);
-    if (m != null && m.start > 12) candidates.add(m.start);
-  }
+  // 1) Primary: first Prophet ﷺ marker.
+  final prophetMatch = _prophetAr.firstMatch(plain);
+  if (prophetMatch != null) candidates.add(prophetMatch.start);
 
-  // Companion begins speaking: انها قالت / انه قال (not انه سمع)
-  for (final m in RegExp(r'انها\s+قالت|انه\s+قال', unicode: true).allMatches(plain)) {
-    candidates.add(m.start);
-  }
-
-  // ان <person> … Prophet (matn)
-  for (final m in RegExp(r'\sان\s+(?!ه\s+سمع)', unicode: true).allMatches(plain)) {
-    if (_prophetAr.hasMatch(plain.substring(m.start)) &&
-        RegExp(r'(?:حدثنا|حدثني|اخبرنا|عن|قال\s+\S)', unicode: true)
-            .hasMatch(plain.substring(0, m.start))) {
-      candidates.add(m.start);
-    }
-  }
-
-  // Direct report from the Prophet
+  // 2) Companion matn speech after isnad (قال كان / بينما / …).
   for (final m in RegExp(
-    r'(?:قال|قالت|سمعت|سمع|عن|ان|كان|سال)\s+(?:رسول\s*الله|النبي|نبي\s*الله)',
+    r'(?:^|[\s،,;:])(?<qala>قال(?:ت)?)\s+'
+    r'(?!حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن\s)'
+    r'(?=كان|كنت|كنا|بينما|بينا|تخلف|ذكر|خطب|جاء|جاءت|بعث|كتب|'
+    r'يسروا|تسموا|حفظت|اقبلت|ضمني|عقلت|اتي|اتيت|سئل)',
     unicode: true,
   ).allMatches(plain)) {
-    candidates.add(m.start);
-  }
-
-  // First prophet token after a chain exists
-  for (final m in _prophetAr.allMatches(plain)) {
-    if (RegExp(r'(?:حدثنا|حدثني|اخبرنا|عن|قال\s+\S)', unicode: true)
-        .hasMatch(plain.substring(0, m.start))) {
-      candidates.add(m.start);
-      break;
+    if (RegExp(r'(?:حدثنا|حدثني|اخبرنا|عن)', unicode: true).hasMatch(plain.substring(0, m.start))) {
+      final qalaStart = m.namedGroup('qala') != null ? m.end - m.namedGroup('qala')!.length : m.start;
+      // Prefer named group start via match groups — use start of قال within match.
+      final local = plain.substring(m.start, m.end);
+      final qi = local.indexOf('قال');
+      candidates.add(qi >= 0 ? m.start + qi : m.start);
     }
   }
 
-  // Quran citation / opening quote (matn)
-  for (final m in RegExp(r'["«»\{]|قوله\s*تعالي|قوله\s*تعالى', unicode: true).allMatches(plain)) {
-    if (m.start > 20) candidates.add(m.start);
+  // 3) Fallback matn openers when neither above matched.
+  if (candidates.isEmpty) {
+    for (final pat in [
+      r'وهو\s+يحدث',
+      r'بينا\s+انا',
+      r'بينما\s+انا',
+      r'["«»\{]|قوله\s*تعالي|قوله\s*تعالى',
+    ]) {
+      final m = RegExp(pat, unicode: true).firstMatch(plain);
+      if (m != null && m.start > 20) {
+        candidates.add(m.start);
+        break;
+      }
+    }
   }
 
-  int cut;
-  if (candidates.isEmpty) {
-    final m = RegExp(r'["«»\{]|قوله\s*تعالي', unicode: true).firstMatch(plain);
-    cut = m?.start ?? (plain.length < 500 ? plain.length : 500);
-  } else {
-    final positive = candidates.where((c) => c > 0).toList();
-    cut = positive.isEmpty ? candidates.reduce((a, b) => a < b ? a : b) : positive.reduce((a, b) => a < b ? a : b);
-  }
+  final cut = candidates.isEmpty
+      ? (plain.length < 800 ? plain.length : 800)
+      : candidates.reduce((a, b) => a < b ? a : b);
   return display.substring(0, cut).replaceAll(RegExp(r'[ ،,;:]+$'), '');
 }
 
@@ -233,11 +287,28 @@ List<String> _extractNamesFromArIsnad(String isnad) {
 
   bool add(String raw) {
     var name = _cleanNameAr(raw);
-    if (name.isEmpty || _isProphetToken(name) || _isMatnNoise(name)) return false;
-    // Strip leftover parallel-chain crumbs.
+    if (name.isEmpty || _isProphetToken(name) || _isMatnNoise(name) || !_looksLikePersonName(name)) {
+      return false;
+    }
     name = name.split(RegExp(r'\s+\.\s+')).first.replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
     name = _cleanNameAr(name);
-    if (name.isEmpty || _isMatnNoise(name)) return false;
+    if (name.isEmpty || _isMatnNoise(name) || !_looksLikePersonName(name)) return false;
+
+    // Split apposition "أبو النعمان، عارم بن الفضل".
+    if (name.contains('،') || name.contains(',')) {
+      var addedAny = false;
+      for (final partRaw in name.split(RegExp(r'[،,]'))) {
+        var part = _cleanNameAr(partRaw);
+        if (part.isEmpty || !_looksLikePersonName(part)) continue;
+        final key = _foldAr(part).replaceAll(' ', '');
+        if (seen.contains(key)) continue;
+        seen.add(key);
+        names.add(part);
+        addedAny = true;
+      }
+      return addedAny;
+    }
+
     final key = _foldAr(name).replaceAll(' ', '');
     if (seen.contains(key)) return false;
     seen.add(key);
@@ -245,13 +316,16 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     return true;
   }
 
-  // Leading قال / قالت <Name> (e.g. قال ابن شهاب)
-  // Name is the last capturing content in the match (lookahead is zero-width).
   for (final m in _qalaName.allMatches(search)) {
     final nameGroup = m.namedGroup('name');
     if (nameGroup == null || nameGroup.isEmpty) continue;
     final nameStart = m.end - nameGroup.length;
-    add(display.substring(nameStart, m.end));
+    final candidate = display.substring(nameStart, m.end);
+    final folded = _foldAr(candidate);
+    if (_matnAfterQala.hasMatch(folded)) continue;
+    if (folded.split(RegExp(r'\s+')).length > 5 || folded.length > 40) continue;
+    if (folded.startsWith('قال ') || folded.startsWith('قلت ')) continue;
+    add(candidate);
   }
 
   final matches = _txFind.allMatches(search).toList();
@@ -261,13 +335,11 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     final start = m.end;
     final end = i + 1 < matches.length ? matches[i + 1].start : search.length;
 
-    // Skip "عن" that is part of يحدث عن <matn>
     final prevStart = m.start - 8 < 0 ? 0 : m.start - 8;
     final prev = search.substring(prevStart, m.start);
     if (verb == 'عن' && RegExp(r'يحدث\s*$|تحدث\s*$|نحدث\s*$', unicode: true).hasMatch(prev)) {
       continue;
     }
-    // Skip "ان" that opens speech: انه قال / انها قالت
     if (verb == 'ان') {
       final aheadEnd = start + 16 > search.length ? search.length : start + 16;
       final ahead = search.substring(start, aheadEnd);
@@ -276,20 +348,28 @@ List<String> _extractNamesFromArIsnad(String isnad) {
       }
     }
 
-    final chunk = display.substring(start, end).replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
+    var chunk = display.substring(start, end).replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
     if (chunk.isEmpty) continue;
 
     final foldedChunk = _foldAr(chunk);
-    if (RegExp(
-      r'^(?:انها\s+قالت|انه\s+قال|قال\s+رسول|قالت\s+رسول|وهو\s+يحدث|فقال\s+في)',
-      unicode: true,
-    ).hasMatch(foldedChunk)) {
+    if (RegExp(r'^(?:انها\s+قالت|انه\s+قال)', unicode: true).hasMatch(foldedChunk)) break;
+    if (_matnAfterQala.hasMatch(foldedChunk)) break;
+    if (RegExp(r'^(?:قال\s+رسول|قالت\s+رسول|وهو\s+يحدث|فقال\s+في)', unicode: true).hasMatch(foldedChunk)) {
       break;
     }
     if (_isProphetToken(chunk) || _isMatnNoise(chunk)) break;
 
+    final speech = RegExp(
+      r'\s+قال(?:ت)?\s+(?=تخلف|بينما|بينا|كان|كنت|كنا|ذكر|خطب|جاء|بعث|كتب|يسروا|تسموا|حفظت)',
+      unicode: true,
+    ).firstMatch(foldedChunk);
+    if (speech != null) {
+      chunk = display.substring(start, start + speech.start).replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
+      add(chunk);
+      break;
+    }
+
     add(chunk);
-    if (names.length >= 16) break;
   }
   return names;
 }
