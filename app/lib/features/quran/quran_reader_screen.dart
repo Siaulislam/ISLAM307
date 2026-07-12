@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/audio/recitation_audio_service.dart';
 import '../../core/repositories/quran_repository.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
@@ -115,8 +116,51 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                     itemCount: _ayahs.length,
-                    itemBuilder: (_, i) => AyahCard(ayah: _ayahs[i]),
+                    itemBuilder: (_, i) => AyahCard(
+                      ayah: _ayahs[i],
+                      surahAyahCount: _ayahs.isEmpty ? null : _ayahs.last['ayah_number'] as int?,
+                    ),
                   ),
+                ),
+                ListenableBuilder(
+                  listenable: RecitationAudioService.instance,
+                  builder: (context, _) {
+                    final audio = RecitationAudioService.instance;
+                    if (!audio.isActive) return const SizedBox.shrink();
+                    return Material(
+                      elevation: 8,
+                      color: Theme.of(context).cardColor,
+                      child: SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 10, 12, 10),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.graphic_eq_rounded, color: Islam307Theme.emerald),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  '${audio.reciterName ?? 'Qari'} · ${audio.playingSurah}:${audio.playingAyah}',
+                                  style: const TextStyle(fontWeight: FontWeight.w800),
+                                ),
+                              ),
+                              FilledButton.icon(
+                                onPressed: () => RecitationAudioService.instance.stop(),
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: const Color(0xFFB91C1C),
+                                  foregroundColor: Colors.white,
+                                  minimumSize: const Size(0, 40),
+                                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                                ),
+                                icon: const Icon(Icons.stop_rounded, size: 18),
+                                label: const Text('Stop'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

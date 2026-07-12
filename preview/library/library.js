@@ -72,6 +72,7 @@ const state = {
   fontScale: Number(localStorage.getItem('i307_font') || 1),
   dark: localStorage.getItem('i307_dark') === '1',
   audio: null,
+  recite: null, // { reciterId, name, surah, ayah }
   ttsUtterance: null,
 };
 
@@ -179,6 +180,12 @@ async function ensureAyahs() {
 }
 
 function readerToolbarHtml(surah) {
+  const reciteBar = state.recite
+    ? `<div class="recite-bar" role="status">
+         <span>▶ ${escapeHtml(state.recite.name)} · ${state.recite.surah}:${state.recite.ayah}</span>
+         <button type="button" data-action="stop-recite" class="stop">Stop</button>
+       </div>`
+    : '';
   return `
     <div class="reader-tools">
       <button type="button" data-action="font-down">Aa −</button>
@@ -186,6 +193,7 @@ function readerToolbarHtml(surah) {
       <button type="button" data-action="theme">${state.dark ? 'Light' : 'Dark'}</button>
       <span class="user-pill">Personal file · ${userId()}</span>
     </div>
+    ${reciteBar}
     <p class="status">${surah.en} · ${surah.ar} · ${surah.ayahs} ayahs</p>
   `;
 }
@@ -195,8 +203,9 @@ function ayahCardHtml(a, lib) {
   const bookmarked = lib.bookmarks.includes(key);
   const highlighted = !!lib.highlights[key];
   const note = lib.notes[key] || '';
+  const playing = state.recite && state.recite.surah === a.s && state.recite.ayah === a.a;
   return `
-    <div class="ayah ${highlighted ? 'is-highlighted' : ''}" data-s="${a.s}" data-a="${a.a}">
+    <div class="ayah ${highlighted ? 'is-highlighted' : ''} ${playing ? 'is-playing' : ''}" data-s="${a.s}" data-a="${a.a}">
       <div class="meta-row">
         <span>${a.s}:${a.a}${bookmarked ? ' ★' : ''}</span>
         <span>Page ${a.p} · Juz ${a.j}</span>
@@ -205,13 +214,16 @@ function ayahCardHtml(a, lib) {
       ${a.ur ? `<p class="en ur">${a.ur}</p>` : ''}
       ${a.en ? `<p class="en">${a.en}</p>` : ''}
       ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}
+      ${playing ? `<div class="recite-now">Playing · ${escapeHtml(state.recite.name)} · continues to next ayah</div>` : ''}
       <div class="ayah-tools">
         <button type="button" data-act="bookmark">${bookmarked ? 'Bookmarked' : 'Bookmark'}</button>
         <button type="button" data-act="highlight">${highlighted ? 'Unhighlight' : 'Highlight'}</button>
         <button type="button" data-act="note">Notes</button>
         <button type="button" data-act="copy">Copy</button>
         <button type="button" data-act="share">Share</button>
-        <button type="button" data-act="recite" class="primary">Recite</button>
+        ${playing
+          ? `<button type="button" data-act="stop" class="stop">Stop</button>`
+          : `<button type="button" data-act="recite" class="primary">Recite</button>`}
       </div>
     </div>
   `;
@@ -256,6 +268,10 @@ function wireReaderEvents() {
       if (act === 'font-up') state.fontScale = Math.min(1.6, state.fontScale + 0.1);
       if (act === 'font-down') state.fontScale = Math.max(0.85, state.fontScale - 0.1);
       if (act === 'theme') state.dark = !state.dark;
+      if (act === 'stop-recite') {
+        stopRecitation('Recitation stopped');
+        return;
+      }
       applyTheme();
       const surah = state.surahs.find((s) => s.n === state.currentSurah);
       if (surah) {
@@ -320,9 +336,35 @@ function wireReaderEvents() {
           }
         }
         if (act === 'recite') openReciterPicker(s, a);
+        if (act === 'stop') stopRecitation('Recitation stopped');
       };
     });
   });
+}
+
+function refreshAyahViewKeepingScroll() {
+  const view = $('ayah-view');
+  const top = view ? view.scrollTop : 0;
+  const surah = state.surahs.find((s) => s.n === state.currentSurah);
+  if (!surah) return;
+  const active = $('surah-list').querySelector('button.active');
+  const ayahs = state.ayahsBySurah.get(state.currentSurah) || [];
+  const lib = ensureUserLibrary();
+  view.innerHTML = readerToolbarHtml(surah) + ayahs.map((a) => ayahCardHtml(a, lib)).join('');
+  wireReaderEvents();
+  view.scrollTop = top;
+  if (active) active.classList.add('active');
+}
+
+function stopRecitation(message) {
+  if (state.audio) {
+    state.audio.onended = null;
+    state.audio.pause();
+    state.audio = null;
+  }
+  state.recite = null;
+  if (message) toast(message);
+  if (state.currentSurah) refreshAyahViewKeepingScroll();
 }
 
 function openReciterPicker(surah, ayah) {
@@ -334,7 +376,7 @@ function openReciterPicker(surah, ayah) {
   modal.innerHTML = `
     <div class="modal">
       <h3>Choose Qari (KSA / Imam Al-Haram)</h3>
-      <p class="lead">Authentic recitation audio · ${surah}:${ayah}</p>
+      <p class="lead">Authentic recitation · ${surah}:${ayah}<br/>Continues to the next ayah automatically. Press Stop anytime.</p>
       <div class="reciter-list">
         ${RECITERS.map((r) => `
           <button type="button" data-reciter="${r.id}">
@@ -355,22 +397,47 @@ function openReciterPicker(surah, ayah) {
     btn.onclick = () => {
       const reciter = RECITERS.find((r) => r.id === btn.dataset.reciter);
       modal.remove();
-      playReciter(reciter, surah, ayah);
+      playReciterContinuous(reciter, surah, ayah);
     };
   });
 }
 
-function playReciter(reciter, surah, ayah) {
+function playReciterContinuous(reciter, surah, ayah) {
   if (!reciter) return;
   if (state.audio) {
+    state.audio.onended = null;
     state.audio.pause();
     state.audio = null;
   }
+
+  const ayahs = state.ayahsBySurah.get(surah) || [];
+  const exists = ayahs.some((row) => row.a === ayah);
+  if (!exists) {
+    stopRecitation('End of surah');
+    return;
+  }
+
   const url = reciter.url(surah, ayah);
   const audio = new Audio(url);
   state.audio = audio;
-  toast(`Playing · ${reciter.name}`);
-  audio.play().catch(() => toast('Audio unavailable right now. Try another qari.'));
+  state.recite = { reciterId: reciter.id, name: reciter.name, surah, ayah };
+  refreshAyahViewKeepingScroll();
+  toast(`Playing · ${reciter.name} · ${surah}:${ayah}`);
+
+  audio.onended = () => {
+    if (!state.recite || state.recite.surah !== surah) return;
+    const next = ayah + 1;
+    const hasNext = ayahs.some((row) => row.a === next);
+    if (!hasNext) {
+      stopRecitation('Surah complete');
+      return;
+    }
+    playReciterContinuous(reciter, surah, next);
+  };
+  audio.play().catch(() => {
+    toast('Audio unavailable right now. Try another qari.');
+    stopRecitation();
+  });
 }
 
 function renderHadithBooks() {

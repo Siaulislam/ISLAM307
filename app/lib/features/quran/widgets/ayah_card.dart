@@ -15,10 +15,11 @@ import '../../core/user/user_library_store.dart';
 import 'word_detail_sheet.dart';
 
 class AyahCard extends ConsumerStatefulWidget {
-  const AyahCard({super.key, required this.ayah, this.surahName});
+  const AyahCard({super.key, required this.ayah, this.surahName, this.surahAyahCount});
 
   final Map<String, dynamic> ayah;
   final String? surahName;
+  final int? surahAyahCount;
 
   @override
   ConsumerState<AyahCard> createState() => _AyahCardState();
@@ -166,12 +167,71 @@ class _AyahCardState extends ConsumerState<AyahCard> {
                 _tool(Icons.copy_rounded, 'Copy', () => _copy(arabic, translation)),
                 _tool(Icons.ios_share_rounded, 'Share', () => _share(arabic, translation, refLabel)),
                 _tool(Icons.menu_book_outlined, 'Tafsir', () => _openTafsir(context)),
-                FilledButton.tonalIcon(
-                  onPressed: _pickReciterAndPlay,
-                  icon: const Icon(Icons.play_circle_fill_rounded, size: 18),
-                  label: const Text('Recite'),
+                ListenableBuilder(
+                  listenable: RecitationAudioService.instance,
+                  builder: (context, _) {
+                    final audio = RecitationAudioService.instance;
+                    final playingHere = audio.isPlayingAyah(_surah, _ayahNo);
+                    final anyPlaying = audio.isActive;
+                    if (playingHere || (anyPlaying && audio.playingSurah == _surah && audio.playingAyah == _ayahNo)) {
+                      return FilledButton.tonalIcon(
+                        onPressed: () async {
+                          await RecitationAudioService.instance.stop();
+                          _toast('Recitation stopped');
+                        },
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFFFEF2F2),
+                          foregroundColor: const Color(0xFFB91C1C),
+                        ),
+                        icon: const Icon(Icons.stop_circle_rounded, size: 18),
+                        label: const Text('Stop'),
+                      );
+                    }
+                    return FilledButton.tonalIcon(
+                      onPressed: _pickReciterAndPlay,
+                      icon: const Icon(Icons.play_circle_fill_rounded, size: 18),
+                      label: const Text('Recite'),
+                    );
+                  },
                 ),
               ],
+            ),
+            ListenableBuilder(
+              listenable: RecitationAudioService.instance,
+              builder: (context, _) {
+                final audio = RecitationAudioService.instance;
+                if (!audio.isPlayingAyah(_surah, _ayahNo)) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Islam307Theme.emeraldSoft,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Islam307Theme.emerald.withValues(alpha: 0.25)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.graphic_eq_rounded, color: Islam307Theme.emerald, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Playing · ${audio.reciterName ?? 'Qari'} · continues to next ayah',
+                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emeraldDeep),
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            await RecitationAudioService.instance.stop();
+                            _toast('Recitation stopped');
+                          },
+                          child: const Text('Stop', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFB91C1C))),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
             if (!_ready) const SizedBox(height: 4),
           ],
@@ -343,6 +403,13 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
               child: Text('Choose Qari (KSA / Imam Al-Haram)', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
             ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Text(
+                'Recitation continues to the next ayah automatically. Press Stop anytime.',
+                style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13, height: 1.4),
+              ),
+            ),
             ...reciters.map((r) => ListTile(
                   leading: const Icon(Icons.record_voice_over_rounded, color: Islam307Theme.emerald),
                   title: Text('${r['name_en']}', style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -354,13 +421,23 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       ),
     );
     if (chosen == null) return;
+
+    // Continue through the end of this surah automatically.
+    final endAyah = widget.surahAyahCount;
     final err = await RecitationAudioService.instance.playAyah(
       surah: _surah,
       ayah: _ayahNo,
       globalNumber: widget.ayah['global_number'] as int?,
       reciterId: chosen,
+      continueThroughSurah: true,
+      endAyah: endAyah,
     );
-    if (err != null) _toast(err);
+    if (err != null) {
+      _toast(err);
+    } else {
+      final name = RecitationAudioService.instance.reciterName ?? 'Qari';
+      _toast('Playing · $name · tap Stop to end');
+    }
   }
 
   Future<void> _openTafsir(BuildContext context) async {

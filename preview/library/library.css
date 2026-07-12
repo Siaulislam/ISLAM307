@@ -625,6 +625,40 @@ body.dark .isnad-highlight {
   border-color: var(--emerald);
   color: #fff;
 }
+.ayah-tools .stop,
+.reader-tools .stop,
+.recite-bar .stop {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
+.recite-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--emerald-soft);
+  border: 1px solid rgba(13, 148, 136, 0.25);
+  color: var(--emerald-deep);
+  font-weight: 700;
+  font-size: 13px;
+}
+.recite-now {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  font-size: 12px;
+  font-weight: 700;
+}
+.ayah.is-playing {
+  border-color: var(--emerald);
+  box-shadow: 0 0 0 1px rgba(13, 148, 136, 0.2);
+}
 .ayah.is-highlighted {
   background: #fff4cc;
   border-color: #e7c96a;
