@@ -4,7 +4,7 @@
   "kitab_en": "Knowledge",
   "kitab_local_number": 2,
   "hadith_number": 60,
-  "policy": "Sanad Arabic-verified from authenticated Bukhari text. User Urdu labels applied only where local numbering verifies.",
+  "policy": "User-final Urdu sanad by hadith number; wording preserved exactly.",
   "arabic_ibarat": "حَدَّثَنَا أَبُو النُّعْمَانِ، عَارِمُ بْنُ الْفَضْلِ قَالَ حَدَّثَنَا أَبُو عَوَانَةَ، عَنْ أَبِي بِشْرٍ، عَنْ يُوسُفَ بْنِ مَاهَكَ، عَنْ عَبْدِ اللَّهِ بْنِ عَمْرٍو، قَالَ تَخَلَّفَ عَنَّا النَّبِيُّ صلى الله عليه وسلم فِي سَفْرَةٍ سَافَرْنَاهَا، فَأَدْرَكَنَا وَقَدْ أَرْهَقَتْنَا الصَّلاَةُ وَنَحْنُ نَتَوَضَّأُ، فَجَعَلْنَا نَمْسَحُ عَلَى أَرْجُلِنَا، فَنَادَى بِأَعْلَى صَوْتِهِ ‏ \"‏ وَيْلٌ لِلأَعْقَابِ مِنَ النَّارِ ‏\"‏‏.‏ مَرَّتَيْنِ أَوْ ثَلاَثًا‏.‏",
   "chain": [
     {
@@ -33,7 +33,7 @@
       "slug": "--115",
       "name_ar": "أبو النعمان",
       "name_en": "",
-      "name_ur": "ابو النعمان",
+      "name_ur": "ابو النعمان (عارم)",
       "full_name": "",
       "kunyah": "",
       "laqab": "",
@@ -47,25 +47,6 @@
     },
     {
       "order": 3,
-      "role": "in_isnad",
-      "narrator_id": 16260,
-      "slug": "---2585",
-      "name_ar": "عارم بن الفضل",
-      "name_en": "",
-      "name_ur": "عارم بن الفضل",
-      "full_name": "",
-      "kunyah": "",
-      "laqab": "",
-      "nasab": "",
-      "birth_text": "",
-      "death_text": "",
-      "generation": "",
-      "is_companion": false,
-      "kitab": "علم",
-      "kitab_local_number": 2
-    },
-    {
-      "order": 4,
       "role": "in_isnad",
       "narrator_id": 5126,
       "slug": "--179",
@@ -84,7 +65,7 @@
       "kitab_local_number": 2
     },
     {
-      "order": 5,
+      "order": 4,
       "role": "in_isnad",
       "narrator_id": 5693,
       "slug": "--312",
@@ -103,7 +84,7 @@
       "kitab_local_number": 2
     },
     {
-      "order": 6,
+      "order": 5,
       "role": "in_isnad",
       "narrator_id": 26380,
       "slug": "---4290",
@@ -122,11 +103,11 @@
       "kitab_local_number": 2
     },
     {
-      "order": 7,
+      "order": 6,
       "role": "primary",
       "narrator_id": 477,
       "slug": "abdullah-ibn-amr",
-      "name_ar": "عبد الله بن عمرو",
+      "name_ar": "",
       "name_en": "Abdullah ibn Amr",
       "name_ur": "عبداللہ بن عمروؓ",
       "full_name": "",

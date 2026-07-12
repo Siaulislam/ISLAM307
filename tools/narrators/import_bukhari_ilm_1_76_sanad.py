@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
-"""Import Sahih Bukhari Kitab al-Ilm (Knowledge) Hadith 1–76 (absolute nos. 59–134).
+"""Import Sahih Bukhari Kitab al-Ilm Hadith 1–76 (absolute nos. 59–134).
 
-POLICY:
-- Chains are Arabic-verified from authenticated Bukhari text (local DB / classical isnad).
-- User Urdu sanad list applied only where local N (= abs 58+N) verifies against Arabic
-  (locals 1–5). Remaining locals use Arabic-derived Urdu display names.
-- No AI biographies.
+User-final Urdu sanad list by hadith number only.
+Local N → absolute (58+N). Do not alter user wording.
 """
 
 from __future__ import annotations
@@ -23,16 +20,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 NARR_GZ = ROOT / "app" / "assets" / "databases" / "narrators.db.gz"
 HADITH_GZ = ROOT / "app" / "assets" / "databases" / "hadith.db.gz"
+SANAD_TXT = ROOT / "data" / "narrators" / "imports" / "bukhari_ilm_1_76_sanad_ur.txt"
 CHAINS_JSON = ROOT / "data" / "narrators" / "imports" / "bukhari_ilm_1_76_chains.json"
 PREVIEW_HADITH = ROOT / "preview" / "library" / "data" / "hadith" / "bukhari.json.gz"
 PREVIEW_NARR = ROOT / "preview" / "library" / "data" / "narrators"
 CATALOG = PREVIEW_NARR / "catalog.json.gz"
 MANIFEST = ROOT / "preview" / "library" / "data" / "manifest.json"
 REPORT = ROOT / "reports" / "verification" / "BUKHARI_ILM_1_76_SANAD_IMPORT.md"
-BATCH = "bukhari_ilm_1_76_sanad_2026-07-12"
+BATCH = "bukhari_ilm_1_76_sanad_user_final_2026-07-12"
 BUKHARI_ID = 1
-
-GENERIC_MATCH = {"أبيه", "أبي", "ابوه", "ابوہ", "ابيه", "أخيه", "اخيه", "أخي", "اخي"}
 
 SHARED = {
     "امام بخاریؒ": "bukhari",
@@ -40,28 +36,22 @@ SHARED = {
     "انس بن مالکؓ": "anas-ibn-malik",
     "عبداللہ بن عمرؓ": "abdullah-ibn-umar",
     "عبداللہ بن عمروؓ": "abdullah-ibn-amr",
-    "عبداللہ بن عباسؓ": "abdullah-ibn-abbas",
     "عبداللہ بن مسعودؓ": "abdullah-ibn-masud",
-    "عمر بن خطابؓ": "umar-ibn-al-khattab",
-    "معاویہؓ": "muawiya",
-    "علیؓ": "ali-ibn-abi-talib",
-    "ام سلمہؓ": "umm-salama",
-    "اسماء بنت ابی بکرؓ": "asma-bint-abi-bakr",
-    "ابن شہاب": "ibn-shihab-al-zuhri",
+    "عبداللہ بن عباسؓ": "abdullah-ibn-abbas",
+    "ابن عباسؓ": "abdullah-ibn-abbas",
+    "ابن عمرؓ": "abdullah-ibn-umar",
+    "عائشہؓ": "aisha",
+    "معاویہ بن ابی سفیانؓ": "muawiya",
+    "نعمان بن بشیرؓ": "numan-ibn-bashir",
     "ابن شہاب الزہری": "ibn-shihab-al-zuhri",
-    "الزہری": "ibn-shihab-al-zuhri",
-    "شعبہ": "shubah",
-    "سفیان": "sufyan",
-    "مسدد": "musaddad",
-    "امام مالک": "malik-ibn-anas",
-    "مالک": "malik-ibn-anas",
+    "زہری": "ibn-shihab-al-zuhri",
     "عروہ بن زبیر": "urwah-ibn-al-zubayr",
+    "امام مالک": "malik-ibn-anas",
+    "مسدد": "musaddad",
+    "شعبہ": "shubah",
     "ابوالیمان": "abu-al-yaman",
-    "ابو الیمان": "abu-al-yaman",
     "شعیب": "shuayb",
-    "لیث": "layth-ibn-saad",
     "لیث بن سعد": "layth-ibn-saad",
-    "قتیبہ": "qutaybah",
     "قتیبہ بن سعید": "qutaybah",
 }
 
@@ -100,64 +90,57 @@ def open_gz(path: Path):
     return conn, Path(tmp)
 
 
-def polish_primary_ur(ur: str) -> str:
-    u = re.sub(r"\s+", " ", (ur or "").strip())
-    # normalize spaced عبداللہ forms
-    u = u.replace("عبد اللہ", "عبداللہ").replace("عبید اللہ", "عبیداللہ")
-    companions = {
-        "عبداللہ بن عمرو": "عبداللہ بن عمروؓ",
-        "عبداللہ بن عمر": "عبداللہ بن عمرؓ",
-        "عبداللہ بن عباس": "عبداللہ بن عباسؓ",
-        "عبداللہ بن مسعود": "عبداللہ بن مسعودؓ",
-        "ابوہریرہ": "ابوہریرہؓ",
-        "انس بن مالک": "انس بن مالکؓ",
-        "انس": "انس بن مالکؓ",
-        "عمر": "عمر بن خطابؓ",
-        "معاویہ": "معاویہؓ",
-        "علی": "علیؓ",
-        "ام سلمہ": "ام سلمہؓ",
-    }
-    if u in companions:
-        return companions[u]
-    if not u.endswith("ؓ") and any(
-        x in u for x in ("ہریرہ", "عباس", "مسعود", "مالک", "عمرو", "عمر", "عائشہ", "اسماء", "علی", "سلمہ")
-    ):
-        return u if u.endswith("ؓ") else u + "ؓ"
-    return u
+def parse_user_sanad() -> dict[int, list[str]]:
+    text = SANAD_TXT.read_text(encoding="utf-8")
+    blocks = re.split(r"(?=حدیث نمبر\s*\d+)", text)
+    user: dict[int, list[str]] = {}
+    for block in blocks:
+        m = re.match(r"حدیث نمبر\s*(\d+)\s*\n([\s\S]+)", block.strip())
+        if not m:
+            continue
+        n = int(m.group(1))
+        lines = [ln.strip() for ln in m.group(2).strip().splitlines() if ln.strip()]
+        user[n] = lines  # exact wording, including امام بخاریؒ
+    missing = [i for i in range(1, 77) if i not in user]
+    if missing:
+        raise SystemExit(f"Missing user sanad numbers: {missing}")
+    return user
 
 
-def load_chains() -> dict[int, list[dict]]:
-    data = json.loads(CHAINS_JSON.read_text(encoding="utf-8"))
+def build_chains(user: dict[int, list[str]]) -> dict[int, list[dict]]:
     chains: dict[int, list[dict]] = {}
-    for row in data:
-        absn = int(row["abs"])
-        items = [
-            {
-                "ur": "امام بخاریؒ",
-                "role": "compiler",
-                "narrator_id": BUKHARI_ID,
-            }
-        ]
-        for c in row["chain"]:
-            item = {
-                "ur": c["ur"],
-                "role": c["role"],
-                "ar_frag": c.get("ar_frag"),
-            }
-            for k in ("person_key", "identity_ar", "identity_ur", "match", "en", "skip_ar_frag_match"):
-                if k in c:
-                    item[k] = c[k]
-            if item["role"] == "primary":
-                item["ur"] = polish_primary_ur(item["ur"])
+    export = []
+    for local in range(1, 77):
+        absn = 58 + local
+        names = user[local]
+        items = []
+        for i, ur in enumerate(names):
+            if i == 0 and "بخاری" in ur:
+                role = "compiler"
+                item = {"ur": ur, "role": role, "narrator_id": BUKHARI_ID}
+            elif i == len(names) - 1:
+                role = "primary"
+                item = {"ur": ur, "role": role}
+            else:
+                role = "in_isnad"
+                item = {"ur": ur, "role": role}
             items.append(item)
         chains[absn] = items
+        export.append(
+            {
+                "abs": absn,
+                "local": local,
+                "chain": [{"ur": c["ur"], "role": c["role"]} for c in items],
+                "source": "user_final_exact",
+            }
+        )
+    CHAINS_JSON.write_text(json.dumps(export, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return chains
 
 
 def find_or_create(conn, item, used_slugs, shared_ids):
     ur = item["ur"]
     person_key = item.get("person_key") or SHARED.get(ur)
-    ar_frag = item.get("ar_frag")
 
     if item.get("narrator_id"):
         nid = int(item["narrator_id"])
@@ -174,22 +157,12 @@ def find_or_create(conn, item, used_slugs, shared_ids):
     if person_key and person_key in shared_ids:
         return shared_ids[person_key]
 
-    candidates = []
-    for alias in item.get("match") or []:
-        candidates.append(alias)
-    for alias in filter(None, [item.get("identity_ur"), item.get("identity_ar"), item.get("en")]):
-        candidates.append(alias)
-    if ur not in GENERIC_MATCH:
-        candidates.append(ur)
-    if (
-        ar_frag
-        and ar_frag not in GENERIC_MATCH
-        and strip_diac(ar_frag) not in {strip_diac(x) for x in GENERIC_MATCH}
-        and not item.get("skip_ar_frag_match")
-    ):
-        sfrag = strip_diac(ar_frag)
-        if " " in sfrag or len(sfrag) >= 8:
-            candidates.append(ar_frag)
+    # Match by exact Urdu alias only (no Arabic rewriting).
+    candidates = [ur]
+    # Also try without parenthetical nickname for lookup, but keep display exact.
+    bare = re.sub(r"\s*\([^)]*\)\s*", " ", ur).strip()
+    if bare != ur:
+        candidates.append(bare)
 
     for alias in candidates:
         nk = normalize_key(alias)
@@ -204,23 +177,19 @@ def find_or_create(conn, item, used_slugs, shared_ids):
             nid = int(row["narrator_id"])
             if person_key:
                 shared_ids[person_key] = nid
-            if ur not in GENERIC_MATCH:
-                ur_nk = normalize_key(ur)
-                if not conn.execute(
-                    "SELECT 1 FROM name_aliases WHERE narrator_id=? AND alias_normalized=?",
-                    (nid, ur_nk),
-                ).fetchone():
-                    conn.execute(
-                        "INSERT INTO name_aliases(narrator_id, lang, alias, alias_normalized) VALUES (?,?,?,?)",
-                        (nid, "ur", ur, ur_nk),
-                    )
+            ur_nk = normalize_key(ur)
+            if not conn.execute(
+                "SELECT 1 FROM name_aliases WHERE narrator_id=? AND alias_normalized=?",
+                (nid, ur_nk),
+            ).fetchone():
+                conn.execute(
+                    "INSERT INTO name_aliases(narrator_id, lang, alias, alias_normalized) VALUES (?,?,?,?)",
+                    (nid, "ur", ur, ur_nk),
+                )
             return nid
 
     next_id = (conn.execute("SELECT COALESCE(MAX(id),0) FROM narrators").fetchone()[0] or 0) + 1
-    identity_ur = item.get("identity_ur") or (ur if ur not in GENERIC_MATCH else None)
-    identity_ar = item.get("identity_ar") or (None if (ar_frag in GENERIC_MATCH) else ar_frag)
-    en = item.get("en") or ""
-    slug = slugify(en or person_key or identity_ar or identity_ur or ur, used_slugs)
+    slug = slugify(person_key or ur, used_slugs)
     conn.execute(
         """
         INSERT INTO narrators(
@@ -228,38 +197,29 @@ def find_or_create(conn, item, used_slugs, shared_ids):
           kunyah, laqab, nasab, birth_text, death_text, birth_hijri, death_hijri,
           city, country, generation, is_companion, is_tabii, is_tab_tabii,
           timeline_notes, import_batch
-        ) VALUES (?, ?, ?, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, ?)
+        ) VALUES (?, ?, NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, 0, NULL, ?)
         """,
-        (next_id, slug, identity_ar, identity_ur, en or None, BATCH),
+        (next_id, slug, ur, BATCH),
     )
-    for lang, alias in (
-        ("ur", identity_ur),
-        ("ar", identity_ar),
-        ("en", en),
-        ("ur", ur if ur not in GENERIC_MATCH else None),
-    ):
-        if not alias:
-            continue
-        try:
-            conn.execute(
-                "INSERT INTO name_aliases(narrator_id, lang, alias, alias_normalized) VALUES (?,?,?,?)",
-                (next_id, lang, alias, normalize_key(alias)),
-            )
-        except sqlite3.IntegrityError:
-            pass
+    try:
+        conn.execute(
+            "INSERT INTO name_aliases(narrator_id, lang, alias, alias_normalized) VALUES (?,?,?,?)",
+            (next_id, "ur", ur, normalize_key(ur)),
+        )
+    except sqlite3.IntegrityError:
+        pass
     if person_key:
         shared_ids[person_key] = next_id
     return next_id
 
 
 def main() -> int:
-    CHAINS = load_chains()
-    meta_src = json.loads(CHAINS_JSON.read_text(encoding="utf-8"))
-    user_applied = sorted({int(r["local"]) for r in meta_src if r.get("user_applied")})
+    user = parse_user_sanad()
+    CHAINS = build_chains(user)
 
     hconn, htmp = open_gz(HADITH_GZ)
-    arabic, missing = {}, {}
-    for num, chain in CHAINS.items():
+    arabic = {}
+    for num in CHAINS:
         row = hconn.execute(
             """
             SELECT h.text_ar FROM hadiths h JOIN books b ON b.id=h.book_id
@@ -267,27 +227,8 @@ def main() -> int:
             """,
             (num,),
         ).fetchone()
-        arabic[num] = row["text_ar"]
-        ar = strip_diac(row["text_ar"] or "")
-        miss = []
-        for item in chain:
-            frag = item.get("ar_frag")
-            if not frag or item.get("skip_ar_frag_match"):
-                continue
-            if frag in GENERIC_MATCH:
-                continue
-            sfrag = strip_diac(frag)
-            if sfrag in ar:
-                continue
-            soft = sfrag[2:] if sfrag.startswith("ال") else sfrag
-            if soft and soft in ar:
-                continue
-            tokens = [t for t in re.findall(r"\w+", sfrag) if len(t) > 2 and t not in ("بن", "ابن")]
-            if tokens and sum(1 for t in tokens if t in ar) >= max(1, len(tokens) // 2):
-                continue
-            miss.append(frag)
-        missing[num] = miss
-        print(f"abs {num}: {'PASS' if not miss else miss}")
+        arabic[num] = row["text_ar"] if row else ""
+        print(f"abs {num} / Ilm {num-58}: {len(CHAINS[num])} names (user exact)")
     hconn.close()
     htmp.unlink(missing_ok=True)
 
@@ -295,6 +236,43 @@ def main() -> int:
     cols = {r[1] for r in conn.execute("PRAGMA table_info(hadith_relations)")}
     if "display_name_ur" not in cols:
         conn.execute("ALTER TABLE hadith_relations ADD COLUMN display_name_ur TEXT")
+
+    # Allow the same narrator twice in one chain (e.g. فلیح at two isnad positions).
+    old_sql = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE name='hadith_relations'"
+    ).fetchone()[0]
+    if "UNIQUE (book_slug, hadith_number, narrator_id, role)" in (old_sql or ""):
+        conn.execute("DROP TABLE IF EXISTS hadith_relations_v2")
+        conn.execute(
+            """
+            CREATE TABLE hadith_relations_v2 (
+              id INTEGER PRIMARY KEY,
+              book_slug TEXT NOT NULL,
+              hadith_number INTEGER NOT NULL,
+              narrator_id INTEGER NOT NULL REFERENCES narrators(id) ON DELETE CASCADE,
+              role TEXT NOT NULL DEFAULT 'primary',
+              isnad_position INTEGER,
+              mapping_source TEXT NOT NULL,
+              display_name_ur TEXT,
+              UNIQUE (book_slug, hadith_number, isnad_position)
+            )
+            """
+        )
+        conn.execute(
+            """
+            INSERT INTO hadith_relations_v2(
+              id, book_slug, hadith_number, narrator_id, role, isnad_position, mapping_source, display_name_ur
+            )
+            SELECT id, book_slug, hadith_number, narrator_id, role, isnad_position, mapping_source, display_name_ur
+            FROM hadith_relations
+            """
+        )
+        conn.execute("DROP TABLE hadith_relations")
+        conn.execute("ALTER TABLE hadith_relations_v2 RENAME TO hadith_relations")
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_hadith_rel_lookup ON hadith_relations(book_slug, hadith_number)"
+        )
+        print("Migrated hadith_relations unique key to include isnad_position")
 
     used_slugs = {r["slug"] for r in conn.execute("SELECT slug FROM narrators")}
     shared_ids = {"bukhari": BUKHARI_ID}
@@ -307,27 +285,6 @@ def main() -> int:
         ).fetchone()
         if row:
             shared_ids[sk] = int(row["narrator_id"])
-    for alias, key in (
-        ("أبو هريرة", "abu-huraira"),
-        ("انس بن مالکؓ", "anas-ibn-malik"),
-        ("ابن شهاب", "ibn-shihab-al-zuhri"),
-        ("الزهري", "ibn-shihab-al-zuhri"),
-        ("عروة بن الزبير", "urwah-ibn-al-zubayr"),
-        ("عروہ بن زبیر", "urwah-ibn-al-zubayr"),
-        ("مالك", "malik-ibn-anas"),
-        ("مسدد", "musaddad"),
-        ("شعبة", "shu bah"),
-        ("أبو اليمان", "abu-al-yaman"),
-        ("شعيب", "shuayb"),
-        ("الليث", "layth-ibn-saad"),
-        ("قتيبة", "qutaybah"),
-    ):
-        row = conn.execute(
-            "SELECT narrator_id FROM name_aliases WHERE alias_normalized=? LIMIT 1",
-            (normalize_key(alias),),
-        ).fetchone()
-        if row:
-            shared_ids[key] = int(row["narrator_id"])
 
     packs = {}
     for num, chain in CHAINS.items():
@@ -352,8 +309,8 @@ def main() -> int:
                     "role": item["role"],
                     "narrator_id": nid,
                     "slug": n["slug"],
-                    "name_ar": n["name_ar"] or item.get("ar_frag") or "",
-                    "name_en": n["name_en"] or item.get("en") or "",
+                    "name_ar": n["name_ar"] or "",
+                    "name_en": n["name_en"] or "",
                     "name_ur": item["ur"],
                     "full_name": n["full_name"] or "",
                     "kunyah": n["kunyah"] or "",
@@ -381,12 +338,7 @@ def main() -> int:
                     "kitab": "Knowledge / علم",
                     "absolute_hadiths": list(CHAINS.keys()),
                     "local_ilm": list(range(1, 77)),
-                    "user_urdu_applied_locals": user_applied,
-                    "arabic_missing": missing,
-                    "note": (
-                        "Knowledge chapter abs 59–134. User Urdu applied only for locals "
-                        f"{user_applied}; others Arabic-derived due to numbering mismatch."
-                    ),
+                    "note": "User-final Urdu sanad by hadith number only; wording unchanged.",
                 },
                 ensure_ascii=False,
             ),
@@ -402,11 +354,8 @@ def main() -> int:
             "kitab_en": "Knowledge",
             "kitab_local_number": num - 58,
             "hadith_number": num,
-            "policy": (
-                "Sanad Arabic-verified from authenticated Bukhari text. "
-                "User Urdu labels applied only where local numbering verifies."
-            ),
-            "arabic_ibarat": arabic[num],
+            "policy": "User-final Urdu sanad by hadith number; wording preserved exactly.",
+            "arabic_ibarat": arabic.get(num, ""),
             "chain": chain,
         }
         (PREVIEW_NARR / f"bukhari-{num}.json").write_text(
@@ -422,7 +371,7 @@ def main() -> int:
         primary = next(c for c in chain if c["role"] == "primary")
         h["ravi"] = primary["name_ur"]
         h["narrator"] = primary["name_en"] or primary["name_ur"]
-        h["ravi_chain"] = [c["name_ar"] or c["name_ur"] for c in chain]
+        h["ravi_chain"] = [c["name_ur"] for c in chain]
         h["ravi_by_lang"] = {
             "ar": [c["name_ar"] or c["name_ur"] for c in chain],
             "en": [c["name_en"] or c["name_ur"] for c in chain],
@@ -466,43 +415,29 @@ def main() -> int:
     tmp.unlink(missing_ok=True)
 
     lines = [
-        "# Bukhari Kitab al-Ilm (Knowledge) Hadith 1–76 Sanad Import",
+        "# Bukhari Kitab al-Ilm Hadith 1–76 Sanad Import (User Final)",
         "",
         f"Batch: `{BATCH}`",
         "",
-        "Local Knowledge N → absolute Bukhari (58+N). Range: abs **59–134**.",
+        "Local Knowledge N → absolute Bukhari (58+N).",
         "",
         "## Policy",
         "",
-        "- Arabic-verified from authenticated Bukhari `text_ar` / classical isnad.",
-        "- User Urdu list (`bukhari_ilm_1_76_sanad_ur.txt`) applied only where local numbering verifies.",
-        f"- User Urdu applied for locals: **{user_applied}**.",
-        "- Remaining locals use Arabic-derived Urdu display names (user list numbering diverged from app abs 58+N).",
-        "- No AI biographies.",
+        "- Follow user hadith numbers only.",
+        "- Preserve user Urdu wording exactly (no Arabic rematch / no rewording).",
         "",
-        "## Arabic verification",
+        "## Chains",
         "",
     ]
-    pass_n = sum(1 for m in missing.values() if not m)
-    lines.append(f"PASS {pass_n} / {len(missing)}")
-    lines.append("")
-    for num, miss in missing.items():
-        lines.append(
-            f"- Absolute {num} (Ilm {num-58}): {'PASS' if not miss else 'MISSING ' + ', '.join(miss)}"
-        )
-    lines.append("")
-    lines.append("## Chains")
-    lines.append("")
     for num, chain in packs.items():
-        flag = "user-urdu" if (num - 58) in user_applied else "arabic-derived-urdu"
-        lines.append(f"### Ilm {num-58} / Absolute {num} ({flag})")
+        lines.append(f"### Ilm {num-58} / Absolute {num}")
         lines.append("")
         for c in chain:
-            lines.append(f"{c['order']}. {c['name_ur']} (`{c['role']}`, id={c['narrator_id']})")
+            lines.append(f"{c['order']}. {c['name_ur']}")
         lines.append("")
     REPORT.write_text("\n".join(lines), encoding="utf-8")
     print(f"Wrote {REPORT}")
-    print(f"Preview packs: {len(packs)} (bukhari-59 … bukhari-134)")
+    print(f"Imported {len(packs)} hadiths with exact user wording")
     return 0
 
 
