@@ -711,7 +711,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-29`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-30`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -737,7 +737,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-29`);
+    const res = await fetch(`${path}?v=hadith-reader-30`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1333,12 +1333,130 @@ function openHadithDetail(slug, hadithNumber) {
   openHadithReader(slug, rows.length ? rows : pack.hadiths, idx >= 0 ? idx : 0);
 }
 
+function isHadithNumberQuery(filter) {
+  return /^\d+$/.test(String(filter || '').trim());
+}
+
+async function ensureHadithPack(slug) {
+  if (!state.hadithCache[slug]) {
+    state.hadithCache[slug] = await fetchJsonGz(`data/hadith/${slug}.json.gz`);
+  }
+  return state.hadithCache[slug];
+}
+
+/** Exact hadith-number search — works with or without a selected collection. */
+async function searchHadithByNumber(rawQuery) {
+  const q = String(rawQuery || '').trim();
+  const n = Number(q);
+  if (!Number.isFinite(n) || n < 1) {
+    $('hadith-view').innerHTML = '<p class="empty">Enter a valid hadith number (e.g. 1 or 7048).</p>';
+    return;
+  }
+
+  state.hadithFilter = q;
+  const active = $('hadith-books')?.querySelector('button.active');
+  let books = state.hadithBooks || [];
+  if (active) {
+    const idx = Array.from($('hadith-books').children).indexOf(active);
+    if (idx >= 0 && state.hadithBooks[idx]) books = [state.hadithBooks[idx]];
+  }
+
+  $('hadith-view').innerHTML = `<p class="status">Searching Hadith ${n}…</p>`;
+  const results = [];
+  await Promise.all(
+    books.map(async (book) => {
+      try {
+        const pack = await ensureHadithPack(book.slug);
+        const hit = (pack.hadiths || []).find((h) => Number(h.n) === n);
+        if (hit) results.push({ book, pack, hadith: hit });
+      } catch (err) {
+        console.warn('Hadith pack load failed', book.slug, err);
+      }
+    }),
+  );
+  results.sort((a, b) => String(a.book.en).localeCompare(String(b.book.en)));
+  paintHadithNumberSearchResults(n, results, !active);
+}
+
+function paintHadithNumberSearchResults(n, results, crossBook) {
+  const scope = crossBook ? 'all collections' : (results[0]?.book?.en || 'this collection');
+  $('hadith-view').innerHTML = `
+    <div class="hadith-browse-head">
+      <div>
+        <p class="hadith-browse-kicker">Hadith number search</p>
+        <h2 class="hadith-browse-title">Hadith ${n}</h2>
+        <p class="hadith-browse-sub">${results.length.toLocaleString()} match${results.length === 1 ? '' : 'es'} in ${escapeHtml(scope)}</p>
+      </div>
+    </div>
+    <p class="hadith-list-hint">Tap a result to open Language · Ravi · Reference · Audio.</p>
+    <div class="hadith-number-list" id="hadith-search-results"></div>
+  `;
+  const list = $('hadith-search-results');
+  if (!results.length) {
+    list.innerHTML = `<p class="empty">No Hadith ${n} found${crossBook ? ' in the offline collections' : ' in this collection'}.</p>`;
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  results.forEach(({ book, pack, hadith }) => {
+    const row = document.createElement('div');
+    row.className = 'hadith-number-row';
+    row.dataset.n = String(hadith.n);
+    const kitabName = localizedKitabName(hadith, pack);
+    row.innerHTML = `
+      <button type="button" class="hadith-n-btn" data-act="open-hadith" aria-label="Open ${escapeHtml(book.en)} Hadith ${hadith.n}">
+        <span class="hadith-n">${escapeHtml(book.en)} · Hadith ${hadith.n}</span>
+      </button>
+      <button type="button" class="hadith-kitab-btn" data-act="open-topic" title="Open all hadith in this topic">
+        <p class="hadith-kitab" dir="rtl">${escapeHtml(kitabName)}</p>
+        <span class="hadith-kitab-hint">Open topic →</span>
+      </button>
+    `;
+    row.querySelector('[data-act="open-hadith"]').onclick = () => {
+      // Mark the matching book active so back-navigation stays coherent.
+      const btn = Array.from($('hadith-books').children).find((el, i) => state.hadithBooks[i]?.slug === book.slug);
+      if (btn) {
+        $('hadith-books').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      state.hadithSlug = book.slug;
+      state.hadithTopicKey = null;
+      state.hadithTopicTitle = '';
+      state.hadithReaderRows = [];
+      openHadithDetail(book.slug, hadith.n);
+    };
+    row.querySelector('[data-act="open-topic"]').onclick = () => {
+      const btn = Array.from($('hadith-books').children).find((el, i) => state.hadithBooks[i]?.slug === book.slug);
+      if (btn) {
+        $('hadith-books').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+      state.hadithSlug = book.slug;
+      openHadithTopic(book.slug, {
+        key: kitabTopicKey(hadith),
+        title: kitabName,
+        kitab_number: hadith.kitab_number,
+        en: hadith.kitab || '',
+      });
+    };
+    frag.appendChild(row);
+  });
+  list.appendChild(frag);
+}
+
 function renderHadithList(slug, filter = '') {
   const pack = state.hadithCache[slug];
   if (!pack) return;
   state.hadithSlug = slug;
   state.hadithFilter = filter;
-  const q = filter.trim().toLowerCase();
+  const raw = filter.trim();
+
+  // Number query → show matching hadith(s), not topics.
+  if (isHadithNumberQuery(raw)) {
+    searchHadithByNumber(raw);
+    return;
+  }
+
+  const q = raw.toLowerCase();
 
   // Always show Topics hub. Selecting a topic opens the full Hadith Reader directly.
   let topics = buildKitabTopics(pack);
@@ -1566,11 +1684,30 @@ async function openTafsir(source, button) {
 
 $('quran-search').addEventListener('input', (e) => renderSurahList(e.target.value));
 $('hadith-search').addEventListener('input', (e) => {
+  const q = e.target.value || '';
+  state.hadithFilter = q;
   const active = $('hadith-books').querySelector('button.active');
-  if (!active) return;
+
+  // Number search works even before selecting a collection.
+  if (isHadithNumberQuery(q)) {
+    searchHadithByNumber(q);
+    return;
+  }
+
+  if (!active) {
+    if (!q.trim()) {
+      $('hadith-view').innerHTML =
+        '<p class="empty">Select a collection, or type a hadith number (e.g. <strong>1</strong> or <strong>7048</strong>) to search.</p>';
+    } else {
+      $('hadith-view').innerHTML =
+        '<p class="empty">Select a collection to search topics, or type a hadith number to search all books.</p>';
+    }
+    return;
+  }
+
   const idx = Array.from($('hadith-books').children).indexOf(active);
   const book = state.hadithBooks[idx];
-  if (book) renderHadithList(book.slug, e.target.value);
+  if (book) renderHadithList(book.slug, q);
 });
 $('tafsir-go').addEventListener('click', () => {
   const active = $('tafsir-sources').querySelector('button.active');
