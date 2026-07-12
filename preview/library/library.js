@@ -444,12 +444,31 @@ function playReciterContinuous(reciter, surah, ayah) {
   });
 }
 
+function bookIconUrl(slug) {
+  const known = {
+    bukhari: '../branding/books/bukhari_sm.png',
+    muslim: '../branding/books/muslim_sm.png',
+    abudawud: '../branding/books/abudawud_sm.png',
+    tirmidhi: '../branding/books/tirmidhi_sm.png',
+    quran: '../branding/books/quran_sm.png',
+  };
+  return known[slug] || null;
+}
+
 function renderHadithBooks() {
   const list = $('hadith-books');
   list.innerHTML = '';
   state.hadithBooks.forEach((book) => {
     const b = document.createElement('button');
-    b.innerHTML = `<strong>${book.en}</strong><small>${book.ar} · ${book.count.toLocaleString()} hadith</small>`;
+    const icon = bookIconUrl(book.slug);
+    b.className = 'book-row';
+    b.innerHTML = `
+      ${icon ? `<img class="book-icon" src="${icon}" alt="" width="44" height="44" loading="lazy" />` : '<span class="book-icon-fallback">📖</span>'}
+      <span class="book-meta">
+        <strong>${book.en}</strong>
+        <small>${book.ar} · ${book.count.toLocaleString()} hadith</small>
+      </span>
+    `;
     b.onclick = () => openHadithBook(book, b);
     list.appendChild(b);
   });

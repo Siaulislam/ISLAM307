@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../core/branding/kitab_icon_registry.dart';
 import '../../core/database/database_registry.dart';
 import '../../core/repositories/hadith_repository.dart';
 import '../../core/theme/islam307_theme.dart';
@@ -16,6 +17,7 @@ class _HadithScreenState extends State<HadithScreen> {
   final _search = TextEditingController();
   List<Map<String, dynamic>> _books = [];
   List<Map<String, dynamic>> _results = [];
+  Map<String, KitabIconSpec> _icons = {};
   bool _loading = true;
   String? _error;
 
@@ -28,9 +30,12 @@ class _HadithScreenState extends State<HadithScreen> {
   Future<void> _load() async {
     try {
       final books = await _repo.books(enabledOnly: true);
+      final icons = await KitabIconRegistry.instance.load(hadithOnly: true);
+      final bySlug = {for (final i in icons) i.slug: i};
       if (!mounted) return;
       setState(() {
         _books = books;
+        _icons = bySlug;
         _loading = false;
       });
     } catch (e) {
@@ -55,6 +60,31 @@ class _HadithScreenState extends State<HadithScreen> {
   void dispose() {
     _search.dispose();
     super.dispose();
+  }
+
+  Widget _bookLeading(Map<String, dynamic> book, int index) {
+    final slug = '${book['slug'] ?? ''}';
+    final icon = _icons[slug];
+    if (icon != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.asset(
+          icon.assetPath,
+          width: 48,
+          height: 48,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _fallbackAvatar(index),
+        ),
+      );
+    }
+    return _fallbackAvatar(index);
+  }
+
+  Widget _fallbackAvatar(int index) {
+    return CircleAvatar(
+      backgroundColor: Islam307Theme.emeraldSoft,
+      child: Text('${index + 1}', style: const TextStyle(color: Islam307Theme.emeraldDeep, fontWeight: FontWeight.w800)),
+    );
   }
 
   @override
@@ -119,10 +149,8 @@ class _HadithScreenState extends State<HadithScreen> {
                                 return Card(
                                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                                   child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Islam307Theme.emeraldSoft,
-                                      child: Text('${i + 1}', style: const TextStyle(color: Islam307Theme.emeraldDeep, fontWeight: FontWeight.w800)),
-                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                    leading: _bookLeading(b, i),
                                     title: Text('${b['name_en']}', style: const TextStyle(fontWeight: FontWeight.w800)),
                                     subtitle: Text('${b['name_ar']} · ${(b['hadith_count'] ?? 0)} hadith · Offline'),
                                     onTap: () => context.push('/hadith/book/${b['id']}'),

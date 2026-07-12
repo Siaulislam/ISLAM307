@@ -30,8 +30,22 @@ class QuranHubScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 40),
         children: [
+          Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                'assets/branding/books/covers/quran_sm.png',
+                width: 88,
+                height: 88,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.menu_book_rounded, size: 64, color: Islam307Theme.emerald),
+              ),
+            ),
+          ),
+          const SizedBox(height: 14),
           Text(
             'How would you like to browse?',
+            textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w800,
                   color: Islam307Theme.emeraldDeep,

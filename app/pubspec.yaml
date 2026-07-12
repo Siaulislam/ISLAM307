@@ -34,6 +34,7 @@ flutter:
     - assets/branding/
     - assets/branding/hadith/
     - assets/branding/books/
+    - assets/branding/books/covers/
     - assets/modules/
   fonts:
     - family: NotoNaskhArabic
