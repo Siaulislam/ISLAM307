@@ -1,0 +1,2471 @@
+[
+  {
+    "abs": 59,
+    "local": 1,
+    "chain": [
+      {
+        "ur": "محمد بن سنان",
+        "ar_frag": "محمد بن سنان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "فلیح",
+        "ar_frag": "فليح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابراہیم بن المنذر",
+        "ar_frag": "إبراهيم بن المنذر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمد بن فلیح",
+        "ar_frag": "محمد بن فليح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "فلیح",
+        "ar_frag": "أبي",
+        "role": "in_isnad",
+        "skip_ar_frag_match": true,
+        "person_key": "fulayh",
+        "identity_ar": "فليح",
+        "identity_ur": "فلیح",
+        "match": [
+          "فليح",
+          "فلیح",
+          "محمد بن فليح"
+        ]
+      },
+      {
+        "ur": "ہلال بن علی",
+        "ar_frag": "هلال بن علي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عطاء بن یسار",
+        "ar_frag": "عطاء بن يسار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": true
+  },
+  {
+    "abs": 60,
+    "local": 2,
+    "chain": [
+      {
+        "ur": "ابو النعمان",
+        "ar_frag": "أبو النعمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عارم بن الفضل",
+        "ar_frag": "عارم بن الفضل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو عوانہ",
+        "ar_frag": "أبو عوانة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو بشر",
+        "ar_frag": "أبي بشر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یوسف بن ماہک",
+        "ar_frag": "يوسف بن ماهك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمروؓ",
+        "ar_frag": "عبد الله بن عمرو",
+        "role": "primary"
+      }
+    ],
+    "user_applied": true
+  },
+  {
+    "abs": 61,
+    "local": 3,
+    "chain": [
+      {
+        "ur": "قتیبہ بن سعید",
+        "ar_frag": "قتيبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اسماعیل بن جعفر",
+        "ar_frag": "إسماعيل بن جعفر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن دینار",
+        "ar_frag": "عبد الله بن دينار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "ابن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": true
+  },
+  {
+    "abs": 62,
+    "local": 4,
+    "chain": [
+      {
+        "ur": "خالد بن مخلد",
+        "ar_frag": "خالد بن مخلد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سلیمان",
+        "ar_frag": "سليمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن دینار",
+        "ar_frag": "عبد الله بن دينار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "ابن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": true
+  },
+  {
+    "abs": 63,
+    "local": 5,
+    "chain": [
+      {
+        "ur": "عبداللہ بن یوسف",
+        "ar_frag": "عبد الله بن يوسف",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "لیث",
+        "ar_frag": "الليث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید المقبری",
+        "ar_frag": "سعيد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شریک بن عبداللہ بن ابی نمر",
+        "ar_frag": "شريك بن عبد الله بن أبي نمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس بن مالك",
+        "role": "primary"
+      }
+    ],
+    "user_applied": true
+  },
+  {
+    "abs": 64,
+    "local": 6,
+    "chain": [
+      {
+        "ur": "اسماعیل بن عبداللہ",
+        "ar_frag": "إسماعيل بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابراہیم بن سعد",
+        "ar_frag": "إبراهيم بن سعد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "صالح",
+        "ar_frag": "صالح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبیداللہ بن عبداللہ بن عتبہ بن مسعود",
+        "ar_frag": "عبيد الله بن عبد الله بن عتبة بن مسعود",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "عبد الله بن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 65,
+    "local": 7,
+    "chain": [
+      {
+        "ur": "محمد بن مقاتل ابو الحسن",
+        "ar_frag": "محمد بن مقاتل أبو الحسن",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ",
+        "ar_frag": "عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "قتادہ",
+        "ar_frag": "قتادة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس بن مالك",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 66,
+    "local": 8,
+    "chain": [
+      {
+        "ur": "اسماعیل",
+        "ar_frag": "إسماعيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مالک",
+        "ar_frag": "مالك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اسحاق بن عبداللہ بن ابی طلحہ",
+        "ar_frag": "إسحاق بن عبد الله بن أبي طلحة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو مرہ",
+        "ar_frag": "أبو مرة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو واقد لیثیؓ",
+        "ar_frag": "أبو واقد الليثي",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 67,
+    "local": 9,
+    "chain": [
+      {
+        "ur": "مسدد",
+        "ar_frag": "مسدد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "بشر",
+        "ar_frag": "بشر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن عون",
+        "ar_frag": "ابن عون",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن سیرین",
+        "ar_frag": "ابن سيرين",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الرحمن بن ابی بکرہ",
+        "ar_frag": "عبد الرحمن بن أبي بكرة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوبکرہؓ",
+        "ar_frag": "أبيه",
+        "role": "primary",
+        "skip_ar_frag_match": true
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 68,
+    "local": 10,
+    "chain": [
+      {
+        "ur": "محمد بن یوسف",
+        "ar_frag": "محمد بن يوسف",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اعمش",
+        "ar_frag": "الأعمش",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی وائل",
+        "ar_frag": "أبي وائل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن مسعودؓ",
+        "ar_frag": "ابن مسعود",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 69,
+    "local": 11,
+    "chain": [
+      {
+        "ur": "محمد بن بشار",
+        "ar_frag": "محمد بن بشار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یحیی بن سعید",
+        "ar_frag": "يحيى بن سعيد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو التیاح",
+        "ar_frag": "أبو التياح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 70,
+    "local": 12,
+    "chain": [
+      {
+        "ur": "عثمان بن ابی شیبہ",
+        "ar_frag": "عثمان بن أبي شيبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "جریر",
+        "ar_frag": "جرير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "منصور",
+        "ar_frag": "منصور",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی وائل",
+        "ar_frag": "أبي وائل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن مسعودؓ",
+        "ar_frag": "عبد الله بن مسعود",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 71,
+    "local": 13,
+    "chain": [
+      {
+        "ur": "سعید بن عفیر",
+        "ar_frag": "سعيد بن عفير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن وہب",
+        "ar_frag": "ابن وهب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یونس",
+        "ar_frag": "يونس",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "حمید بن عبد الرحمن",
+        "ar_frag": "حميد بن عبد الرحمن",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "معاویہؓ",
+        "ar_frag": "معاوية",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 72,
+    "local": 14,
+    "chain": [
+      {
+        "ur": "علی",
+        "ar_frag": "علي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی نجیح",
+        "ar_frag": "ابن أبي نجيح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مجاہد",
+        "ar_frag": "مجاهد",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 73,
+    "local": 15,
+    "chain": [
+      {
+        "ur": "الحمیدی",
+        "ar_frag": "الحميدي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اسماعیل بن ابی خالد",
+        "ar_frag": "إسماعيل بن أبي خالد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "قیس بن ابی حازم",
+        "ar_frag": "قيس بن أبي حازم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن مسعودؓ",
+        "ar_frag": "عبد الله بن مسعود",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 74,
+    "local": 16,
+    "chain": [
+      {
+        "ur": "محمد بن غریر الزہری",
+        "ar_frag": "محمد بن غرير الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یعقوب بن ابراہیم",
+        "ar_frag": "يعقوب بن إبراهيم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابراہیم بن سعد",
+        "ar_frag": "أبي",
+        "role": "in_isnad",
+        "skip_ar_frag_match": true
+      },
+      {
+        "ur": "صالح",
+        "ar_frag": "صالح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبیداللہ بن عبداللہ",
+        "ar_frag": "عبيد الله بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 75,
+    "local": 17,
+    "chain": [
+      {
+        "ur": "ابو معمر",
+        "ar_frag": "أبو معمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الوارث",
+        "ar_frag": "عبد الوارث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "خالد",
+        "ar_frag": "خالد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عکرمہ",
+        "ar_frag": "عكرمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 76,
+    "local": 18,
+    "chain": [
+      {
+        "ur": "اسماعیل بن ابی اویس",
+        "ar_frag": "إسماعيل بن أبي أويس",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مالک",
+        "ar_frag": "مالك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبیداللہ بن عبداللہ بن عتبہ",
+        "ar_frag": "عبيد الله بن عبد الله بن عتبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "عبد الله بن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 77,
+    "local": 19,
+    "chain": [
+      {
+        "ur": "محمد بن یوسف",
+        "ar_frag": "محمد بن يوسف",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو مسہر",
+        "ar_frag": "أبو مسهر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمد بن حرب",
+        "ar_frag": "محمد بن حرب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزبیدی",
+        "ar_frag": "الزبيدي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزہری",
+        "ar_frag": "الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمود بن ربیعؓ",
+        "ar_frag": "محمود بن الربيع",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 78,
+    "local": 20,
+    "chain": [
+      {
+        "ur": "ابو القاسم خالد بن خلی",
+        "ar_frag": "أبو القاسم خالد بن خلي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمد بن حرب",
+        "ar_frag": "محمد بن حرب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزہری",
+        "ar_frag": "الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبیداللہ بن عبداللہ بن عتبہ بن مسعود",
+        "ar_frag": "عبيد الله بن عبد الله بن عتبة بن مسعود",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 79,
+    "local": 21,
+    "chain": [
+      {
+        "ur": "محمد بن العلاء",
+        "ar_frag": "محمد بن العلاء",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "حماد بن اسامہ",
+        "ar_frag": "حماد بن أسامة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "برید بن عبداللہ",
+        "ar_frag": "بريد بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی بردہ",
+        "ar_frag": "أبي بردة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوموسیٰؓ",
+        "ar_frag": "أبي موسى",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 80,
+    "local": 22,
+    "chain": [
+      {
+        "ur": "عمران بن میسرہ",
+        "ar_frag": "عمران بن ميسرة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الوارث",
+        "ar_frag": "عبد الوارث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی التیاح",
+        "ar_frag": "أبي التياح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 81,
+    "local": 23,
+    "chain": [
+      {
+        "ur": "مسدد",
+        "ar_frag": "مسدد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یحیی",
+        "ar_frag": "يحيى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "قتادہ",
+        "ar_frag": "قتادة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 82,
+    "local": 24,
+    "chain": [
+      {
+        "ur": "سعید بن عفیر",
+        "ar_frag": "سعيد بن عفير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "لیث",
+        "ar_frag": "الليث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عقیل",
+        "ar_frag": "عقيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "حمزہ بن عبداللہ بن عمر",
+        "ar_frag": "حمزة بن عبد الله بن عمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "ابن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 83,
+    "local": 25,
+    "chain": [
+      {
+        "ur": "اسماعیل",
+        "ar_frag": "إسماعيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مالک",
+        "ar_frag": "مالك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عیسی بن طلحہ بن عبیداللہ",
+        "ar_frag": "عيسى بن طلحة بن عبيد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرو بن العاصؓ",
+        "ar_frag": "عبد الله بن عمرو بن العاص",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 84,
+    "local": 26,
+    "chain": [
+      {
+        "ur": "موسی بن اسماعیل",
+        "ar_frag": "موسى بن إسماعيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "وہیب",
+        "ar_frag": "وهيب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ایوب",
+        "ar_frag": "أيوب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عکرمہ",
+        "ar_frag": "عكرمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 85,
+    "local": 27,
+    "chain": [
+      {
+        "ur": "المکی بن ابراہیم",
+        "ar_frag": "المكي بن إبراهيم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "حنظلہ بن ابی سفیان",
+        "ar_frag": "حنظلة بن أبي سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سالم",
+        "ar_frag": "سالم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبو هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 86,
+    "local": 28,
+    "chain": [
+      {
+        "ur": "موسی بن اسماعیل",
+        "ar_frag": "موسى بن إسماعيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "وہیب",
+        "ar_frag": "وهيب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ہشام",
+        "ar_frag": "هشام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "فاطمہ",
+        "ar_frag": "فاطمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اسماء بنت ابی بکرؓ",
+        "ar_frag": "أسماء",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 87,
+    "local": 29,
+    "chain": [
+      {
+        "ur": "محمد بن بشار",
+        "ar_frag": "محمد بن بشار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "غندر",
+        "ar_frag": "غندر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو جمرہ",
+        "ar_frag": "أبي جمرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 88,
+    "local": 30,
+    "chain": [
+      {
+        "ur": "محمد بن مقاتل ابو الحسن",
+        "ar_frag": "محمد بن مقاتل أبو الحسن",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ",
+        "ar_frag": "عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عمر بن سعید بن ابی حسین",
+        "ar_frag": "عمر بن سعيد بن أبي حسين",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن ابی ملیکہ",
+        "ar_frag": "عبد الله بن أبي مليكة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عقبہ بن حارثؓ",
+        "ar_frag": "عقبة بن الحارث",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 89,
+    "local": 31,
+    "chain": [
+      {
+        "ur": "ابو الیمان",
+        "ar_frag": "أبو اليمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعیب",
+        "ar_frag": "شعيب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزہری",
+        "ar_frag": "الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبیداللہ بن عبداللہ بن ابی ثور",
+        "ar_frag": "عبيد الله بن عبد الله بن أبي ثور",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباس",
+        "ar_frag": "عبد الله بن عباس",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عمر بن خطابؓ",
+        "ar_frag": "عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 90,
+    "local": 32,
+    "chain": [
+      {
+        "ur": "محمد بن کثیر",
+        "ar_frag": "محمد بن كثير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی خالد",
+        "ar_frag": "ابن أبي خالد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "قیس بن ابی حازم",
+        "ar_frag": "قيس بن أبي حازم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو مسعود انصاریؓ",
+        "ar_frag": "أبي مسعود الأنصاري",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 91,
+    "local": 33,
+    "chain": [
+      {
+        "ur": "عبداللہ بن محمد",
+        "ar_frag": "عبد الله بن محمد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو عامر",
+        "ar_frag": "أبو عامر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سلیمان بن بلال المدینی",
+        "ar_frag": "سليمان بن بلال المديني",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ربیعہ بن ابی عبد الرحمن",
+        "ar_frag": "ربيعة بن أبي عبد الرحمن",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یزید مولی المنبعث",
+        "ar_frag": "يزيد، مولى المنبعث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "زید بن خالد جہنیؓ",
+        "ar_frag": "زيد بن خالد الجهني",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 92,
+    "local": 34,
+    "chain": [
+      {
+        "ur": "محمد بن العلاء",
+        "ar_frag": "محمد بن العلاء",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو اسامہ",
+        "ar_frag": "أبو أسامة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "برید",
+        "ar_frag": "بريد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی بردہ",
+        "ar_frag": "أبي بردة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوموسیٰؓ",
+        "ar_frag": "أبي موسى",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 93,
+    "local": 35,
+    "chain": [
+      {
+        "ur": "ابو الیمان",
+        "ar_frag": "أبو اليمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعیب",
+        "ar_frag": "شعيب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزہری",
+        "ar_frag": "الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس بن مالك",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 94,
+    "local": 36,
+    "chain": [
+      {
+        "ur": "عبدہ",
+        "ar_frag": "عبدة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الصمد",
+        "ar_frag": "عبد الصمد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن المثنی",
+        "ar_frag": "عبد الله بن المثنى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ثمامہ بن عبداللہ",
+        "ar_frag": "ثمامة بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 95,
+    "local": 37,
+    "chain": [
+      {
+        "ur": "عبدہ بن عبداللہ",
+        "ar_frag": "عبدة بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الصمد",
+        "ar_frag": "عبد الصمد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن المثنی",
+        "ar_frag": "عبد الله بن المثنى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ثمامہ بن عبداللہ",
+        "ar_frag": "ثمامة بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 96,
+    "local": 38,
+    "chain": [
+      {
+        "ur": "مسدد",
+        "ar_frag": "مسدد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو عوانہ",
+        "ar_frag": "أبو عوانة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی بشر",
+        "ar_frag": "أبي بشر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یوسف بن ماہک",
+        "ar_frag": "يوسف بن ماهك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمروؓ",
+        "ar_frag": "عبد الله بن عمرو",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 97,
+    "local": 39,
+    "chain": [
+      {
+        "ur": "محمد بن سلام",
+        "ar_frag": "محمد بن سلام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "المحاربی",
+        "ar_frag": "المحاربي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "صالح بن حیان",
+        "ar_frag": "صالح بن حيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو بردہ",
+        "ar_frag": "أبو بردة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوموسیٰؓ",
+        "ar_frag": "أبيه",
+        "role": "primary",
+        "skip_ar_frag_match": true
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 98,
+    "local": 40,
+    "chain": [
+      {
+        "ur": "سلیمان بن حرب",
+        "ar_frag": "سليمان بن حرب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ایوب",
+        "ar_frag": "أيوب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عطاء",
+        "ar_frag": "عطاء",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 99,
+    "local": 41,
+    "chain": [
+      {
+        "ur": "عبد العزیز بن عبداللہ",
+        "ar_frag": "عبد العزيز بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سلیمان",
+        "ar_frag": "سليمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عمرو بن ابی عمرو",
+        "ar_frag": "عمرو بن أبي عمرو",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید بن ابی سعید المقبری",
+        "ar_frag": "سعيد بن أبي سعيد المقبري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 100,
+    "local": 42,
+    "chain": [
+      {
+        "ur": "اسماعیل بن ابی اویس",
+        "ar_frag": "إسماعيل بن أبي أويس",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مالک",
+        "ar_frag": "مالك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ہشام بن عروہ",
+        "ar_frag": "هشام بن عروة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عروہ بن زبیر",
+        "ar_frag": "أبيه",
+        "role": "in_isnad",
+        "skip_ar_frag_match": true
+      },
+      {
+        "ur": "عبداللہ بن عمرو بن العاصؓ",
+        "ar_frag": "عبد الله بن عمرو بن العاص",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 101,
+    "local": 43,
+    "chain": [
+      {
+        "ur": "آدم",
+        "ar_frag": "آدم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن الاصبہانی",
+        "ar_frag": "ابن الأصبهاني",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو صالح",
+        "ar_frag": "أبو صالح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوسعید خدریؓ",
+        "ar_frag": "أبو سعيد الخدري",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 102,
+    "local": 44,
+    "chain": [
+      {
+        "ur": "محمد بن بشار",
+        "ar_frag": "محمد بن بشار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "غندر",
+        "ar_frag": "غندر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الرحمن بن الاصبہانی",
+        "ar_frag": "عبد الرحمن بن الأصبهاني",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ذکوان",
+        "ar_frag": "ذكوان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوسعید خدریؓ",
+        "ar_frag": "أبي سعيد الخدري",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 103,
+    "local": 45,
+    "chain": [
+      {
+        "ur": "سعید بن ابی مریم",
+        "ar_frag": "سعيد بن أبي مريم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "نافع بن عمر",
+        "ar_frag": "نافع بن عمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی ملیکہ",
+        "ar_frag": "ابن أبي مليكة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 104,
+    "local": 46,
+    "chain": [
+      {
+        "ur": "عبداللہ بن یوسف",
+        "ar_frag": "عبد الله بن يوسف",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "لیث",
+        "ar_frag": "الليث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید",
+        "ar_frag": "سعيد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی شریح",
+        "ar_frag": "أبي شريح",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 105,
+    "local": 47,
+    "chain": [
+      {
+        "ur": "عبداللہ بن عبد الوہاب",
+        "ar_frag": "عبد الله بن عبد الوهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "حماد",
+        "ar_frag": "حماد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ایوب",
+        "ar_frag": "أيوب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمد",
+        "ar_frag": "محمد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی بکرہ",
+        "ar_frag": "ابن أبي بكرة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوبکرہؓ",
+        "ar_frag": "أبو بكرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 106,
+    "local": 48,
+    "chain": [
+      {
+        "ur": "علی بن الجعد",
+        "ar_frag": "علي بن الجعد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "منصور",
+        "ar_frag": "منصور",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ربعی بن حراش",
+        "ar_frag": "ربعي بن حراش",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "علیؓ",
+        "ar_frag": "علي",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 107,
+    "local": 49,
+    "chain": [
+      {
+        "ur": "ابو الولید",
+        "ar_frag": "أبو الوليد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "جامع بن شداد",
+        "ar_frag": "جامع بن شداد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عامر بن عبداللہ بن الزبیر",
+        "ar_frag": "عامر بن عبد الله بن الزبير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "زبیر بن عوامؓ",
+        "ar_frag": "أبيه",
+        "role": "primary",
+        "skip_ar_frag_match": true
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 108,
+    "local": 50,
+    "chain": [
+      {
+        "ur": "ابو معمر",
+        "ar_frag": "أبو معمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الوارث",
+        "ar_frag": "عبد الوارث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد العزیز",
+        "ar_frag": "عبد العزيز",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 109,
+    "local": 51,
+    "chain": [
+      {
+        "ur": "مکی بن ابراہیم",
+        "ar_frag": "مكي بن إبراهيم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یزید بن ابی عبید",
+        "ar_frag": "يزيد بن أبي عبيد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سلمہ بن الاکوعؓ",
+        "ar_frag": "سلمة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 110,
+    "local": 52,
+    "chain": [
+      {
+        "ur": "موسی",
+        "ar_frag": "موسى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو عوانہ",
+        "ar_frag": "أبو عوانة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی حصین",
+        "ar_frag": "أبي حصين",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی صالح",
+        "ar_frag": "أبي صالح",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 111,
+    "local": 53,
+    "chain": [
+      {
+        "ur": "محمد بن سلام",
+        "ar_frag": "محمد بن سلام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "وکیع",
+        "ar_frag": "وكيع",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مطرف",
+        "ar_frag": "مطرف",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الشعبی",
+        "ar_frag": "الشعبي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو جحیفہؓ",
+        "ar_frag": "أبي جحيفة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 112,
+    "local": 54,
+    "chain": [
+      {
+        "ur": "ابو نعیم الفضل بن دکین",
+        "ar_frag": "أبو نعيم الفضل بن دكين",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شیبان",
+        "ar_frag": "شيبان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یحیی",
+        "ar_frag": "يحيى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی سلمہ",
+        "ar_frag": "أبي سلمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 113,
+    "local": 55,
+    "chain": [
+      {
+        "ur": "علی بن عبداللہ",
+        "ar_frag": "علي بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عمرو",
+        "ar_frag": "عمرو",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "وہب بن منبہ",
+        "ar_frag": "وهب بن منبه",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اخیہ",
+        "ar_frag": "أخيه",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ہمام",
+        "ar_frag": "همام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 114,
+    "local": 56,
+    "chain": [
+      {
+        "ur": "یحیی بن سلیمان",
+        "ar_frag": "يحيى بن سليمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن وہب",
+        "ar_frag": "ابن وهب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "یونس",
+        "ar_frag": "يونس",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبیداللہ بن عبداللہ",
+        "ar_frag": "عبيد الله بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 115,
+    "local": 57,
+    "chain": [
+      {
+        "ur": "صدقہ",
+        "ar_frag": "صدقة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن عیینہ",
+        "ar_frag": "ابن عيينة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "معمر",
+        "ar_frag": "معمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزہری",
+        "ar_frag": "الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ہند",
+        "ar_frag": "هند",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ام سلمہؓ",
+        "ar_frag": "أم سلمة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 116,
+    "local": 58,
+    "chain": [
+      {
+        "ur": "سعید بن عفیر",
+        "ar_frag": "سعيد بن عفير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "لیث",
+        "ar_frag": "الليث",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الرحمن بن خالد",
+        "ar_frag": "عبد الرحمن بن خالد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سالم",
+        "ar_frag": "سالم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "عبد الله بن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 117,
+    "local": 59,
+    "chain": [
+      {
+        "ur": "آدم",
+        "ar_frag": "آدم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الحکم",
+        "ar_frag": "الحكم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید بن جبیر",
+        "ar_frag": "سعيد بن جبير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عباسؓ",
+        "ar_frag": "ابن عباس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 118,
+    "local": 60,
+    "chain": [
+      {
+        "ur": "عبد العزیز بن عبداللہ",
+        "ar_frag": "عبد العزيز بن عبد الله",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مالک",
+        "ar_frag": "مالك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن شہاب",
+        "ar_frag": "ابن شهاب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الاعرج",
+        "ar_frag": "الأعرج",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 119,
+    "local": 61,
+    "chain": [
+      {
+        "ur": "احمد بن ابی بکر ابو مصعب",
+        "ar_frag": "أحمد بن أبي بكر أبو مصعب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمد بن ابراہیم بن دینار",
+        "ar_frag": "محمد بن إبراهيم بن دينار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی ذئب",
+        "ar_frag": "ابن أبي ذئب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید المقبری",
+        "ar_frag": "سعيد المقبري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 120,
+    "local": 62,
+    "chain": [
+      {
+        "ur": "اسماعیل",
+        "ar_frag": "إسماعيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو بکر بن ابی اویس",
+        "ar_frag": "أخي",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی ذئب",
+        "ar_frag": "ابن أبي ذئب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید المقبری",
+        "ar_frag": "سعيد المقبري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوہریرہؓ",
+        "ar_frag": "أبي هريرة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 121,
+    "local": 63,
+    "chain": [
+      {
+        "ur": "حجاج",
+        "ar_frag": "حجاج",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "شعبہ",
+        "ar_frag": "شعبة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "علی بن مدرک",
+        "ar_frag": "علي بن مدرك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی زرعہ",
+        "ar_frag": "أبي زرعة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "جریر بن عبداللہؓ",
+        "ar_frag": "جرير",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 122,
+    "local": 64,
+    "chain": [
+      {
+        "ur": "عبداللہ بن محمد",
+        "ar_frag": "عبد الله بن محمد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سفیان",
+        "ar_frag": "سفيان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عمرو",
+        "ar_frag": "عمرو",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سعید بن جبیر",
+        "ar_frag": "سعيد بن جبير",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 123,
+    "local": 65,
+    "chain": [
+      {
+        "ur": "عثمان",
+        "ar_frag": "عثمان",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "جریر",
+        "ar_frag": "جرير",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "منصور",
+        "ar_frag": "منصور",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی وائل",
+        "ar_frag": "أبي وائل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابوموسیٰؓ",
+        "ar_frag": "أبي موسى",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 124,
+    "local": 66,
+    "chain": [
+      {
+        "ur": "ابو نعیم",
+        "ar_frag": "أبو نعيم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد العزیز بن ابی سلمہ",
+        "ar_frag": "عبد العزيز بن أبي سلمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الزہری",
+        "ar_frag": "الزهري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عیسی بن طلحہ",
+        "ar_frag": "عيسى بن طلحة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمروؓ",
+        "ar_frag": "عبد الله بن عمرو",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 125,
+    "local": 67,
+    "chain": [
+      {
+        "ur": "قیس بن حفص",
+        "ar_frag": "قيس بن حفص",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبد الواحد",
+        "ar_frag": "عبد الواحد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اعمش",
+        "ar_frag": "الأعمش",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابراہیم",
+        "ar_frag": "إبراهيم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "علقمہ",
+        "ar_frag": "علقمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ",
+        "ar_frag": "عبد الله",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 126,
+    "local": 68,
+    "chain": [
+      {
+        "ur": "عبیداللہ بن موسی",
+        "ar_frag": "عبيد الله بن موسى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اسرائیل",
+        "ar_frag": "إسرائيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی اسحاق",
+        "ar_frag": "أبي إسحاق",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "الاسود",
+        "ar_frag": "الأسود",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 127,
+    "local": 69,
+    "chain": [
+      {
+        "ur": "عبیداللہ بن موسی",
+        "ar_frag": "عبيد الله بن موسى",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "معروف بن خربوذ",
+        "ar_frag": "معروف بن خربوذ",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابی الطفیل",
+        "ar_frag": "أبي الطفيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "علیؓ",
+        "ar_frag": "علي",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 128,
+    "local": 70,
+    "chain": [
+      {
+        "ur": "اسحاق بن ابراہیم",
+        "ar_frag": "إسحاق بن إبراهيم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "معاذ بن ہشام",
+        "ar_frag": "معاذ بن هشام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ہشام دستوائی",
+        "ar_frag": "أبي",
+        "role": "in_isnad",
+        "skip_ar_frag_match": true
+      },
+      {
+        "ur": "قتادہ",
+        "ar_frag": "قتادة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس بن مالك",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 129,
+    "local": 71,
+    "chain": [
+      {
+        "ur": "مسدد",
+        "ar_frag": "مسدد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "معتمر",
+        "ar_frag": "معتمر",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "سلیمان التیمی",
+        "ar_frag": "أبي",
+        "role": "in_isnad",
+        "skip_ar_frag_match": true
+      },
+      {
+        "ur": "انس بن مالکؓ",
+        "ar_frag": "أنس",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 130,
+    "local": 72,
+    "chain": [
+      {
+        "ur": "محمد بن سلام",
+        "ar_frag": "محمد بن سلام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابو معاویہ",
+        "ar_frag": "أبو معاوية",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ہشام",
+        "ar_frag": "هشام",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عروہ بن زبیر",
+        "ar_frag": "أبيه",
+        "role": "in_isnad",
+        "skip_ar_frag_match": true
+      },
+      {
+        "ur": "زینب ابنہ ام سلمہ",
+        "ar_frag": "زينب ابنة أم سلمة",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ام سلمہؓ",
+        "ar_frag": "أم سلمة",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 131,
+    "local": 73,
+    "chain": [
+      {
+        "ur": "اسماعیل",
+        "ar_frag": "إسماعيل",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "مالک",
+        "ar_frag": "مالك",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن دینار",
+        "ar_frag": "عبد الله بن دينار",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "عبد الله بن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 132,
+    "local": 74,
+    "chain": [
+      {
+        "ur": "مسدد",
+        "ar_frag": "مسدد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن داود",
+        "ar_frag": "عبد الله بن داود",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "اعمش",
+        "ar_frag": "الأعمش",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "منذر الثوری",
+        "ar_frag": "منذر الثوري",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "محمد ابن الحنفیہ",
+        "ar_frag": "محمد ابن الحنفية",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "علیؓ",
+        "ar_frag": "علي",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 133,
+    "local": 75,
+    "chain": [
+      {
+        "ur": "قتیبہ بن سعید",
+        "ar_frag": "قتيبة بن سعيد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "لیث بن سعد",
+        "ar_frag": "الليث بن سعد",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "نافع",
+        "ar_frag": "نافع",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "عبد الله بن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  },
+  {
+    "abs": 134,
+    "local": 76,
+    "chain": [
+      {
+        "ur": "آدم",
+        "ar_frag": "آدم",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "ابن ابی ذئب",
+        "ar_frag": "ابن أبي ذئب",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "نافع",
+        "ar_frag": "نافع",
+        "role": "in_isnad"
+      },
+      {
+        "ur": "عبداللہ بن عمرؓ",
+        "ar_frag": "ابن عمر",
+        "role": "primary"
+      }
+    ],
+    "user_applied": false
+  }
+]
