@@ -7,17 +7,40 @@
 | Arabic Uthmani text | [Tanzil Project](https://tanzil.net) v1.1 via dotquran/corpus |
 | Page, Juz, Hizb, Ruku, Sajdah | Quran.com API v4 |
 | English translation | Sahih International (resource 131) |
+| Urdu translation | Maulana Muhammad Junagarhi (resource 54) |
 | Tajweed markup | Quran.com `text_uthmani_tajweed` |
+| Word morphology / roots / grammar | [Quranic Arabic Corpus](http://corpus.quran.com) morphology v0.4 |
+| Word EN/UR glosses + transliteration | Quran.com API word fields (build-time) |
 
 Arabic text is **cross-verified** against the API. On mismatch, **Tanzil text is kept** (authoritative).
+Morphology annotations are used **without alteration** (QAC terms).
 
-## Build
+## Build ayah database
 
 ```bash
 python tools/quran/build_quran_db.py --skip-pdf
 ```
 
 Output: `app/assets/databases/quran.db`
+
+## Build Phase 4 word knowledge tables
+
+Requires QAC morphology in `tools/quran/cache/` (gitignored). Download once:
+
+```bash
+# morphology file is cached as quranic-corpus-morphology-0.4.txt.gz
+python tools/quran/import_quran_knowledge.py --chapters 1-114
+```
+
+This creates/updates inside `quran.db`:
+
+- `quran_words` — Arabic, EN/UR meaning, root, lemma, POS, morphology, grammar, syntax, occurrences
+- `quran_word_parts` — QAC segments
+- `quran_words_fts` — offline FTS for Arabic / Urdu / English / root / morphology
+
+Sets `meta.schema_version = 3_knowledge`.
+
+Optional: `--skip-api` for morphology-only (no EN/UR glosses).
 
 ## Optional 13-line PDF page mapping
 
@@ -38,4 +61,10 @@ The PDF is used **only** to map `page_13_line` numbers by detecting `surah:ayah`
 
 ## Schema
 
-See `schema.sql` — tables: `surahs`, `ayahs`, `juz`, `ruku`, `sajdah`, `pages_madani`, `pages_13_line`, `ayah_fts` (FTS5 full-text search).
+See `schema.sql` — tables: `surahs`, `ayahs`, `juz`, `ruku`, `sajdah`, `pages_madani`, `pages_13_line`, `ayah_fts`.
+
+See `schema_knowledge.sql` — tables: `quran_words`, `quran_word_parts`, `quran_words_fts`.
+
+## Attribution
+
+Required acknowledgements are shown in-app at **About → Data Sources & Licenses** (`assets/modules/data_sources.json`).
