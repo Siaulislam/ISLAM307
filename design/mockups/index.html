@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
   <title>ISLAM 307 — UI Mockups</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=logo-fit-5" />
   <link rel="stylesheet" href="kitab-icons.css" />
 </head>
 <body>
@@ -20,13 +22,9 @@
       <!-- 1 SPLASH -->
       <div class="screen active" data-id="splash">
         <div class="phone">
-          <div class="pattern-bg"></div>
           <div class="phone-notch">ISLAM 307</div>
-          <div class="splash-center">
-            <div class="logo-mark"><div><span>307</span><small>ISLAM</small></div></div>
-            <h2>ISLAM 307</h2>
-            <p>Your complete offline Islamic companion</p>
-            <div style="margin-top:40px;width:48px;height:4px;background:var(--gold);border-radius:4px;animation:pulse 1.5s infinite"></div>
+          <div class="splash-center splash-brand">
+            <img class="brand-logo-full" src="islam307_brand_logo.png" alt="ISLAM 307" />
           </div>
         </div>
         <p class="screen-label">1 · Splash Screen</p>
@@ -35,21 +33,20 @@
       <!-- 2 WELCOME -->
       <div class="screen" data-id="welcome">
         <div class="phone">
-          <div class="pattern-bg"></div>
           <div class="phone-notch">Welcome</div>
-          <div class="screen-body" style="padding-top:48px">
-            <div class="logo-mark" style="width:72px;height:72px;border-radius:20px"><div><span style="font-size:18px">307</span></div></div>
-            <h2 style="text-align:center;margin-top:20px;font-size:24px;color:var(--emerald-deep)">Welcome to ISLAM 307</h2>
-            <p style="text-align:center;color:var(--muted);margin-top:8px;font-size:14px">100% offline · Quran · Hadith · Prayer</p>
-            <p style="text-align:center;margin-top:24px;font-size:13px;font-weight:700;color:var(--muted)">Choose language</p>
+          <div class="screen-body welcome-brand-body">
+            <img class="brand-logo-full welcome-logo" src="islam307_brand_logo.png" alt="ISLAM 307" />
+            <h2 class="welcome-title">Welcome</h2>
+            <p class="welcome-sub">100% offline · Quran · Hadith · Prayer</p>
+            <p style="text-align:center;margin-top:18px;font-size:13px;font-weight:700;color:var(--muted)">Choose language</p>
             <div class="lang-pills">
               <span class="lang-pill">العربية</span>
               <span class="lang-pill active">English</span>
               <span class="lang-pill">اردو</span>
             </div>
-            <div style="margin-top:32px">
-              <button class="btn-primary">Get Started</button>
-              <button class="btn-outline">Continue as Guest</button>
+            <div style="margin-top:24px">
+              <button class="btn-primary" data-goto="home">Get Started</button>
+              <button class="btn-outline" data-goto="home">Continue as Guest</button>
             </div>
           </div>
         </div>
@@ -59,11 +56,16 @@
       <!-- 3 HOME -->
       <div class="screen" data-id="home">
         <div class="phone">
-          <div class="pattern-bg"></div>
           <div class="phone-notch">Home</div>
           <div class="screen-body">
-            <div class="top-bar">
-              <div class="avatar">ZS</div>
+            <div class="top-bar brand-top-bar">
+              <div class="brand-top">
+                <img class="brand-logo-mark" src="islam307_brand_logo.png" alt="ISLAM 307" />
+                <div>
+                  <strong>ISLAM 307</strong>
+                  <small>KNOWLEDGE · GUIDANCE · PEACE</small>
+                </div>
+              </div>
               <div style="display:flex;gap:8px">
                 <div class="icon-btn">🔍</div>
                 <div class="icon-btn">🔔</div>
@@ -88,35 +90,42 @@
             </div>
             <p class="section-title">Quick Access</p>
             <div class="grid-4">
-              <div class="grid-item"><div class="icon">📖</div><span>Quran</span></div>
-              <div class="grid-item"><div class="icon">📜</div><span>Hadith</span></div>
-              <div class="grid-item"><div class="icon">📚</div><span>Tafsir</span></div>
-              <div class="grid-item"><div class="icon">✨</div><span>AI</span></div>
-              <div class="grid-item"><div class="icon">🕌</div><span>Prayer</span></div>
-              <div class="grid-item"><div class="icon">🧭</div><span>Qibla</span></div>
-              <div class="grid-item"><div class="icon">📿</div><span>Azkar</span></div>
-              <div class="grid-item"><div class="icon">🤲</div><span>Duas</span></div>
-              <div class="grid-item"><div class="icon">📕</div><span>Library</span></div>
-              <div class="grid-item"><div class="icon">🎧</div><span>Audio</span></div>
-              <div class="grid-item"><div class="icon">🎬</div><span>Videos</span></div>
-              <div class="grid-item"><div class="icon">⬇️</div><span>Downloads</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="quran"><div class="icon">📖</div><span>Quran</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#hadith"><div class="icon">📜</div><span>Hadith</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#tafsir"><div class="icon">📚</div><span>Tafsir</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="ai"><div class="icon">✨</div><span>AI</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🕌</div><span>Prayer</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🧭</div><span>Qibla</span></div>
+              <div class="grid-item is-disabled" title="Coming soon"><div class="icon">📿</div><span>Azkar</span></div>
+              <div class="grid-item is-disabled" title="Coming soon"><div class="icon">🤲</div><span>Duas</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="library"><div class="icon">📕</div><span>Library</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="audio"><div class="icon">🎧</div><span>Audio</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="videos"><div class="icon">🎬</div><span>Videos</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="downloads"><div class="icon">⬇️</div><span>Downloads</span></div>
             </div>
-            <div class="card" style="margin-top:14px">
+            <div class="card" style="margin-top:14px" role="button" tabindex="0" data-goto="quran-reader">
               <strong style="font-size:13px">Continue Reading</strong>
               <p style="font-size:12px;color:var(--muted);margin-top:4px">Al-Baqarah · Page 42 · Juz 1</p>
             </div>
-            <div class="card">
+            <div class="card" role="button" tabindex="0" data-goto="hadith">
               <strong style="font-size:13px">Daily Hadith</strong>
               <p style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Actions are judged by intentions...</p>
               <span class="ref-badge">Sahih Bukhari · 1</span>
             </div>
+            <div class="brand-footer">
+              <img class="brand-logo-mark" src="islam307_brand_logo.png" alt="ISLAM 307" />
+              <div>
+                <strong>ISLAM 307</strong>
+                <small>KNOWLEDGE · GUIDANCE · PEACE</small>
+              </div>
+            </div>
           </div>
           <nav class="bottom-nav">
-            <div class="nav-item active"><div class="ni">🏠</div>Home</div>
-            <div class="nav-item"><div class="ni">📖</div>Quran</div>
-            <div class="nav-item"><div class="ni">✨</div>AI</div>
-            <div class="nav-item"><div class="ni">📕</div>Library</div>
-            <div class="nav-item"><div class="ni">☰</div>More</div>
+            <div class="nav-item active" data-goto="home"><div class="ni ni-logo"><img src="islam307_brand_logo.png" alt="" /></div>Home</div>
+            <div class="nav-item" data-goto="quran"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item" data-goto="ai"><div class="ni">✨</div>AI</div>
+            <div class="nav-item" data-goto="library"><div class="ni">📕</div>Library</div>
+            <div class="nav-item" data-goto="more"><div class="ni">☰</div>More</div>
           </nav>
         </div>
         <p class="screen-label">3 · Home Dashboard</p>
@@ -130,29 +139,141 @@
           <div class="screen-body">
             <div class="top-bar">
               <strong style="font-size:18px;color:var(--emerald-deep)">Al-Quran</strong>
-              <div class="icon-btn">⚙️</div>
+              <a class="icon-btn" href="../../preview/library/index.html#quran" title="Open full library" style="text-decoration:none;display:flex;align-items:center;justify-content:center">↗</a>
             </div>
-            <div class="search-bar">🔍 Search surah, ayah, page, juz...</div>
-            <div style="display:flex;gap:8px;margin-bottom:16px">
+            <input id="mockup-quran-search" class="search-bar" type="search" placeholder="🔍 Search surah, ayah, page, juz..." style="width:100%;border:0;outline:none;font:inherit" />
+            <div style="display:flex;gap:8px;margin-bottom:12px">
               <span class="lang-pill active" style="font-size:11px;padding:8px 14px">Surah</span>
-              <span class="lang-pill" style="font-size:11px;padding:8px 14px">Juz</span>
-              <span class="lang-pill" style="font-size:11px;padding:8px 14px">Page</span>
+              <span class="lang-pill" style="font-size:11px;padding:8px 14px;opacity:.55" title="Coming in Flutter app">Juz</span>
+              <span class="lang-pill" style="font-size:11px;padding:8px 14px;opacity:.55" title="Coming in Flutter app">Page</span>
             </div>
-            <div class="list-row"><div class="num">1</div><div class="meta"><strong>Al-Fatiha</strong><small>الفاتحة · 7 Ayahs · Page 1</small></div><span style="color:var(--gold)">★</span></div>
-            <div class="list-row"><div class="num">2</div><div class="meta"><strong>Al-Baqarah</strong><small>البقرة · 286 Ayahs · Page 2</small></div></div>
-            <div class="list-row"><div class="num">3</div><div class="meta"><strong>Al-Imran</strong><small>آل عمران · 200 Ayahs · Page 50</small></div></div>
-            <div class="list-row"><div class="num">36</div><div class="meta"><strong>Yasin</strong><small>يس · 83 Ayahs · Page 440</small></div><span style="color:var(--gold)">★</span></div>
-            <p style="margin-top:16px;font-size:11px;color:var(--muted);text-align:center">13-Line Uthmani · Offline · 114 Surahs</p>
+            <div id="mockup-surah-list">
+            <a class="list-row surah-row" data-surah="1" data-name="al-fatihah الفاتحة" href="../../preview/library/index.html?surah=1#quran" style="text-decoration:none;color:inherit"><div class="num">1</div><div class="meta"><strong>Al-Fatihah</strong><small>الفاتحة · 7 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="2" data-name="al-baqarah البقرة" href="../../preview/library/index.html?surah=2#quran" style="text-decoration:none;color:inherit"><div class="num">2</div><div class="meta"><strong>Al-Baqarah</strong><small>البقرة · 286 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="3" data-name="ali 'imran آل عمران" href="../../preview/library/index.html?surah=3#quran" style="text-decoration:none;color:inherit"><div class="num">3</div><div class="meta"><strong>Ali 'Imran</strong><small>آل عمران · 200 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="4" data-name="an-nisa النساء" href="../../preview/library/index.html?surah=4#quran" style="text-decoration:none;color:inherit"><div class="num">4</div><div class="meta"><strong>An-Nisa</strong><small>النساء · 176 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="5" data-name="al-ma'idah المائدة" href="../../preview/library/index.html?surah=5#quran" style="text-decoration:none;color:inherit"><div class="num">5</div><div class="meta"><strong>Al-Ma'idah</strong><small>المائدة · 120 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="6" data-name="al-an'am الأنعام" href="../../preview/library/index.html?surah=6#quran" style="text-decoration:none;color:inherit"><div class="num">6</div><div class="meta"><strong>Al-An'am</strong><small>الأنعام · 165 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="7" data-name="al-a'raf الأعراف" href="../../preview/library/index.html?surah=7#quran" style="text-decoration:none;color:inherit"><div class="num">7</div><div class="meta"><strong>Al-A'raf</strong><small>الأعراف · 206 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="8" data-name="al-anfal الأنفال" href="../../preview/library/index.html?surah=8#quran" style="text-decoration:none;color:inherit"><div class="num">8</div><div class="meta"><strong>Al-Anfal</strong><small>الأنفال · 75 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="9" data-name="at-tawbah التوبة" href="../../preview/library/index.html?surah=9#quran" style="text-decoration:none;color:inherit"><div class="num">9</div><div class="meta"><strong>At-Tawbah</strong><small>التوبة · 129 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="10" data-name="yunus يونس" href="../../preview/library/index.html?surah=10#quran" style="text-decoration:none;color:inherit"><div class="num">10</div><div class="meta"><strong>Yunus</strong><small>يونس · 109 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="11" data-name="hud هود" href="../../preview/library/index.html?surah=11#quran" style="text-decoration:none;color:inherit"><div class="num">11</div><div class="meta"><strong>Hud</strong><small>هود · 123 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="12" data-name="yusuf يوسف" href="../../preview/library/index.html?surah=12#quran" style="text-decoration:none;color:inherit"><div class="num">12</div><div class="meta"><strong>Yusuf</strong><small>يوسف · 111 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="13" data-name="ar-ra'd الرعد" href="../../preview/library/index.html?surah=13#quran" style="text-decoration:none;color:inherit"><div class="num">13</div><div class="meta"><strong>Ar-Ra'd</strong><small>الرعد · 43 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="14" data-name="ibrahim ابراهيم" href="../../preview/library/index.html?surah=14#quran" style="text-decoration:none;color:inherit"><div class="num">14</div><div class="meta"><strong>Ibrahim</strong><small>ابراهيم · 52 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="15" data-name="al-hijr الحجر" href="../../preview/library/index.html?surah=15#quran" style="text-decoration:none;color:inherit"><div class="num">15</div><div class="meta"><strong>Al-Hijr</strong><small>الحجر · 99 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="16" data-name="an-nahl النحل" href="../../preview/library/index.html?surah=16#quran" style="text-decoration:none;color:inherit"><div class="num">16</div><div class="meta"><strong>An-Nahl</strong><small>النحل · 128 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="17" data-name="al-isra الإسراء" href="../../preview/library/index.html?surah=17#quran" style="text-decoration:none;color:inherit"><div class="num">17</div><div class="meta"><strong>Al-Isra</strong><small>الإسراء · 111 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="18" data-name="al-kahf الكهف" href="../../preview/library/index.html?surah=18#quran" style="text-decoration:none;color:inherit"><div class="num">18</div><div class="meta"><strong>Al-Kahf</strong><small>الكهف · 110 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="19" data-name="maryam مريم" href="../../preview/library/index.html?surah=19#quran" style="text-decoration:none;color:inherit"><div class="num">19</div><div class="meta"><strong>Maryam</strong><small>مريم · 98 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="20" data-name="taha طه" href="../../preview/library/index.html?surah=20#quran" style="text-decoration:none;color:inherit"><div class="num">20</div><div class="meta"><strong>Taha</strong><small>طه · 135 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="21" data-name="al-anbya الأنبياء" href="../../preview/library/index.html?surah=21#quran" style="text-decoration:none;color:inherit"><div class="num">21</div><div class="meta"><strong>Al-Anbya</strong><small>الأنبياء · 112 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="22" data-name="al-hajj الحج" href="../../preview/library/index.html?surah=22#quran" style="text-decoration:none;color:inherit"><div class="num">22</div><div class="meta"><strong>Al-Hajj</strong><small>الحج · 78 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="23" data-name="al-mu'minun المؤمنون" href="../../preview/library/index.html?surah=23#quran" style="text-decoration:none;color:inherit"><div class="num">23</div><div class="meta"><strong>Al-Mu'minun</strong><small>المؤمنون · 118 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="24" data-name="an-nur النور" href="../../preview/library/index.html?surah=24#quran" style="text-decoration:none;color:inherit"><div class="num">24</div><div class="meta"><strong>An-Nur</strong><small>النور · 64 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="25" data-name="al-furqan الفرقان" href="../../preview/library/index.html?surah=25#quran" style="text-decoration:none;color:inherit"><div class="num">25</div><div class="meta"><strong>Al-Furqan</strong><small>الفرقان · 77 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="26" data-name="ash-shu'ara الشعراء" href="../../preview/library/index.html?surah=26#quran" style="text-decoration:none;color:inherit"><div class="num">26</div><div class="meta"><strong>Ash-Shu'ara</strong><small>الشعراء · 227 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="27" data-name="an-naml النمل" href="../../preview/library/index.html?surah=27#quran" style="text-decoration:none;color:inherit"><div class="num">27</div><div class="meta"><strong>An-Naml</strong><small>النمل · 93 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="28" data-name="al-qasas القصص" href="../../preview/library/index.html?surah=28#quran" style="text-decoration:none;color:inherit"><div class="num">28</div><div class="meta"><strong>Al-Qasas</strong><small>القصص · 88 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="29" data-name="al-'ankabut العنكبوت" href="../../preview/library/index.html?surah=29#quran" style="text-decoration:none;color:inherit"><div class="num">29</div><div class="meta"><strong>Al-'Ankabut</strong><small>العنكبوت · 69 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="30" data-name="ar-rum الروم" href="../../preview/library/index.html?surah=30#quran" style="text-decoration:none;color:inherit"><div class="num">30</div><div class="meta"><strong>Ar-Rum</strong><small>الروم · 60 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="31" data-name="luqman لقمان" href="../../preview/library/index.html?surah=31#quran" style="text-decoration:none;color:inherit"><div class="num">31</div><div class="meta"><strong>Luqman</strong><small>لقمان · 34 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="32" data-name="as-sajdah السجدة" href="../../preview/library/index.html?surah=32#quran" style="text-decoration:none;color:inherit"><div class="num">32</div><div class="meta"><strong>As-Sajdah</strong><small>السجدة · 30 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="33" data-name="al-ahzab الأحزاب" href="../../preview/library/index.html?surah=33#quran" style="text-decoration:none;color:inherit"><div class="num">33</div><div class="meta"><strong>Al-Ahzab</strong><small>الأحزاب · 73 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="34" data-name="saba سبإ" href="../../preview/library/index.html?surah=34#quran" style="text-decoration:none;color:inherit"><div class="num">34</div><div class="meta"><strong>Saba</strong><small>سبإ · 54 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="35" data-name="fatir فاطر" href="../../preview/library/index.html?surah=35#quran" style="text-decoration:none;color:inherit"><div class="num">35</div><div class="meta"><strong>Fatir</strong><small>فاطر · 45 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="36" data-name="ya-sin يس" href="../../preview/library/index.html?surah=36#quran" style="text-decoration:none;color:inherit"><div class="num">36</div><div class="meta"><strong>Ya-Sin</strong><small>يس · 83 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="37" data-name="as-saffat الصافات" href="../../preview/library/index.html?surah=37#quran" style="text-decoration:none;color:inherit"><div class="num">37</div><div class="meta"><strong>As-Saffat</strong><small>الصافات · 182 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="38" data-name="sad ص" href="../../preview/library/index.html?surah=38#quran" style="text-decoration:none;color:inherit"><div class="num">38</div><div class="meta"><strong>Sad</strong><small>ص · 88 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="39" data-name="az-zumar الزمر" href="../../preview/library/index.html?surah=39#quran" style="text-decoration:none;color:inherit"><div class="num">39</div><div class="meta"><strong>Az-Zumar</strong><small>الزمر · 75 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="40" data-name="ghafir غافر" href="../../preview/library/index.html?surah=40#quran" style="text-decoration:none;color:inherit"><div class="num">40</div><div class="meta"><strong>Ghafir</strong><small>غافر · 85 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="41" data-name="fussilat فصلت" href="../../preview/library/index.html?surah=41#quran" style="text-decoration:none;color:inherit"><div class="num">41</div><div class="meta"><strong>Fussilat</strong><small>فصلت · 54 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="42" data-name="ash-shuraa الشورى" href="../../preview/library/index.html?surah=42#quran" style="text-decoration:none;color:inherit"><div class="num">42</div><div class="meta"><strong>Ash-Shuraa</strong><small>الشورى · 53 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="43" data-name="az-zukhruf الزخرف" href="../../preview/library/index.html?surah=43#quran" style="text-decoration:none;color:inherit"><div class="num">43</div><div class="meta"><strong>Az-Zukhruf</strong><small>الزخرف · 89 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="44" data-name="ad-dukhan الدخان" href="../../preview/library/index.html?surah=44#quran" style="text-decoration:none;color:inherit"><div class="num">44</div><div class="meta"><strong>Ad-Dukhan</strong><small>الدخان · 59 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="45" data-name="al-jathiyah الجاثية" href="../../preview/library/index.html?surah=45#quran" style="text-decoration:none;color:inherit"><div class="num">45</div><div class="meta"><strong>Al-Jathiyah</strong><small>الجاثية · 37 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="46" data-name="al-ahqaf الأحقاف" href="../../preview/library/index.html?surah=46#quran" style="text-decoration:none;color:inherit"><div class="num">46</div><div class="meta"><strong>Al-Ahqaf</strong><small>الأحقاف · 35 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="47" data-name="muhammad محمد" href="../../preview/library/index.html?surah=47#quran" style="text-decoration:none;color:inherit"><div class="num">47</div><div class="meta"><strong>Muhammad</strong><small>محمد · 38 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="48" data-name="al-fath الفتح" href="../../preview/library/index.html?surah=48#quran" style="text-decoration:none;color:inherit"><div class="num">48</div><div class="meta"><strong>Al-Fath</strong><small>الفتح · 29 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="49" data-name="al-hujurat الحجرات" href="../../preview/library/index.html?surah=49#quran" style="text-decoration:none;color:inherit"><div class="num">49</div><div class="meta"><strong>Al-Hujurat</strong><small>الحجرات · 18 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="50" data-name="qaf ق" href="../../preview/library/index.html?surah=50#quran" style="text-decoration:none;color:inherit"><div class="num">50</div><div class="meta"><strong>Qaf</strong><small>ق · 45 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="51" data-name="adh-dhariyat الذاريات" href="../../preview/library/index.html?surah=51#quran" style="text-decoration:none;color:inherit"><div class="num">51</div><div class="meta"><strong>Adh-Dhariyat</strong><small>الذاريات · 60 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="52" data-name="at-tur الطور" href="../../preview/library/index.html?surah=52#quran" style="text-decoration:none;color:inherit"><div class="num">52</div><div class="meta"><strong>At-Tur</strong><small>الطور · 49 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="53" data-name="an-najm النجم" href="../../preview/library/index.html?surah=53#quran" style="text-decoration:none;color:inherit"><div class="num">53</div><div class="meta"><strong>An-Najm</strong><small>النجم · 62 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="54" data-name="al-qamar القمر" href="../../preview/library/index.html?surah=54#quran" style="text-decoration:none;color:inherit"><div class="num">54</div><div class="meta"><strong>Al-Qamar</strong><small>القمر · 55 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="55" data-name="ar-rahman الرحمن" href="../../preview/library/index.html?surah=55#quran" style="text-decoration:none;color:inherit"><div class="num">55</div><div class="meta"><strong>Ar-Rahman</strong><small>الرحمن · 78 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="56" data-name="al-waqi'ah الواقعة" href="../../preview/library/index.html?surah=56#quran" style="text-decoration:none;color:inherit"><div class="num">56</div><div class="meta"><strong>Al-Waqi'ah</strong><small>الواقعة · 96 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="57" data-name="al-hadid الحديد" href="../../preview/library/index.html?surah=57#quran" style="text-decoration:none;color:inherit"><div class="num">57</div><div class="meta"><strong>Al-Hadid</strong><small>الحديد · 29 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="58" data-name="al-mujadila المجادلة" href="../../preview/library/index.html?surah=58#quran" style="text-decoration:none;color:inherit"><div class="num">58</div><div class="meta"><strong>Al-Mujadila</strong><small>المجادلة · 22 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="59" data-name="al-hashr الحشر" href="../../preview/library/index.html?surah=59#quran" style="text-decoration:none;color:inherit"><div class="num">59</div><div class="meta"><strong>Al-Hashr</strong><small>الحشر · 24 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="60" data-name="al-mumtahanah الممتحنة" href="../../preview/library/index.html?surah=60#quran" style="text-decoration:none;color:inherit"><div class="num">60</div><div class="meta"><strong>Al-Mumtahanah</strong><small>الممتحنة · 13 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="61" data-name="as-saf الصف" href="../../preview/library/index.html?surah=61#quran" style="text-decoration:none;color:inherit"><div class="num">61</div><div class="meta"><strong>As-Saf</strong><small>الصف · 14 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="62" data-name="al-jumu'ah الجمعة" href="../../preview/library/index.html?surah=62#quran" style="text-decoration:none;color:inherit"><div class="num">62</div><div class="meta"><strong>Al-Jumu'ah</strong><small>الجمعة · 11 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="63" data-name="al-munafiqun المنافقون" href="../../preview/library/index.html?surah=63#quran" style="text-decoration:none;color:inherit"><div class="num">63</div><div class="meta"><strong>Al-Munafiqun</strong><small>المنافقون · 11 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="64" data-name="at-taghabun التغابن" href="../../preview/library/index.html?surah=64#quran" style="text-decoration:none;color:inherit"><div class="num">64</div><div class="meta"><strong>At-Taghabun</strong><small>التغابن · 18 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="65" data-name="at-talaq الطلاق" href="../../preview/library/index.html?surah=65#quran" style="text-decoration:none;color:inherit"><div class="num">65</div><div class="meta"><strong>At-Talaq</strong><small>الطلاق · 12 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="66" data-name="at-tahrim التحريم" href="../../preview/library/index.html?surah=66#quran" style="text-decoration:none;color:inherit"><div class="num">66</div><div class="meta"><strong>At-Tahrim</strong><small>التحريم · 12 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="67" data-name="al-mulk الملك" href="../../preview/library/index.html?surah=67#quran" style="text-decoration:none;color:inherit"><div class="num">67</div><div class="meta"><strong>Al-Mulk</strong><small>الملك · 30 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="68" data-name="al-qalam القلم" href="../../preview/library/index.html?surah=68#quran" style="text-decoration:none;color:inherit"><div class="num">68</div><div class="meta"><strong>Al-Qalam</strong><small>القلم · 52 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="69" data-name="al-haqqah الحاقة" href="../../preview/library/index.html?surah=69#quran" style="text-decoration:none;color:inherit"><div class="num">69</div><div class="meta"><strong>Al-Haqqah</strong><small>الحاقة · 52 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="70" data-name="al-ma'arij المعارج" href="../../preview/library/index.html?surah=70#quran" style="text-decoration:none;color:inherit"><div class="num">70</div><div class="meta"><strong>Al-Ma'arij</strong><small>المعارج · 44 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="71" data-name="nuh نوح" href="../../preview/library/index.html?surah=71#quran" style="text-decoration:none;color:inherit"><div class="num">71</div><div class="meta"><strong>Nuh</strong><small>نوح · 28 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="72" data-name="al-jinn الجن" href="../../preview/library/index.html?surah=72#quran" style="text-decoration:none;color:inherit"><div class="num">72</div><div class="meta"><strong>Al-Jinn</strong><small>الجن · 28 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="73" data-name="al-muzzammil المزمل" href="../../preview/library/index.html?surah=73#quran" style="text-decoration:none;color:inherit"><div class="num">73</div><div class="meta"><strong>Al-Muzzammil</strong><small>المزمل · 20 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="74" data-name="al-muddaththir المدثر" href="../../preview/library/index.html?surah=74#quran" style="text-decoration:none;color:inherit"><div class="num">74</div><div class="meta"><strong>Al-Muddaththir</strong><small>المدثر · 56 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="75" data-name="al-qiyamah القيامة" href="../../preview/library/index.html?surah=75#quran" style="text-decoration:none;color:inherit"><div class="num">75</div><div class="meta"><strong>Al-Qiyamah</strong><small>القيامة · 40 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="76" data-name="al-insan الانسان" href="../../preview/library/index.html?surah=76#quran" style="text-decoration:none;color:inherit"><div class="num">76</div><div class="meta"><strong>Al-Insan</strong><small>الانسان · 31 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="77" data-name="al-mursalat المرسلات" href="../../preview/library/index.html?surah=77#quran" style="text-decoration:none;color:inherit"><div class="num">77</div><div class="meta"><strong>Al-Mursalat</strong><small>المرسلات · 50 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="78" data-name="an-naba النبإ" href="../../preview/library/index.html?surah=78#quran" style="text-decoration:none;color:inherit"><div class="num">78</div><div class="meta"><strong>An-Naba</strong><small>النبإ · 40 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="79" data-name="an-nazi'at النازعات" href="../../preview/library/index.html?surah=79#quran" style="text-decoration:none;color:inherit"><div class="num">79</div><div class="meta"><strong>An-Nazi'at</strong><small>النازعات · 46 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="80" data-name="'abasa عبس" href="../../preview/library/index.html?surah=80#quran" style="text-decoration:none;color:inherit"><div class="num">80</div><div class="meta"><strong>'Abasa</strong><small>عبس · 42 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="81" data-name="at-takwir التكوير" href="../../preview/library/index.html?surah=81#quran" style="text-decoration:none;color:inherit"><div class="num">81</div><div class="meta"><strong>At-Takwir</strong><small>التكوير · 29 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="82" data-name="al-infitar الإنفطار" href="../../preview/library/index.html?surah=82#quran" style="text-decoration:none;color:inherit"><div class="num">82</div><div class="meta"><strong>Al-Infitar</strong><small>الإنفطار · 19 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="83" data-name="al-mutaffifin المطففين" href="../../preview/library/index.html?surah=83#quran" style="text-decoration:none;color:inherit"><div class="num">83</div><div class="meta"><strong>Al-Mutaffifin</strong><small>المطففين · 36 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="84" data-name="al-inshiqaq الإنشقاق" href="../../preview/library/index.html?surah=84#quran" style="text-decoration:none;color:inherit"><div class="num">84</div><div class="meta"><strong>Al-Inshiqaq</strong><small>الإنشقاق · 25 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="85" data-name="al-buruj البروج" href="../../preview/library/index.html?surah=85#quran" style="text-decoration:none;color:inherit"><div class="num">85</div><div class="meta"><strong>Al-Buruj</strong><small>البروج · 22 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="86" data-name="at-tariq الطارق" href="../../preview/library/index.html?surah=86#quran" style="text-decoration:none;color:inherit"><div class="num">86</div><div class="meta"><strong>At-Tariq</strong><small>الطارق · 17 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="87" data-name="al-a'la الأعلى" href="../../preview/library/index.html?surah=87#quran" style="text-decoration:none;color:inherit"><div class="num">87</div><div class="meta"><strong>Al-A'la</strong><small>الأعلى · 19 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="88" data-name="al-ghashiyah الغاشية" href="../../preview/library/index.html?surah=88#quran" style="text-decoration:none;color:inherit"><div class="num">88</div><div class="meta"><strong>Al-Ghashiyah</strong><small>الغاشية · 26 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="89" data-name="al-fajr الفجر" href="../../preview/library/index.html?surah=89#quran" style="text-decoration:none;color:inherit"><div class="num">89</div><div class="meta"><strong>Al-Fajr</strong><small>الفجر · 30 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="90" data-name="al-balad البلد" href="../../preview/library/index.html?surah=90#quran" style="text-decoration:none;color:inherit"><div class="num">90</div><div class="meta"><strong>Al-Balad</strong><small>البلد · 20 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="91" data-name="ash-shams الشمس" href="../../preview/library/index.html?surah=91#quran" style="text-decoration:none;color:inherit"><div class="num">91</div><div class="meta"><strong>Ash-Shams</strong><small>الشمس · 15 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="92" data-name="al-layl الليل" href="../../preview/library/index.html?surah=92#quran" style="text-decoration:none;color:inherit"><div class="num">92</div><div class="meta"><strong>Al-Layl</strong><small>الليل · 21 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="93" data-name="ad-duhaa الضحى" href="../../preview/library/index.html?surah=93#quran" style="text-decoration:none;color:inherit"><div class="num">93</div><div class="meta"><strong>Ad-Duhaa</strong><small>الضحى · 11 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="94" data-name="ash-sharh الشرح" href="../../preview/library/index.html?surah=94#quran" style="text-decoration:none;color:inherit"><div class="num">94</div><div class="meta"><strong>Ash-Sharh</strong><small>الشرح · 8 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="95" data-name="at-tin التين" href="../../preview/library/index.html?surah=95#quran" style="text-decoration:none;color:inherit"><div class="num">95</div><div class="meta"><strong>At-Tin</strong><small>التين · 8 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="96" data-name="al-'alaq العلق" href="../../preview/library/index.html?surah=96#quran" style="text-decoration:none;color:inherit"><div class="num">96</div><div class="meta"><strong>Al-'Alaq</strong><small>العلق · 19 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="97" data-name="al-qadr القدر" href="../../preview/library/index.html?surah=97#quran" style="text-decoration:none;color:inherit"><div class="num">97</div><div class="meta"><strong>Al-Qadr</strong><small>القدر · 5 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="98" data-name="al-bayyinah البينة" href="../../preview/library/index.html?surah=98#quran" style="text-decoration:none;color:inherit"><div class="num">98</div><div class="meta"><strong>Al-Bayyinah</strong><small>البينة · 8 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="99" data-name="az-zalzalah الزلزلة" href="../../preview/library/index.html?surah=99#quran" style="text-decoration:none;color:inherit"><div class="num">99</div><div class="meta"><strong>Az-Zalzalah</strong><small>الزلزلة · 8 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="100" data-name="al-'adiyat العاديات" href="../../preview/library/index.html?surah=100#quran" style="text-decoration:none;color:inherit"><div class="num">100</div><div class="meta"><strong>Al-'Adiyat</strong><small>العاديات · 11 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="101" data-name="al-qari'ah القارعة" href="../../preview/library/index.html?surah=101#quran" style="text-decoration:none;color:inherit"><div class="num">101</div><div class="meta"><strong>Al-Qari'ah</strong><small>القارعة · 11 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="102" data-name="at-takathur التكاثر" href="../../preview/library/index.html?surah=102#quran" style="text-decoration:none;color:inherit"><div class="num">102</div><div class="meta"><strong>At-Takathur</strong><small>التكاثر · 8 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="103" data-name="al-'asr العصر" href="../../preview/library/index.html?surah=103#quran" style="text-decoration:none;color:inherit"><div class="num">103</div><div class="meta"><strong>Al-'Asr</strong><small>العصر · 3 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="104" data-name="al-humazah الهمزة" href="../../preview/library/index.html?surah=104#quran" style="text-decoration:none;color:inherit"><div class="num">104</div><div class="meta"><strong>Al-Humazah</strong><small>الهمزة · 9 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="105" data-name="al-fil الفيل" href="../../preview/library/index.html?surah=105#quran" style="text-decoration:none;color:inherit"><div class="num">105</div><div class="meta"><strong>Al-Fil</strong><small>الفيل · 5 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="106" data-name="quraysh قريش" href="../../preview/library/index.html?surah=106#quran" style="text-decoration:none;color:inherit"><div class="num">106</div><div class="meta"><strong>Quraysh</strong><small>قريش · 4 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="107" data-name="al-ma'un الماعون" href="../../preview/library/index.html?surah=107#quran" style="text-decoration:none;color:inherit"><div class="num">107</div><div class="meta"><strong>Al-Ma'un</strong><small>الماعون · 7 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="108" data-name="al-kawthar الكوثر" href="../../preview/library/index.html?surah=108#quran" style="text-decoration:none;color:inherit"><div class="num">108</div><div class="meta"><strong>Al-Kawthar</strong><small>الكوثر · 3 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="109" data-name="al-kafirun الكافرون" href="../../preview/library/index.html?surah=109#quran" style="text-decoration:none;color:inherit"><div class="num">109</div><div class="meta"><strong>Al-Kafirun</strong><small>الكافرون · 6 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="110" data-name="an-nasr النصر" href="../../preview/library/index.html?surah=110#quran" style="text-decoration:none;color:inherit"><div class="num">110</div><div class="meta"><strong>An-Nasr</strong><small>النصر · 3 Ayahs · Madinah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="111" data-name="al-masad المسد" href="../../preview/library/index.html?surah=111#quran" style="text-decoration:none;color:inherit"><div class="num">111</div><div class="meta"><strong>Al-Masad</strong><small>المسد · 5 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="112" data-name="al-ikhlas الإخلاص" href="../../preview/library/index.html?surah=112#quran" style="text-decoration:none;color:inherit"><div class="num">112</div><div class="meta"><strong>Al-Ikhlas</strong><small>الإخلاص · 4 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="113" data-name="al-falaq الفلق" href="../../preview/library/index.html?surah=113#quran" style="text-decoration:none;color:inherit"><div class="num">113</div><div class="meta"><strong>Al-Falaq</strong><small>الفلق · 5 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            <a class="list-row surah-row" data-surah="114" data-name="an-nas الناس" href="../../preview/library/index.html?surah=114#quran" style="text-decoration:none;color:inherit"><div class="num">114</div><div class="meta"><strong>An-Nas</strong><small>الناس · 6 Ayahs · Makkah</small></div><span style="color:var(--gold)">★</span></a>
+            </div>
+            <p style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center">All 114 Surahs · Tap any surah to read</p>
           </div>
           <nav class="bottom-nav">
-            <div class="nav-item"><div class="ni">🏠</div>Home</div>
-            <div class="nav-item active"><div class="ni">📖</div>Quran</div>
-            <div class="nav-item"><div class="ni">✨</div>AI</div>
-            <div class="nav-item"><div class="ni">📕</div>Library</div>
-            <div class="nav-item"><div class="ni">☰</div>More</div>
+            <div class="nav-item" data-goto="home"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item active" data-goto="quran"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item" data-open="../../preview/library/index.html#hadith"><div class="ni">📜</div>Hadith</div>
+            <div class="nav-item" data-open="../../preview/library/index.html#tafsir"><div class="ni">📚</div>Tafsir</div>
+            <div class="nav-item" data-goto="more"><div class="ni">☰</div>More</div>
           </nav>
         </div>
-        <p class="screen-label">4 · Quran — Surah List</p>
+        <p class="screen-label">4 · Quran — All 114 Surahs</p>
       </div>
 
       <!-- 5 QURAN READER -->
@@ -162,15 +283,16 @@
           <div class="phone-notch">Al-Baqarah · Page 42</div>
           <div class="screen-body">
             <div class="toolbar">
-              <span class="tool">Aa Size</span>
-              <span class="tool">🌙 Dark</span>
-              <span class="tool">🔖 Bookmark</span>
-              <span class="tool">🖍 Highlight</span>
-              <span class="tool">📝 Notes</span>
-              <span class="tool">📋 Copy</span>
-              <span class="tool">↗ Share</span>
-              <span class="tool">▶ Recite</span>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">Aa Size</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">🌙 Dark</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">🔖 Bookmark</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">🖍 Highlight</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">📝 Notes</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">📋 Copy</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">↗ Share</a>
+              <a class="tool" href="../../preview/library/index.html?surah=2#quran">▶ Recite (Imam Haram)</a>
             </div>
+            <p style="font-size:12px;color:var(--muted);margin:8px 0 12px;text-align:center">These tools work in the live Quran library — tap any tool to open it.</p>
             <p class="ayah-block">الَّذِينَ يُؤْمِنُونَ بِالْغَيْبِ وَيُقِيمُونَ الصَّلَاةَ وَمِمَّا رَزَقْنَاهُمْ يُنفِقُونَ</p>
             <p class="translation">Who believe in the unseen, establish prayer, and spend from what We have provided them.</p>
             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
@@ -195,13 +317,14 @@
           <div class="screen-body">
             <strong style="font-size:18px;color:var(--emerald-deep)">Hadith Collections</strong>
             <div class="search-bar" style="margin-top:12px">🔍 Search hadith...</div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/bukhari.svg" alt="Sahih Bukhari" /></div><div class="meta"><strong>Sahih Bukhari</strong><small>7,563 hadith · Offline</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/muslim.svg" alt="Sahih Muslim" /></div><div class="meta"><strong>Sahih Muslim</strong><small>7,563 hadith · Offline</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/abudawud.svg" alt="Abu Dawood" /></div><div class="meta"><strong>Abu Dawood</strong><small>5,274 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/tirmidhi.svg" alt="Tirmidhi" /></div><div class="meta"><strong>Tirmidhi</strong><small>3,956 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/nasai.svg" alt="Nasai" /></div><div class="meta"><strong>Nasai</strong><small>5,758 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/ibnmajah.svg" alt="Ibn Majah" /></div><div class="meta"><strong>Ibn Majah</strong><small>4,341 hadith</small></div></div>
-            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/malik.svg" alt="Muwatta Imam Malik" /></div><div class="meta"><strong>Muwatta Imam Malik</strong><small>1,720 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-detail"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/bukhari.svg" alt="Sahih Bukhari" /></div><div class="meta"><strong>Sahih Bukhari</strong><small>7,563 hadith · Offline</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/muslim.svg" alt="Sahih Muslim" /></div><div class="meta"><strong>Sahih Muslim</strong><small>7,563 hadith · Offline</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/abudawud.svg" alt="Abu Dawood" /></div><div class="meta"><strong>Abu Dawood</strong><small>5,274 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/tirmidhi.svg" alt="Tirmidhi" /></div><div class="meta"><strong>Tirmidhi</strong><small>3,956 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/nasai.svg" alt="Nasai" /></div><div class="meta"><strong>Nasai</strong><small>5,758 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/ibnmajah.svg" alt="Ibn Majah" /></div><div class="meta"><strong>Ibn Majah</strong><small>4,341 hadith</small></div></div>
+            <div class="list-row" data-open="phase3-mockups.html#hadith-books"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/malik.svg" alt="Muwatta Imam Malik" /></div><div class="meta"><strong>Muwatta Imam Malik</strong><small>1,720 hadith</small></div></div>
+            <p style="margin-top:14px;text-align:center"><a class="btn-primary" style="display:inline-block;width:auto;padding:10px 18px;text-decoration:none" href="../../preview/library/index.html#hadith">Browse offline Hadith library</a></p>
           </div>
         </div>
         <p class="screen-label">6 · Hadith Module</p>
@@ -222,6 +345,7 @@
             <p class="section-title">Ibn Kathir</p>
             <p style="font-size:14px;line-height:1.7;color:var(--text)">These are the believers who have faith in what cannot be seen — they believe in Allah, His angels, His books, and His messengers...</p>
             <span class="ref-badge">Tafsir Ibn Kathir · Vol 1</span>
+            <p style="margin-top:14px;text-align:center"><a class="btn-primary" style="display:inline-block;width:auto;padding:10px 18px;text-decoration:none" href="../../preview/library/index.html#tafsir">Open Tafsir library</a></p>
           </div>
         </div>
         <p class="screen-label">7 · Tafsir Reading</p>
@@ -452,18 +576,79 @@
     ];
     const nav = document.getElementById('nav');
     const els = document.querySelectorAll('.screen');
+
+    function goTo(id) {
+      if (!id) return;
+      const exists = Array.from(els).some(el => el.dataset.id === id);
+      if (!exists) return;
+      nav.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.id === id));
+      els.forEach(el => el.classList.toggle('active', el.dataset.id === id));
+      const active = document.querySelector('.screen.active');
+      if (active) active.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (history.replaceState) history.replaceState(null, '', '#' + id);
+    }
+
     screens.forEach((s, i) => {
       const b = document.createElement('button');
       b.textContent = s.label;
       b.dataset.id = s.id;
       if (i === 0) b.classList.add('active');
-      b.onclick = () => {
-        nav.querySelectorAll('button').forEach(x => x.classList.remove('active'));
-        b.classList.add('active');
-        els.forEach(el => el.classList.toggle('active', el.dataset.id === s.id));
-      };
+      b.onclick = () => goTo(s.id);
       nav.appendChild(b);
     });
+
+    document.addEventListener('click', (e) => {
+      const open = e.target.closest('[data-open]');
+      if (open) {
+        window.location.href = open.getAttribute('data-open');
+        return;
+      }
+      const target = e.target.closest('[data-goto]');
+      if (!target || target.classList.contains('is-disabled')) return;
+      goTo(target.getAttribute('data-goto'));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const target = e.target.closest('[data-goto]');
+      if (!target || target.classList.contains('is-disabled')) return;
+      e.preventDefault();
+      goTo(target.getAttribute('data-goto'));
+    });
+
+    // Wire remaining bottom navs that are static in other screens
+    document.querySelectorAll('.bottom-nav .nav-item').forEach((item) => {
+      if (item.hasAttribute('data-goto') || item.hasAttribute('data-open')) return;
+      const label = (item.textContent || '').trim().toLowerCase();
+      const map = { home: 'home', quran: 'quran', ai: 'ai', library: 'library', more: 'more' };
+      for (const [key, id] of Object.entries(map)) {
+        if (label.includes(key)) {
+          item.setAttribute('data-goto', id);
+          break;
+        }
+      }
+    });
+
+    
+    // Filter all 114 embedded surah rows
+    const surahListEl = document.getElementById('mockup-surah-list');
+    const surahSearch = document.getElementById('mockup-quran-search');
+    function filterSurahs(q) {
+      if (!surahListEl) return;
+      const query = (q || '').trim().toLowerCase();
+      surahListEl.querySelectorAll('.surah-row').forEach((row) => {
+        const hay = `${row.dataset.surah || ''} ${row.dataset.name || ''}`.toLowerCase();
+        row.style.display = !query || hay.includes(query) ? '' : 'none';
+      });
+    }
+    if (surahSearch) {
+      surahSearch.addEventListener('input', (e) => filterSurahs(e.target.value));
+      surahSearch.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    const hash = (location.hash || '').replace(/^#/, '');
+    if (hash) goTo(hash);
+    else goTo('home');
   </script>
 </body>
 </html>

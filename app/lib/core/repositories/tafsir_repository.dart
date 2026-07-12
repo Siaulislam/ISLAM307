@@ -1,8 +1,17 @@
 import '../database/database_registry.dart';
+import '../modules/module_catalog.dart';
 
 class TafsirRepository {
-  TafsirRepository(this._registry);
+  TafsirRepository(this._registry, {ModuleCatalog? catalog})
+      : _catalog = catalog ?? ModuleCatalog.instance;
+
   final DatabaseRegistry _registry;
+  final ModuleCatalog _catalog;
+
+  static const unavailableMessage =
+      'Authentic tafsir is unavailable for this selection. ISLAM 307 never generates tafsir with AI.';
+
+  Future<List<Map<String, dynamic>>> catalogSources() => _catalog.allTafsirs();
 
   Future<List<Map<String, dynamic>>> sources() async {
     final db = await _registry.open('tafsir');
@@ -10,6 +19,27 @@ class TafsirRepository {
   }
 
   Future<Map<String, dynamic>?> entry(String sourceSlug, int surah, int ayah) async {
+    final catalog = await _catalog.allTafsirs();
+    Map<String, dynamic>? meta;
+    for (final s in catalog) {
+      if (s['slug'] == sourceSlug) {
+        meta = s;
+        break;
+      }
+    }
+    if (meta == null) return null;
+    if (meta['installed'] != true) {
+      return {
+        'unavailable': true,
+        'message': unavailableMessage,
+        'source_name': meta['name_en'],
+        'slug': sourceSlug,
+        'surah_number': surah,
+        'ayah_number': ayah,
+        'notes': meta['notes'],
+      };
+    }
+
     final db = await _registry.open('tafsir');
     final rows = await db.rawQuery(
       '''
@@ -21,7 +51,18 @@ class TafsirRepository {
       ''',
       [sourceSlug, surah, ayah],
     );
-    return rows.isEmpty ? null : rows.first;
+    if (rows.isEmpty) {
+      return {
+        'unavailable': true,
+        'message': unavailableMessage,
+        'source_name': meta['name_en'],
+        'slug': sourceSlug,
+        'surah_number': surah,
+        'ayah_number': ayah,
+        'notes': 'No authenticated entry found in the offline pack for $surah:$ayah.',
+      };
+    }
+    return rows.first;
   }
 
   Future<List<Map<String, dynamic>>> search(String query, {int limit = 30}) async {

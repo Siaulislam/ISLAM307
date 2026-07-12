@@ -1,0 +1,56 @@
+{
+  "module": "tafsir_sources",
+  "policy": "Never generate tafsir. Only display authenticated database packs. If a pack is missing, show an unavailable message.",
+  "sources": [
+    {
+      "slug": "ibn-kathir",
+      "name_en": "Tafsir Ibn Kathir",
+      "name_ar": "تفسير ابن كثير",
+      "author": "Hafiz Ibn Kathir",
+      "language": "en",
+      "installed": true,
+      "api_resource_id": 169,
+      "notes": "Bundled offline pack from Quran.com abridged English edition"
+    },
+    {
+      "slug": "al-tabari",
+      "name_en": "Tafsir Al-Tabari",
+      "name_ar": "تفسير الطبري",
+      "author": "Al-Tabari",
+      "language": "ar",
+      "installed": false,
+      "api_resource_id": 15,
+      "notes": "Authentic classical source registered. Offline pack not installed yet."
+    },
+    {
+      "slug": "al-qurtubi",
+      "name_en": "Tafsir Al-Qurtubi",
+      "name_ar": "تفسير القرطبي",
+      "author": "Al-Qurtubi",
+      "language": "ar",
+      "installed": false,
+      "api_resource_id": 90,
+      "notes": "Authentic classical source registered. Offline pack not installed yet."
+    },
+    {
+      "slug": "jalalayn",
+      "name_en": "Tafsir Al-Jalalayn",
+      "name_ar": "تفسير الجلالين",
+      "author": "Al-Mahalli & As-Suyuti",
+      "language": "ar",
+      "installed": false,
+      "api_resource_id": null,
+      "notes": "Authentic classical source registered. Not available via current authenticated API pack."
+    },
+    {
+      "slug": "tafhim-ul-quran",
+      "name_en": "Tafhim-ul-Quran",
+      "name_ar": "تفہیم القرآن",
+      "author": "Syed Abul A'la Maududi",
+      "language": "ur",
+      "installed": false,
+      "api_resource_id": null,
+      "notes": "Licensing / authenticated pack pending. Do not generate content."
+    }
+  ]
+}
