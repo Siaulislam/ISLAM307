@@ -71,8 +71,9 @@ class _AboutScreenState extends State<AboutScreen> {
           ),
           const Divider(),
           const Text(
-            'AI searches only local authenticated databases (quran.db, hadith.db, tafsir.db, word/grammar/morphology/root tables). '
-            'If nothing matches: “No authentic reference found.”',
+            'AI searches only local authenticated databases (quran.db, hadith.db, tafsir.db, narrators.db). '
+            'Narrator biographies are never invented — only approved classical Sunni sources with license/permission. '
+            'If nothing matches: “No authentic reference found.” / “Verified narrator biography is not available.”',
             style: TextStyle(color: Islam307Theme.textMuted, height: 1.5, fontSize: 13),
           ),
         ],

@@ -13,13 +13,13 @@ class DatabaseRegistry {
   final _cache = <String, Database>{};
 
   /// Asset paths — add new databases here (no hardcoding in features).
-  /// `narrators` is registered only when a licensed pack is shipped
-  /// (`assets/databases/narrators.db.gz` + narrators_sources.json installed=true).
+  /// `narrators.db.gz` ships schema + approved-source catalog (0 biography rows
+  /// until a licensed import is added).
   static const bundled = {
     'quran': 'assets/databases/quran.db',
     'hadith': 'assets/databases/hadith.db.gz',
     'tafsir': 'assets/databases/tafsir.db.gz',
-    // 'narrators': 'assets/databases/narrators.db.gz',
+    'narrators': 'assets/databases/narrators.db.gz',
   };
 
   bool isRegistered(String name) => bundled.containsKey(name);

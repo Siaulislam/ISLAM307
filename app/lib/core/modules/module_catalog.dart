@@ -58,6 +58,8 @@ class ModuleCatalog {
 
   Future<List<Map<String, dynamic>>> allNarratorSources() async {
     final m = await narratorSources();
-    return (m['sources'] as List).cast<Map<String, dynamic>>();
+    final approved = (m['approved_sources'] as List?)?.cast<Map<String, dynamic>>();
+    if (approved != null) return approved;
+    return (m['sources'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
   }
 }

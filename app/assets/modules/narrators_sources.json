@@ -1,26 +1,103 @@
 {
-  "module": "narrator_biographies",
-  "policy": "Never generate narrator names or biographies with AI. Never guess. Never mix narrators between hadith. Display only authenticated names from the hadith pack (e.g. Sunnah.com). Biography packs must be officially licensed and installed offline before any extra detail is shown.",
-  "offline_unavailable_message": "Additional narrator information is not available offline.",
-  "sources": [
+  "module": "narrator_rijal",
+  "policy": [
+    "Never generate narrator names, biographies, teachers, students, birth/death, or reliability with AI.",
+    "Never scrape Wikipedia, blogs, forums, or unapproved websites.",
+    "Use ONLY the approved classical Sunni references listed below, and only when license/permission allows.",
+    "If verified data is missing, display: Verified narrator biography is not available.",
+    "Never invent. Never guess. Never merge opinions from different books. Cite volume/page/entry for every statement."
+  ],
+  "offline_unavailable_message": "Verified narrator biography is not available.",
+  "database": "narrators",
+  "database_asset": "assets/databases/narrators.db.gz",
+  "schema_version": "1_rijal",
+  "pack": {
+    "slug": "rijal-scaffold",
+    "name_en": "Narrator (Rijāl) Knowledge Pack",
+    "installed": true,
+    "has_biography_rows": false,
+    "has_hadith_mappings": false,
+    "notes": "Schema and approved-source catalog are bundled. Biography rows and hadith→narrator IDs are empty until a licensed import is added."
+  },
+  "approved_sources": [
     {
-      "slug": "sunnah-com-narrator-field",
-      "name_en": "Hadith narrator field (Sunnah.com / licensed pack)",
-      "name_ar": "راوي الحديث",
-      "purpose": "Primary narrator name stored on each hadith from the authenticated hadith database.",
-      "installed": true,
-      "provides": ["name", "hadith_reference"],
-      "notes": "Name comes only from hadiths.narrator / authenticated isnad extraction. No biography text."
+      "slug": "tahdhib-al-kamal",
+      "name_en": "Tahdhib al-Kamal",
+      "name_ar": "تهذيب الكمال",
+      "author": "Imam al-Mizzi",
+      "license_status": "permission_required"
     },
     {
-      "slug": "licensed-rijal",
-      "name_en": "Licensed narrator biographies (rijāl)",
-      "name_ar": "تراجم الرواة",
-      "purpose": "Optional offline biographies, narrator type (Companion / Tabi'i / etc.), and source attribution.",
-      "installed": false,
-      "provides": ["type", "biography", "aliases"],
-      "database": "narrators",
-      "notes": "Licensed pack not installed yet. When added, register narrators.db.gz and set installed=true. Never invent biographies."
+      "slug": "tahdhib-al-tahdhib",
+      "name_en": "Tahdhib al-Tahdhib",
+      "name_ar": "تهذيب التهذيب",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "taqrib-al-tahdhib",
+      "name_en": "Taqrib al-Tahdhib",
+      "name_ar": "تقريب التهذيب",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "siyar-alam-al-nubala",
+      "name_en": "Siyar A'lam al-Nubala",
+      "name_ar": "سير أعلام النبلاء",
+      "author": "Imam al-Dhahabi",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-isabah",
+      "name_en": "Al-Isabah fi Tamyiz al-Sahabah",
+      "name_ar": "الإصابة في تمييز الصحابة",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "mizan-al-itidal",
+      "name_en": "Mizan al-I'tidal",
+      "name_ar": "ميزان الاعتدال",
+      "author": "Imam al-Dhahabi",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "lisan-al-mizan",
+      "name_en": "Lisan al-Mizan",
+      "name_ar": "لسان الميزان",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "tabaqat-ibn-sad",
+      "name_en": "Tabaqat Ibn Sa'd",
+      "name_ar": "الطبقات الكبرى",
+      "author": "Ibn Sa'd",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "tarikh-al-kabir",
+      "name_en": "Tarikh al-Kabir",
+      "name_ar": "التاريخ الكبير",
+      "author": "Imam al-Bukhari",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-jarh-wa-al-tadil",
+      "name_en": "Al-Jarh wa al-Ta'dil",
+      "name_ar": "الجرح والتعديل",
+      "author": "Ibn Abi Hatim",
+      "license_status": "permission_required"
     }
+  ],
+  "forbidden": [
+    "AI-generated biographies",
+    "Wikipedia",
+    "Blogs",
+    "Forums",
+    "User-generated content",
+    "Unapproved websites",
+    "Guessing or merging classical opinions"
   ]
 }

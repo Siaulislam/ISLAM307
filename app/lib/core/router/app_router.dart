@@ -10,6 +10,7 @@ import '../../features/quran/quran_reader_screen.dart';
 import '../../features/hadith/hadith_screen.dart';
 import '../../features/hadith/hadith_book_screen.dart';
 import '../../features/hadith/hadith_detail_screen.dart';
+import '../../features/hadith/narrator_profile_screen.dart';
 import '../../features/tafsir/tafsir_screen.dart';
 import '../../features/tafsir/tafsir_reader_screen.dart';
 import '../../features/search/search_screen.dart';
@@ -63,6 +64,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             bookId: bookId,
             hadithNumber: hadithNumber,
             chapterId: chapterId,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/narrator',
+        builder: (_, state) {
+          final id = int.tryParse(state.uri.queryParameters['id'] ?? '');
+          final slug = state.uri.queryParameters['slug'];
+          final name = state.uri.queryParameters['name'];
+          final bookSlug = state.uri.queryParameters['book'];
+          final hadithNumber = int.tryParse(state.uri.queryParameters['n'] ?? '');
+          final lang = state.uri.queryParameters['lang'] ?? 'en';
+          return NarratorProfileScreen(
+            narratorId: id,
+            slug: slug,
+            displayName: name,
+            bookSlug: bookSlug,
+            hadithNumber: hadithNumber,
+            lang: lang,
           );
         },
       ),

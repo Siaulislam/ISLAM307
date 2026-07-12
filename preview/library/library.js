@@ -643,6 +643,65 @@ function raviCopy(lang) {
   return copy[lang] || copy.en;
 }
 
+/** Primary narrator exactly as provided by the authenticated pack (e.g. Sunnah.com). */
+function authenticatedNarratorName(hadith) {
+  const primary = String(hadith.ravi || hadith.narrator || '').trim();
+  if (primary) return primary;
+  const chain = hadith.ravi_chain || [];
+  return chain.length ? String(chain[0]).trim() : '';
+}
+
+/**
+ * Narrator (Rijāl) Knowledge seam.
+ * Biographies ONLY from approved classical sources via licensed import.
+ * Never invent. Never Wikipedia/blogs/forums/AI.
+ */
+const NARRATOR_BIO = {
+  packInstalled: true,
+  hasBiographyRows: false,
+  offlineMessage: 'Verified narrator biography is not available.',
+  policy: 'ISLAM 307 never generates narrator biographies with AI. Only approved classical Sunni references are used, with license/permission. Opinions from different books are never merged.',
+  approved: [
+    'Tahdhib al-Kamal',
+    'Tahdhib al-Tahdhib',
+    'Taqrib al-Tahdhib',
+    "Siyar A'lam al-Nubala",
+    'Al-Isabah fi Tamyiz al-Sahabah',
+    "Mizan al-I'tidal",
+    'Lisan al-Mizan',
+    "Tabaqat Ibn Sa'd",
+    'Tarikh al-Kabir',
+    "Al-Jarh wa al-Ta'dil",
+  ],
+};
+
+function narratorCardHtml(name) {
+  return `
+    <div class="narrator-card">
+      <p class="narrator-kicker">👤 Narrator</p>
+      <p class="narrator-name" dir="auto">${escapeHtml(name)}</p>
+      <button type="button" class="narrator-more-btn primary" data-narrator="${escapeHtml(name)}">More about this Narrator</button>
+    </div>`;
+}
+
+function openNarratorMore(name, hadith) {
+  const clean = String(name || '').trim();
+  if (!clean) return;
+  /* Future: resolve verified narrator_id from hadith_relations, then load profile fields.
+     Until licensed import exists, show the strict unavailable message — never invent. */
+  const body = `
+    <div class="narrator-profile-preview">
+      <p class="narrator-offline-msg">${escapeHtml(NARRATOR_BIO.offlineMessage)}</p>
+      <p class="narrator-policy">${escapeHtml(NARRATOR_BIO.policy)}</p>
+      <p class="narrator-chain-label">Approved classical sources (license/permission required)</p>
+      <ul class="narrator-approved-list">
+        ${NARRATOR_BIO.approved.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}
+      </ul>
+      ${hadith ? `<p class="narrator-policy">Hadith reference: ${escapeHtml((hadith.reference || `Hadith ${hadith.n}`))}</p>` : ''}
+    </div>`;
+  openHadithModal(clean || 'Narrator Profile', body);
+}
+
 function openRaviDetail(hadith, book) {
   const lang = state.hadithLang || 'ur';
   const t = raviCopy(lang);
@@ -654,10 +713,9 @@ function openRaviDetail(hadith, book) {
   const isnadText = (isnads[lang] || (lang === 'ur' ? hadith.isnad_ur : hadith.isnad) || '').trim();
   const rtl = lang === 'ur' || lang === 'ar';
   const primary = authenticatedNarratorName(hadith);
-  const reference = hadith.reference || `${book?.en || 'Hadith'} · Hadith ${hadith.n}`;
   let body = `
-    <p class="narrator-policy">Names come only from the authenticated hadith source. Never invented.</p>
-    ${primary ? narratorCardHtml(primary, reference) : ''}
+    <p class="narrator-policy">Names come only from the authenticated hadith source. Never invented with AI.</p>
+    ${primary ? narratorCardHtml(primary) : ''}
   `;
   if (chain.length) {
     body += `
@@ -685,53 +743,8 @@ function openRaviDetail(hadith, book) {
   openHadithModal(`${t.title} · Hadith ${hadith.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');
   modal?.querySelectorAll('[data-narrator]').forEach((btn) => {
-    btn.onclick = () => openNarratorMore(btn.getAttribute('data-narrator') || '');
+    btn.onclick = () => openNarratorMore(btn.getAttribute('data-narrator') || '', hadith);
   });
-}
-
-/** Primary narrator exactly as provided by the authenticated pack (e.g. Sunnah.com). */
-function authenticatedNarratorName(hadith) {
-  const primary = String(hadith.ravi || hadith.narrator || '').trim();
-  if (primary) return primary;
-  const chain = hadith.ravi_chain || [];
-  return chain.length ? String(chain[0]).trim() : '';
-}
-
-/**
- * Narrator biography seam — licensed offline pack only.
- * Never invent biographies. When pack is absent, show policy message.
- */
-const NARRATOR_BIO = {
-  installed: false,
-  offlineMessage: 'Additional narrator information is not available offline.',
-  policy: 'ISLAM 307 never generates narrator biographies with AI. Only authenticated, licensed offline packs are shown.',
-};
-
-function narratorCardHtml(name, reference, type) {
-  return `
-    <div class="narrator-card">
-      <div class="narrator-field">
-        <span>Narrator Name</span>
-        <strong dir="auto">${escapeHtml(name)}</strong>
-      </div>
-      ${type ? `<div class="narrator-field"><span>Narrator Type</span><strong>${escapeHtml(type)}</strong></div>` : ''}
-      <div class="narrator-field">
-        <span>Reference</span>
-        <strong>${escapeHtml(reference)}</strong>
-      </div>
-      <button type="button" class="narrator-more-btn primary" data-narrator="${escapeHtml(name)}">More about this Narrator</button>
-    </div>`;
-}
-
-function openNarratorMore(name) {
-  const clean = String(name || '').trim();
-  if (!clean) return;
-  /* Future: look up licensed narrators.db / pack. Never invent content. */
-  const body = NARRATOR_BIO.installed
-    ? `<p class="empty">Licensed biography lookup is registered but no pack is loaded in this preview build.</p>`
-    : `<p class="narrator-offline-msg">${escapeHtml(NARRATOR_BIO.offlineMessage)}</p>
-       <p class="narrator-policy">${escapeHtml(NARRATOR_BIO.policy)}</p>`;
-  openHadithModal(clean, body);
 }
 
 function openReferenceDetail(hadith, book) {
@@ -1034,7 +1047,7 @@ function openHadithReader(slug, rows, index) {
           if (!primary) {
             return '<p class="empty">Narrator is not available in the authenticated source for this hadith.</p>';
           }
-          return narratorCardHtml(primary, ref);
+          return narratorCardHtml(primary);
         })()}
       </section>
 
@@ -1104,7 +1117,7 @@ function openHadithReader(slug, rows, index) {
   root.querySelector('[data-act="ravi"]').onclick = () => openRaviDetail(hadith, pack.book);
   root.querySelector('[data-act="reference"]').onclick = () => openReferenceDetail(hadith, pack.book);
   root.querySelectorAll('.hadith-narrator-section [data-narrator]').forEach((btn) => {
-    btn.onclick = () => openNarratorMore(btn.getAttribute('data-narrator') || '');
+    btn.onclick = () => openNarratorMore(btn.getAttribute('data-narrator') || '', hadith);
   });
 
   const copyShareText = () => [
