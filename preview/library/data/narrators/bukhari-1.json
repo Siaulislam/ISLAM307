@@ -1,7 +1,7 @@
 {
   "book_slug": "bukhari",
   "hadith_number": 1,
-  "policy": "Imported from Arabic isnad verification + classical research file. Never AI-invented.",
+  "policy": "Sanad names corrected to authenticated research list for Sahih Bukhari Hadith 1. Never AI-invented.",
   "arabic_ibarat": "حَدَّثَنَا الْحُمَيْدِيُّ عَبْدُ اللَّهِ بْنُ الزُّبَيْرِ ، قَالَ : حَدَّثَنَا سُفْيَانُ ، قَالَ : حَدَّثَنَا يَحْيَى بْنُ سَعِيدٍ الْأَنْصَارِيُّ ، قَالَ : أَخْبَرَنِي مُحَمَّدُ بْنُ إِبْرَاهِيمَ التَّيْمِيُّ ، أَنَّهُ سَمِعَ عَلْقَمَةَ بْنَ وَقَّاصٍ اللَّيْثِيَّ ، يَقُولُ : سَمِعْتُ عُمَرَ بْنَ الْخَطَّابِ رَضِيَ اللَّهُ عَنْهُ عَلَى الْمِنْبَرِ، قَالَ : سَمِعْتُ رَسُولَ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ، يَقُولُ : \" إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى، فَمَنْ كَانَتْ هِجْرَتُهُ إِلَى دُنْيَا يُصِيبُهَا أَوْ إِلَى امْرَأَةٍ يَنْكِحُهَا، فَهِجْرَتُهُ إِلَى مَا هَاجَرَ إِلَيْهِ",
   "chain": [
     {
@@ -11,7 +11,7 @@
       "slug": "muhammad-ibn-ismail-al-bukhari",
       "name_ar": "محمد بن إسماعيل البخاري",
       "name_en": "Muhammad ibn Ismail al-Bukhari",
-      "name_ur": "امام محمد بن اسماعیل البخاری رحمہ اللہ",
+      "name_ur": "امام محمد بن اسماعیل البخاری (مصنف)",
       "full_name": "محمد بن اسماعیل بن ابراہیم بن مغیرہ بن بردزبہ الجعفی البخاری",
       "kunyah": "ابو عبداللہ",
       "laqab": "امیر المؤمنین فی الحدیث",
@@ -30,7 +30,7 @@
       "slug": "abdullah-ibn-al-zubayr-al-humaydi",
       "name_ar": "الحميدي عبد الله بن الزبير",
       "name_en": "Abdullah ibn al-Zubayr al-Humaydi",
-      "name_ur": "امام الحمیدی عبداللہ بن الزبیر رحمہ اللہ",
+      "name_ur": "امام الحمیدی عبداللہ بن الزبیر",
       "full_name": "عبداللہ بن الزبیر بن عیسیٰ بن عبیداللہ القرشی الأسدی المکی",
       "kunyah": "ابو بکر",
       "laqab": "الحمیدی",
@@ -49,7 +49,7 @@
       "slug": "sufyan-ibn-uyaynah",
       "name_ar": "سفيان بن عيينة",
       "name_en": "Sufyan ibn Uyaynah",
-      "name_ur": "امام سفیان بن عیینہ رحمہ اللہ",
+      "name_ur": "امام سفیان بن عیینہ",
       "full_name": "سفیان بن عیینہ بن ابی عمران میمون الهلالی الکوفی، ثم المکی",
       "kunyah": "ابو محمد",
       "laqab": "",
@@ -68,7 +68,7 @@
       "slug": "yahya-ibn-said-al-ansari",
       "name_ar": "يحيى بن سعيد الأنصاري",
       "name_en": "Yahya ibn Sa'id al-Ansari",
-      "name_ur": "امام یحییٰ بن سعید الانصاری رحمہ اللہ",
+      "name_ur": "امام یحییٰ بن سعید الانصاری",
       "full_name": "یحییٰ بن سعید بن قیس بن عمرو الأنصاری النجاری المدنی",
       "kunyah": "ابو سعید",
       "laqab": "",
@@ -87,7 +87,7 @@
       "slug": "muhammad-ibn-ibrahim-al-taymi",
       "name_ar": "محمد بن إبراهيم التيمي",
       "name_en": "Muhammad ibn Ibrahim al-Taymi",
-      "name_ur": "امام محمد بن ابراہیم بن الحارث التیمی رحمہ اللہ",
+      "name_ur": "امام محمد بن ابراہیم التیمی",
       "full_name": "محمد بن ابراہیم بن الحارث بن خالد بن صخر التیمی القرشی المدنی",
       "kunyah": "ابو عبداللہ",
       "laqab": "",
@@ -106,7 +106,7 @@
       "slug": "alqamah-ibn-waqqas-al-laythi",
       "name_ar": "علقمة بن وقاص الليثي",
       "name_en": "Alqamah ibn Waqqas al-Laythi",
-      "name_ur": "امام علقمہ بن وقاص اللیثی رحمہ اللہ",
+      "name_ur": "امام علقمہ بن وقاص اللیثی",
       "full_name": "علقمہ بن وقاص بن محصن اللیثی المدنی",
       "kunyah": "ابو شبل",
       "laqab": "",
@@ -156,6 +156,5 @@
       "sunnah_com_url": null,
       "is_companion": false
     }
-  ],
-  "batch": "bukhari_1_ibarat_import_2026-07-12"
+  ]
 }
