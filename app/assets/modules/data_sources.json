@@ -7,7 +7,7 @@
       "No advertisements.",
       "No paid subscriptions.",
       "Built as Sadaqah Jariyah.",
-      "AI never invents Quran, Hadith, or Tafsir — it only searches local authenticated databases.",
+      "AI never invents Quran, Hadith, Tafsir, or narrator biographies — it only searches local authenticated databases.",
       "No copyrighted datasets are used without permission."
     ]
   },
@@ -80,6 +80,15 @@
       "attribution": "Hadith text and metadata are served only from authenticated local hadith.db packs. AI must cite book and number.",
       "url": "https://sunnah.com",
       "notes": "Commercial readiness depends on verified provenance documented under reports/verification/."
+    },
+    {
+      "id": "hadith-narrators",
+      "title": "Hadith narrators (authenticated names + optional rijāl pack)",
+      "purpose": "Display the narrator name exactly as provided by the authenticated hadith source (e.g. Sunnah.com). Optional licensed biographies may be added later.",
+      "license": "Narrator names: same provenance as hadith packs. Biographies: only when a licensed offline narrators.db pack is installed.",
+      "attribution": "Narrator names come only from authenticated hadith.db fields / isnad. Biographies are never generated with AI. If a licensed biography pack is missing, the app shows: Additional narrator information is not available offline.",
+      "url": "https://sunnah.com",
+      "notes": "See assets/modules/narrators_sources.json and tools/narrators/schema.sql for the plug-in architecture."
     },
     {
       "id": "tafsir-packs",

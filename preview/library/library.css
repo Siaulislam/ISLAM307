@@ -1215,3 +1215,83 @@ body.dark .hadith-meta-grid > div {
   .hadith-meta-grid { grid-template-columns: 1fr; }
   .hadith-nav { grid-template-columns: 1fr; }
 }
+
+/* —— Narrator policy section —— */
+.hadith-narrator-section { margin: 4px 0 8px; }
+.narrator-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f8fafc, #fff);
+}
+.narrator-field { display: grid; gap: 4px; }
+.narrator-field span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.narrator-field strong {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--text);
+}
+.narrator-more-btn {
+  border: 1px solid var(--emerald);
+  background: #fff;
+  color: var(--emerald-deep);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  justify-self: start;
+  margin-top: 4px;
+}
+.narrator-more-btn.primary {
+  background: var(--emerald);
+  color: #fff;
+  width: 100%;
+  padding: 12px;
+  margin-top: 2px;
+}
+.narrator-policy {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 1.45;
+}
+.narrator-offline-msg {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--text);
+}
+.narrator-chain-label {
+  margin: 8px 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.ravi-chain .narrator-more-btn {
+  display: inline-block;
+  margin-top: 8px;
+}
+body.dark .narrator-card {
+  background: linear-gradient(180deg, #172033, #121a2a);
+  border-color: #334155;
+}
+body.dark .narrator-more-btn {
+  background: #121a2a;
+  color: #a7f3d0;
+}
+body.dark .narrator-more-btn.primary {
+  background: var(--emerald);
+  color: #fff;
+}

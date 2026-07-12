@@ -1,0 +1,26 @@
+{
+  "module": "narrator_biographies",
+  "policy": "Never generate narrator names or biographies with AI. Never guess. Never mix narrators between hadith. Display only authenticated names from the hadith pack (e.g. Sunnah.com). Biography packs must be officially licensed and installed offline before any extra detail is shown.",
+  "offline_unavailable_message": "Additional narrator information is not available offline.",
+  "sources": [
+    {
+      "slug": "sunnah-com-narrator-field",
+      "name_en": "Hadith narrator field (Sunnah.com / licensed pack)",
+      "name_ar": "راوي الحديث",
+      "purpose": "Primary narrator name stored on each hadith from the authenticated hadith database.",
+      "installed": true,
+      "provides": ["name", "hadith_reference"],
+      "notes": "Name comes only from hadiths.narrator / authenticated isnad extraction. No biography text."
+    },
+    {
+      "slug": "licensed-rijal",
+      "name_en": "Licensed narrator biographies (rijāl)",
+      "name_ar": "تراجم الرواة",
+      "purpose": "Optional offline biographies, narrator type (Companion / Tabi'i / etc.), and source attribution.",
+      "installed": false,
+      "provides": ["type", "biography", "aliases"],
+      "database": "narrators",
+      "notes": "Licensed pack not installed yet. When added, register narrators.db.gz and set installed=true. Never invent biographies."
+    }
+  ]
+}

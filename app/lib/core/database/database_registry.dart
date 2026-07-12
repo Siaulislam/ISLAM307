@@ -13,11 +13,16 @@ class DatabaseRegistry {
   final _cache = <String, Database>{};
 
   /// Asset paths — add new databases here (no hardcoding in features).
+  /// `narrators` is registered only when a licensed pack is shipped
+  /// (`assets/databases/narrators.db.gz` + narrators_sources.json installed=true).
   static const bundled = {
     'quran': 'assets/databases/quran.db',
     'hadith': 'assets/databases/hadith.db.gz',
     'tafsir': 'assets/databases/tafsir.db.gz',
+    // 'narrators': 'assets/databases/narrators.db.gz',
   };
+
+  bool isRegistered(String name) => bundled.containsKey(name);
 
   Future<Database> open(String name) async {
     if (_cache.containsKey(name)) return _cache[name]!;

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
 import '../../core/repositories/hadith_repository.dart';
+import '../../core/repositories/narrator_repository.dart';
 import '../../core/theme/islam307_theme.dart';
 
 /// Full Hadith Reader — opens directly after selecting a book/topic.
@@ -28,9 +29,11 @@ class HadithDetailScreen extends StatefulWidget {
 
 class _HadithDetailScreenState extends State<HadithDetailScreen> {
   final _repo = HadithRepository(DatabaseRegistry.instance);
+  final _narratorRepo = NarratorRepository(DatabaseRegistry.instance);
   final _scroll = ScrollController();
 
   Map<String, dynamic>? _hadith;
+  Map<String, dynamic>? _narratorLookup;
   List<int> _numbers = const [];
   int _index = 0;
   bool _loading = true;
@@ -132,8 +135,55 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       _loading = false;
       _speaking = false;
       _paused = false;
+      _narratorLookup = null;
     });
     if (_scroll.hasClients) _scroll.jumpTo(0);
+    await _refreshNarratorType();
+  }
+
+  /// Primary narrator name exactly as stored in the authenticated hadith pack.
+  String _primaryNarratorName() {
+    final h = _hadith;
+    if (h == null) return '';
+    final fromField = (h['ravi'] ?? h['narrator'] ?? '').toString().trim();
+    if (fromField.isNotEmpty) return fromField;
+    final chain = _raviChain();
+    return chain.isEmpty ? '' : chain.first;
+  }
+
+  Future<void> _refreshNarratorType() async {
+    final name = _primaryNarratorName();
+    if (name.isEmpty) {
+      if (mounted) setState(() => _narratorLookup = null);
+      return;
+    }
+    final result = await _narratorRepo.lookup(name, lang: _lang == 'hi' ? 'en' : _lang);
+    if (!mounted) return;
+    setState(() => _narratorLookup = result);
+  }
+
+  String? _authenticatedNarratorType() {
+    final lookup = _narratorLookup;
+    if (lookup == null || lookup['unavailable'] == true) return null;
+    final type = (lookup['narrator_type'] as String?)?.trim();
+    if (type == null || type.isEmpty || type == 'unknown') return null;
+    switch (type.toLowerCase()) {
+      case 'companion':
+      case 'sahabi':
+        return "Companion";
+      case 'tabii':
+      case "tabi'i":
+      case 'tabi':
+        return "Tabi'i";
+      case 'tab_tabii':
+      case 'atba':
+        return "Tabi' al-Tabi'in";
+      case 'scholar':
+        return 'Scholar';
+      default:
+        // Show authenticated label as-is — never invent a nicer label.
+        return type;
+    }
   }
 
   String _bookmarkKey(int bookId, int n) => 'hadith_bm_${bookId}_$n';
@@ -300,6 +350,9 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final chain = _raviChain();
     final isnad = _isnadText();
     final rtl = _lang == 'ur';
+    final primary = _primaryNarratorName();
+    final reference = h['reference']?.toString() ?? 'Hadith ${widget.hadithNumber}';
+    final type = _authenticatedNarratorType();
 
     showModalBottomSheet<void>(
       context: context,
@@ -313,44 +366,75 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Narrator / Ravi · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  Text('Narrator · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'Names come only from the authenticated hadith source. Never invented.',
+                    style: TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.4),
+                  ),
                   const SizedBox(height: 14),
-                  if (chain.isEmpty)
+                  if (primary.isNotEmpty) ...[
+                    _narratorInfoCard(
+                      name: primary,
+                      type: type,
+                      reference: reference,
+                      onMore: () {
+                        Navigator.pop(ctx);
+                        _openNarratorMore(primary);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (chain.isEmpty && primary.isEmpty)
                     Text(
-                      'Full ravi chain is not available in the authenticated isnad for this hadith.',
+                      'Narrator is not available in the authenticated source for this hadith.',
                       textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
                     )
-                  else
-                    ...[
-                      for (var i = 0; i < chain.length; i++)
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          decoration: BoxDecoration(
-                            color: i == chain.length - 1 ? Islam307Theme.emeraldSoft : null,
-                            border: Border.all(color: i == chain.length - 1 ? Islam307Theme.emerald : Islam307Theme.cardBorder),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CircleAvatar(
-                                radius: 14,
-                                backgroundColor: Islam307Theme.emerald,
-                                child: Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800)),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  chain[i],
-                                  textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                                  style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
-                                ),
-                              ),
-                            ],
-                          ),
+                  else if (chain.isNotEmpty) ...[
+                    const Text('Isnad chain (authenticated)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+                    const SizedBox(height: 10),
+                    for (var i = 0; i < chain.length; i++)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: i == chain.length - 1 ? Islam307Theme.emeraldSoft : null,
+                          border: Border.all(color: i == chain.length - 1 ? Islam307Theme.emerald : Islam307Theme.cardBorder),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                    ],
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Islam307Theme.emerald,
+                              child: Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800)),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    chain[i],
+                                    textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                                    style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(ctx);
+                                      _openNarratorMore(chain[i]);
+                                    },
+                                    child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
                   if (isnad.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     const Text('Isnad (authenticated)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
@@ -362,6 +446,127 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                       style: _lang == 'ur' ? Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)) : const TextStyle(height: 1.5),
                     ),
                   ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _narratorInfoCard({
+    required String name,
+    required String? type,
+    required String reference,
+    required VoidCallback onMore,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Islam307Theme.cardBorder),
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFF8FAFC), Colors.white],
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('NARRATOR NAME', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.04, color: Islam307Theme.textMuted)),
+          const SizedBox(height: 4),
+          Text(name, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800, height: 1.35)),
+          if (type != null) ...[
+            const SizedBox(height: 10),
+            const Text('NARRATOR TYPE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.04, color: Islam307Theme.textMuted)),
+            const SizedBox(height: 4),
+            Text(type, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Islam307Theme.emeraldDeep)),
+          ],
+          const SizedBox(height: 10),
+          const Text('REFERENCE', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.04, color: Islam307Theme.textMuted)),
+          const SizedBox(height: 4),
+          Text(reference, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, height: 1.35)),
+          const SizedBox(height: 12),
+          FilledButton(
+            onPressed: onMore,
+            style: FilledButton.styleFrom(
+              backgroundColor: Islam307Theme.emerald,
+              minimumSize: const Size.fromHeight(44),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openNarratorMore(String name) async {
+    final clean = name.trim();
+    if (clean.isEmpty) return;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald)),
+    );
+    final result = await _narratorRepo.lookup(clean, lang: _lang == 'hi' ? 'en' : _lang);
+    if (!mounted) return;
+    Navigator.of(context, rootNavigator: true).pop();
+
+    final unavailable = result['unavailable'] == true;
+    final message = (result['message'] as String?)?.trim().isNotEmpty == true
+        ? result['message'] as String
+        : NarratorRepository.offlineUnavailableMessage;
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(clean, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 12),
+                  if (unavailable)
+                    Text(message, style: const TextStyle(fontSize: 15, height: 1.5, fontWeight: FontWeight.w600))
+                  else ...[
+                    if ((result['display_name'] as String?)?.isNotEmpty == true)
+                      Text('${result['display_name']}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    if ((result['narrator_type'] as String?)?.isNotEmpty == true) ...[
+                      const SizedBox(height: 8),
+                      Text('Type: ${result['narrator_type']}', style: const TextStyle(fontWeight: FontWeight.w700, color: Islam307Theme.emeraldDeep)),
+                    ],
+                    if ((result['display_bio'] as String?)?.isNotEmpty == true) ...[
+                      const SizedBox(height: 12),
+                      Text('${result['display_bio']}', style: const TextStyle(height: 1.55, fontSize: 15)),
+                    ] else ...[
+                      const SizedBox(height: 8),
+                      const Text(NarratorRepository.offlineUnavailableMessage, style: TextStyle(fontSize: 15, height: 1.5, fontWeight: FontWeight.w600)),
+                    ],
+                    if ((result['source_attribution'] as String?)?.isNotEmpty == true ||
+                        (result['source_name'] as String?)?.isNotEmpty == true) ...[
+                      const SizedBox(height: 16),
+                      const Text('Source attribution', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+                      const SizedBox(height: 6),
+                      Text(
+                        '${result['source_attribution'] ?? result['source_name']}',
+                        style: const TextStyle(fontSize: 13, height: 1.45, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ],
+                  const SizedBox(height: 16),
+                  Text(
+                    NarratorRepository.policyNeverInvent,
+                    style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, height: 1.4, fontWeight: FontWeight.w600),
+                  ),
                 ],
               ),
             ),
@@ -605,6 +810,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                       await _stopAudio();
                                       setState(() => _lang = v);
                                       await _persistLang();
+                                      await _refreshNarratorType();
                                     },
                                   ),
                                 ),
@@ -623,6 +829,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 ),
                               const SizedBox(height: 18),
                               _audioBox(),
+                              const SizedBox(height: 14),
+                              _narratorSection(
+                                name: _primaryNarratorName(),
+                                type: _authenticatedNarratorType(),
+                                reference: h['reference']?.toString() ?? '$bookName · Hadith ${widget.hadithNumber}',
+                              ),
                               const SizedBox(height: 14),
                               Wrap(
                                 spacing: 8,
@@ -697,6 +909,33 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                     ),
                   ),
       ),
+    );
+  }
+
+  Widget _narratorSection({
+    required String name,
+    required String? type,
+    required String reference,
+  }) {
+    if (name.isEmpty) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Islam307Theme.cardBorder),
+        ),
+        child: const Text(
+          'Narrator is not available in the authenticated source for this hadith.',
+          style: TextStyle(fontWeight: FontWeight.w600, height: 1.45),
+        ),
+      );
+    }
+    return _narratorInfoCard(
+      name: name,
+      type: type,
+      reference: reference,
+      onMore: () => _openNarratorMore(name),
     );
   }
 
