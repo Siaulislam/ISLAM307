@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
 import '../../core/repositories/hadith_repository.dart';
+import '../../core/repositories/narrator_repository.dart';
 import '../../core/theme/islam307_theme.dart';
 
 /// Full Hadith Reader — opens directly after selecting a book/topic.
@@ -28,6 +29,7 @@ class HadithDetailScreen extends StatefulWidget {
 
 class _HadithDetailScreenState extends State<HadithDetailScreen> {
   final _repo = HadithRepository(DatabaseRegistry.instance);
+  final _narratorRepo = NarratorRepository(DatabaseRegistry.instance);
   final _scroll = ScrollController();
 
   Map<String, dynamic>? _hadith;
@@ -155,16 +157,147 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
 
   String _bookSlug() => (_hadith?['book_slug'] ?? '').toString();
 
-  void _openNarratorProfile([String? name]) {
+  void _openNarratorProfile([String? name, int? narratorId]) {
     final clean = (name ?? _primaryNarratorName()).trim();
     final params = <String, String>{
       'lang': _lang == 'hi' ? 'en' : _lang,
       if (clean.isNotEmpty) 'name': clean,
+      if (narratorId != null) 'id': '$narratorId',
       if (_bookSlug().isNotEmpty) 'book': _bookSlug(),
       'n': '${widget.hadithNumber}',
     };
     final q = params.entries.map((e) => '${e.key}=${Uri.encodeQueryComponent(e.value)}').join('&');
     context.push('/narrator?$q');
+  }
+
+  Future<void> _openRaviSheet() async {
+    final h = _hadith;
+    if (h == null) return;
+    final lang = _lang == 'hi' ? 'en' : _lang;
+    final imported = await _narratorRepo.isnadChainForHadith(_bookSlug(), widget.hadithNumber, lang: lang);
+    if (!mounted) return;
+    final chain = imported.isNotEmpty
+        ? imported.map((e) => '${e['display_name'] ?? e['name_ar'] ?? ''}').where((e) => e.isNotEmpty).toList()
+        : _raviChain();
+    final isnad = _isnadText();
+    final rtl = _lang == 'ur';
+    final primary = _primaryNarratorName();
+
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Narrator · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 6),
+                  Text(
+                    imported.isNotEmpty
+                        ? 'Complete sanad imported from Arabic ibarat (verified). Never AI-generated.'
+                        : 'Names come only from the authenticated hadith source. Never invented with AI.',
+                    style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.4),
+                  ),
+                  const SizedBox(height: 14),
+                  if (primary.isNotEmpty) ...[
+                    Text(primary, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, height: 1.4)),
+                    const SizedBox(height: 10),
+                    FilledButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        final primaryId = imported.cast<Map<String, dynamic>?>().firstWhere(
+                          (e) => e?['role'] == 'primary',
+                          orElse: () => null,
+                        )?['narrator_id'] as int?;
+                        _openNarratorProfile(primary, primaryId);
+                      },
+                      child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800)),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                  if (chain.isEmpty && primary.isEmpty)
+                    Text(
+                      'Narrator is not available in the authenticated source for this hadith.',
+                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                    )
+                  else if (chain.isNotEmpty) ...[
+                    Text(
+                      imported.isNotEmpty ? 'Isnad chain (Arabic ibarat order)' : 'Isnad chain (authenticated)',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted),
+                    ),
+                    const SizedBox(height: 10),
+                    for (var i = 0; i < chain.length; i++)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: i == chain.length - 1 ? Islam307Theme.emeraldSoft : null,
+                          border: Border.all(color: i == chain.length - 1 ? Islam307Theme.emerald : Islam307Theme.cardBorder),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: Islam307Theme.emerald,
+                              child: Text(
+                                '${imported.isNotEmpty ? (imported[i]['isnad_position'] ?? (i + 1)) : (i + 1)}',
+                                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    chain[i],
+                                    textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+                                    style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
+                                  ),
+                                  if (imported.isNotEmpty) ...[
+                                    Text(
+                                      [
+                                        if ('${imported[i]['kunyah'] ?? ''}'.trim().isNotEmpty) 'كنية: ${imported[i]['kunyah']}',
+                                        if ('${imported[i]['role'] ?? ''}'.trim().isNotEmpty) '${imported[i]['role']}',
+                                      ].where((e) => e.isNotEmpty).join(' · '),
+                                      style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, height: 1.35),
+                                    ),
+                                  ],
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(ctx);
+                                      final id = imported.isNotEmpty ? imported[i]['narrator_id'] as int? : null;
+                                      _openNarratorProfile(chain[i], id);
+                                    },
+                                    child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                  if (isnad.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    const Text('Isnad text', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
+                    const SizedBox(height: 8),
+                    Text(isnad, textDirection: rtl ? TextDirection.rtl : TextDirection.ltr, style: const TextStyle(height: 1.55)),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   String _bookmarkKey(int bookId, int n) => 'hadith_bm_${bookId}_$n';
@@ -323,114 +456,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   Future<void> _share() async {
     final text = _copyShareText();
     await Share.share(text, subject: 'Hadith ${widget.hadithNumber}');
-  }
-
-  void _openRaviSheet() {
-    final h = _hadith;
-    if (h == null) return;
-    final chain = _raviChain();
-    final isnad = _isnadText();
-    final rtl = _lang == 'ur';
-    final primary = _primaryNarratorName();
-
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Narrator · Hadith ${widget.hadithNumber}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'Names come only from the authenticated hadith source. Never invented with AI.',
-                    style: TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600, height: 1.4),
-                  ),
-                  const SizedBox(height: 14),
-                  if (primary.isNotEmpty) ...[
-                    Text(primary, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, height: 1.4)),
-                    const SizedBox(height: 10),
-                    FilledButton(
-                      onPressed: () {
-                        Navigator.pop(ctx);
-                        _openNarratorProfile(primary);
-                      },
-                      child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800)),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  if (chain.isEmpty && primary.isEmpty)
-                    Text(
-                      'Narrator is not available in the authenticated source for this hadith.',
-                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                    )
-                  else if (chain.isNotEmpty) ...[
-                    const Text('Isnad chain (authenticated)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
-                    const SizedBox(height: 10),
-                    for (var i = 0; i < chain.length; i++)
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: i == chain.length - 1 ? Islam307Theme.emeraldSoft : null,
-                          border: Border.all(color: i == chain.length - 1 ? Islam307Theme.emerald : Islam307Theme.cardBorder),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            CircleAvatar(
-                              radius: 14,
-                              backgroundColor: Islam307Theme.emerald,
-                              child: Text('${i + 1}', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w800)),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    chain[i],
-                                    textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                                    style: const TextStyle(fontWeight: FontWeight.w700, height: 1.45, fontSize: 15),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(ctx);
-                                      _openNarratorProfile(chain[i]);
-                                    },
-                                    child: const Text('More about this Narrator', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                  if (isnad.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    const Text('Isnad (authenticated)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.textMuted)),
-                    const SizedBox(height: 8),
-                    Text(
-                      isnad,
-                      textAlign: rtl ? TextAlign.right : TextAlign.left,
-                      textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
-                      style: _lang == 'ur' ? Islam307Theme.urdu().copyWith(color: const Color(0xFF1D4ED8)) : const TextStyle(height: 1.5),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 
   void _openReferenceSheet() {

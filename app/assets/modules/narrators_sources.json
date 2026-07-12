@@ -15,9 +15,10 @@
     "slug": "rijal-scaffold",
     "name_en": "Narrator (Rijāl) Knowledge Pack",
     "installed": true,
-    "has_biography_rows": false,
-    "has_hadith_mappings": false,
-    "notes": "Schema and approved-source catalog are bundled. Biography rows and hadith→narrator IDs stay empty until a licensed import is added. UI fills automatically when rows appear."
+    "has_biography_rows": true,
+    "has_hadith_mappings": true,
+    "notes": "Includes Bukhari Hadith 1 sanad import (8 narrators) verified against Arabic isnad. Additional biographies require further licensed imports.",
+    "last_import_batch": "bukhari_1_ibarat_import_2026-07-12"
   },
   "approved_sources": [
     {

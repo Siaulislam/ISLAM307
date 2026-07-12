@@ -676,11 +676,83 @@ function narratorCardHtml(name) {
     </div>`;
 }
 
-function openNarratorMore(name, hadith) {
+const narratorPackCache = {};
+
+async function loadNarratorSanadPack(bookSlug, hadithNumber) {
+  const key = `${bookSlug}:${hadithNumber}`;
+  if (narratorPackCache[key] !== undefined) return narratorPackCache[key];
+  // Only packs that have been imported into preview/data/narrators/ are loadable.
+  const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
+  try {
+    const res = await fetch(`${path}?v=hadith-reader-10`);
+    if (!res.ok) {
+      narratorPackCache[key] = null;
+      return null;
+    }
+    const data = await res.json();
+    narratorPackCache[key] = data;
+    return data;
+  } catch (_) {
+    narratorPackCache[key] = null;
+    return null;
+  }
+}
+
+function findImportedNarrator(pack, name) {
+  if (!pack || !Array.isArray(pack.chain)) return null;
+  const needle = String(name || '').trim().toLowerCase();
+  if (!needle) return null;
+  return pack.chain.find((n) => {
+    const keys = [n.name_ar, n.name_en, n.name_ur, n.full_name, n.kunyah, n.laqab]
+      .filter(Boolean)
+      .map((s) => String(s).toLowerCase());
+    return keys.some((k) => k === needle || k.includes(needle) || needle.includes(k));
+  }) || null;
+}
+
+function importedProfileHtml(entry) {
+  const rows = [
+    ['Order in sanad', entry.order],
+    ['Role', entry.role],
+    ['Arabic Name', entry.name_ar],
+    ['English Name', entry.name_en],
+    ['Urdu Name', entry.name_ur],
+    ['Full Name', entry.full_name],
+    ['Kunyah', entry.kunyah],
+    ['Laqab', entry.laqab],
+    ['Nasab / Nisbah', entry.nasab],
+    ['Generation', entry.generation],
+    ['Birth', entry.birth_text],
+    ['Death', entry.death_text],
+    ['Narrator ID', entry.narrator_id],
+    ['Sunnah.com ID', entry.sunnah_com_id || '—'],
+    ['Sunnah.com URL', entry.sunnah_com_url || '—'],
+  ];
+  return `
+    <div class="narrator-profile-preview imported">
+      <p class="narrator-offline-msg">Imported from authenticated Arabic isnad + classical research file. Never AI-generated.</p>
+      <div class="narrator-empty-grid">
+        ${rows.map(([label, value]) => `
+          <div class="narrator-empty-field">
+            <span>${escapeHtml(String(label))}</span>
+            <strong dir="auto">${escapeHtml(value == null || value === '' ? '—' : String(value))}</strong>
+          </div>`).join('')}
+      </div>
+      <p class="narrator-policy">${escapeHtml(NARRATOR_PROFILE.policy)}</p>
+    </div>`;
+}
+
+async function openNarratorMore(name, hadith) {
   const clean = String(name || '').trim();
   if (!clean) return;
-  /* Future: resolve verified narrator_id from hadith_relations / aliases, then render imported fields.
-     Until that row exists in local narrators.db, show empty profile shell — never invent content. */
+  const slug = state.hadithSlug || '';
+  const pack = await loadNarratorSanadPack(slug, hadith?.n);
+  const entry = findImportedNarrator(pack, clean)
+    || (pack?.chain || []).find((n) => Number(n.order) && String(n.name_en).toLowerCase() === clean.toLowerCase());
+  if (entry) {
+    openHadithModal(entry.name_en || entry.name_ar || clean, importedProfileHtml(entry));
+    return;
+  }
   const fields = NARRATOR_PROFILE.emptyFields.map((label) => `
     <div class="narrator-empty-field">
       <span>${escapeHtml(label)}</span>
@@ -695,19 +767,26 @@ function openNarratorMore(name, hadith) {
   openHadithModal(clean || 'Narrator Profile', body);
 }
 
-function openRaviDetail(hadith, book) {
+async function openRaviDetail(hadith, book) {
   const lang = state.hadithLang || 'ur';
   const t = raviCopy(lang);
+  const slug = state.hadithSlug || book?.slug || '';
+  const pack = await loadNarratorSanadPack(slug, hadith.n);
   const byLang = hadith.ravi_by_lang || {};
-  const chain = (Array.isArray(byLang[lang]) && byLang[lang].length
+  let chain = (Array.isArray(byLang[lang]) && byLang[lang].length
     ? byLang[lang]
     : (hadith.ravi_chain || [])).filter(Boolean);
+  let chainMeta = null;
+  if (pack && Array.isArray(pack.chain) && pack.chain.length) {
+    chainMeta = pack.chain;
+    chain = pack.chain.map((n) => (lang === 'ar' ? n.name_ar : (lang === 'en' ? n.name_en : n.name_ur)) || n.name_ar || n.name_en);
+  }
   const isnads = hadith.isnad_by_lang || {};
   const isnadText = (isnads[lang] || (lang === 'ur' ? hadith.isnad_ur : hadith.isnad) || '').trim();
   const rtl = lang === 'ur' || lang === 'ar';
   const primary = authenticatedNarratorName(hadith);
   let body = `
-    <p class="narrator-policy">Names come only from the authenticated hadith source. Never invented with AI.</p>
+    <p class="narrator-policy">Names come only from the authenticated hadith source / imported sanad pack. Never invented with AI.</p>
     ${primary ? narratorCardHtml(primary) : ''}
   `;
   if (chain.length) {
@@ -715,14 +794,18 @@ function openRaviDetail(hadith, book) {
       <p class="narrator-chain-label">Isnad chain (authenticated)</p>
       <ol class="ravi-chain" dir="auto">
         ${chain.map((name, i) => {
+          const meta = chainMeta ? chainMeta[i] : null;
           const isLast = i === chain.length - 1;
-          const heard = i === 0 ? t.first : (isLast ? t.last : t.mid);
+          const heard = meta
+            ? `Order ${meta.order} · ${meta.role}${meta.kunyah ? ` · ${meta.kunyah}` : ''}`
+            : (i === 0 ? t.first : (isLast ? t.last : t.mid));
+          const key = meta ? (meta.name_en || meta.name_ar || name) : name;
           return `<li class="${isLast ? 'is-last-rawi' : ''}">
-            <span class="ravi-step">${i + 1}</span>
+            <span class="ravi-step">${meta ? meta.order : (i + 1)}</span>
             <div>
               <strong>${escapeHtml(name)}</strong>
               <small>${escapeHtml(heard)}</small>
-              <button type="button" class="narrator-more-btn" data-narrator="${escapeHtml(name)}">More about this Narrator</button>
+              <button type="button" class="narrator-more-btn" data-narrator="${escapeHtml(key)}">More about this Narrator</button>
             </div>
           </li>`;
         }).join('')}

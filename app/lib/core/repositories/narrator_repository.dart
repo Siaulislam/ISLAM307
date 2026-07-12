@@ -67,6 +67,42 @@ class NarratorRepository {
     }
   }
 
+  /// Full authenticated sanad chain for a hadith (ordered by isnad_position).
+  /// Returns empty list when no imported mapping exists — never invents names.
+  Future<List<Map<String, dynamic>>> isnadChainForHadith(
+    String bookSlug,
+    int hadithNumber, {
+    String lang = 'en',
+  }) async {
+    if (!await isPackRegistered()) return const [];
+    try {
+      final db = await _registry.open('narrators');
+      final rows = await db.rawQuery(
+        '''
+        SELECT hr.isnad_position, hr.role, hr.narrator_id,
+               n.slug, n.name_ar, n.name_ur, n.name_en, n.full_name,
+               n.kunyah, n.laqab, n.nasab, n.generation,
+               n.is_companion, n.is_tabii, n.is_tab_tabii
+        FROM hadith_relations hr
+        JOIN narrators n ON n.id = hr.narrator_id
+        WHERE hr.book_slug = ? AND hr.hadith_number = ?
+        ORDER BY hr.isnad_position ASC
+        ''',
+        [bookSlug, hadithNumber],
+      );
+      return rows.map((r) {
+        final map = Map<String, dynamic>.from(r);
+        map['display_name'] = _displayName(map, lang);
+        map['is_companion'] = r['is_companion'] == 1;
+        map['is_tabii'] = r['is_tabii'] == 1;
+        map['is_tab_tabii'] = r['is_tab_tabii'] == 1;
+        return map;
+      }).toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
   Future<Map<String, dynamic>> profileById(int narratorId, {String lang = 'en'}) async {
     if (!await isPackRegistered()) {
       return _notImported(name: null);
