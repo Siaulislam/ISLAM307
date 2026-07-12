@@ -509,6 +509,11 @@ String _localizedChapter(String bookSlug, String chapterTitle, String lang) {
   return chapter;
 }
 
+/// Public localized کتاب/chapter title for topic browse UI.
+String localizedChapterTitle(String bookSlug, String chapterTitle, String lang) {
+  return _localizedChapter(bookSlug, chapterTitle, lang);
+}
+
 Map<String, dynamic> buildReferenceDetail({
   required String bookName,
   required String bookSlug,

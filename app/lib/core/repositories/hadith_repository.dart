@@ -44,12 +44,60 @@ class HadithRepository {
     return db.query('chapters', where: 'book_id = ?', whereArgs: [bookId], orderBy: order);
   }
 
+  /// Topics (کتاب) with hadith counts for professional browse.
+  Future<List<Map<String, dynamic>>> chaptersWithCounts(int bookId) async {
+    await _ensureChapterI18n();
+    final db = await _registry.open('hadith');
+    final hasKitabNumber = await _chapterHasKitabNumber(db);
+    final order = hasKitabNumber ? 'c.kitab_number ASC, c.number ASC' : 'c.number ASC';
+    final rows = await db.rawQuery(
+      '''
+      SELECT c.id, c.book_id, c.number, c.title, c.hadith_start, c.hadith_end,
+             COUNT(h.id) AS hadith_count
+      FROM chapters c
+      LEFT JOIN hadiths h ON h.chapter_id = c.id
+      WHERE c.book_id = ? AND TRIM(IFNULL(c.title, '')) != ''
+      GROUP BY c.id
+      ORDER BY $order
+      ''',
+      [bookId],
+    );
+    final bookRows = await db.query('books', where: 'id = ?', whereArgs: [bookId], limit: 1);
+    final slug = bookRows.isEmpty ? 'hadith' : '${bookRows.first['slug']}';
+    return rows.map((row) {
+      final map = Map<String, dynamic>.from(row);
+      final titleEn = '${map['title'] ?? ''}';
+      map['title_en'] = titleEn;
+      map['title_ur'] = localizedChapterTitle(slug, titleEn, 'ur');
+      map['title_ar'] = localizedChapterTitle(slug, titleEn, 'ar');
+      return map;
+    }).toList();
+  }
+
   Future<List<Map<String, dynamic>>> hadithsForBook(int bookId, {int limit = 100, int offset = 0}) async {
     final db = await _registry.open('hadith');
     final rows = await db.query(
       'hadiths',
       where: 'book_id = ?',
       whereArgs: [bookId],
+      orderBy: 'hadith_number ASC',
+      limit: limit,
+      offset: offset,
+    );
+    return Future.wait(rows.map(_enrich));
+  }
+
+  Future<List<Map<String, dynamic>>> hadithsForChapter(
+    int bookId,
+    int chapterId, {
+    int limit = 200,
+    int offset = 0,
+  }) async {
+    final db = await _registry.open('hadith');
+    final rows = await db.query(
+      'hadiths',
+      where: 'book_id = ? AND chapter_id = ?',
+      whereArgs: [bookId, chapterId],
       orderBy: 'hadith_number ASC',
       limit: limit,
       offset: offset,
@@ -202,9 +250,15 @@ class HadithRepository {
     if (_hasKitabNumber != null) {
       return _hasKitabNumber! ? 'kitab_number, number ASC' : 'number ASC';
     }
+    await _chapterHasKitabNumber(db);
+    return _hasKitabNumber! ? 'kitab_number, number ASC' : 'number ASC';
+  }
+
+  Future<bool> _chapterHasKitabNumber(dynamic db) async {
+    if (_hasKitabNumber != null) return _hasKitabNumber!;
     final cols = await db.rawQuery('PRAGMA table_info(chapters)');
     _hasKitabNumber = cols.any((c) => c['name'] == 'kitab_number');
-    return _hasKitabNumber! ? 'kitab_number, number ASC' : 'number ASC';
+    return _hasKitabNumber!;
   }
 
   static ({String grade, String? scholar, String referenceUrl}) gradingSummary(

@@ -62,6 +62,10 @@ const state = {
   hadithFilter: '',
   hadithLang: localStorage.getItem('i307_hadith_lang') || 'ur',
   hadithAudioMode: localStorage.getItem('i307_hadith_audio_mode') || 'ibarat', // ibarat | translation
+  /** topics | topic | numbers */
+  hadithBrowseMode: localStorage.getItem('i307_hadith_browse') || 'topics',
+  hadithTopicKey: null,
+  hadithTopicTitle: '',
   hadithListRows: [],
   hadithListShown: 0,
   // Paint in chunks so the full book (Bukhari/Muslim 7563, etc.) appears without a fake 120 cap.
@@ -456,6 +460,9 @@ async function openHadithBook(book, button) {
   if (button) button.classList.add('active');
   state.hadithSlug = book.slug;
   state.hadithFilter = $('hadith-search').value || '';
+  state.hadithTopicKey = null;
+  state.hadithTopicTitle = '';
+  if (state.hadithBrowseMode === 'topic') setHadithBrowseMode('topics');
   $('hadith-view').innerHTML = `<p class="status">Loading ${book.en}…</p>`;
   if (!state.hadithCache[book.slug]) {
     state.hadithCache[book.slug] = await fetchJsonGz(`data/hadith/${book.slug}.json.gz`);
@@ -483,6 +490,57 @@ function localizedKitabName(hadith, pack) {
   if (ur) return ur;
   if (hadith.reference_detail?.kitab) return hadith.reference_detail.kitab;
   return hadith.kitab || pack?.book?.en || '';
+}
+
+function kitabTopicKey(hadith) {
+  if (hadith.kitab_number != null && hadith.kitab_number !== '') return `n:${hadith.kitab_number}`;
+  return `t:${hadith.kitab || localizedKitabName(hadith) || 'unknown'}`;
+}
+
+function buildKitabTopics(pack) {
+  const map = new Map();
+  for (const h of pack.hadiths || []) {
+    const key = kitabTopicKey(h);
+    if (!map.has(key)) {
+      map.set(key, {
+        key,
+        kitab_number: h.kitab_number,
+        en: h.kitab || '',
+        title: localizedKitabName(h, pack),
+        count: 0,
+        first: h.n,
+        last: h.n,
+      });
+    }
+    const row = map.get(key);
+    row.count += 1;
+    row.last = h.n;
+    if (!row.title) row.title = localizedKitabName(h, pack);
+  }
+  return [...map.values()].sort((a, b) => {
+    const an = a.kitab_number == null ? 9999 : Number(a.kitab_number);
+    const bn = b.kitab_number == null ? 9999 : Number(b.kitab_number);
+    return an - bn || a.first - b.first;
+  });
+}
+
+function setHadithBrowseMode(mode) {
+  state.hadithBrowseMode = mode;
+  localStorage.setItem('i307_hadith_browse', mode === 'numbers' ? 'numbers' : 'topics');
+}
+
+function openHadithTopic(slug, topic) {
+  state.hadithTopicKey = topic.key;
+  state.hadithTopicTitle = topic.title;
+  setHadithBrowseMode('topic');
+  renderHadithList(slug, state.hadithFilter);
+}
+
+function clearHadithTopic(slug) {
+  state.hadithTopicKey = null;
+  state.hadithTopicTitle = '';
+  setHadithBrowseMode('topics');
+  renderHadithList(slug, state.hadithFilter);
 }
 
 function closeHadithModal() {
@@ -798,11 +856,29 @@ function renderHadithList(slug, filter = '') {
   state.hadithSlug = slug;
   state.hadithFilter = filter;
   const q = filter.trim().toLowerCase();
+
+  // Topics hub: show every کتاب as a professional topic card.
+  if (state.hadithBrowseMode === 'topics' && !state.hadithTopicKey) {
+    let topics = buildKitabTopics(pack);
+    if (q) {
+      topics = topics.filter((t) =>
+        String(t.kitab_number || '').includes(q) ||
+        (t.title || '').toLowerCase().includes(q) ||
+        (t.title || '').includes(filter) ||
+        (t.en || '').toLowerCase().includes(q)
+      );
+    }
+    paintHadithTopics(slug, pack, topics);
+    return;
+  }
+
   const rows = pack.hadiths.filter((h) => {
+    if (state.hadithTopicKey && kitabTopicKey(h) !== state.hadithTopicKey) return false;
     if (!q) return true;
     const chain = Array.isArray(h.ravi_chain) ? h.ravi_chain.join(' ') : '';
     const byLang = h.ravi_by_lang || {};
     const urChain = Array.isArray(byLang.ur) ? byLang.ur.join(' ') : '';
+    const kitabName = localizedKitabName(h, pack);
     return (
       String(h.n) === q ||
       (h.en || '').toLowerCase().includes(q) ||
@@ -813,6 +889,8 @@ function renderHadithList(slug, filter = '') {
       urChain.includes(filter) ||
       (h.reference || '').toLowerCase().includes(q) ||
       (h.kitab || '').toLowerCase().includes(q) ||
+      kitabName.includes(filter) ||
+      kitabName.toLowerCase().includes(q) ||
       (h.grade || '').toLowerCase().includes(q)
     );
   });
@@ -823,6 +901,64 @@ function renderHadithList(slug, filter = '') {
   scheduleFillAllHadith(slug);
 }
 
+function paintHadithTopics(slug, pack, topics) {
+  const totalAll = (pack.hadiths || []).length;
+  const q = (state.hadithFilter || '').trim();
+  $('hadith-view').innerHTML = `
+    <div class="hadith-browse-head">
+      <div>
+        <p class="hadith-browse-kicker">${escapeHtml(pack.book.en)}</p>
+        <h2 class="hadith-browse-title" dir="rtl">موضوعات · کتب</h2>
+        <p class="hadith-browse-sub">${topics.length.toLocaleString()} topics · ${totalAll.toLocaleString()} hadith${q ? ` · filter “${escapeHtml(q)}”` : ''}</p>
+      </div>
+      <div class="hadith-mode-toggle" role="tablist" aria-label="Browse mode">
+        <button type="button" class="active" data-hadith-mode="topics" aria-selected="true">Topics</button>
+        <button type="button" data-hadith-mode="numbers" aria-selected="false">All numbers</button>
+      </div>
+    </div>
+    <p class="hadith-list-hint">Tap a topic such as <strong dir="rtl">کتاب وحی کے بیان میں</strong> to open every related hadith in that کتاب.</p>
+    <div class="hadith-topic-grid" id="hadith-topic-grid"></div>
+  `;
+  $('hadith-view').onscroll = null;
+  $('hadith-view').querySelectorAll('[data-hadith-mode]').forEach((btn) => {
+    btn.onclick = () => {
+      const mode = btn.getAttribute('data-hadith-mode');
+      state.hadithTopicKey = null;
+      state.hadithTopicTitle = '';
+      setHadithBrowseMode(mode === 'numbers' ? 'numbers' : 'topics');
+      renderHadithList(slug, state.hadithFilter);
+    };
+  });
+
+  const grid = $('hadith-topic-grid');
+  if (!topics.length) {
+    grid.innerHTML = '<p class="empty">No topics match this search.</p>';
+    return;
+  }
+  const frag = document.createDocumentFragment();
+  topics.forEach((t, idx) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'hadith-topic-card';
+    card.innerHTML = `
+      <div class="hadith-topic-index">${String(t.kitab_number || idx + 1).padStart(2, '0')}</div>
+      <div class="hadith-topic-main">
+        <p class="hadith-topic-title" dir="rtl">${escapeHtml(t.title || t.en || '—')}</p>
+        ${t.en ? `<p class="hadith-topic-en">${escapeHtml(t.en)}</p>` : ''}
+        <p class="hadith-topic-meta">Hadith ${t.first}–${t.last}</p>
+      </div>
+      <div class="hadith-topic-side">
+        <span class="hadith-topic-count">${t.count.toLocaleString()}</span>
+        <span class="hadith-topic-count-label">hadith</span>
+        <span class="hadith-topic-go" aria-hidden="true">←</span>
+      </div>
+    `;
+    card.onclick = () => openHadithTopic(slug, t);
+    frag.appendChild(card);
+  });
+  grid.appendChild(frag);
+}
+
 function scheduleFillAllHadith(slug) {
   const pack = state.hadithCache[slug];
   if (!pack) return;
@@ -830,6 +966,7 @@ function scheduleFillAllHadith(slug) {
   if (state.hadithListShown >= rows.length) return;
   requestAnimationFrame(() => {
     if (state.hadithSlug !== slug) return;
+    if (state.hadithBrowseMode === 'topics' && !state.hadithTopicKey) return;
     state.hadithListShown = Math.min(rows.length, state.hadithListShown + state.hadithListPage);
     paintHadithListPage(slug, pack, false);
     scheduleFillAllHadith(slug);
@@ -843,20 +980,46 @@ function paintHadithListPage(slug, pack, reset = false) {
   const totalAll = (pack.hadiths || []).length;
   const q = (state.hadithFilter || '').trim();
   const done = shown >= rows.length;
-  const status = q
-    ? `${pack.book.en} · ${rows.length.toLocaleString()} matches · ${done ? 'all shown' : `loading ${visible.length.toLocaleString()}…`}`
-    : `${pack.book.en} · full collection ${totalAll.toLocaleString()} hadith · ${done ? 'all numbers listed' : `loading ${visible.length.toLocaleString()}…`}`;
+  const inTopic = !!state.hadithTopicKey;
+  const status = inTopic
+    ? `${state.hadithTopicTitle} · ${rows.length.toLocaleString()} related hadith · ${done ? 'all shown' : `loading ${visible.length.toLocaleString()}…`}`
+    : q
+      ? `${pack.book.en} · ${rows.length.toLocaleString()} matches · ${done ? 'all shown' : `loading ${visible.length.toLocaleString()}…`}`
+      : `${pack.book.en} · full collection ${totalAll.toLocaleString()} hadith · ${done ? 'all numbers listed' : `loading ${visible.length.toLocaleString()}…`}`;
 
   if (reset) {
     const maxN = totalAll ? Math.max(...pack.hadiths.map((h) => h.n)) : 0;
     $('hadith-view').innerHTML = `
-      <p class="status" id="hadith-list-status">${escapeHtml(status)}</p>
-      <p class="hadith-list-hint">Same on every number: Language (Urdu / English / Arabic) · Ravi · Reference. Type a number (1–${maxN}) in search to jump.</p>
+      <div class="hadith-browse-head compact">
+        <div>
+          ${inTopic ? `<button type="button" class="ghost back-hadith" data-act="back-topics">← All topics</button>` : ''}
+          <p class="status" id="hadith-list-status">${escapeHtml(status)}</p>
+          ${inTopic ? `<p class="hadith-topic-banner" dir="rtl">${escapeHtml(state.hadithTopicTitle)}</p>` : ''}
+        </div>
+        <div class="hadith-mode-toggle" role="tablist" aria-label="Browse mode">
+          <button type="button" class="${state.hadithBrowseMode !== 'numbers' ? 'active' : ''}" data-hadith-mode="topics" aria-selected="${state.hadithBrowseMode !== 'numbers'}">Topics</button>
+          <button type="button" class="${state.hadithBrowseMode === 'numbers' ? 'active' : ''}" data-hadith-mode="numbers" aria-selected="${state.hadithBrowseMode === 'numbers'}">All numbers</button>
+        </div>
+      </div>
+      <p class="hadith-list-hint">${inTopic
+        ? 'These are all authenticated hadith in this کتاب/topic. Tap a number to open Language · Ravi · Reference · Audio.'
+        : `Tap the topic name to open that کتاب, or tap Hadith N to open the hadith. Type a number (1–${maxN}) in search to jump.`}</p>
       <div class="hadith-number-list" id="hadith-number-list"></div>
       <div class="hadith-list-more" id="hadith-list-more"></div>
     `;
     const scroller = $('hadith-view');
     scroller.onscroll = () => maybeLoadMoreHadith(slug);
+    const back = $('hadith-view').querySelector('[data-act="back-topics"]');
+    if (back) back.onclick = () => clearHadithTopic(slug);
+    $('hadith-view').querySelectorAll('[data-hadith-mode]').forEach((btn) => {
+      btn.onclick = () => {
+        const mode = btn.getAttribute('data-hadith-mode');
+        state.hadithTopicKey = null;
+        state.hadithTopicTitle = '';
+        setHadithBrowseMode(mode === 'numbers' ? 'numbers' : 'topics');
+        renderHadithList(slug, state.hadithFilter);
+      };
+    });
   } else {
     const statusEl = $('hadith-list-status');
     if (statusEl) statusEl.textContent = status;
@@ -870,18 +1033,29 @@ function paintHadithListPage(slug, pack, reset = false) {
   const frag = document.createDocumentFragment();
   for (let i = start; i < visible.length; i += 1) {
     const h = visible[i];
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'hadith-number-row';
-    btn.dataset.n = String(h.n);
-    // Left: Hadith N · Right: large Urdu kitab name only (no grade/status).
+    const row = document.createElement('div');
+    row.className = 'hadith-number-row';
+    row.dataset.n = String(h.n);
     const kitabName = localizedKitabName(h, pack);
-    btn.innerHTML = `
-      <span class="hadith-n">Hadith ${h.n}</span>
-      <p class="hadith-kitab" dir="rtl">${escapeHtml(kitabName)}</p>
+    row.innerHTML = `
+      <button type="button" class="hadith-n-btn" data-act="open-hadith" aria-label="Open Hadith ${h.n}">
+        <span class="hadith-n">Hadith ${h.n}</span>
+      </button>
+      <button type="button" class="hadith-kitab-btn" data-act="open-topic" title="Open all hadith in this topic">
+        <p class="hadith-kitab" dir="rtl">${escapeHtml(kitabName)}</p>
+        <span class="hadith-kitab-hint">Open topic →</span>
+      </button>
     `;
-    btn.onclick = () => openHadithDetail(slug, h.n);
-    frag.appendChild(btn);
+    row.querySelector('[data-act="open-hadith"]').onclick = () => openHadithDetail(slug, h.n);
+    row.querySelector('[data-act="open-topic"]').onclick = () => {
+      openHadithTopic(slug, {
+        key: kitabTopicKey(h),
+        title: kitabName,
+        kitab_number: h.kitab_number,
+        en: h.kitab || '',
+      });
+    };
+    frag.appendChild(row);
   }
   list.appendChild(frag);
 
@@ -899,7 +1073,7 @@ function paintHadithListPage(slug, pack, reset = false) {
   } else if (rows.length === 0) {
     more.innerHTML = '<p class="empty">No matches.</p>';
   } else {
-    more.innerHTML = `<p class="status">All ${rows.length.toLocaleString()} hadith loaded · Language / Ravi / Reference work on every number (Bukhari, Muslim, Abu Dawood, Tirmidhi)</p>`;
+    more.innerHTML = `<p class="status">${inTopic ? 'All related hadith in this topic loaded' : `All ${rows.length.toLocaleString()} hadith loaded`} · Language / Ravi / Reference / Audio on every number</p>`;
   }
 }
 
