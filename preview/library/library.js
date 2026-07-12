@@ -711,7 +711,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-15`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-16`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -737,7 +737,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-15`);
+    const res = await fetch(`${path}?v=hadith-reader-16`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -763,6 +763,25 @@ function findImportedNarrator(pack, name) {
   }) || null;
 }
 
+function formatNarratorCitation(row) {
+  if (!row) return '';
+  const book = String(row.source_name || '').trim();
+  const author = String(row.source_author || row.author_en || '').trim();
+  const volume = String(row.volume || '').trim();
+  const page = String(row.page || '').trim();
+  const edition = String(row.edition || row.source_edition || '').trim();
+  const publisher = String(row.publisher || row.source_publisher || '').trim();
+  const lines = [];
+  if (book) lines.push(book);
+  if (author) lines.push(author);
+  if (volume) lines.push(`Vol. ${volume}`);
+  if (page) lines.push(`Page ${page}`);
+  if (edition) lines.push(`Edition: ${edition}`);
+  if (publisher) lines.push(`Publisher: ${publisher}`);
+  if (!lines.length) return '';
+  return `Reference:\n${lines.join('\n')}`;
+}
+
 /** Build the standard راوی معلومات table values from an imported entry (or empty). */
 function narratorDetailValues(entry) {
   if (!entry) {
@@ -776,27 +795,41 @@ function narratorDetailValues(entry) {
     : (entry.role === 'prophet'
       ? 'رسول اللہ ﷺ'
       : (entry.role === 'compiler' ? 'امام' : ''));
+
+  const appendCite = (value, fieldKey) => {
+    const cites = Array.isArray(entry.field_citations) ? entry.field_citations : [];
+    const blocks = cites
+      .filter((c) => String(c.field_key || '') === fieldKey)
+      .map(formatNarratorCitation)
+      .filter(Boolean);
+    const v = String(value || '').trim();
+    if (!v && !blocks.length) return '';
+    if (!blocks.length) return v;
+    if (!v) return blocks.join('\n\n');
+    return `${v}\n\n${blocks.join('\n\n')}`;
+  };
+
   return [
     entry.narrator_id != null ? String(entry.narrator_id) : (entry.id != null ? String(entry.id) : ''),
     nameAr || '',
     nameUr || '',
-    entry.kunyah || '',
-    entry.laqab || '',
-    entry.nasab || '',
-    '',
-    entry.birth_hijri || entry.birth_text || '',
-    entry.death_hijri || entry.death_text || '',
-    entry.city || '',
-    '',
-    status,
-    entry.generation || '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    entry.timeline_notes || '',
+    appendCite(entry.kunyah || '', 'kunyah'),
+    appendCite(entry.laqab || '', 'laqab'),
+    appendCite(entry.nasab || '', 'nasab'),
+    appendCite('', 'tribe'),
+    appendCite(entry.birth_hijri || entry.birth_text || '', 'birth_hijri'),
+    appendCite(entry.death_hijri || entry.death_text || '', 'death_hijri'),
+    appendCite(entry.city || '', 'birth_place'),
+    appendCite('', 'death_place'),
+    appendCite(status, 'status'),
+    appendCite(entry.generation || '', 'generation'),
+    appendCite('', 'occupation'),
+    appendCite('', 'reliability'),
+    appendCite('', 'known_for'),
+    appendCite('', 'teachers'),
+    appendCite('', 'students'),
+    appendCite('', 'books'),
+    appendCite(entry.timeline_notes || '', 'notes'),
   ];
 }
 

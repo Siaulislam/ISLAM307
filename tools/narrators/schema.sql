@@ -2,6 +2,8 @@
 -- Authenticated classical Sunni sources ONLY.
 -- NEVER invent biographies, names, teachers, students, dates, or reliability with AI.
 -- Populate only from licensed/authorized imports of approved reference works.
+-- CITATION RULE: every classical field MUST store Book Name, Author, Volume, Page
+-- (Edition/Publisher when available). If unverified, leave the field empty.
 
 PRAGMA foreign_keys = ON;
 PRAGMA journal_mode = WAL;
@@ -24,7 +26,9 @@ CREATE TABLE IF NOT EXISTS sources (
   -- permission_required | licensed | public_domain | unavailable
   attribution TEXT,
   notes TEXT,
-  approved INTEGER NOT NULL DEFAULT 1 CHECK (approved IN (0, 1))
+  approved INTEGER NOT NULL DEFAULT 1 CHECK (approved IN (0, 1)),
+  edition TEXT,
+  publisher TEXT
 );
 
 CREATE TABLE IF NOT EXISTS narrators (
@@ -79,7 +83,9 @@ CREATE TABLE IF NOT EXISTS teachers (
   entry_number TEXT,
   quote_ar TEXT,
   quote_en TEXT,
-  notes TEXT
+  notes TEXT,
+  edition TEXT,
+  publisher TEXT
 );
 
 CREATE TABLE IF NOT EXISTS students (
@@ -94,7 +100,9 @@ CREATE TABLE IF NOT EXISTS students (
   entry_number TEXT,
   quote_ar TEXT,
   quote_en TEXT,
-  notes TEXT
+  notes TEXT,
+  edition TEXT,
+  publisher TEXT
 );
 
 -- Jarḥ wa taʿdīl / reliability — one row per source opinion (never merge).
@@ -110,7 +118,9 @@ CREATE TABLE IF NOT EXISTS reliability (
   entry_number TEXT,
   verbatim_ar TEXT,
   verbatim_en TEXT,
-  notes TEXT
+  notes TEXT,
+  edition TEXT,
+  publisher TEXT
 );
 
 -- General biography statements / fields with exact source citation.
@@ -125,8 +135,33 @@ CREATE TABLE IF NOT EXISTS references_cite (
   text_ar TEXT,
   text_en TEXT,
   text_ur TEXT,
+  notes TEXT,
+  edition TEXT,
+  publisher TEXT
+);
+
+-- Per-field classical citations (mandatory for every populated classical field).
+-- field_key examples: kunyah, laqab, nasab, tribe, birth_hijri, death_hijri,
+-- birth_place, death_place, status, generation, occupation, reliability,
+-- known_for, teachers, students, books, notes
+CREATE TABLE IF NOT EXISTS field_citations (
+  id INTEGER PRIMARY KEY,
+  narrator_id INTEGER NOT NULL REFERENCES narrators(id) ON DELETE CASCADE,
+  field_key TEXT NOT NULL,
+  source_id INTEGER NOT NULL REFERENCES sources(id),
+  volume TEXT,
+  page TEXT,
+  entry_number TEXT,
+  edition TEXT,
+  publisher TEXT,
+  quote_ar TEXT,
+  quote_en TEXT,
+  quote_ur TEXT,
   notes TEXT
 );
+
+CREATE INDEX IF NOT EXISTS idx_field_citations_narrator
+  ON field_citations(narrator_id, field_key);
 
 -- Books where the biography appears (approved sources only).
 CREATE TABLE IF NOT EXISTS books_mentioned (
@@ -136,7 +171,9 @@ CREATE TABLE IF NOT EXISTS books_mentioned (
   volume TEXT,
   page TEXT,
   entry_number TEXT,
-  notes TEXT
+  notes TEXT,
+  edition TEXT,
+  publisher TEXT
 );
 
 -- Verified mapping: hadith → primary narrator ID (never AI / text prediction).

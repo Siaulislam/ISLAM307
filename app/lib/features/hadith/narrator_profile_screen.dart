@@ -121,20 +121,41 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
       ];
     }
 
+    String citationFor(Map<String, dynamic> m) => NarratorRepository.formatCitation(m);
+
+    String withFieldCitations(String value, String fieldKey) {
+      final cites = (p['field_citations'] as List?) ?? const [];
+      final blocks = <String>[];
+      for (final raw in cites) {
+        final m = Map<String, dynamic>.from(raw as Map);
+        if ('${m['field_key'] ?? ''}' != fieldKey) continue;
+        final block = citationFor(m);
+        if (block.isNotEmpty) blocks.add(block);
+      }
+      if (value.trim().isEmpty && blocks.isEmpty) return '';
+      if (blocks.isEmpty) return value;
+      if (value.trim().isEmpty) return blocks.join('\n\n');
+      return '$value\n\n${blocks.join('\n\n')}';
+    }
+
     String joinPeople(List? rows, List<String> keys) {
       if (rows == null || rows.isEmpty) return '';
       final out = <String>[];
       for (final raw in rows) {
         final m = Map<String, dynamic>.from(raw as Map);
+        String body = '';
         for (final k in keys) {
           final v = '${m[k] ?? ''}'.trim();
           if (v.isNotEmpty) {
-            out.add(v);
+            body = v;
             break;
           }
         }
+        if (body.isEmpty) continue;
+        final cite = citationFor(m);
+        out.add(cite.isEmpty ? body : '$body\n$cite');
       }
-      return out.join('\n');
+      return out.join('\n\n');
     }
 
     String joinReliability(List? rows) {
@@ -147,22 +168,24 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
           '${m['ruling_ar'] ?? ''}'.trim(),
           '${m['ruling_en'] ?? ''}'.trim(),
         ].firstWhere((e) => e.isNotEmpty, orElse: () => '');
-        final source = '${m['source_name'] ?? ''}'.trim();
-        if (ruling.isEmpty && source.isEmpty) continue;
-        out.add(source.isEmpty ? ruling : '$ruling ($source)');
+        if (ruling.isEmpty) continue;
+        final cite = citationFor(m);
+        out.add(cite.isEmpty ? ruling : '$ruling\n$cite');
       }
-      return out.join('\n');
+      return out.join('\n\n');
     }
 
     String joinBooks(List? rows) {
       if (rows == null || rows.isEmpty) return '';
-      return rows
-          .map((raw) {
-            final m = Map<String, dynamic>.from(raw as Map);
-            return '${m['source_name'] ?? m['source_name_ar'] ?? ''}'.trim();
-          })
-          .where((e) => e.isNotEmpty)
-          .join('\n');
+      final out = <String>[];
+      for (final raw in rows) {
+        final m = Map<String, dynamic>.from(raw as Map);
+        final name = '${m['source_name'] ?? m['source_name_ar'] ?? ''}'.trim();
+        if (name.isEmpty) continue;
+        final cite = citationFor(m);
+        out.add(cite.isEmpty ? name : '$name\n$cite');
+      }
+      return out.join('\n\n');
     }
 
     String status() {
@@ -197,23 +220,23 @@ class _NarratorProfileScreenState extends State<NarratorProfileScreen> {
         // Authenticated English attribution from hadith pack (identity only).
         return '${p['name_en'] ?? ''}'.trim();
       }(),
-      '${p['kunyah'] ?? ''}',
-      '${p['laqab'] ?? ''}',
-      '${p['nasab'] ?? ''}',
-      '', // قبیلہ — empty until classical import
-      birthHijri,
-      deathHijri,
-      '${p['city'] ?? ''}',
-      '', // وفات کا مقام — empty until classical import
-      status(),
-      '${p['generation'] ?? ''}',
-      '', // شغل — empty until classical import
-      joinReliability(p['reliability'] as List?),
-      '', // مشہور کیوں ہیں — empty until classical import
-      joinPeople(p['teachers'] as List?, const ['teacher_name_ar', 'teacher_name_en']),
-      joinPeople(p['students'] as List?, const ['student_name_ar', 'student_name_en']),
-      joinBooks(p['books_mentioned'] as List?),
-      '${p['timeline_notes'] ?? ''}',
+      withFieldCitations('${p['kunyah'] ?? ''}', 'kunyah'),
+      withFieldCitations('${p['laqab'] ?? ''}', 'laqab'),
+      withFieldCitations('${p['nasab'] ?? ''}', 'nasab'),
+      withFieldCitations('', 'tribe'), // empty until classical import + citation
+      withFieldCitations(birthHijri, 'birth_hijri'),
+      withFieldCitations(deathHijri, 'death_hijri'),
+      withFieldCitations('${p['city'] ?? ''}', 'birth_place'),
+      withFieldCitations('', 'death_place'),
+      withFieldCitations(status(), 'status'),
+      withFieldCitations('${p['generation'] ?? ''}', 'generation'),
+      withFieldCitations('', 'occupation'),
+      withFieldCitations(joinReliability(p['reliability'] as List?), 'reliability'),
+      withFieldCitations('', 'known_for'),
+      withFieldCitations(joinPeople(p['teachers'] as List?, const ['teacher_name_ar', 'teacher_name_en']), 'teachers'),
+      withFieldCitations(joinPeople(p['students'] as List?, const ['student_name_ar', 'student_name_en']), 'students'),
+      withFieldCitations(joinBooks(p['books_mentioned'] as List?), 'books'),
+      withFieldCitations('${p['timeline_notes'] ?? ''}', 'notes'),
     ];
   }
 

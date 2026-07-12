@@ -25,6 +25,7 @@ OUT_DB = ROOT / "app" / "assets" / "databases" / "narrators.db"
 OUT_GZ = ROOT / "app" / "assets" / "databases" / "narrators.db.gz"
 
 # Approved classical Sunni references ONLY (license/permission still required to import text).
+# Every imported classical field must cite Book, Author, Volume, Page (+ Edition/Publisher if available).
 APPROVED_SOURCES = [
     (1, "tahdhib-al-kamal", "تهذيب الكمال", "Tahdhib al-Kamal", "Imam al-Mizzi", "الإمام المزي", 1),
     (2, "tahdhib-al-tahdhib", "تهذيب التهذيب", "Tahdhib al-Tahdhib", "Imam Ibn Hajar al-Asqalani", "ابن حجر العسقلاني", 2),
@@ -36,6 +37,10 @@ APPROVED_SOURCES = [
     (8, "tabaqat-ibn-sad", "الطبقات الكبرى", "Tabaqat Ibn Sa'd", "Ibn Sa'd", "ابن سعد", 8),
     (9, "tarikh-al-kabir", "التاريخ الكبير", "Tarikh al-Kabir", "Imam al-Bukhari", "الإمام البخاري", 9),
     (10, "al-jarh-wa-al-tadil", "الجرح والتعديل", "Al-Jarh wa al-Ta'dil", "Ibn Abi Hatim", "ابن أبي حاتم", 10),
+    (11, "al-istiab", "الاستيعاب في معرفة الأصحاب", "Al-Isti'ab fi Ma'rifat al-Ashab", "Ibn Abd al-Barr", "ابن عبد البر", 11),
+    (12, "usd-al-ghabah", "أسد الغابة في معرفة الصحابة", "Usd al-Ghabah fi Ma'rifat al-Sahabah", "Ibn al-Athir", "ابن الأثير", 12),
+    (13, "fath-al-bari", "فتح الباري شرح صحيح البخاري", "Fath al-Bari", "Imam Ibn Hajar al-Asqalani", "ابن حجر العسقلاني", 13),
+    (14, "al-kashif", "الكاشف", "Al-Kashif", "Imam al-Dhahabi", "الإمام الذهبي", 14),
 ]
 
 

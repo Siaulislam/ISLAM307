@@ -3,14 +3,16 @@
   "policy": [
     "Never generate narrator names, biographies, teachers, students, birth/death, or reliability with AI.",
     "Never scrape Wikipedia, blogs, forums, or unapproved websites.",
-    "Use ONLY approved classical Sunni references, and only when license/permission allows.",
-    "If a narrator has not been imported into local narrators.db yet, show: This narrator profile has not been imported into the local database yet.",
+    "Use ONLY approved classical Ahl al-Sunnah wa al-Jama'ah references accepted by Hanafi/Deobandi scholars.",
+    "Every classical field MUST include citation: Book Name, Author, Volume Number, Page Number (Edition/Publisher if available).",
+    "If authentic information cannot be verified, leave the field empty — never guess.",
+    "Never use Shia, Ahmadi/Qadiani, or other non-Sunni sources.",
     "Never assume classical data is unavailable. Never invent. Never merge opinions from different books."
   ],
   "not_imported_message": "This narrator profile has not been imported into the local database yet.",
   "database": "narrators",
   "database_asset": "assets/databases/narrators.db.gz",
-  "schema_version": "1_rijal",
+  "schema_version": "1_rijal_citations",
   "pack": {
     "slug": "rijal-scaffold",
     "name_en": "Narrator (Rijāl) Knowledge Pack",
@@ -111,6 +113,13 @@
       "name_ar": "فتح الباري شرح صحيح البخاري",
       "author": "Imam Ibn Hajar al-Asqalani",
       "license_status": "permission_required"
+    },
+    {
+      "slug": "al-kashif",
+      "name_en": "Al-Kashif",
+      "name_ar": "الكاشف",
+      "author": "Imam al-Dhahabi",
+      "license_status": "permission_required"
     }
   ],
   "forbidden": [
@@ -121,6 +130,29 @@
     "User-generated content",
     "Unapproved websites",
     "Guessing or merging classical opinions",
-    "Hardcoding that classical biographies are unavailable"
-  ]
+    "Shia sources",
+    "Ahmadi/Qadiani sources",
+    "Hardcoding that classical biographies are unavailable",
+    "Fields without Book/Author/Volume/Page citation"
+  ],
+  "citation_rule": {
+    "required_fields": [
+      "book_name",
+      "author",
+      "volume",
+      "page"
+    ],
+    "optional_fields": [
+      "edition",
+      "publisher"
+    ],
+    "display_example": {
+      "reliability": "Thiqah",
+      "reference": [
+        "Tahdhib al-Tahdhib",
+        "Vol. 11",
+        "Page 245"
+      ]
+    }
+  }
 }

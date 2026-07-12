@@ -26,7 +26,28 @@ class NarratorRepository {
 
   static const policyNeverInvent =
       'ISLAM 307 never generates narrator biographies with AI. '
-      'Profiles appear only after authenticated narrator datasets are imported into narrators.db.';
+      'Classical fields require approved Ahl al-Sunnah references with Book, Author, Volume, and Page. '
+      'If unverified, the field stays empty.';
+
+  /// Format a classical citation block. Never invents missing volume/page.
+  static String formatCitation(Map<String, dynamic> row) {
+    final book = '${row['source_name'] ?? ''}'.trim();
+    final author = '${row['source_author'] ?? row['author_en'] ?? ''}'.trim();
+    final volume = '${row['volume'] ?? ''}'.trim();
+    final page = '${row['page'] ?? ''}'.trim();
+    final edition = '${row['edition'] ?? row['source_edition'] ?? ''}'.trim();
+    final publisher = '${row['publisher'] ?? row['source_publisher'] ?? ''}'.trim();
+    final lines = <String>[
+      if (book.isNotEmpty) book,
+      if (author.isNotEmpty) author,
+      if (volume.isNotEmpty) 'Vol. $volume',
+      if (page.isNotEmpty) 'Page $page',
+      if (edition.isNotEmpty) 'Edition: $edition',
+      if (publisher.isNotEmpty) 'Publisher: $publisher',
+    ];
+    if (lines.isEmpty) return '';
+    return 'Reference:\n${lines.join('\n')}';
+  }
 
   Future<Map<String, dynamic>> catalog() => _catalog.narratorSources();
 
@@ -201,7 +222,8 @@ class NarratorRepository {
 
     final teachers = await db.rawQuery(
       '''
-      SELECT t.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug
+      SELECT t.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug,
+             s.author_en AS source_author, s.edition AS source_edition, s.publisher AS source_publisher
       FROM teachers t JOIN sources s ON s.id = t.source_id
       WHERE t.narrator_id = ?
       ORDER BY s.sort_order, t.id
@@ -210,7 +232,8 @@ class NarratorRepository {
     );
     final students = await db.rawQuery(
       '''
-      SELECT st.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug
+      SELECT st.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug,
+             s.author_en AS source_author, s.edition AS source_edition, s.publisher AS source_publisher
       FROM students st JOIN sources s ON s.id = st.source_id
       WHERE st.narrator_id = ?
       ORDER BY s.sort_order, st.id
@@ -219,7 +242,8 @@ class NarratorRepository {
     );
     final reliability = await db.rawQuery(
       '''
-      SELECT r.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug
+      SELECT r.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug,
+             s.author_en AS source_author, s.edition AS source_edition, s.publisher AS source_publisher
       FROM reliability r JOIN sources s ON s.id = r.source_id
       WHERE r.narrator_id = ?
       ORDER BY s.sort_order, r.id
@@ -228,7 +252,8 @@ class NarratorRepository {
     );
     final cites = await db.rawQuery(
       '''
-      SELECT c.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug
+      SELECT c.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug,
+             s.author_en AS source_author, s.edition AS source_edition, s.publisher AS source_publisher
       FROM references_cite c JOIN sources s ON s.id = c.source_id
       WHERE c.narrator_id = ?
       ORDER BY s.sort_order, c.id
@@ -237,13 +262,29 @@ class NarratorRepository {
     );
     final books = await db.rawQuery(
       '''
-      SELECT b.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug
+      SELECT b.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug,
+             s.author_en AS source_author, s.edition AS source_edition, s.publisher AS source_publisher
       FROM books_mentioned b JOIN sources s ON s.id = b.source_id
       WHERE b.narrator_id = ?
       ORDER BY s.sort_order, b.id
       ''',
       [id],
     );
+    List<Map<String, Object?>> fieldCitations = const [];
+    try {
+      fieldCitations = await db.rawQuery(
+        '''
+        SELECT fc.*, s.name_en AS source_name, s.name_ar AS source_name_ar, s.slug AS source_slug,
+               s.author_en AS source_author, s.edition AS source_edition, s.publisher AS source_publisher
+        FROM field_citations fc JOIN sources s ON s.id = fc.source_id
+        WHERE fc.narrator_id = ?
+        ORDER BY fc.field_key, s.sort_order, fc.id
+        ''',
+        [id],
+      );
+    } catch (_) {
+      fieldCitations = const [];
+    }
     final hadithCollections = await db.rawQuery(
       '''
       SELECT book_slug, COUNT(*) AS hadith_count
@@ -294,6 +335,7 @@ class NarratorRepository {
       'reliability': reliability,
       'references': cites,
       'books_mentioned': books,
+      'field_citations': fieldCitations,
       'hadith_collections': hadithCollections,
       'policy': policyNeverInvent,
     };
@@ -365,6 +407,7 @@ class NarratorRepository {
       'reliability': const <Map<String, dynamic>>[],
       'references': const <Map<String, dynamic>>[],
       'books_mentioned': const <Map<String, dynamic>>[],
+      'field_citations': const <Map<String, dynamic>>[],
       'hadith_collections': const <Map<String, dynamic>>[],
       'policy': policyNeverInvent,
     };
