@@ -7,13 +7,15 @@
 | Phase | Status |
 |-------|--------|
 | UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
-| `quran.db` | Built (6,236 ayahs + English + Urdu Junagarhi) |
+| `quran.db` | Built (6,236 ayahs + English + Urdu + word knowledge) |
 | `hadith.db` / `tafsir.db` | Bundled; Flutter modules wired |
-| Flutter Quran module | Surah/Ruku browse, Urdu/EN/Arabic-only, View Tafsir, audio |
+| Flutter Quran module | Surah/Ruku browse, word-by-word, Urdu/EN/Arabic-only, View Tafsir, audio + TTS |
 | Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
 | Flutter Tafsir module | Source/Surah/Ayah picker · authentic packs only |
-| Search + Light/Dark | Wired |
-| AI, Prayer, etc. | Next |
+| Search + Light/Dark | Wired (ayah, word, root, morphology, juz, page) |
+| AI Assistant | Source-only local DB search (never invents) |
+| About / Licenses | Data Sources & Licenses acknowledgements |
+| Prayer, etc. | Next |
 
 ## Quick start (local Chrome — same as XMONEY)
 
@@ -74,12 +76,21 @@ Output: `app/assets/databases/quran.db`
 
 | Data | Source |
 |------|--------|
-| Arabic Uthmani | Tanzil Project v1.1 |
+| Arabic Uthmani | Tanzil Project v1.1 (CC BY-ND — unmodified) |
 | Page, Juz, Ruku, Sajdah, Tajweed | Quran.com API v4 |
 | English translation | Sahih International |
+| Urdu translation | Maulana Muhammad Junagarhi |
+| Word morphology / roots / grammar | Quranic Arabic Corpus v0.4 |
+| Word EN/UR meanings | Quran.com word glosses (build-time) |
 | 13-line pages | Optional PDF import (not runtime) |
 
-The app reads **quran.db only** — never the PDF.
+The app reads **quran.db only** — never the PDF. Acknowledgements live in **About → Data Sources & Licenses**.
+
+### Rebuild word knowledge (Phase 4)
+
+```bash
+python tools/quran/import_quran_knowledge.py --chapters 1-114
+```
 
 ## Tech
 

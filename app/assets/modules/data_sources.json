@@ -1,0 +1,93 @@
+{
+  "app": {
+    "name": "ISLAM 307",
+    "tagline": "100% FREE · Sadaqah Jariyah · Offline-first",
+    "policy": [
+      "This application is 100% free.",
+      "No advertisements.",
+      "No paid subscriptions.",
+      "Built as Sadaqah Jariyah.",
+      "AI never invents Quran, Hadith, or Tafsir — it only searches local authenticated databases.",
+      "No copyrighted datasets are used without permission."
+    ]
+  },
+  "sources": [
+    {
+      "id": "tanzil",
+      "title": "Tanzil Quran Text (Uthmani)",
+      "purpose": "Offline Arabic Quran text for reading, search, copy, bookmark, and AI reference.",
+      "license": "Creative Commons Attribution-NoDerivatives 3.0 Unported (CC BY-ND 3.0)",
+      "attribution": "Quran text courtesy of Tanzil Project (https://tanzil.net). The text is used unmodified (NoDerivatives).",
+      "url": "https://tanzil.net",
+      "notes": "BY-ND requires attribution and forbids derivative changes to the Quran text."
+    },
+    {
+      "id": "qac",
+      "title": "Quranic Arabic Corpus — Morphology",
+      "purpose": "Word-by-word morphology, grammar tags, roots, lemmas, and syntax segments for offline word study.",
+      "license": "GNU General Public License (GPL) with Quranic Arabic Corpus terms of use",
+      "attribution": "Morphological annotation © Kais Dukes, Quranic Arabic Corpus (http://corpus.quran.com). Annotations are used without alteration.",
+      "url": "http://corpus.quran.com",
+      "notes": "Applications may use the corpus data with attribution and a link to corpus.quran.com. Do not change annotations."
+    },
+    {
+      "id": "qurancom-wbw",
+      "title": "Quran.com word glosses (EN / UR)",
+      "purpose": "English and Urdu word meanings and transliteration bundled offline for word-by-word study.",
+      "license": "Quran.com / QuranFoundation terms — attribution required; commercial redistribution may require permission",
+      "attribution": "Word translations and transliteration via Quran.com API (https://quran.com). Used for a free Sadaqah Jariyah offline app with attribution.",
+      "url": "https://quran.com",
+      "notes": "If redistributing commercially, contact QuranFoundation for clarification."
+    },
+    {
+      "id": "qurancom-meta",
+      "title": "Quran.com metadata",
+      "purpose": "Surah metadata, page/juz/ruku/sajdah mapping, and related structural fields.",
+      "license": "Quran.com API terms with attribution",
+      "attribution": "Structural Quran metadata from Quran.com API v4 (https://quran.com).",
+      "url": "https://quran.com"
+    },
+    {
+      "id": "sahih-international",
+      "title": "Sahih International (English translation)",
+      "purpose": "English ayah translation for offline reading and search.",
+      "license": "Widely redistributed for free Islamic education; preserve attribution",
+      "attribution": "English translation: Sahih International.",
+      "url": "https://quran.com"
+    },
+    {
+      "id": "junagarhi",
+      "title": "Maulana Muhammad Junagarhi (Urdu translation)",
+      "purpose": "Urdu ayah translation for offline reading and search.",
+      "license": "Distributed via Quran.com translation resources; preserve attribution",
+      "attribution": "Urdu translation: Maulana Muhammad Junagarhi (Quran.com translation id 54).",
+      "url": "https://quran.com"
+    },
+    {
+      "id": "everyayah",
+      "title": "EveryAyah recitation audio",
+      "purpose": "Optional network Quran recitation playback (not stored per-word).",
+      "license": "EveryAyah.com distribution terms",
+      "attribution": "Recitation audio streams from EveryAyah.com when the user chooses to play a reciter.",
+      "url": "https://everyayah.com",
+      "notes": "Word/verse TTS uses the device offline Text-To-Speech engine — audio files are not stored for every word."
+    },
+    {
+      "id": "hadith-packs",
+      "title": "Hadith collections (offline packs)",
+      "purpose": "Bukhari, Muslim, Abu Dawood, Tirmidhi text for offline reading and AI source search.",
+      "license": "See verification reports; preserve book/number grading attribution",
+      "attribution": "Hadith text and metadata are served only from authenticated local hadith.db packs. AI must cite book and number.",
+      "url": "https://sunnah.com",
+      "notes": "Commercial readiness depends on verified provenance documented under reports/verification/."
+    },
+    {
+      "id": "tafsir-packs",
+      "title": "Tafsir packs (offline)",
+      "purpose": "Authenticated tafsir text for offline reading and AI source search.",
+      "license": "Per-pack license; preserve source name and reference",
+      "attribution": "Tafsir entries come only from local tafsir.db. Unavailable packs show an explicit unavailable message — never invented text.",
+      "url": "https://quran.com"
+    }
+  ]
+}

@@ -51,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (q.trim().isEmpty) setState(() => _hits = []);
               },
               decoration: const InputDecoration(
-                hintText: 'Surah, ayah (2:255), ruku 12, hadith number, keywords…',
+                hintText: 'Arabic, Urdu, English, root, word, morphology, ayah, surah, juz, page…',
                 prefixIcon: Icon(Icons.search_rounded),
               ),
             ),
@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Searches authenticated Quran, Hadith, and Tafsir databases only.',
+              'Instant offline search across Quran, words/roots/grammar, Hadith, and Tafsir. Try: 2:255 · juz 1 · page 2 · root رحم · نماز',
               style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12),
             ),
           ),

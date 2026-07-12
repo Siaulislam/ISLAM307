@@ -4,11 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/audio/recitation_audio_service.dart';
+import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
+import '../../core/models/quran_word.dart';
+import '../../core/repositories/quran_word_repository.dart';
 import '../../core/repositories/tafsir_repository.dart';
 import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
 import '../../core/user/user_library_store.dart';
+import 'word_detail_sheet.dart';
 
 class AyahCard extends ConsumerStatefulWidget {
   const AyahCard({super.key, required this.ayah, this.surahName});
@@ -25,6 +29,8 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   String? _highlight;
   String? _note;
   bool _ready = false;
+  List<QuranWord> _words = const [];
+  bool _wordsLoaded = false;
 
   int get _surah => widget.ayah['surah_number'] as int;
   int get _ayahNo => widget.ayah['ayah_number'] as int;
@@ -33,6 +39,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   void initState() {
     super.initState();
     _loadPersonal();
+    _loadWords();
   }
 
   Future<void> _loadPersonal() async {
@@ -46,6 +53,15 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       _highlight = highlight;
       _note = note;
       _ready = true;
+    });
+  }
+
+  Future<void> _loadWords() async {
+    final words = await QuranWordRepository().wordsForAyah(_surah, _ayahNo);
+    if (!mounted) return;
+    setState(() {
+      _words = words;
+      _wordsLoaded = true;
     });
   }
 
@@ -102,7 +118,15 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               ],
             ),
             const SizedBox(height: 12),
-            Text(arabic, textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 24 * scale)),
+            if (_wordsLoaded && _words.isNotEmpty)
+              _tappableArabic(scale)
+            else
+              Text(arabic, textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 24 * scale)),
+            if (_wordsLoaded && _words.isNotEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: Text('Tap a word for meanings, root, grammar & morphology', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
+              ),
             if (translation != null) ...[
               const SizedBox(height: 12),
               Container(
@@ -132,6 +156,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               spacing: 6,
               runSpacing: 6,
               children: [
+                _tool(Icons.volume_up_rounded, 'Speak', () => _speakMenu(arabic, translation, ttsLang)),
                 _tool(Icons.text_increase_rounded, 'Aa', () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale + 0.1)),
                 _tool(Icons.text_decrease_rounded, 'Aa-', () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale - 0.1)),
                 _tool(Icons.dark_mode_rounded, 'Dark', () => ref.read(appSettingsProvider.notifier).toggleTheme()),
@@ -155,6 +180,34 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     );
   }
 
+  Widget _tappableArabic(double scale) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Wrap(
+        alignment: WrapAlignment.start,
+        spacing: 6,
+        runSpacing: 8,
+        children: _words.map((w) {
+          return InkWell(
+            onTap: () => showQuranWordDetailSheet(context, w),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+              child: Text(
+                w.textAr,
+                style: Islam307Theme.arabic(size: 24 * scale).copyWith(
+                  decoration: TextDecoration.underline,
+                  decorationColor: Islam307Theme.emerald.withValues(alpha: 0.35),
+                  decorationThickness: 1.2,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
   Widget _tool(IconData icon, String label, VoidCallback onTap) {
     return OutlinedButton.icon(
       onPressed: onTap,
@@ -162,6 +215,60 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       label: Text(label, style: const TextStyle(fontSize: 12)),
       style: OutlinedButton.styleFrom(visualDensity: VisualDensity.compact),
     );
+  }
+
+  Future<void> _speakMenu(String arabic, String? translation, String translationLang) async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ListTile(title: Text('Speak with offline TTS', style: TextStyle(fontWeight: FontWeight.w800))),
+            ListTile(
+              leading: const Icon(Icons.menu_book_rounded),
+              title: const Text('Entire verse (Arabic)'),
+              onTap: () => Navigator.pop(ctx, 'verse'),
+            ),
+            if (translation != null)
+              ListTile(
+                leading: const Icon(Icons.translate_rounded),
+                title: const Text('Translation'),
+                onTap: () => Navigator.pop(ctx, 'translation'),
+              ),
+            ListTile(
+              leading: const Icon(Icons.library_books_rounded),
+              title: const Text('Tafsir'),
+              onTap: () => Navigator.pop(ctx, 'tafsir'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (choice == null) return;
+    if (choice == 'verse') {
+      await _speak(arabic, 'ar-SA');
+    } else if (choice == 'translation' && translation != null) {
+      await _speak(translation, translationLang);
+    } else if (choice == 'tafsir') {
+      final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
+      final entry = await TafsirRepository(DatabaseRegistry.instance).entry(slug, _surah, _ayahNo);
+      final text = '${entry?['text'] ?? ''}';
+      if (text.isEmpty || entry?['unavailable'] == true) {
+        _toast(entry?['message'] as String? ?? TafsirRepository.unavailableMessage);
+        return;
+      }
+      final lang = RegExp(r'[\u0600-\u06FF]').hasMatch(text) ? 'ar-SA' : 'en-US';
+      await _speak(text, lang);
+    }
+  }
+
+  Future<void> _speak(String text, String language) async {
+    final ok = await TtsService.instance.speakOffline(text, language: language);
+    if (!ok && mounted) {
+      await TtsService.instance.showInstallVoiceGuide(context, language);
+    }
   }
 
   Future<void> _toggleBookmark() async {
@@ -271,7 +378,21 @@ class _AyahCardState extends ConsumerState<AyahCard> {
           height: MediaQuery.sizeOf(context).height * 0.7,
           child: ListView(
             children: [
-              Text('Tafsir · $_surah:$_ayahNo', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+              Row(
+                children: [
+                  Expanded(child: Text('Tafsir · $_surah:$_ayahNo', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18))),
+                  if (entry != null && entry['unavailable'] != true)
+                    IconButton(
+                      tooltip: 'Speak tafsir',
+                      onPressed: () async {
+                        final text = '${entry['text'] ?? ''}';
+                        final lang = RegExp(r'[\u0600-\u06FF]').hasMatch(text) ? 'ar-SA' : 'en-US';
+                        await _speak(text, lang);
+                      },
+                      icon: const Icon(Icons.volume_up_rounded, color: Islam307Theme.emerald),
+                    ),
+                ],
+              ),
               const SizedBox(height: 12),
               if (entry == null || entry['unavailable'] == true)
                 Text(entry?['message'] as String? ?? TafsirRepository.unavailableMessage,

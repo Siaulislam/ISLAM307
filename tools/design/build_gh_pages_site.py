@@ -14,6 +14,7 @@ COPY_DIRS = [
     ("preview", "preview"),
     ("design/mockups", "design/mockups"),
     ("app/assets/branding", "app/assets/branding"),
+    ("app/assets/modules", "app/assets/modules"),
     ("reports/verification", "reports/verification"),
 ]
 

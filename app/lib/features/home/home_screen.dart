@@ -13,14 +13,14 @@ class HomeScreen extends ConsumerWidget {
     ('Hadith', Icons.auto_stories_rounded, '/hadith'),
     ('Tafsir', Icons.library_books_rounded, '/tafsir'),
     ('Search', Icons.search_rounded, '/search'),
-    ('AI', Icons.auto_awesome_rounded, null),
+    ('AI', Icons.auto_awesome_rounded, '/ai'),
+    ('About', Icons.info_outline_rounded, '/about'),
     ('Prayer', Icons.mosque_rounded, null),
     ('Qibla', Icons.explore_rounded, null),
     ('Azkar', Icons.favorite_rounded, null),
     ('Duas', Icons.volunteer_activism_rounded, null),
     ('Library', Icons.local_library_rounded, null),
     ('Audio', Icons.headphones_rounded, null),
-    ('Videos', Icons.play_circle_outline_rounded, null),
   ];
 
   @override
@@ -63,6 +63,7 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _infoCard('Continue Reading', 'Al-Baqarah · Page 42 · Juz 1', onTap: () => context.push('/quran/read/2/1')),
             _infoCard('Daily Hadith', 'Actions are judged by intentions…', subtitle: 'Sahih Bukhari · 1', onTap: () => context.push('/hadith/read/1/1')),
+            _infoCard('About & Licenses', 'Tanzil · Quranic Arabic Corpus · Data Sources', onTap: () => context.push('/about/licenses')),
             const SizedBox(height: 20),
             _dashboardFooter(),
           ],
