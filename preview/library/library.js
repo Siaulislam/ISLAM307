@@ -444,9 +444,6 @@ function openWordQuick(word) {
 function openWordFull(word) {
   const lang = activeWordLang();
   const selected = wordMeaningForLang(word, lang);
-  const parts = (word.parts || [])
-    .map((p) => `<li><strong>${escapeHtml(p.tag || 'seg')}</strong> · ${escapeHtml(fieldOrMissing(p.f))}</li>`)
-    .join('');
   const occS = word.occ_s || 0;
   const occL = word.occ_l || 0;
   const occR = word.occ_r || word.occ || 0;
@@ -469,7 +466,6 @@ function openWordFull(word) {
               ? ` · <button type="button" class="linkish" data-open-root="${escapeHtml(word.root)}">جذر کھولیں</button>`
               : ''
           }</td></tr>
-          <tr><th>صرف</th><td>${escapeHtml(fieldOrMissing(word.morph))}</td></tr>
           <tr><th>گرامر</th><td>${escapeHtml(fieldOrMissing(word.gram))}</td></tr>
           <tr><th>قسم کلمہ</th><td>${escapeHtml(fieldOrMissing(word.pos))}</td></tr>
           <tr><th>نحو</th><td>${escapeHtml(fieldOrMissing(word.syn))}</td></tr>
@@ -479,8 +475,6 @@ function openWordFull(word) {
           <tr><th>Lemma</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.lemma))}</td></tr>
         </tbody>
       </table>
-      <h4>صرف کا درخت</h4>
-      ${parts ? `<ul class="morph-tree">${parts}</ul>` : `<p class="muted">${NO_AUTH}</p>`}
     </div>`;
   openHadithModal(`تفصیل لفظ · ${state.currentSurah}:${word.a}:${word.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');

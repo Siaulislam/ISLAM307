@@ -229,7 +229,6 @@ class _WordDetailBodyState extends State<_WordDetailBody> {
                       child: const Text('جذر کھولیں'),
                     ),
             ),
-            _block('صرف', w.fieldOrMissing(w.morphology)),
             _block('نحو / گرامر', w.fieldOrMissing(w.grammarSummary)),
             _block('قسم کلمہ', w.fieldOrMissing(w.pos)),
             _block('نحو ترکیب', w.fieldOrMissing(w.syntaxSummary)),
@@ -243,30 +242,6 @@ class _WordDetailBodyState extends State<_WordDetailBody> {
               const Text(kNoAuthenticReference, style: TextStyle(color: Islam307Theme.textMuted))
             else
               ...g.displayRows.entries.map((e) => _kv(e.key, e.value)),
-            const SizedBox(height: 14),
-            const Text('صرف کا درخت', style: TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
-            const SizedBox(height: 8),
-            if (w.parts.isEmpty)
-              const Text(kNoAuthenticReference, style: TextStyle(color: Islam307Theme.textMuted))
-            else
-              ...w.parts.map(
-                (p) => Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: const Color(0xFFD1D5DB)),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('${p.role} · ${p.tag.isEmpty ? '—' : p.tag}', style: const TextStyle(fontWeight: FontWeight.w800)),
-                      const SizedBox(height: 4),
-                      Text(p.features.isEmpty ? kNoAuthenticReference : p.features, style: const TextStyle(fontSize: 13, height: 1.45, color: Islam307Theme.textMuted)),
-                    ],
-                  ),
-                ),
-              ),
             const SizedBox(height: 12),
             const Text('وہ آیات جن میں یہی لفظ ہے', style: TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
             const SizedBox(height: 8),
