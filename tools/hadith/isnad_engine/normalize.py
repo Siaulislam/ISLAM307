@@ -13,8 +13,7 @@ _HONOR = re.compile(
     r"رحمه(?:ما|ا)?\s*الله|"
     r"رحمها\s*الله|"
     r"عليه(?:ما|ا)?\s*السلام|"
-    r"صلى\s*الله\s*عليه(?:\s*وآله)?\s*وسلم|"
-    r"ﷺ"
+    r"صلى\s*الله\s*عليه(?:\s*وآله)?\s*وسلم"
     r")\s*",
     re.UNICODE,
 )
@@ -77,6 +76,7 @@ def normalize_key(raw: str) -> str:
     ابن/بن → بن ; أبو/ابو → ابو
     """
     t = normalize_display_ar(raw)
+    t = t.replace("ﷺ", "")
     t = fold_hamza(t)
     t = t.replace("ابن", "بن")
     # Collapse عبد الله → عبدالله (and similar spaced compounds used as one person)

@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from .compilers import compiler_for
 from .confidence import REVIEW_THRESHOLD, score_chain
-from .models import ExtractedHadithIsnad, SanadChain
+from .matn_guards import PROPHET_DISPLAY, should_append_prophet
+from .models import ExtractedHadithIsnad, NarratorRef, SanadChain, SanadLink
+from .normalize import match_key
 from .parse import parse_links
 from .registry import NarratorRegistry
 from .split import split_matn, split_parallel_isnads
@@ -38,13 +40,34 @@ class IsnadEngine:
         )
 
         segments = split_parallel_isnads(isnad_ar) if isnad_ar else []
-        # If parallel marker in full text but cut dropped it, split original isnad cut only.
         if not segments and isnad_ar:
             segments = [isnad_ar]
+
+        append_prophet = should_append_prophet(text_ar or "", isnad_ar)
+        prophet_rec = None
+        if append_prophet:
+            prophet_rec = self.registry.get_or_create(PROPHET_DISPLAY)
 
         chains: list[SanadChain] = []
         for idx, seg in enumerate(segments):
             links, unresolved, leak = parse_links(seg, self.registry)
+            if prophet_rec is not None:
+                already = any(
+                    lnk.ref.normalized_key == match_key(PROPHET_DISPLAY) for lnk in links
+                )
+                if not already:
+                    links.append(
+                        SanadLink(
+                            position=len(links),
+                            ref=NarratorRef(
+                                narrator_id=prophet_rec.id,
+                                display_name_ar=prophet_rec.display_name_ar,
+                                normalized_key=prophet_rec.normalized_key,
+                                surface_form=PROPHET_DISPLAY,
+                            ),
+                            transmission_verb="قال",
+                        )
+                    )
             chain = SanadChain(
                 chain_index=idx,
                 links=links,

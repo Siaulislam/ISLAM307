@@ -27,6 +27,7 @@ from .normalize import (
     normalize_display_ar,
     relative_type,
 )
+from .matn_guards import looks_like_matn_verb_name
 from .registry import NarratorRegistry
 from .models import NarratorRef, SanadLink
 
@@ -94,6 +95,15 @@ def _surface_tokens_from_isnad(isnad: str) -> list[tuple[int, str, str | None]]:
             chunk = chunk[: nested.start()].strip(" ،,;:")
         chunk = re.sub(r"\s*[،,]?\s*\.\s*$", "", chunk).strip(" ،,;:")
         chunk = re.sub(r"\s*[،,]?\s*(?:يقول|يحدث)\s*:?\s*$", "", chunk).strip(" ،,;:")
+        folded_for_peel = _fold_ar(chunk)
+        m_peel = re.search(
+            r"[،,]?\s*قال(?:ت)?\s*:?\s*"
+            r"(?=قام|جلس|خرج|دخل|اتي|جاء|خطب|بعث|ارسل|نزل|بينا|بينما|كان|"
+            r"سئل|سيل|سال|سالت|رسول|النبي|بلغ|وهو)",
+            folded_for_peel,
+        )
+        if m_peel:
+            chunk = chunk[: m_peel.start()].strip(" ،,;:")
         if not chunk:
             continue
         if _is_prophet_token(chunk) or (_is_matn_noise(chunk) and not is_relative_token(chunk)):
@@ -102,7 +112,7 @@ def _surface_tokens_from_isnad(isnad: str) -> list[tuple[int, str, str | None]]:
                 offset = start
                 for p in parts:
                     p = p.strip()
-                    if p and not _is_prophet_token(p):
+                    if p and not _is_prophet_token(p) and not _is_matn_noise(p):
                         push(offset, p, verb)
                         offset += len(p) + 1
             continue
@@ -136,6 +146,8 @@ def parse_links(
     leak = bool(_MATN_LEAK.search(isnad_ar or ""))
 
     for surface, verb in ((t[1], t[2]) for t in tokens):
+        if looks_like_matn_verb_name(surface):
+            continue
         rel = relative_type(surface)
         if rel:
             prev = links[-1] if links else None

@@ -290,6 +290,24 @@ def _cut_isnad_ar(text_ar: str) -> str:
         if m:
             add_cut(m.start())
 
+    # --- Matn-opening verbs (+ optional فينا) before Prophet ---
+    # e.g. قال قام فينا رسول الله / خرج رسول الله / خطب رسول الله
+    matn_verbs = (
+        r"قام|جلس|خرج|دخل|اتي|جاء|ذهب|راي|خطب|خطبنا|قرا|كتب|تكلم|دعا|"
+        r"سال|سالت|سيل|سئل|اجاب|بعث|ارسل|نزل|بينا|بينما|كان|كنت|كنا|دخلنا|خرجنا"
+    )
+    for m in re.finditer(
+        rf"(?:^|[\s،,;:])(?:{matn_verbs})"
+        rf"(?:\s+فينا)?"
+        rf"\s+(?:رسول\s*الله|النبي\b|نبي\s*الله)",
+        plain,
+    ):
+        # Cut at the verb (skip leading whitespace from the non-capturing prefix)
+        pos = m.start()
+        while pos < len(plain) and plain[pos] in " \t،,;:":
+            pos += 1
+        add_cut(pos)
+
     # --- Companion speech that opens matn: انها قالت / انه قال (not انه سمع) ---
     for m in re.finditer(r"انها\s+قالت|انه\s+قال(?!\s+رسول)", plain):
         add_cut(m.start())
@@ -333,15 +351,16 @@ def _cut_isnad_ar(text_ar: str) -> str:
     ):
         add_cut(m.start("tail"))
 
-    # --- قال: opens matn when followed by story / question / Prophet speech ---
+    # --- قال / قالت: opens matn when followed by action verb or Prophet ---
     for m in re.finditer(
-        r"قال\s*:?\s*(?!حدثنا|حدثني|اخبرنا|اخبرني|سمعت|انبانا|انباني)",
+        r"قال(?:ت)?\s*:?\s*(?!حدثنا|حدثني|اخبرنا|اخبرني|سمعت|انبانا|انباني)",
         plain,
     ):
-        ahead = plain[m.end() : m.end() + 55]
+        ahead = plain[m.end() : m.end() + 60]
         if re.match(
-            r"\s*(?:سمعت\s+رسول|كان\s+رسول|ان\s+الحارث|ان\s+ابا\s+سفيان|ان\s+هرقل|"
-            r"بلغ\s+|بينا|بينما|وهو|"
+            rf"\s*(?:(?:{matn_verbs})\b|سمعت\s+رسول|رسول\s*الله|النبي\b|"
+            r"ان\s+الحارث|ان\s+ابا\s+سفيان|ان\s+هرقل|"
+            r"بلغ\s+|وهو\s+|"
             r"اخبرني\s+(?:ابو|ابا)\s+سفيان)",
             ahead,
         ):
@@ -374,13 +393,14 @@ def _is_matn_noise(name: str) -> bool:
         return True
     if re.search(
         r"^(?:في|وهو|فقال|بينا|بينما|فترة|حديثه|نحوه|له\s+سالتك|سالتك|قالوا|"
-        r"ابو\s+سفيان|ابا\s+سفيان|هرقل)\b",
+        r"ابو\s+سفيان|ابا\s+سفيان|هرقل|"
+        r"قام|جلس|خرج|دخل|خطب|بعث|ارسل|نزل|كان|سئل)\b",
         n,
     ):
         return True
-    if re.search(r"(?:سالتك|يزعم|ارسل|دعا|يزيدون|ينقصون|فزعمت|بشاشته|القريش|الشام)", n):
+    if re.search(r"(?:سالتك|يزعم|ارسل|دعا|يزيدون|ينقصون|فزعمت|بشاشته|القريش|الشام|قام\s+فينا)", n):
         return True
-    if re.search(r"^(?:هرقل|الملك|اصحابه|ملك)$", n):
+    if re.search(r"^(?:هرقل|الملك|اصحابه|ملك|فينا)$", n):
         return True
     # Long multi-clause blobs (not ordinary ibn-chains).
     if len(n.split()) > 12:
@@ -490,6 +510,16 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
         # Drop speech / parallel-chain tails before noise checks
         chunk = re.sub(r"\s*[،,]?\s*\.\s*$", "", chunk).strip(" ،,;:")
         chunk = re.sub(r"\s*[،,]?\s*(?:يقول|يحدث)\s*:?\s*$", "", chunk).strip(" ،,;:")
+        # Peel companion "قال / قالت" + matn opener (قام فينا / خرج / …)
+        folded_for_peel = _fold_ar(chunk)
+        m_peel = re.search(
+            r"[،,]?\s*قال(?:ت)?\s*:?\s*"
+            r"(?=قام|جلس|خرج|دخل|اتي|جاء|خطب|بعث|ارسل|نزل|بينا|بينما|كان|"
+            r"سئل|سيل|سال|سالت|رسول|النبي|بلغ|وهو)",
+            folded_for_peel,
+        )
+        if m_peel:
+            chunk = chunk[: m_peel.start()].strip(" ،,;:")
         if not chunk:
             continue
 
@@ -547,13 +577,11 @@ def extract_ravi_chain(
     book_slug: str | None = None,
 ) -> list[str]:
     """
-    Ordered rawi list from authenticated isnad only (excludes Prophet ﷺ).
+    Ordered sanad names from authenticated isnad only.
 
-    Prefer Arabic isnad via Isnad Engine (primary chain, relatives resolved when
-    recoverable from the previous authenticated name). Fall back to English
-    Narrated-X; then DB narrator field.
-
-    Compiler is never included in this list.
+    Includes رسول الله ﷺ as the final node when the Matn is Prophet
+    speech/action. Compiler is never included. Matn verbs (قام فينا, …)
+    are never narrators.
     """
     ar = (text_ar or "").strip()
     en = (text_en or "").strip()
@@ -574,16 +602,25 @@ def extract_ravi_chain(
             names = [n for n in parsed.primary_names if n]
         except Exception:
             names = _extract_names_from_ar_isnad(_cut_isnad_ar(ar))
+            # Append Prophet when matn is Prophet action/speech
+            try:
+                from isnad_engine.matn_guards import PROPHET_DISPLAY, should_append_prophet
+
+                if should_append_prophet(ar) and not any(_is_prophet_token(n) for n in names):
+                    names.append(PROPHET_DISPLAY)
+            except Exception:
+                pass
 
     if len(names) < 1 and en:
         names = _extract_narrated_en(en)
 
     if not names and primary:
         p = _clean_name_en(primary) if re.search(r"[A-Za-z]", primary or "") else _clean_name_ar(primary or "")
-        if p and not _is_prophet_token(p):
+        if p:
             names = [p]
 
-    return [n for n in names if n and not _is_prophet_token(n)]
+    # Keep Prophet ﷺ when present as final sanad node; drop empty only.
+    return [n for n in names if n]
 
 
 def isnad_excerpt(text_ar: str | None, max_len: int = 480) -> str:

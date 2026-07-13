@@ -158,5 +158,57 @@ class MatchKeyAlias(unittest.TestCase):
         self.assertEqual(match_key("عبد الله"), match_key("عبدالله"))
 
 
+
+class MatnVerbLeakTests(unittest.TestCase):
+    """Abu Dawud 4240 + synthetic matn-openers must not leak verbs."""
+
+    def test_abudawud_4240_qaama_feena(self):
+        import gzip, sqlite3, tempfile
+        raw = gzip.open(
+            Path(__file__).resolve().parents[3] / "app/assets/databases/hadith.db.gz",
+            "rb",
+        ).read()
+        tf = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+        tf.write(raw)
+        tf.close()
+        con = sqlite3.connect(tf.name)
+        bid = con.execute("SELECT id FROM books WHERE slug='abudawud'").fetchone()[0]
+        ar = con.execute(
+            "SELECT text_ar FROM hadiths WHERE book_id=? AND hadith_number=4240 ORDER BY id LIMIT 1",
+            (bid,),
+        ).fetchone()[0]
+        names = parse_hadith_isnad(ar, book_slug="abudawud", hadith_number=4240).primary_names
+        joined = " | ".join(names)
+        for tok in ("عثمان", "جرير", "عمش", "وائل", "حذيفة", "رسول الله"):
+            self.assertIn(tok, joined.replace("أ", "ا").replace("إ", "ا"))
+        self.assertFalse(any(n.startswith("قام") or "فينا" in n for n in names), names)
+
+    def test_synthetic_matn_openers(self):
+        cases = [
+            ("عن ابن عباس قال خرج رسول الله صلى الله عليه وسلم", "عباس", "خرج"),
+            ("عن أبي هريرة قال دخل رسول الله صلى الله عليه وسلم", "هريرة", "دخل"),
+            ("عن أنس قال كان رسول الله صلى الله عليه وسلم", "أنس", "كان"),
+            ("عن عائشة قالت سئل رسول الله صلى الله عليه وسلم", "عائشة", "سئل"),
+            ("عن أبي سعيد قال خطب رسول الله صلى الله عليه وسلم", "سعيد", "خطب"),
+            ("عن جابر قال بينما رسول الله صلى الله عليه وسلم", "جابر", "بينما"),
+            ("عن أبي موسى قال بعث رسول الله صلى الله عليه وسلم", "موسى", "بعث"),
+            (
+                "حدثنا عثمان بن أبي شيبة، حدثنا جرير، عن الأعمش، عن أبي وائل، عن حذيفة، "
+                "قال: قام فينا رسول الله صلى الله عليه وسلم",
+                "حذيفة",
+                "قام",
+            ),
+        ]
+        for ar, need, forbid in cases:
+            names = parse_hadith_isnad(ar, book_slug="bukhari").primary_names
+            joined = " | ".join(names)
+            self.assertIn(need, joined, msg=joined)
+            self.assertFalse(
+                any(n == forbid or n.startswith(forbid + " ") or n.startswith("قام") for n in names),
+                msg=f"{forbid} leaked in {names}",
+            )
+            self.assertTrue(any("رسول الله" in n for n in names), msg=names)
+
+
 if __name__ == "__main__":
     unittest.main()

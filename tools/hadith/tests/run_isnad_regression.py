@@ -194,6 +194,23 @@ def main() -> int:
     ok7 = any("عباس" in n for n in r7.primary_names) and not any("هرقل" in n for n in r7.primary_names)
     spot.append(("Bukhari 7 story", ok7, r7.primary_names))
 
+
+    # Abu Dawud 4240 — قام فينا must not be a narrator
+    ad_id = book_map.get("abudawud")
+    if ad_id:
+        ar4240 = conn.execute(
+            "SELECT text_ar FROM hadiths WHERE book_id=? AND hadith_number=4240 ORDER BY id LIMIT 1",
+            (ad_id,),
+        ).fetchone()
+        if ar4240:
+            r4240 = engine.parse(text_ar=ar4240[0], book_slug="abudawud", hadith_number=4240)
+            ok4240 = (
+                any("حذيفة" in n for n in r4240.primary_names)
+                and any("رسول الله" in n for n in r4240.primary_names)
+                and not any(n.startswith("قام") or "فينا" in n for n in r4240.primary_names)
+            )
+            spot.append(("Abu Dawud 4240 قام فينا", ok4240, r4240.primary_names))
+
     lines.append("")
     lines.append("## Spot checks")
     lines.append("")
