@@ -19,6 +19,8 @@ dependencies:
   flutter_tts: ^4.2.0
   audioplayers: ^6.1.0
   share_plus: ^10.0.2
+  geolocator: ^13.0.2
+  flutter_compass: ^1.0.8
 
 dev_dependencies:
   flutter_test:

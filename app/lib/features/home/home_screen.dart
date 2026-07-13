@@ -15,7 +15,7 @@ class HomeScreen extends ConsumerWidget {
     ('Search', Icons.search_rounded, '/search'),
     ('AI', Icons.auto_awesome_rounded, null),
     ('Prayer', Icons.mosque_rounded, null),
-    ('Qibla', Icons.explore_rounded, null),
+    ('Qibla', Icons.explore_rounded, '/qibla'),
     ('Azkar', Icons.favorite_rounded, null),
     ('Duas', Icons.volunteer_activism_rounded, null),
     ('Library', Icons.local_library_rounded, null),

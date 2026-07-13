@@ -13,7 +13,8 @@
 | Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
 | Flutter Tafsir module | Source/Surah/Ayah picker · authentic packs only |
 | Search + Light/Dark | Wired |
-| AI, Prayer, etc. | Next |
+| Flutter Qibla | Live GPS + compass toward Kaaba |
+| AI, Prayer, Azkar, etc. | Next |
 
 ## Quick start (local Chrome — same as XMONEY)
 
