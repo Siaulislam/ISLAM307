@@ -391,34 +391,39 @@
           <div class="pattern-bg"></div>
           <div class="phone-notch">Prayer</div>
           <div class="screen-body">
-            <div style="display:flex;gap:8px;margin-bottom:16px;overflow-x:auto">
-              <span class="lang-pill active" style="font-size:11px">Times</span>
-              <span class="lang-pill" style="font-size:11px" role="button" tabindex="0" data-goto="qibla">Qibla</span>
-              <span class="lang-pill" style="font-size:11px">Tasbeeh</span>
-              <span class="lang-pill" style="font-size:11px">Hijri</span>
+            <div class="top-bar" style="margin-bottom:8px">
+              <div class="icon-btn" role="button" tabindex="0" data-goto="home" title="Back">←</div>
+              <strong style="flex:1;text-align:center;color:var(--emerald-deep)">Prayer Times</strong>
+              <div class="icon-btn" role="button" tabindex="0" data-goto="qibla" title="Qibla">🧭</div>
             </div>
             <div class="card card-emerald">
               <p style="text-align:center;font-size:13px;color:var(--muted)">Next prayer</p>
-              <p style="text-align:center;font-size:32px;font-weight:900;color:var(--emerald-deep)">Dhuhr · 12:45</p>
-              <p style="text-align:center;font-size:12px;color:var(--muted)">in 2h 14m</p>
+              <p id="prayer-next" style="text-align:center;font-size:28px;font-weight:900;color:var(--emerald-deep)">—</p>
+              <p id="prayer-countdown" style="text-align:center;font-size:12px;color:var(--muted)">Tap “Use my location”</p>
             </div>
-            <div class="card">
-              <div class="prayer-row"><span>Fajr</span><span class="time">05:12</span></div>
-              <div class="prayer-row active"><span>Dhuhr</span><span class="time">12:45</span></div>
-              <div class="prayer-row"><span>Asr</span><span class="time">16:20</span></div>
-              <div class="prayer-row"><span>Maghrib</span><span class="time">18:52</span></div>
-              <div class="prayer-row"><span>Isha</span><span class="time">20:15</span></div>
+            <div class="card" id="prayer-rows">
+              <div class="prayer-row"><span>Fajr</span><span class="time" data-prayer="Fajr">—</span></div>
+              <div class="prayer-row"><span>Sunrise</span><span class="time" data-prayer="Sunrise">—</span></div>
+              <div class="prayer-row"><span>Dhuhr</span><span class="time" data-prayer="Dhuhr">—</span></div>
+              <div class="prayer-row"><span>Asr</span><span class="time" data-prayer="Asr">—</span></div>
+              <div class="prayer-row"><span>Maghrib</span><span class="time" data-prayer="Maghrib">—</span></div>
+              <div class="prayer-row"><span>Isha</span><span class="time" data-prayer="Isha">—</span></div>
             </div>
-            <div class="qibla-ring"><span>Qibla<br><small style="font-size:12px">258° W</small></span></div>
-            <p class="section-title" style="text-align:center">Tasbeeh</p>
-            <p class="tasbeeh-count">33</p>
-            <p style="text-align:center;font-size:14px;color:var(--muted)">SubhanAllah</p>
-            <div class="card" style="text-align:center;margin-top:12px">
-              <span class="chip">Hijri · 12 Ramadan 1447</span>
-            </div>
+            <p id="prayer-meta" style="text-align:center;font-size:11px;color:var(--muted);margin:8px 0">
+              Offline timetable from your GPS location
+            </p>
+            <button class="btn-primary" id="prayer-locate">Use my location</button>
+            <button class="btn-outline" data-goto="qibla" style="margin-top:8px">Open Qibla</button>
           </div>
+          <nav class="bottom-nav">
+            <div class="nav-item" data-goto="home"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item" data-goto="quran"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item active" data-goto="prayer"><div class="ni">🕌</div>Prayer</div>
+            <div class="nav-item" data-goto="qibla"><div class="ni">🧭</div>Qibla</div>
+            <div class="nav-item" data-goto="more"><div class="ni">☰</div>More</div>
+          </nav>
         </div>
-        <p class="screen-label">9 · Prayer (Times · Qibla · Tasbeeh · Hijri)</p>
+        <p class="screen-label">9 · Prayer timetable (offline · your location)</p>
       </div>
 
       <!-- 9b QIBLA (live location) -->
@@ -768,11 +773,28 @@
           const coordsEl = document.getElementById('qibla-coords');
           if (distEl) distEl.textContent = `${dist.toFixed(0)} km`;
           if (coordsEl) coordsEl.textContent = `${lat.toFixed(4)}°, ${lng.toFixed(4)}°`;
-          if (status) status.textContent = 'Location ready — hold phone flat and turn';
+          if (status) status.textContent = 'Location ready — hold phone flat and turn · offline bearing';
           renderQibla();
           startCompass();
+          try { localStorage.setItem('islam307_geo', JSON.stringify({ lat, lng, at: Date.now() })); } catch (_) {}
         },
         (err) => {
+          try {
+            const raw = localStorage.getItem('islam307_geo');
+            if (raw) {
+              const c = JSON.parse(raw);
+              qiblaDeg = qiblaBearing(c.lat, c.lng);
+              const dist = haversineKm(c.lat, c.lng);
+              const distEl = document.getElementById('qibla-distance');
+              const coordsEl = document.getElementById('qibla-coords');
+              if (distEl) distEl.textContent = `${dist.toFixed(0)} km`;
+              if (coordsEl) coordsEl.textContent = `${c.lat.toFixed(4)}°, ${c.lng.toFixed(4)}° (saved)`;
+              if (status) status.textContent = 'Using saved location · offline';
+              renderQibla();
+              startCompass();
+              return;
+            }
+          } catch (_) {}
           if (status) {
             status.textContent = err.code === 1
               ? 'Location permission denied. Allow location access and try again.'
@@ -787,6 +809,163 @@
     const refreshBtn = document.getElementById('qibla-refresh');
     if (locateBtn) locateBtn.addEventListener('click', (e) => { e.stopPropagation(); locateQibla(); });
     if (refreshBtn) refreshBtn.addEventListener('click', (e) => { e.stopPropagation(); locateQibla(); });
+
+    // —— Offline prayer times (Karachi method, Hanafi Asr) ——
+    function fix(a, b) { let x = a - b * Math.floor(a / b); return x < 0 ? x + b : x; }
+    function julian(date, tz) {
+      let y = date.getFullYear(), m = date.getMonth() + 1;
+      const d = date.getDate() + 0.5 - tz / 24;
+      if (m <= 2) { y -= 1; m += 12; }
+      const A = Math.floor(y / 100), B = 2 - A + Math.floor(A / 4);
+      return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+    }
+    function sunDecl(jd) {
+      const d = jd - 2451545.0;
+      const g = fix(357.529 + 0.98560028 * d, 360) * Math.PI / 180;
+      const q = fix(280.459 + 0.98564736 * d, 360);
+      const L = fix(q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g), 360) * Math.PI / 180;
+      const e = (23.439 - 0.00000036 * d) * Math.PI / 180;
+      return Math.asin(Math.sin(e) * Math.sin(L)) * 180 / Math.PI;
+    }
+    function eqTime(jd) {
+      const d = jd - 2451545.0;
+      const g = fix(357.529 + 0.98560028 * d, 360) * Math.PI / 180;
+      const q = fix(280.459 + 0.98564736 * d, 360);
+      const L = fix(q + 1.915 * Math.sin(g) + 0.020 * Math.sin(2 * g), 360);
+      const e = (23.439 - 0.00000036 * d) * Math.PI / 180;
+      const RA = Math.atan2(Math.cos(e) * Math.sin(L * Math.PI / 180), Math.cos(L * Math.PI / 180)) * 180 / Math.PI / 15;
+      return q / 15 - fix(RA, 24);
+    }
+    function midDay(jd, tz, lng) { return fix(12 - eqTime(jd) - lng / 15 + tz, 24); }
+    function hourAngle(lat, angle, decl) {
+      const term = (-Math.sin(angle * Math.PI / 180) - Math.sin(lat * Math.PI / 180) * Math.sin(decl * Math.PI / 180)) /
+        (Math.cos(lat * Math.PI / 180) * Math.cos(decl * Math.PI / 180));
+      return Math.acos(Math.min(1, Math.max(-1, term))) * 180 / Math.PI / 15;
+    }
+    function asrTime(mid, lat, decl) {
+      const factor = 2 + Math.tan(Math.abs(lat - decl) * Math.PI / 180); // Hanafi
+      const ang = Math.atan(1 / factor) * 180 / Math.PI;
+      return mid + hourAngle(lat, 90 - ang, decl);
+    }
+    function hoursToDate(base, hours) {
+      const h = fix(hours, 24);
+      const hr = Math.floor(h);
+      const mf = (h - hr) * 60;
+      const mi = Math.floor(mf);
+      const se = Math.round((mf - mi) * 60);
+      return new Date(base.getFullYear(), base.getMonth(), base.getDate(), hr, mi, se);
+    }
+    function fmtTime(d) {
+      return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    }
+    function calcPrayerTimes(lat, lng) {
+      const now = new Date();
+      const tz = -now.getTimezoneOffset() / 60;
+      const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const jd0 = julian(day, tz);
+      const fajrA = 18, ishaA = 18, riseA = 0.833;
+      let decl = sunDecl(jd0), mid = midDay(jd0, tz, lng);
+      let fajr = mid - hourAngle(lat, fajrA, decl);
+      let sunrise = mid - hourAngle(lat, riseA, decl);
+      let sunset = mid + hourAngle(lat, riseA, decl);
+      let asr = asrTime(mid, lat, decl);
+      let isha = mid + hourAngle(lat, ishaA, decl);
+      let dhuhr = mid;
+      function rising(approx, angle) {
+        const j = jd0 + (approx - tz - 12) / 24;
+        decl = sunDecl(j); mid = midDay(j, tz, lng);
+        return mid - hourAngle(lat, angle, decl);
+      }
+      function setting(approx, angle) {
+        const j = jd0 + (approx - tz - 12) / 24;
+        decl = sunDecl(j); mid = midDay(j, tz, lng);
+        return mid + hourAngle(lat, angle, decl);
+      }
+      fajr = rising(fajr, fajrA);
+      sunrise = rising(sunrise, riseA);
+      sunset = setting(sunset, riseA);
+      {
+        const j = jd0 + (asr - tz - 12) / 24;
+        decl = sunDecl(j); mid = midDay(j, tz, lng);
+        asr = asrTime(mid, lat, decl);
+      }
+      isha = setting(isha, ishaA);
+      dhuhr = midDay(jd0, tz, lng);
+      return {
+        Fajr: hoursToDate(day, fajr),
+        Sunrise: hoursToDate(day, sunrise),
+        Dhuhr: hoursToDate(day, dhuhr),
+        Asr: hoursToDate(day, asr),
+        Maghrib: hoursToDate(day, sunset),
+        Isha: hoursToDate(day, isha),
+      };
+    }
+    function renderPrayerTimes(lat, lng) {
+      const times = calcPrayerTimes(lat, lng);
+      const now = new Date();
+      let nextName = 'Fajr', nextTime = new Date(times.Fajr.getTime() + 86400000);
+      for (const name of ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha']) {
+        if (times[name] > now) { nextName = name; nextTime = times[name]; break; }
+      }
+      document.querySelectorAll('#prayer-rows .time').forEach((el) => {
+        const n = el.getAttribute('data-prayer');
+        if (times[n]) el.textContent = fmtTime(times[n]);
+        const row = el.closest('.prayer-row');
+        if (row) row.classList.toggle('active', n === nextName);
+      });
+      const nextEl = document.getElementById('prayer-next');
+      const cdEl = document.getElementById('prayer-countdown');
+      const meta = document.getElementById('prayer-meta');
+      if (nextEl) nextEl.textContent = `${nextName} · ${fmtTime(nextTime)}`;
+      if (cdEl) {
+        const mins = Math.max(0, Math.round((nextTime - now) / 60000));
+        const h = Math.floor(mins / 60), m = mins % 60;
+        cdEl.textContent = h > 0 ? `in ${h}h ${m}m · offline` : `in ${m}m · offline`;
+      }
+      if (meta) meta.textContent = `Karachi method · Hanafi Asr · ${lat.toFixed(3)}°, ${lng.toFixed(3)}°`;
+      try { localStorage.setItem('islam307_geo', JSON.stringify({ lat, lng, at: Date.now() })); } catch (_) {}
+    }
+    function locatePrayer() {
+      const cdEl = document.getElementById('prayer-countdown');
+      // Prefer cached coords for offline reuse
+      try {
+        const raw = localStorage.getItem('islam307_geo');
+        if (raw && !navigator.onLine) {
+          const c = JSON.parse(raw);
+          if (c.lat != null) { renderPrayerTimes(c.lat, c.lng); return; }
+        }
+      } catch (_) {}
+      if (!navigator.geolocation) {
+        if (cdEl) cdEl.textContent = 'Geolocation not supported';
+        return;
+      }
+      if (cdEl) cdEl.textContent = 'Finding your location…';
+      navigator.geolocation.getCurrentPosition(
+        (pos) => renderPrayerTimes(pos.coords.latitude, pos.coords.longitude),
+        (err) => {
+          try {
+            const raw = localStorage.getItem('islam307_geo');
+            if (raw) {
+              const c = JSON.parse(raw);
+              renderPrayerTimes(c.lat, c.lng);
+              return;
+            }
+          } catch (_) {}
+          if (cdEl) cdEl.textContent = err.code === 1 ? 'Location permission denied' : 'Could not read location';
+        },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 600000 }
+      );
+    }
+    const prayerLocate = document.getElementById('prayer-locate');
+    if (prayerLocate) prayerLocate.addEventListener('click', (e) => { e.stopPropagation(); locatePrayer(); });
+    // Auto-fill from cache when opening prayer
+    try {
+      const raw = localStorage.getItem('islam307_geo');
+      if (raw) {
+        const c = JSON.parse(raw);
+        if (c.lat != null) renderPrayerTimes(c.lat, c.lng);
+      }
+    } catch (_) {}
   </script>
 </body>
 </html>

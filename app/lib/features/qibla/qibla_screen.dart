@@ -5,11 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/location/offline_location_service.dart';
 import '../../core/theme/islam307_theme.dart';
-import 'qibla_location_service.dart';
 import 'qibla_math.dart';
 
-/// Live Qibla finder: uses GPS + device compass to point toward the Kaaba.
+/// Live Qibla finder: GPS (cached offline) + on-device compass toward the Kaaba.
+/// Bearing math never uses the network.
 class QiblaScreen extends StatefulWidget {
   const QiblaScreen({super.key});
 
@@ -18,11 +19,12 @@ class QiblaScreen extends StatefulWidget {
 }
 
 class _QiblaScreenState extends State<QiblaScreen> {
-  final _location = const QiblaLocationService();
+  final _location = const OfflineLocationService();
 
   bool _loading = true;
   String? _error;
-  QiblaLocationError? _errorCode;
+  OfflineLocationError? _errorCode;
+  bool _fromCache = false;
 
   double? _lat;
   double? _lng;
@@ -51,7 +53,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
       _errorCode = null;
     });
     try {
-      final pos = await _location.getCurrentPosition();
+      final pos = await _location.resolve(featureLabel: 'Qibla');
       final bearing = qiblaBearingDegrees(pos.latitude, pos.longitude);
       final dist = distanceToKaabaKm(pos.latitude, pos.longitude);
       if (!mounted) return;
@@ -60,22 +62,23 @@ class _QiblaScreenState extends State<QiblaScreen> {
         _lng = pos.longitude;
         _qiblaBearing = bearing;
         _distanceKm = dist;
+        _fromCache = pos.fromCache;
         _loading = false;
       });
       _listenCompass();
-    } on QiblaLocationException catch (e) {
+    } on OfflineLocationException catch (e) {
       if (!mounted) return;
       setState(() {
         _loading = false;
         _error = e.message;
         _errorCode = e.code;
       });
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
       setState(() {
         _loading = false;
         _error = 'Something went wrong while reading your location.';
-        _errorCode = QiblaLocationError.unavailable;
+        _errorCode = OfflineLocationError.unavailable;
       });
     }
   }
@@ -103,7 +106,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
   }
 
   Future<void> _openSettings() async {
-    if (_errorCode == QiblaLocationError.serviceDisabled) {
+    if (_errorCode == OfflineLocationError.serviceDisabled) {
       await _location.openLocationSettings();
     } else {
       await _location.openAppSettings();
@@ -126,6 +129,11 @@ class _QiblaScreenState extends State<QiblaScreen> {
           },
         ),
         actions: [
+          IconButton(
+            tooltip: 'Prayer times',
+            onPressed: () => context.push('/prayer'),
+            icon: const Icon(Icons.mosque_rounded),
+          ),
           IconButton(
             tooltip: 'Refresh location',
             onPressed: _loading ? null : _bootstrap,
@@ -172,7 +180,7 @@ class _QiblaScreenState extends State<QiblaScreen> {
           ),
           const SizedBox(height: 20),
           const Text(
-            'Location needed for Qibla',
+            'Location needed once',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep),
           ),
@@ -182,18 +190,21 @@ class _QiblaScreenState extends State<QiblaScreen> {
             textAlign: TextAlign.center,
             style: const TextStyle(color: Islam307Theme.textMuted, height: 1.45),
           ),
-          const SizedBox(height: 24),
-          FilledButton(
-            onPressed: _bootstrap,
-            child: const Text('Try again'),
+          const SizedBox(height: 8),
+          const Text(
+            'Qibla direction is calculated fully offline after your location is saved on this device.',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 12, color: Islam307Theme.textMuted, height: 1.4),
           ),
+          const SizedBox(height: 24),
+          FilledButton(onPressed: _bootstrap, child: const Text('Use my location')),
           const SizedBox(height: 10),
-          if (_errorCode == QiblaLocationError.deniedForever ||
-              _errorCode == QiblaLocationError.serviceDisabled)
+          if (_errorCode == OfflineLocationError.deniedForever ||
+              _errorCode == OfflineLocationError.serviceDisabled)
             OutlinedButton(
               onPressed: _openSettings,
               child: Text(
-                _errorCode == QiblaLocationError.serviceDisabled
+                _errorCode == OfflineLocationError.serviceDisabled
                     ? 'Open location settings'
                     : 'Open app settings',
               ),
@@ -206,11 +217,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
   Widget _compassView() {
     final bearing = _qiblaBearing ?? 0;
     final heading = _heading;
-    final needle = heading == null
-        ? bearing
-        : qiblaNeedleRotation(bearing, heading);
-    final aligned = heading != null &&
-        ((needle > 350) || (needle < 10));
+    final needle = heading == null ? bearing : qiblaNeedleRotation(bearing, heading);
+    final aligned = heading != null && ((needle > 350) || (needle < 10));
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
@@ -226,7 +234,8 @@ class _QiblaScreenState extends State<QiblaScreen> {
         ),
         const SizedBox(height: 6),
         Text(
-          'Kaaba · ${bearing.toStringAsFixed(0)}° ${bearingCardinal(bearing)}',
+          'Kaaba · ${bearing.toStringAsFixed(0)}° ${bearingCardinal(bearing)}'
+          '${_fromCache ? ' · offline location' : ''}',
           textAlign: TextAlign.center,
           style: const TextStyle(color: Islam307Theme.textMuted, fontWeight: FontWeight.w600),
         ),
@@ -235,7 +244,6 @@ class _QiblaScreenState extends State<QiblaScreen> {
           child: _QiblaCompassDial(
             rotationDegrees: needle,
             qiblaBearing: bearing,
-            deviceHeading: heading,
             aligned: aligned,
           ),
         ),
@@ -268,22 +276,25 @@ class _QiblaScreenState extends State<QiblaScreen> {
             '${heading.toStringAsFixed(1)}° ${bearingCardinal(heading)}',
           ),
         if (_distanceKm != null)
-          _infoTile(
-            Icons.straighten_rounded,
-            'Distance to Kaaba',
-            '${_distanceKm!.toStringAsFixed(0)} km',
-          ),
+          _infoTile(Icons.straighten_rounded, 'Distance to Kaaba', '${_distanceKm!.toStringAsFixed(0)} km'),
         if (_lat != null && _lng != null)
           _infoTile(
             Icons.my_location_rounded,
-            'Your location',
+            _fromCache ? 'Saved location (offline)' : 'Your location',
             '${_lat!.toStringAsFixed(4)}°, ${_lng!.toStringAsFixed(4)}°',
           ),
+        _infoTile(Icons.cloud_off_rounded, 'Mode', 'Direction calculated offline on device'),
         const SizedBox(height: 8),
         Text(
-          'Point the top of your phone toward the arrow tip. For best accuracy, calibrate the compass by moving the phone in a figure‑8 and stay away from metal or magnets.',
+          'Point the top of your phone toward the arrow tip. For best accuracy, calibrate the compass with a figure‑8 and stay away from metal or magnets.',
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 12, color: Islam307Theme.textMuted.withValues(alpha: 0.95), height: 1.45),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () => context.push('/prayer'),
+          icon: const Icon(Icons.mosque_rounded),
+          label: const Text('Open prayer timetable'),
         ),
       ],
     );
@@ -321,13 +332,11 @@ class _QiblaCompassDial extends StatelessWidget {
   const _QiblaCompassDial({
     required this.rotationDegrees,
     required this.qiblaBearing,
-    required this.deviceHeading,
     required this.aligned,
   });
 
   final double rotationDegrees;
   final double qiblaBearing;
-  final double? deviceHeading;
   final bool aligned;
 
   @override
@@ -360,10 +369,7 @@ class _QiblaCompassDial extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Cardinal ticks
-          for (final label in const ['N', 'E', 'S', 'W'])
-            _cardinal(label, size),
-          // Rotating Qibla needle
+          for (final label in const ['N', 'E', 'S', 'W']) _cardinal(label, size),
           Transform.rotate(
             angle: rotationDegrees * math.pi / 180,
             child: CustomPaint(

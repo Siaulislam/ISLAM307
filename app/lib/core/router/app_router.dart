@@ -14,6 +14,7 @@ import '../../features/tafsir/tafsir_screen.dart';
 import '../../features/tafsir/tafsir_reader_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/qibla/qibla_screen.dart';
+import '../../features/prayer/prayer_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -24,6 +25,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
       GoRoute(path: '/search', builder: (_, __) => const SearchScreen()),
       GoRoute(path: '/qibla', builder: (_, __) => const QiblaScreen()),
+      GoRoute(path: '/prayer', builder: (_, __) => const PrayerScreen()),
       GoRoute(path: '/quran', builder: (_, __) => const QuranHubScreen()),
       GoRoute(path: '/quran/surahs', builder: (_, __) => const QuranSurahListScreen()),
       GoRoute(path: '/quran/rukus', builder: (_, __) => const QuranRukuListScreen()),
