@@ -358,7 +358,7 @@ function ayahCardHtml(a, lib) {
   const note = lib.notes[key] || '';
   const playing = state.recite && state.recite.surah === a.s && state.recite.ayah === a.a;
   return `
-    <div class="ayah ${highlighted ? 'is-highlighted' : ''} ${playing ? 'is-playing' : ''}" data-s="${a.s}" data-a="${a.a}">
+    <div class="ayah is-tappable ${highlighted ? 'is-highlighted' : ''} ${playing ? 'is-playing' : ''}" data-s="${a.s}" data-a="${a.a}" role="button" tabindex="0" title="Tap verse for actions">
       <div class="meta-row">
         <span class="ayah-ref">${a.s}:${a.a}${bookmarked ? ' ★' : ''}</span>
         ${ayahHeaderMenusHtml(a)}
@@ -368,17 +368,7 @@ function ayahCardHtml(a, lib) {
       ${translationBlockHtml(a)}
       ${tafsirBlockHtml(a)}
       ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}
-      ${playing ? `<div class="recite-now">Playing · ${escapeHtml(state.recite.name)} · continues to next ayah</div>` : ''}
-      <div class="ayah-tools">
-        <button type="button" data-act="bookmark">${bookmarked ? 'Bookmarked' : 'Bookmark'}</button>
-        <button type="button" data-act="highlight">${highlighted ? 'Unhighlight' : 'Highlight'}</button>
-        <button type="button" data-act="note">Notes</button>
-        <button type="button" data-act="copy">Copy</button>
-        <button type="button" data-act="share">Share</button>
-        ${playing
-          ? `<button type="button" data-act="stop" class="stop">Stop</button>`
-          : `<button type="button" data-act="recite" class="primary">Recite</button>`}
-      </div>
+      ${playing ? `<div class="recite-now">Playing · ${escapeHtml(state.recite.name)} · continues to next ayah · tap verse to Stop</div>` : ''}
     </div>
   `;
 }
@@ -431,6 +421,111 @@ async function ensureTafsirPack(slug) {
   return state.tafsirCache[slug];
 }
 
+function openVerseActions(surah, ayah) {
+  const existing = document.getElementById('verse-actions-modal');
+  if (existing) existing.remove();
+  const key = ayahKey(surah, ayah);
+  const lib = ensureUserLibrary();
+  const bookmarked = lib.bookmarks.includes(key);
+  const highlighted = !!lib.highlights[key];
+  const playing = state.recite && state.recite.surah === surah && state.recite.ayah === ayah;
+  const row = (state.ayahsBySurah.get(surah) || []).find((x) => x.a === ayah);
+  const ar = row?.ar || '';
+  const tr = state.quranTranslationLang ? ayahTranslationText(row || {}, state.quranTranslationLang) : '';
+
+  const modal = document.createElement('div');
+  modal.id = 'verse-actions-modal';
+  modal.className = 'modal-backdrop';
+  modal.innerHTML = `
+    <div class="modal verse-actions-modal">
+      <h3>Ayah ${surah}:${ayah}</h3>
+      <p class="lead">Choose an action for this verse</p>
+      <div class="verse-actions-list">
+        <button type="button" data-act="bookmark"><strong>${bookmarked ? 'Remove bookmark' : 'Bookmark'}</strong><small>Save to your personal file</small></button>
+        <button type="button" data-act="highlight"><strong>${highlighted ? 'Remove highlight' : 'Highlight'}</strong><small>Mark this ayah</small></button>
+        <button type="button" data-act="note"><strong>Notes</strong><small>${lib.notes[key] ? 'Edit your note' : 'Write a personal note'}</small></button>
+        <button type="button" data-act="copy"><strong>Copy</strong><small>Copy Arabic${tr ? ' + translation' : ''}</small></button>
+        <button type="button" data-act="share"><strong>Share</strong><small>Share this ayah</small></button>
+        ${playing
+          ? `<button type="button" data-act="stop" class="danger"><strong>Stop</strong><small>Stop recitation</small></button>`
+          : `<button type="button" data-act="recite" class="primary"><strong>Recite</strong><small>Choose Qari · continues automatically</small></button>`}
+      </div>
+      <button type="button" class="ghost" data-close>Close</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  const close = () => modal.remove();
+  modal.querySelector('[data-close]').onclick = close;
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) close();
+  });
+
+  modal.querySelectorAll('[data-act]').forEach((btn) => {
+    btn.onclick = async () => {
+      const act = btn.dataset.act;
+      const library = ensureUserLibrary();
+      if (act === 'bookmark') {
+        const i = library.bookmarks.indexOf(key);
+        if (i >= 0) library.bookmarks.splice(i, 1);
+        else library.bookmarks.push(key);
+        saveUserLibrary(library);
+        toast(i >= 0 ? 'Bookmark removed' : 'Saved to your personal bookmark file');
+        close();
+        refreshCurrentSurah(true);
+        return;
+      }
+      if (act === 'highlight') {
+        if (library.highlights[key]) delete library.highlights[key];
+        else library.highlights[key] = 'gold';
+        saveUserLibrary(library);
+        toast(library.highlights[key] ? 'Highlighted' : 'Highlight cleared');
+        close();
+        refreshCurrentSurah(true);
+        return;
+      }
+      if (act === 'note') {
+        const next = prompt(`Note for ${key}`, library.notes[key] || '');
+        if (next === null) return;
+        if (!next.trim()) delete library.notes[key];
+        else library.notes[key] = next.trim();
+        saveUserLibrary(library);
+        toast('Note saved to your personal file');
+        close();
+        refreshCurrentSurah(true);
+        return;
+      }
+      if (act === 'copy') {
+        await navigator.clipboard.writeText(`${key}\n${ar}\n${tr}`.trim());
+        toast('Copied');
+        close();
+        return;
+      }
+      if (act === 'share') {
+        const text = `ISLAM 307 · Quran ${key}\n${ar}\n${tr}`.trim();
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: `Quran ${key}`, text });
+          } catch {}
+        } else {
+          await navigator.clipboard.writeText(text);
+          toast('Share text copied');
+        }
+        close();
+        return;
+      }
+      if (act === 'recite') {
+        close();
+        openReciterPicker(surah, ayah);
+        return;
+      }
+      if (act === 'stop') {
+        close();
+        stopRecitation('Recitation stopped');
+      }
+    };
+  });
+}
+
 function wireReaderEvents() {
   const view = $('ayah-view');
   view.querySelectorAll('[data-action]').forEach((btn) => {
@@ -455,8 +550,18 @@ function wireReaderEvents() {
   view.querySelectorAll('.ayah').forEach((card) => {
     const s = Number(card.dataset.s);
     const a = Number(card.dataset.a);
-    const key = ayahKey(s, a);
     const ayahKeyStr = `${s}:${a}`;
+
+    card.addEventListener('click', (ev) => {
+      if (ev.target.closest('[data-menu], [data-tr-lang], [data-tf-slug], .ayah-dd-panel, a, button')) return;
+      openVerseActions(s, a);
+    });
+    card.addEventListener('keydown', (ev) => {
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      if (ev.target !== card) return;
+      ev.preventDefault();
+      openVerseActions(s, a);
+    });
 
     card.querySelectorAll('[data-menu]').forEach((btn) => {
       btn.onclick = (ev) => {
@@ -507,60 +612,6 @@ function wireReaderEvents() {
         refreshCurrentSurah(true);
         const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
         toast(opt ? (opt.ready ? `Tafseer · ${opt.label}` : `${opt.label} · coming soon`) : 'Tafseer hidden');
-      };
-    });
-
-    card.querySelectorAll('[data-act]').forEach((btn) => {
-      btn.onclick = async () => {
-        const act = btn.dataset.act;
-        const lib = ensureUserLibrary();
-        const ar = card.querySelector('.ar')?.textContent || '';
-        const tr = card.querySelector('.ayah-translation p')?.textContent || '';
-        if (act === 'bookmark') {
-          const i = lib.bookmarks.indexOf(key);
-          if (i >= 0) lib.bookmarks.splice(i, 1);
-          else lib.bookmarks.push(key);
-          saveUserLibrary(lib);
-          toast(i >= 0 ? 'Bookmark removed' : 'Saved to your personal bookmark file');
-          const active = $('surah-list').querySelector('button.active');
-          openSurah(s, active);
-        }
-        if (act === 'highlight') {
-          if (lib.highlights[key]) delete lib.highlights[key];
-          else lib.highlights[key] = 'gold';
-          saveUserLibrary(lib);
-          toast(lib.highlights[key] ? 'Highlighted' : 'Highlight cleared');
-          const active = $('surah-list').querySelector('button.active');
-          openSurah(s, active);
-        }
-        if (act === 'note') {
-          const next = prompt(`Note for ${key}`, lib.notes[key] || '');
-          if (next === null) return;
-          if (!next.trim()) delete lib.notes[key];
-          else lib.notes[key] = next.trim();
-          saveUserLibrary(lib);
-          toast('Note saved to your personal file');
-          const active = $('surah-list').querySelector('button.active');
-          openSurah(s, active);
-        }
-        if (act === 'copy') {
-          const text = `${key}\n${ar}\n${tr}`.trim();
-          await navigator.clipboard.writeText(text);
-          toast('Copied');
-        }
-        if (act === 'share') {
-          const text = `ISLAM 307 · Quran ${key}\n${ar}\n${tr}`.trim();
-          if (navigator.share) {
-            try {
-              await navigator.share({ title: `Quran ${key}`, text });
-            } catch {}
-          } else {
-            await navigator.clipboard.writeText(text);
-            toast('Share text copied');
-          }
-        }
-        if (act === 'recite') openReciterPicker(s, a);
-        if (act === 'stop') stopRecitation('Recitation stopped');
       };
     });
   });

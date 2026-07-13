@@ -139,193 +139,241 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
       color: highlighted ? const Color(0xFFFFF4CC) : null,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Text(refLabel, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF0F172A))),
-                if (_bookmarked) ...[
-                  const SizedBox(width: 6),
-                  const Icon(Icons.bookmark_rounded, color: Islam307Theme.gold, size: 16),
-                ],
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _headerChoice(
-                        label: trLabel,
-                        active: _translationLang != null,
-                        onTap: _pickTranslationLang,
-                      ),
-                      const SizedBox(width: 8),
-                      _headerChoice(
-                        label: 'Tafseer',
-                        active: _tafsirSlug != null,
-                        onTap: _pickTafsirSource,
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  'Page $page · Juz $juz',
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emerald),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            if (_wordsLoaded && _words.isNotEmpty)
-              _tappableArabic(scale)
-            else
-              Text(arabic, textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 24 * scale)),
-            if (_wordsLoaded && _words.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 6),
-                child: Text('Tap a word for meanings, root, grammar & morphology', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
-              ),
-            if (translation != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFE2E8F0)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      trLabel.toUpperCase(),
-                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep, letterSpacing: 0.3),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      translation,
-                      textAlign: translationRtl ? TextAlign.right : TextAlign.left,
-                      textDirection: translationRtl ? TextDirection.rtl : TextDirection.ltr,
-                      style: translationStyle,
-                    ),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _openVerseActions(arabic: arabic, translation: translation, ttsLang: ttsLang, refLabel: refLabel),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Text(refLabel, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF0F172A))),
+                  if (_bookmarked) ...[
+                    const SizedBox(width: 6),
+                    const Icon(Icons.bookmark_rounded, color: Islam307Theme.gold, size: 16),
                   ],
-                ),
-              ),
-            ] else if (showMissingTranslation) ...[
-              const SizedBox(height: 12),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFFBEB),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: const Color(0xFFFDE68A)),
-                ),
-                child: Text(
-                  'Authentic $trLabel translation is not in the library yet. ISLAM 307 never invents Quran translations.',
-                  style: const TextStyle(fontSize: 13, height: 1.45, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
-                ),
-              ),
-            ],
-            if (_tafsirSlug != null) ...[
-              const SizedBox(height: 10),
-              _tafsirPanel(),
-            ],
-            if ((_note ?? '').isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Islam307Theme.emeraldSoft,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text('Note: $_note', style: const TextStyle(fontSize: 13, height: 1.4)),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                _tool(Icons.volume_up_rounded, 'Speak', () => _speakMenu(arabic, translation, ttsLang)),
-                _tool(Icons.text_increase_rounded, 'Aa', () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale + 0.1)),
-                _tool(Icons.text_decrease_rounded, 'Aa-', () => ref.read(appSettingsProvider.notifier).setFontScale(settings.fontScale - 0.1)),
-                _tool(Icons.dark_mode_rounded, 'Dark', () => ref.read(appSettingsProvider.notifier).toggleTheme()),
-                _tool(_bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, 'Bookmark', _toggleBookmark),
-                _tool(Icons.highlight_rounded, 'Highlight', _toggleHighlight),
-                _tool(Icons.note_alt_outlined, 'Notes', _editNote),
-                _tool(Icons.copy_rounded, 'Copy', () => _copy(arabic, translation)),
-                _tool(Icons.ios_share_rounded, 'Share', () => _share(arabic, translation, refLabel)),
-                ListenableBuilder(
-                  listenable: RecitationAudioService.instance,
-                  builder: (context, _) {
-                    final audio = RecitationAudioService.instance;
-                    final playingHere = audio.isPlayingAyah(_surah, _ayahNo);
-                    final anyPlaying = audio.isActive;
-                    if (playingHere || (anyPlaying && audio.playingSurah == _surah && audio.playingAyah == _ayahNo)) {
-                      return FilledButton.tonalIcon(
-                        onPressed: () async {
-                          await RecitationAudioService.instance.stop();
-                          _toast('Recitation stopped');
-                        },
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFFFEF2F2),
-                          foregroundColor: const Color(0xFFB91C1C),
-                        ),
-                        icon: const Icon(Icons.stop_circle_rounded, size: 18),
-                        label: const Text('Stop'),
-                      );
-                    }
-                    return FilledButton.tonalIcon(
-                      onPressed: _pickReciterAndPlay,
-                      icon: const Icon(Icons.play_circle_fill_rounded, size: 18),
-                      label: const Text('Recite'),
-                    );
-                  },
-                ),
-              ],
-            ),
-            ListenableBuilder(
-              listenable: RecitationAudioService.instance,
-              builder: (context, _) {
-                final audio = RecitationAudioService.instance;
-                if (!audio.isPlayingAyah(_surah, _ayahNo)) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.only(top: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Islam307Theme.emeraldSoft,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Islam307Theme.emerald.withValues(alpha: 0.25)),
-                    ),
+                  Expanded(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(Icons.graphic_eq_rounded, color: Islam307Theme.emerald, size: 18),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Playing · ${audio.reciterName ?? 'Qari'} · continues to next ayah',
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emeraldDeep),
-                          ),
+                        _headerChoice(
+                          label: trLabel,
+                          active: _translationLang != null,
+                          onTap: _pickTranslationLang,
                         ),
-                        TextButton(
-                          onPressed: () async {
-                            await RecitationAudioService.instance.stop();
-                            _toast('Recitation stopped');
-                          },
-                          child: const Text('Stop', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFB91C1C))),
+                        const SizedBox(width: 8),
+                        _headerChoice(
+                          label: 'Tafseer',
+                          active: _tafsirSlug != null,
+                          onTap: _pickTafsirSource,
                         ),
                       ],
                     ),
                   ),
-                );
-              },
+                  Text(
+                    'Page $page · Juz $juz',
+                    style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emerald),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (_wordsLoaded && _words.isNotEmpty)
+                _tappableArabic(scale)
+              else
+                Text(arabic, textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 24 * scale)),
+              if (_wordsLoaded && _words.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(top: 6),
+                  child: Text('Tap a word for meanings, root, grammar & morphology', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
+                ),
+              if (translation != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8FAFC),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFE2E8F0)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        trLabel.toUpperCase(),
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep, letterSpacing: 0.3),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        translation,
+                        textAlign: translationRtl ? TextAlign.right : TextAlign.left,
+                        textDirection: translationRtl ? TextDirection.rtl : TextDirection.ltr,
+                        style: translationStyle,
+                      ),
+                    ],
+                  ),
+                ),
+              ] else if (showMissingTranslation) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFFBEB),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: const Color(0xFFFDE68A)),
+                  ),
+                  child: Text(
+                    'Authentic $trLabel translation is not in the library yet. ISLAM 307 never invents Quran translations.',
+                    style: const TextStyle(fontSize: 13, height: 1.45, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+                  ),
+                ),
+              ],
+              if (_tafsirSlug != null) ...[
+                const SizedBox(height: 10),
+                _tafsirPanel(),
+              ],
+              if ((_note ?? '').isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Islam307Theme.emeraldSoft,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text('Note: $_note', style: const TextStyle(fontSize: 13, height: 1.4)),
+                ),
+              ],
+              ListenableBuilder(
+                listenable: RecitationAudioService.instance,
+                builder: (context, _) {
+                  final audio = RecitationAudioService.instance;
+                  if (!audio.isPlayingAyah(_surah, _ayahNo)) return const SizedBox.shrink();
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Islam307Theme.emeraldSoft,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Islam307Theme.emerald.withValues(alpha: 0.25)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.graphic_eq_rounded, color: Islam307Theme.emerald, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Playing · ${audio.reciterName ?? 'Qari'} · tap verse for Stop',
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emeraldDeep),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              await RecitationAudioService.instance.stop();
+                              _toast('Recitation stopped');
+                            },
+                            child: const Text('Stop', style: TextStyle(fontWeight: FontWeight.w800, color: Color(0xFFB91C1C))),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (!_ready) const SizedBox(height: 4),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openVerseActions({
+    required String arabic,
+    required String? translation,
+    required String ttsLang,
+    required String refLabel,
+  }) async {
+    final audio = RecitationAudioService.instance;
+    final playingHere = audio.isPlayingAyah(_surah, _ayahNo);
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+              child: Text('Ayah $_surah:$_ayahNo', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
             ),
-            if (!_ready) const SizedBox(height: 4),
+            ListTile(
+              leading: Icon(_bookmarked ? Icons.bookmark_rounded : Icons.bookmark_border_rounded, color: Islam307Theme.emerald),
+              title: Text(_bookmarked ? 'Remove bookmark' : 'Bookmark'),
+              onTap: () => Navigator.pop(ctx, 'bookmark'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.highlight_rounded, color: Islam307Theme.emerald),
+              title: Text(_highlight != null ? 'Remove highlight' : 'Highlight'),
+              onTap: () => Navigator.pop(ctx, 'highlight'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.note_alt_outlined, color: Islam307Theme.emerald),
+              title: const Text('Notes'),
+              onTap: () => Navigator.pop(ctx, 'notes'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.copy_rounded, color: Islam307Theme.emerald),
+              title: const Text('Copy'),
+              onTap: () => Navigator.pop(ctx, 'copy'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.ios_share_rounded, color: Islam307Theme.emerald),
+              title: const Text('Share'),
+              onTap: () => Navigator.pop(ctx, 'share'),
+            ),
+            ListTile(
+              leading: const Icon(Icons.volume_up_rounded, color: Islam307Theme.emerald),
+              title: const Text('Speak'),
+              onTap: () => Navigator.pop(ctx, 'speak'),
+            ),
+            if (playingHere)
+              ListTile(
+                leading: const Icon(Icons.stop_circle_rounded, color: Color(0xFFB91C1C)),
+                title: const Text('Stop'),
+                onTap: () => Navigator.pop(ctx, 'stop'),
+              )
+            else
+              ListTile(
+                leading: const Icon(Icons.play_circle_fill_rounded, color: Islam307Theme.emerald),
+                title: const Text('Recite'),
+                subtitle: const Text('Choose Qari · continues automatically'),
+                onTap: () => Navigator.pop(ctx, 'recite'),
+              ),
           ],
         ),
       ),
     );
+    if (choice == null || !mounted) return;
+    if (choice == 'bookmark') {
+      await _toggleBookmark();
+    } else if (choice == 'highlight') {
+      await _toggleHighlight();
+    } else if (choice == 'notes') {
+      await _editNote();
+    } else if (choice == 'copy') {
+      await _copy(arabic, translation);
+    } else if (choice == 'share') {
+      await _share(arabic, translation, refLabel);
+    } else if (choice == 'speak') {
+      await _speakMenu(arabic, translation, ttsLang);
+    } else if (choice == 'recite') {
+      await _pickReciterAndPlay();
+    } else if (choice == 'stop') {
+      await RecitationAudioService.instance.stop();
+      _toast('Recitation stopped');
+    }
   }
 
   Widget _headerChoice({required String label, required bool active, required VoidCallback onTap}) {
