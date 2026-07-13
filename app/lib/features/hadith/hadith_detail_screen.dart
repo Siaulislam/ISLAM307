@@ -468,13 +468,12 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final h = _hadith;
     if (h == null) return;
     final grading = HadithRepository.gradingSummary(h);
+    // Do not show external Reference URL / Source Provider (sunnah.com, fawazahmed0, etc.).
     final rows = <(String, String)>[
       ('Book', h['book_name']?.toString() ?? ''),
       ('Chapter', h['kitab']?.toString() ?? h['chapter']?.toString() ?? ''),
       ('Hadith Number', '${widget.hadithNumber}'),
       ('Grade', grading.grade),
-      ('Reference URL', h['reference_url']?.toString() ?? ''),
-      ('Source Provider', h['source_provider']?.toString() ?? ''),
     ];
 
     showModalBottomSheet<void>(

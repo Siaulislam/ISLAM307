@@ -336,9 +336,7 @@ class HadithRepository {
     map['book_name'] ??= bookName;
     map['book_slug'] ??= slug;
     map['book_name_ar'] ??= bookNameAr;
-    map['source_provider'] = (map['source_provider'] as String?)?.trim().isNotEmpty == true
-        ? map['source_provider']
-        : 'fawazahmed0/hadith-api@1';
+    // Keep DB fields if present, but never invent sunnah.com / fawazahmed0 defaults for UI.
     map['reference_detail'] = buildReferenceDetail(
       bookName: bookName,
       bookSlug: slug,
@@ -350,10 +348,9 @@ class HadithRepository {
       chapterNumber: kitabNumber,
       grade: map['grade'] as String?,
     );
-    map['reference_url'] =
-        (map['reference_url'] as String?)?.trim().isNotEmpty == true
-            ? map['reference_url']
-            : ((map['reference_detail'] as Map)['source_url']?.toString() ?? 'https://sunnah.com/$slug:$hadithNo');
+    map.remove('source_provider');
+    map.remove('reference_url');
+    (map['reference_detail'] as Map).remove('source_url');
     return map;
   }
 

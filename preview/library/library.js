@@ -1249,15 +1249,12 @@ async function openRaviDetail(hadith, book) {
 function openReferenceDetail(hadith, book) {
   const grade = hadith.grade || hadith.reference_detail?.status || 'Grade not verified.';
   const chapter = hadith.kitab || state.hadithTopicTitle || '';
-  const url = hadith.source_url || hadith.reference_url || `https://sunnah.com/${state.hadithSlug || book?.slug || ''}:${hadith.n}`;
-  const provider = hadith.source_provider || 'fawazahmed0/hadith-api@1';
+  // Do not show external Reference URL / Source Provider (sunnah.com, fawazahmed0, etc.).
   const rows = [
     ['Book', book?.en || ''],
     ['Chapter', chapter],
     ['Hadith Number', String(hadith.n)],
     ['Grade', grade],
-    ['Reference URL', url],
-    ['Source Provider', provider],
   ];
   const body = `
     <table class="ref-table ref-table-shot">

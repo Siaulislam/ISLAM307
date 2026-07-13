@@ -56,7 +56,8 @@ class SourceReferenceSearch {
           hadithNumber: r['hadith_number'] as int?,
           grade: grading.grade,
           scholar: grading.scholar,
-          referenceUrl: grading.referenceUrl,
+          // Do not surface sunnah.com / fawazahmed0 reference URLs in AI answers.
+          referenceUrl: null,
         );
       }),
       ...tafsirHits.map((r) => SourceReference(

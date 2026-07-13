@@ -804,7 +804,8 @@ Map<String, dynamic> buildReferenceDetail({
     'takhreej': '',
     'status': statusFor('ur'),
     'wazahat': '',
-    'source_url': 'https://sunnah.com/$bookSlug:$hadithNumber',
+    // Intentionally omit external sunnah.com / provider links from reference UI.
+    'source_url': '',
     'chapter_number': chNum,
     'by_lang': byLang,
   };

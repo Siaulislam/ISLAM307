@@ -949,7 +949,7 @@ def build_reference_detail(
         "takhreej": "",
         "status": _status("ur"),
         "wazahat": "",
-        "source_url": f"https://sunnah.com/{book_slug}:{hadith_number}",
+        "source_url": "",
         "chapter_number": ch_num,
     }
 

@@ -67,10 +67,10 @@
       "id": "quran-translations-offline",
       "title": "Offline ayah translations (authenticated)",
       "purpose": "Exact ayah translations for the in-app language picker (never machine-translated).",
-      "license": "Distributed via Quran.com translation resources; preserve each translator attribution",
+      "license": "See reports/verification/QURAN_TRANSLATION_LICENSE_AUDIT.md — free Sadaqah Jariyah offline use with full attribution; commercial store redistribution may require written permission from translators / Quran Foundation.",
       "attribution": "Downloaded from Quran.com API v4 into quran.db: Saheeh International (en, id 20); Junagarhi (ur, id 54); Maulana Azizul Haque al-Umari (hi, id 122); Dar Al-Salam Center (fil, id 211); Taisirul Quran (bn, id 161); Indonesian Islamic Affairs Ministry (id, id 33); Abdullah Muhammad Basmeih (ms, id 39); Diyanet (tr, id 77); IslamHouse Persian (fa, id 135); Muhammad Hamidullah (fr, id 31); Abubakar Mahmoud Gumi (ha, id 32); Mahmud Muhammad Abduh (so, id 46); Zakaria Abulsalam (ps, id 118); Ali Muhsin Al-Barwani (sw, id 49).",
       "url": "https://quran.com",
-      "notes": "ISLAM 307 never invents or auto-converts Quran translations. Selecting Hindi (etc.) shows that language’s authenticated ayah text from the offline database."
+      "notes": "ISLAM 307 never invents or auto-converts Quran translations. Text is unaltered. Selecting Hindi (etc.) shows that language’s authenticated ayah text from the offline database. Attribution is shown in About → Data Sources."
     },
     {
       "id": "everyayah",
@@ -86,17 +86,17 @@
       "title": "Hadith collections (offline packs)",
       "purpose": "Bukhari, Muslim, Abu Dawood, Tirmidhi text for offline reading and AI source search.",
       "license": "See verification reports; preserve book/number grading attribution",
-      "attribution": "Hadith text and metadata are served only from authenticated local hadith.db packs. AI must cite book and number.",
-      "url": "https://sunnah.com",
-      "notes": "Commercial readiness depends on verified provenance documented under reports/verification/."
+      "attribution": "Hadith text and metadata are served only from authenticated local hadith.db packs. AI must cite book and number. The app does not display external Reference URL or Source Provider links.",
+      "url": "",
+      "notes": "Reference sheet shows Book · Chapter · Hadith Number · Grade only."
     },
     {
       "id": "hadith-narrators",
       "title": "Narrator (Rijāl) Knowledge System",
       "purpose": "Display authenticated hadith narrator names and, when licensed, classical rijāl biographies from approved Sunni references only.",
-      "license": "Narrator names: same provenance as hadith packs (e.g. Sunnah.com). Biographies: ONLY from approved classical works with license/permission — never AI, Wikipedia, blogs, or forums.",
+      "license": "Narrator names: same provenance as hadith packs. Biographies: ONLY from approved classical works with license/permission — never AI, Wikipedia, blogs, or forums.",
       "attribution": "Approved references (permission required to import text): Tahdhib al-Kamal (al-Mizzi), Tahdhib al-Tahdhib & Taqrib al-Tahdhib & Al-Isabah & Lisan al-Mizan (Ibn Hajar), Siyar A'lam al-Nubala & Mizan al-I'tidal (al-Dhahabi), Tabaqat Ibn Sa'd, Tarikh al-Kabir (al-Bukhari), Al-Jarh wa al-Ta'dil (Ibn Abi Hatim). Until a narrator is imported into narrators.db: “This narrator profile has not been imported into the local database yet.” Never invent biographies with AI.",
-      "url": "https://sunnah.com",
+      "url": "",
       "notes": "narrators.db ships schema + approved-source catalog with zero biography rows until a licensed import. See assets/modules/narrators_sources.json and tools/narrators/."
     },
     {

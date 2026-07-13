@@ -96,9 +96,6 @@ def export_hadith() -> dict:
     import re
     ar_re = re.compile(r"[\u0600-\u06FF]")
     conn = connect_gz(HADITH_GZ)
-    cols = {r[1] for r in conn.execute("PRAGMA table_info(hadiths)")}
-    has_ref_url = "reference_url" in cols
-    has_provider = "source_provider" in cols
     books = [
         {
             "id": r["id"],
@@ -116,16 +113,10 @@ def export_hadith() -> dict:
     totals = {}
     for book in books:
         rows = []
-        select_extra = ""
-        if has_ref_url:
-            select_extra += ", h.reference_url"
-        if has_provider:
-            select_extra += ", h.source_provider"
         for r in conn.execute(
-            f"""
+            """
             SELECT h.hadith_number, h.text_ar, h.text_en, h.text_ur, h.grade, h.narrator,
                    h.reference_book, h.reference_hadith, c.number AS chapter_number, c.title AS chapter_title
-                   {select_extra}
             FROM hadiths h
             LEFT JOIN chapters c ON c.id = h.chapter_id
             WHERE h.book_id = ?
@@ -160,16 +151,9 @@ def export_hadith() -> dict:
                 chapter_number=r["chapter_number"],
                 grade=r["grade"],
             )
-            source_url = ""
-            if has_ref_url:
-                source_url = (r["reference_url"] or "").strip()
-            if not source_url:
-                source_url = ref_detail["source_url"]
-            provider = ""
-            if has_provider:
-                provider = (r["source_provider"] or "").strip()
-            if not provider:
-                provider = "fawazahmed0/hadith-api@1"
+            # Omit external Reference URL / Source Provider from preview packs.
+            if isinstance(ref_detail, dict):
+                ref_detail = {k: v for k, v in ref_detail.items() if k != "source_url"}
             rows.append(
                 {
                     "n": r["hadith_number"],
@@ -190,9 +174,6 @@ def export_hadith() -> dict:
                     "reference_hadith": ref_hadith,
                     "kitab": r["chapter_title"] or "",
                     "kitab_number": r["chapter_number"],
-                    "source_url": source_url,
-                    "reference_url": source_url,
-                    "source_provider": provider,
                 }
             )
         write_json_gz(OUT / "hadith" / f"{book['slug']}.json.gz", {"book": book, "hadiths": rows})
