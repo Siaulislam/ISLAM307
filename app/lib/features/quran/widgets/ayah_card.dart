@@ -200,7 +200,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               if (_wordsLoaded && _words.isNotEmpty)
                 const Padding(
                   padding: EdgeInsets.only(top: 6),
-                  child: Text('Tap a word for meaning · More for full analysis', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
+                  child: Text('لفظ پر ٹیپ کریں · مزید کے لیے مکمل تجزیہ', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
                 ),
               if (translation != null) ...[
                 const SizedBox(height: 12),
@@ -586,7 +586,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
         runSpacing: 8,
         children: _words.map((w) {
           return InkWell(
-            onTap: () => showQuranWordQuickSheet(context, w),
+            onTap: () => showQuranWordQuickSheet(context, w, preferredLang: _translationLang),
             borderRadius: BorderRadius.circular(8),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),

@@ -1,6 +1,6 @@
 import 'quran_grammar.dart';
 
-/// Offline Quran word knowledge row (QAC morphology + glosses).
+/// Offline Quran word knowledge row (QAC morphology + authenticated glosses).
 class QuranWord {
   const QuranWord({
     required this.id,
@@ -12,6 +12,11 @@ class QuranWord {
     this.transliteration = '',
     this.meaningEn = '',
     this.meaningUr = '',
+    this.meaningHi = '',
+    this.meaningBn = '',
+    this.meaningId = '',
+    this.meaningTr = '',
+    this.meaningFa = '',
     this.root = '',
     this.lemma = '',
     this.pos = '',
@@ -19,6 +24,9 @@ class QuranWord {
     this.grammarSummary = '',
     this.syntaxSummary = '',
     this.occurrenceCount = 0,
+    this.occurrenceSurface = 0,
+    this.occurrenceLemma = 0,
+    this.occurrenceRoot = 0,
     this.source = '',
     this.parts = const [],
   });
@@ -32,6 +40,11 @@ class QuranWord {
   final String transliteration;
   final String meaningEn;
   final String meaningUr;
+  final String meaningHi;
+  final String meaningBn;
+  final String meaningId;
+  final String meaningTr;
+  final String meaningFa;
   final String root;
   final String lemma;
   final String pos;
@@ -39,10 +52,14 @@ class QuranWord {
   final String grammarSummary;
   final String syntaxSummary;
   final int occurrenceCount;
+  final int occurrenceSurface;
+  final int occurrenceLemma;
+  final int occurrenceRoot;
   final String source;
   final List<QuranWordPart> parts;
 
   factory QuranWord.fromMap(Map<String, dynamic> m, {List<QuranWordPart> parts = const []}) {
+    int asInt(dynamic v) => (v as int?) ?? 0;
     return QuranWord(
       id: m['id'] as int,
       surah: m['surah'] as int,
@@ -53,19 +70,49 @@ class QuranWord {
       transliteration: '${m['transliteration'] ?? ''}',
       meaningEn: '${m['meaning_en'] ?? ''}',
       meaningUr: '${m['meaning_ur'] ?? ''}',
+      meaningHi: '${m['meaning_hi'] ?? ''}',
+      meaningBn: '${m['meaning_bn'] ?? ''}',
+      meaningId: '${m['meaning_id'] ?? ''}',
+      meaningTr: '${m['meaning_tr'] ?? ''}',
+      meaningFa: '${m['meaning_fa'] ?? ''}',
       root: '${m['root'] ?? ''}',
       lemma: '${m['lemma'] ?? ''}',
       pos: '${m['pos'] ?? ''}',
       morphology: '${m['morphology'] ?? ''}',
       grammarSummary: '${m['grammar_summary'] ?? ''}',
       syntaxSummary: '${m['syntax_summary'] ?? ''}',
-      occurrenceCount: (m['occurrence_count'] as int?) ?? 0,
+      occurrenceCount: asInt(m['occurrence_count']),
+      occurrenceSurface: asInt(m['occurrence_surface']),
+      occurrenceLemma: asInt(m['occurrence_lemma']),
+      occurrenceRoot: asInt(m['occurrence_root']),
       source: '${m['source'] ?? ''}',
       parts: parts,
     );
   }
 
   String get reference => '$surah:$ayah:$wordNumber';
+
+  /// Authenticated word gloss for a UI language code (never invents).
+  String meaningForLang(String? lang) {
+    switch ((lang ?? '').trim()) {
+      case 'ur':
+        return meaningUr;
+      case 'en':
+        return meaningEn;
+      case 'hi':
+        return meaningHi;
+      case 'bn':
+        return meaningBn;
+      case 'id':
+        return meaningId;
+      case 'tr':
+        return meaningTr;
+      case 'fa':
+        return meaningFa;
+      default:
+        return '';
+    }
+  }
 
   QuranGrammarAnalysis get grammarAnalysis {
     final feats = parts.map((p) => p.features).where((f) => f.isNotEmpty);
@@ -76,13 +123,13 @@ class QuranWord {
 
   String fieldOrMissing(String value) => value.trim().isEmpty ? kNoAuthenticReference : value;
 
-  /// Local-only explanation built from authenticated DB fields — never invents.
-  String localAiExplanation() {
-    final g = grammarAnalysis;
+  String localAiExplanation({String? lang}) {
+    final selected = meaningForLang(lang);
     final lines = <String>[
-      'Arabic Language Analysis (local quran.db only)',
       'Arabic: $textAr',
       'Urdu: ${fieldOrMissing(meaningUr)}',
+      if (lang != null && lang.isNotEmpty && lang != 'ur')
+        '${lang.toUpperCase()}: ${fieldOrMissing(selected)}',
       'English: ${fieldOrMissing(meaningEn)}',
       'Transliteration: ${fieldOrMissing(transliteration)}',
       'Root: ${fieldOrMissing(root)}',
@@ -91,16 +138,12 @@ class QuranWord {
       'Grammar: ${fieldOrMissing(grammarSummary)}',
       'Morphology: ${fieldOrMissing(morphology)}',
       'Syntax: ${fieldOrMissing(syntaxSummary)}',
+      'This word form: ${occurrenceSurface > 0 ? occurrenceSurface : '—'}',
+      'Same lemma: ${occurrenceLemma > 0 ? occurrenceLemma : '—'}',
+      'Same root: ${occurrenceRoot > 0 ? occurrenceRoot : '—'}',
+      'Reference: $surah:$ayah (word $wordNumber)',
+      'Source: ${source.isEmpty ? 'quran.db' : source}',
     ];
-    for (final e in g.displayRows.entries) {
-      lines.add('${e.key}: ${e.value}');
-    }
-    if (occurrenceCount > 0) {
-      lines.add('Root/lemma/form occurrences in Quran: $occurrenceCount');
-    }
-    lines.add('Reference: $surah:$ayah (word $wordNumber)');
-    lines.add('Source: ${source.isEmpty ? 'quran.db' : source}');
-    lines.add('AI must not invent meanings — only authenticated fields above.');
     return lines.join('\n');
   }
 }

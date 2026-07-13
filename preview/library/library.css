@@ -1173,6 +1173,9 @@ button.qword {
   text-decoration: underline;
   text-decoration-color: color-mix(in srgb, var(--emerald, #0f766e) 35%, transparent);
   text-underline-offset: 4px;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
 }
 button.qword:hover,
 button.qword:focus-visible {
@@ -1184,6 +1187,20 @@ button.qword:focus-visible {
   font-size: 11px;
   color: #64748b;
   text-align: right;
+  background: transparent !important;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.no-blue-hl { -webkit-tap-highlight-color: transparent; }
+.word-quick ::selection,
+.word-full ::selection,
+.root-page ::selection,
+.ayah-words ::selection,
+.morph-tree ::selection,
+.ai-box ::selection,
+.no-blue-hl ::selection {
+  background: #ccfbf1;
+  color: inherit;
 }
 .word-quick .ar,
 .word-full .ar,
@@ -1195,10 +1212,15 @@ button.qword:focus-visible {
 .word-quick .ur { font-size: 1.15rem; margin: 8px 0; }
 .word-quick .en { margin: 4px 0 12px; }
 .word-quick .root { font-size: 1.2rem; margin-bottom: 12px; }
-.word-quick .primary,
-.word-full .linkish {
-  cursor: pointer;
+.word-quick .lang-label {
+  margin: 8px 0 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f766e;
 }
+.word-quick .muted { color: #64748b; font-size: 13px; }
+.word-quick .primary,
+.word-full .linkish { cursor: pointer; }
 .word-quick .primary {
   width: 100%;
   border: none;
@@ -1211,14 +1233,20 @@ button.qword:focus-visible {
 .morph-tree { padding-left: 18px; line-height: 1.5; }
 .ai-box {
   white-space: pre-wrap;
-  background: #ecfdf5;
+  background: #f0fdfa;
+  border: 1px solid #ccfbf1;
   border-radius: 12px;
   padding: 12px;
   font-size: 12px;
   line-height: 1.5;
   overflow: auto;
+  color: inherit;
 }
-body.dark .ai-box { background: #0b1220; }
+body.dark .ai-box {
+  background: #0b1220;
+  border-color: #134e4a;
+  color: #e2e8f0;
+}
 body.dark .ayah-word-hint { color: #94a3b8; }
 
 @media (max-width: 860px) {

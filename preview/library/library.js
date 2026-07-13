@@ -395,21 +395,46 @@ function fieldOrMissing(v) {
   return t || NO_AUTH;
 }
 
+function wordMeaningForLang(word, lang) {
+  const map = {
+    ur: word.ur,
+    en: word.en,
+    hi: word.hi,
+    bn: word.bn,
+    id: word.idn || word.id_meaning,
+    tr: word.trm,
+    fa: word.fa,
+  };
+  // note: word.tr is transliteration — Indonesian uses idn
+  if (lang === 'id') return word.idn || '';
+  if (lang === 'tr') return word.trm || '';
+  return (map[lang] || '').trim ? (map[lang] || '') : (map[lang] || '');
+}
+
+function activeWordLang() {
+  return state.quranTranslationLang || 'ur';
+}
+
 function openWordQuick(word) {
+  const lang = activeWordLang();
+  const selected = wordMeaningForLang(word, lang);
+  const selectedBlock =
+    lang && lang !== 'ur'
+      ? `<p class="lang-label">${escapeHtml(lang.toUpperCase())}</p>
+         <p class="${lang === 'fa' || lang === 'ur' ? 'ur' : 'en'}" dir="${lang === 'fa' ? 'rtl' : 'ltr'}">${escapeHtml(fieldOrMissing(selected))}</p>`
+      : '';
   const body = `
-    <div class="word-quick">
+    <div class="word-quick no-blue-hl">
       <p class="ar" dir="rtl">${escapeHtml(word.ar)}</p>
       ${word.tr ? `<p class="muted">${escapeHtml(word.tr)}</p>` : ''}
       <p class="ur" dir="rtl">${escapeHtml(fieldOrMissing(word.ur))}</p>
-      <p class="en">${escapeHtml(fieldOrMissing(word.en))}</p>
-      ${word.root ? `<p class="root" dir="rtl">Root · ${escapeHtml(word.root)}</p>` : ''}
-      <button type="button" class="primary" data-word-more="${word.id}">More · Full Word Analysis</button>
+      ${selectedBlock}
+      ${word.en && lang !== 'en' ? `<p class="en muted">${escapeHtml(word.en)}</p>` : ''}
+      ${word.root ? `<p class="root" dir="rtl">جذر · ${escapeHtml(word.root)}</p>` : ''}
+      <button type="button" class="primary" data-word-more="${word.id}">مزید · مکمل لفظی تجزیہ</button>
     </div>`;
-  openHadithModal(`Word Meaning · ${word.a ? `${state.currentSurah || ''}:${word.a}:${word.n}` : word.id}`, body);
-  // fix title with surah
+  openHadithModal(`لفظ کا مطلب · ${state.currentSurah}:${word.a}:${word.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');
-  const h = modal?.querySelector('h3');
-  if (h) h.textContent = `Word Meaning · ${state.currentSurah}:${word.a}:${word.n}`;
   modal?.querySelector('[data-word-more]')?.addEventListener('click', () => {
     closeHadithModal();
     openWordFull(word);
@@ -417,42 +442,51 @@ function openWordQuick(word) {
 }
 
 function openWordFull(word) {
+  const lang = activeWordLang();
+  const selected = wordMeaningForLang(word, lang);
   const parts = (word.parts || [])
-    .map(
-      (p) =>
-        `<li><strong>${escapeHtml(p.tag || 'seg')}</strong> · ${escapeHtml(fieldOrMissing(p.f))}</li>`
-    )
+    .map((p) => `<li><strong>${escapeHtml(p.tag || 'seg')}</strong> · ${escapeHtml(fieldOrMissing(p.f))}</li>`)
     .join('');
+  const occS = word.occ_s || 0;
+  const occL = word.occ_l || 0;
+  const occR = word.occ_r || word.occ || 0;
+  const selectedRow =
+    lang && lang !== 'ur'
+      ? `<tr><th>${escapeHtml(lang.toUpperCase())} معنی</th><td dir="${lang === 'fa' ? 'rtl' : 'ltr'}">${escapeHtml(fieldOrMissing(selected))}</td></tr>`
+      : '';
   const body = `
-    <div class="word-full">
+    <div class="word-full no-blue-hl">
       <p class="ar" dir="rtl">${escapeHtml(word.ar)}</p>
       <table class="ref-table">
         <tbody>
-          <tr><th>Arabic Word</th><td dir="rtl">${escapeHtml(word.ar)}</td></tr>
-          <tr><th>Urdu Meaning</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.ur))}</td></tr>
-          <tr><th>English Meaning</th><td>${escapeHtml(fieldOrMissing(word.en))}</td></tr>
-          <tr><th>Transliteration</th><td>${escapeHtml(fieldOrMissing(word.tr))}</td></tr>
-          <tr><th>Root Letters</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.root))}${
+          <tr><th>عربی لفظ</th><td dir="rtl">${escapeHtml(word.ar)}</td></tr>
+          <tr><th>اردو معنی</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.ur))}</td></tr>
+          ${selectedRow}
+          ${lang !== 'en' ? `<tr><th>English</th><td>${escapeHtml(fieldOrMissing(word.en))}</td></tr>` : ''}
+          <tr><th>تلفظ</th><td>${escapeHtml(fieldOrMissing(word.tr))}</td></tr>
+          <tr><th>جذر حروف</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.root))}${
             word.root
-              ? ` · <button type="button" class="linkish" data-open-root="${escapeHtml(word.root)}">Open Root</button>`
+              ? ` · <button type="button" class="linkish" data-open-root="${escapeHtml(word.root)}">جذر کھولیں</button>`
               : ''
           }</td></tr>
-          <tr><th>Morphology</th><td>${escapeHtml(fieldOrMissing(word.morph))}</td></tr>
-          <tr><th>Grammar</th><td>${escapeHtml(fieldOrMissing(word.gram))}</td></tr>
-          <tr><th>Part of Speech</th><td>${escapeHtml(fieldOrMissing(word.pos))}</td></tr>
-          <tr><th>Syntax</th><td>${escapeHtml(fieldOrMissing(word.syn))}</td></tr>
-          <tr><th>Occurrences</th><td>${escapeHtml(String(word.occ || 0))}</td></tr>
+          <tr><th>صرف</th><td>${escapeHtml(fieldOrMissing(word.morph))}</td></tr>
+          <tr><th>گرامر</th><td>${escapeHtml(fieldOrMissing(word.gram))}</td></tr>
+          <tr><th>قسم کلمہ</th><td>${escapeHtml(fieldOrMissing(word.pos))}</td></tr>
+          <tr><th>نحو</th><td>${escapeHtml(fieldOrMissing(word.syn))}</td></tr>
+          <tr><th>اسی لفظ کی تعداد</th><td>${escapeHtml(String(occS))}</td></tr>
+          <tr><th>اسی lemma کی تعداد</th><td>${escapeHtml(String(occL))}</td></tr>
+          <tr><th>اسی جذر کی کل تعداد</th><td>${escapeHtml(String(occR))}</td></tr>
           <tr><th>Lemma</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.lemma))}</td></tr>
         </tbody>
       </table>
-      <h4>Morphology Tree</h4>
+      <h4>صرف کا درخت</h4>
       ${parts ? `<ul class="morph-tree">${parts}</ul>` : `<p class="muted">${NO_AUTH}</p>`}
-      <h4>AI Explanation</h4>
-      <p class="muted">Explains only authenticated grammar/morphology from the local database. Never generates new meanings.</p>
+      <h4>AI وضاحت</h4>
       <pre class="ai-box">${escapeHtml(
         [
           'Arabic: ' + word.ar,
           'Urdu: ' + fieldOrMissing(word.ur),
+          lang !== 'ur' ? lang.toUpperCase() + ': ' + fieldOrMissing(selected) : '',
           'English: ' + fieldOrMissing(word.en),
           'Transliteration: ' + fieldOrMissing(word.tr),
           'Root: ' + fieldOrMissing(word.root),
@@ -460,13 +494,16 @@ function openWordFull(word) {
           'POS: ' + fieldOrMissing(word.pos),
           'Grammar: ' + fieldOrMissing(word.gram),
           'Morphology: ' + fieldOrMissing(word.morph),
-          'Syntax: ' + fieldOrMissing(word.syn),
-          'Occurrences: ' + (word.occ || 0),
+          'This word form: ' + occS,
+          'Same lemma: ' + occL,
+          'Same root: ' + occR,
           'Source: local quran.db only',
-        ].join('\\n')
+        ]
+          .filter(Boolean)
+          .join('\n')
       )}</pre>
     </div>`;
-  openHadithModal(`Word Details · ${state.currentSurah}:${word.a}:${word.n}`, body);
+  openHadithModal(`تفصیل لفظ · ${state.currentSurah}:${word.a}:${word.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');
   modal?.querySelector('[data-open-root]')?.addEventListener('click', () => {
     closeHadithModal();
@@ -476,40 +513,35 @@ function openWordFull(word) {
 
 function openRootPage(root) {
   if (!root) {
-    openHadithModal('Root', `<p class="muted">${NO_AUTH}</p>`);
+    openHadithModal('جذر', `<p class="muted">${NO_AUTH}</p>`);
     return;
   }
-  const all = Object.values(state.wordsBySurah).flat();
-  const hits = all.filter((w) => w.root === root);
   const meanings = [];
   const seen = new Set();
-  for (const w of hits) {
-    const key = `${w.en}|${w.ur}`;
-    if (!w.en && !w.ur) continue;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    meanings.push(w);
-    if (meanings.length >= 12) break;
-  }
-  // Collect across loaded surah packs with surah number from cache keys
   const ayahRows = [];
   const ayahSeen = new Set();
+  let total = 0;
   for (const [surah, words] of Object.entries(state.wordsBySurah)) {
     for (const w of words) {
       if (w.root !== root) continue;
-      const key = `${surah}:${w.a}`;
-      if (ayahSeen.has(key)) continue;
-      ayahSeen.add(key);
-      ayahRows.push({ s: Number(surah), a: w.a, ar: w.ar, en: w.en, ur: w.ur });
-      if (ayahRows.length >= 80) break;
+      total += 1;
+      const key = `${w.en}|${w.ur}`;
+      if ((w.en || w.ur) && !seen.has(key) && meanings.length < 12) {
+        seen.add(key);
+        meanings.push(w);
+      }
+      const akey = `${surah}:${w.a}`;
+      if (!ayahSeen.has(akey) && ayahRows.length < 80) {
+        ayahSeen.add(akey);
+        ayahRows.push({ s: Number(surah), a: w.a, ar: w.ar, ur: w.ur, en: w.en });
+      }
     }
-    if (ayahRows.length >= 80) break;
   }
   const meanHtml = meanings.length
     ? meanings
         .map(
           (w) =>
-            `<li><span dir="rtl">${escapeHtml(fieldOrMissing(w.ur))}</span><br/><span>${escapeHtml(fieldOrMissing(w.en))}</span></li>`
+            `<li><span dir="rtl">${escapeHtml(fieldOrMissing(w.ur))}</span><br/><span class="muted">${escapeHtml(fieldOrMissing(w.en))}</span></li>`
         )
         .join('')
     : `<li class="muted">${NO_AUTH}</li>`;
@@ -517,26 +549,25 @@ function openRootPage(root) {
     ? ayahRows
         .map(
           (r) =>
-            `<li><strong>${r.s}:${r.a}</strong> <span dir="rtl">${escapeHtml(r.ar)}</span> — ${escapeHtml(
-              fieldOrMissing(r.en || r.ur)
-            )}</li>`
+            `<li><strong>${r.s}:${r.a}</strong> <span dir="rtl">${escapeHtml(r.ar)}</span> — <span dir="rtl">${escapeHtml(
+              fieldOrMissing(r.ur || r.en)
+            )}</span></li>`
         )
         .join('')
     : `<li class="muted">${NO_AUTH}</li>`;
   const body = `
-    <div class="root-page">
+    <div class="root-page no-blue-hl">
       <p class="ar" dir="rtl">${escapeHtml(root)}</p>
-      <p class="muted">Attested meanings from local word glosses only — never AI-invented.</p>
-      <h4>Meaning</h4>
+      <h4>معانی</h4>
       <ul>${meanHtml}</ul>
-      <h4>Total Occurrences (loaded packs)</h4>
-      <p>${hits.length}</p>
-      <h4>Related Roots</h4>
+      <h4>کل وقوعات (لوڈ شدہ)</h4>
+      <p>${total}</p>
+      <h4>متعلقہ جذور</h4>
       <p class="muted">${NO_AUTH}</p>
-      <h4>Every Ayah using this Root (from loaded surahs)</h4>
+      <h4>آیات</h4>
       <ul class="root-ayahs">${ayahHtml}</ul>
     </div>`;
-  openHadithModal(`Root · ${root}`, body);
+  openHadithModal(`جذر · ${root}`, body);
 }
 
 function ayahCardHtml(a, lib) {
@@ -553,7 +584,7 @@ function ayahCardHtml(a, lib) {
         <span class="ayah-page">Page ${a.p} · Juz ${a.j}</span>
       </div>
       <div class="ar ayah-words" dir="rtl" data-s="${a.s}" data-a="${a.a}">${ayahWordsHtml(a)}</div>
-      <p class="ayah-word-hint">Tap a word for meaning · More for full analysis</p>
+      <p class="ayah-word-hint">لفظ پر ٹیپ کریں · مزید کے لیے مکمل تجزیہ</p>
       ${translationBlockHtml(a)}
       ${tafsirBlockHtml(a)}
       ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}

@@ -108,8 +108,17 @@ def export_quran_words() -> dict:
             conn.execute(
                 """
                 SELECT id, surah, ayah, word_number, text_ar, transliteration,
-                       meaning_en, meaning_ur, root, lemma, pos, morphology,
-                       grammar_summary, syntax_summary, occurrence_count
+                       meaning_en, meaning_ur,
+                       IFNULL(meaning_hi,'') AS meaning_hi,
+                       IFNULL(meaning_bn,'') AS meaning_bn,
+                       IFNULL(meaning_id,'') AS meaning_id,
+                       IFNULL(meaning_tr,'') AS meaning_tr,
+                       IFNULL(meaning_fa,'') AS meaning_fa,
+                       root, lemma, pos, morphology,
+                       grammar_summary, syntax_summary, occurrence_count,
+                       IFNULL(occurrence_surface,0) AS occurrence_surface,
+                       IFNULL(occurrence_lemma,0) AS occurrence_lemma,
+                       IFNULL(occurrence_root,0) AS occurrence_root
                 FROM quran_words
                 WHERE surah = ?
                 ORDER BY ayah, word_number
@@ -128,6 +137,11 @@ def export_quran_words() -> dict:
                 "tr": r["transliteration"] or "",
                 "en": r["meaning_en"] or "",
                 "ur": r["meaning_ur"] or "",
+                "hi": r["meaning_hi"] or "",
+                "bn": r["meaning_bn"] or "",
+                "idn": r["meaning_id"] or "",
+                "trm": r["meaning_tr"] or "",
+                "fa": r["meaning_fa"] or "",
                 "root": r["root"] or "",
                 "lemma": r["lemma"] or "",
                 "pos": r["pos"] or "",
@@ -135,6 +149,9 @@ def export_quran_words() -> dict:
                 "gram": r["grammar_summary"] or "",
                 "syn": r["syntax_summary"] or "",
                 "occ": r["occurrence_count"] or 0,
+                "occ_s": r["occurrence_surface"] or 0,
+                "occ_l": r["occurrence_lemma"] or 0,
+                "occ_r": r["occurrence_root"] or 0,
             }
             for r in rows
         ]

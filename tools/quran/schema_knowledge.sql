@@ -22,6 +22,10 @@ CREATE TABLE IF NOT EXISTS quran_words (
   grammar_summary TEXT,
   syntax_summary TEXT,
   occurrence_count INTEGER NOT NULL DEFAULT 0,
+  -- occurrence_surface / occurrence_lemma / occurrence_root added by
+  -- tools/quran/import_wbw_gloss_languages.py (exact form / lemma / root counts).
+  -- meaning_hi, meaning_bn, meaning_id, meaning_tr, meaning_fa added the same way
+  -- from Quran.com authenticated word-by-word glosses (never English fallback).
   source TEXT NOT NULL DEFAULT 'qac+qurancom',
   UNIQUE (surah, ayah, word_number)
 );
