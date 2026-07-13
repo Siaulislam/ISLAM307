@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import re
+import sys
 from pathlib import Path
 
 _DIAC = re.compile(r"[\u064B-\u065F\u0670\u06D6-\u06ED\u0640]")
@@ -279,8 +280,8 @@ def _cut_isnad_ar(text_ar: str) -> str:
         r"قالت\s+رسول\s*الله",
         r"قال\s+كان\s+رسول\s*الله",
         r"كان\s+رسول\s*الله",
-        r"ان\s+رسول\s*الله\s+قال",
-        r"ان\s+النبي\s+قال",
+        r"ان\s+رسول\s*الله(?:\s+صلى\s+الله\s+عليه(?:\s+واله)?\s+وسلم)?\s+قال",
+        r"ان\s+النبي(?:\s+صلى\s+الله\s+عليه(?:\s+واله)?\s+وسلم)?\s+قال",
         r"عن\s+النبي\s+(?:صلى|انه\s+قال|قال)",
         r"قال\s+النبي",
         r"سمعت\s+النبي",
@@ -543,18 +544,36 @@ def extract_ravi_chain(
     primary: str | None = None,
     text_en: str | None = None,
     text_ur: str | None = None,  # noqa: ARG001 — display helper only
+    book_slug: str | None = None,
 ) -> list[str]:
     """
     Ordered rawi list from authenticated isnad only (excludes Prophet ﷺ).
 
-    Prefer Arabic isnad; fall back to English Narrated-X; then DB narrator field.
+    Prefer Arabic isnad via Isnad Engine (primary chain, relatives resolved when
+    recoverable from the previous authenticated name). Fall back to English
+    Narrated-X; then DB narrator field.
+
+    Compiler is never included in this list.
     """
     ar = (text_ar or "").strip()
     en = (text_en or "").strip()
 
     names: list[str] = []
     if ar:
-        names = _extract_names_from_ar_isnad(_cut_isnad_ar(ar))
+        try:
+            _here = Path(__file__).resolve().parent
+            if str(_here) not in sys.path:
+                sys.path.insert(0, str(_here))
+            from isnad_engine import parse_hadith_isnad
+
+            parsed = parse_hadith_isnad(
+                ar,
+                book_slug=book_slug or "bukhari",
+                hadith_number=0,
+            )
+            names = [n for n in parsed.primary_names if n]
+        except Exception:
+            names = _extract_names_from_ar_isnad(_cut_isnad_ar(ar))
 
     if len(names) < 1 and en:
         names = _extract_narrated_en(en)
@@ -700,9 +719,10 @@ def extract_ravi_by_lang(
     primary: str | None = None,
     text_en: str | None = None,
     text_ur: str | None = None,
+    book_slug: str | None = None,
 ) -> dict[str, list[str]]:
     """Authenticated rawi lists keyed by language code."""
-    ar = extract_ravi_chain(text_ar, primary, text_en, text_ur)
+    ar = extract_ravi_chain(text_ar, primary, text_en, text_ur, book_slug=book_slug)
     ur = extract_ravi_chain_urdu(text_ur)
     en = _extract_narrated_en(text_en)
     # English editions usually expose only the companion. Prefer full Arabic

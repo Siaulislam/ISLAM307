@@ -122,6 +122,7 @@ def export_hadith() -> dict:
                 ravi_primary,
                 r["text_en"] or "",
                 r["text_ur"] or "",
+                book_slug=book["slug"],
             )
             isnads = isnad_by_lang(r["text_ar"] or "", r["text_en"] or "", r["text_ur"] or "")
             ref_detail = build_reference_detail(

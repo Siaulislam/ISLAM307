@@ -134,6 +134,22 @@ bool _isStoryPerson(String foldedName) {
   return RegExp(r'^(?:ابا|ابو)\s+سفيان|هرقل|الحارث\b', unicode: true).hasMatch(foldedName);
 }
 
+bool _isRelativeToken(String name) {
+  final f = _foldAr(name).replaceAll(' ', '');
+  return RegExp(
+    r'^(?:ابيه|اباه|ابوه|والده|امه|امها|والدته|جده|اخيه|اخاه|عمه|خاله)$',
+    unicode: true,
+  ).hasMatch(f);
+}
+
+String? _extractIbnParent(String nameAr) {
+  final display = _norm(_stripDiac(nameAr));
+  final m = RegExp(r'(?:^|\s)(?:بن|ابن)\s+([^،,;]+?)(?:\s+(?:بن|ابن)\s+|$)', unicode: true).firstMatch(display);
+  if (m == null) return null;
+  final parent = _norm(m.group(1)!);
+  return parent.isEmpty ? null : parent;
+}
+
 String _cleanNameAr(String raw) {
   var name = raw.replaceAll(_honorificAr, ' ').replaceAll('ـ', ' ');
   name = _norm(_stripDiac(name)).replaceAll(RegExp(r'^[ ،,;:.\-]+|[ ،,;:.\-]+$'), '');
@@ -314,8 +330,17 @@ List<String> _extractNamesFromArIsnad(String isnad) {
     cleaned = cleaned.replaceAll(RegExp(r'،?\s*أخبر[هها]?\s*$'), '');
     cleaned = cleaned.split(RegExp(r'\s+\.\s+')).first.replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
     cleaned = cleaned.split(RegExp(r'\s+أن\s+|\s+ان\s+')).first.replaceAll(RegExp(r'^[ ،,;:]+|[ ،,;:]+$'), '');
+    // Relatives are never stored as names — resolve from previous link when possible.
+    if (_isRelativeToken(cleaned)) {
+      if (found.isEmpty) return false;
+      final prev = found.last.$2;
+      final parent = _extractIbnParent(prev);
+      if (parent == null || parent.isEmpty) return false;
+      cleaned = parent;
+    }
     final name = _cleanNameAr(cleaned);
     if (name.isEmpty || _isProphetToken(name) || _isMatnNoise(name)) return false;
+    if (_isRelativeToken(name)) return false;
     final key = _foldAr(name).replaceAll(' ', '');
     if (seen.contains(key)) return false;
     seen.add(key);
