@@ -1,0 +1,879 @@
+{
+  "book": "bukhari",
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Revelation",
+      "first": 1,
+      "last": 7,
+      "count": 7,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 2,
+      "title": "Belief",
+      "first": 8,
+      "last": 58,
+      "count": 51,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 3,
+      "title": "Knowledge",
+      "first": 59,
+      "last": 134,
+      "count": 76,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 4,
+      "title": "Ablutions (Wudu')",
+      "first": 135,
+      "last": 247,
+      "count": 113,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 5,
+      "title": "Bathing (Ghusl)",
+      "first": 248,
+      "last": 293,
+      "count": 46,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 6,
+      "title": "Menstrual Periods",
+      "first": 294,
+      "last": 333,
+      "count": 40,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 7,
+      "title": "Rubbing hands and feet with dust (Tayammum)",
+      "first": 334,
+      "last": 348,
+      "count": 15,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 8,
+      "title": "Prayers (Salat)",
+      "first": 349,
+      "last": 520,
+      "count": 172,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 9,
+      "title": "Times of the Prayers",
+      "first": 521,
+      "last": 602,
+      "count": 82,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 10,
+      "title": "Call to Prayers (Adhaan)",
+      "first": 603,
+      "last": 875,
+      "count": 273,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 11,
+      "title": "Friday Prayer",
+      "first": 876,
+      "last": 941,
+      "count": 66,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 12,
+      "title": "Fear Prayer",
+      "first": 942,
+      "last": 947,
+      "count": 6,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 13,
+      "title": "The Two Festivals (Eids)",
+      "first": 948,
+      "last": 989,
+      "count": 42,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 14,
+      "title": "Witr Prayer",
+      "first": 990,
+      "last": 1004,
+      "count": 15,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 15,
+      "title": "Invoking Allah for Rain (Istisqaa)",
+      "first": 1005,
+      "last": 1039,
+      "count": 35,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 16,
+      "title": "Eclipses",
+      "first": 1040,
+      "last": 1066,
+      "count": 27,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 17,
+      "title": "Prostration During Recital of Qur'an",
+      "first": 1067,
+      "last": 1079,
+      "count": 13,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 18,
+      "title": "Shortening the Prayers (At-Taqseer)",
+      "first": 1080,
+      "last": 1119,
+      "count": 40,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 19,
+      "title": "Prayer at Night (Tahajjud)",
+      "first": 1120,
+      "last": 1187,
+      "count": 68,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 20,
+      "title": "Virtues of Prayer at Masjid Makkah and Madinah",
+      "first": 1188,
+      "last": 1197,
+      "count": 10,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 21,
+      "title": "Actions while Praying",
+      "first": 1198,
+      "last": 1223,
+      "count": 26,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 22,
+      "title": "Forgetfulness in Prayer",
+      "first": 1224,
+      "last": 1236,
+      "count": 13,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 23,
+      "title": "Funerals (Al-Janaa'iz)",
+      "first": 1237,
+      "last": 1394,
+      "count": 158,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 24,
+      "title": "Obligatory Charity Tax (Zakat)",
+      "first": 1395,
+      "last": 1512,
+      "count": 118,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 25,
+      "title": "Hajj (Pilgrimage)",
+      "first": 1513,
+      "last": 1772,
+      "count": 260,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 26,
+      "title": "`Umrah (Minor pilgrimage)",
+      "first": 1773,
+      "last": 1805,
+      "count": 33,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 27,
+      "title": "Pilgrims Prevented from Completing the Pilgrimage",
+      "first": 1806,
+      "last": 1820,
+      "count": 15,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 28,
+      "title": "Penalty of Hunting while on Pilgrimage",
+      "first": 1821,
+      "last": 1866,
+      "count": 46,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 29,
+      "title": "Virtues of Madinah",
+      "first": 1867,
+      "last": 1890,
+      "count": 24,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 30,
+      "title": "Fasting",
+      "first": 1891,
+      "last": 2007,
+      "count": 117,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 31,
+      "title": "Praying at Night in Ramadaan (Taraweeh)",
+      "first": 2008,
+      "last": 2013,
+      "count": 6,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 32,
+      "title": "Virtues of the Night of Qadr",
+      "first": 2014,
+      "last": 2024,
+      "count": 11,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 33,
+      "title": "Retiring to a Mosque for Remembrance of Allah (I'tikaf)",
+      "first": 2025,
+      "last": 2046,
+      "count": 22,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 34,
+      "title": "Sales and Trade",
+      "first": 2047,
+      "last": 2238,
+      "count": 192,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 35,
+      "title": "Sales in which a Price is paid for Goods to be Delivered Later (As-Salam)",
+      "first": 2239,
+      "last": 2256,
+      "count": 18,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 36,
+      "title": "Shuf'a",
+      "first": 2257,
+      "last": 2259,
+      "count": 3,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 37,
+      "title": "Hiring",
+      "first": 2260,
+      "last": 2286,
+      "count": 27,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 38,
+      "title": "Transferance of a Debt from One Person to Another (Al-Hawaala)",
+      "first": 2287,
+      "last": 2289,
+      "count": 3,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 39,
+      "title": "Kafalah",
+      "first": 2290,
+      "last": 2298,
+      "count": 9,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 40,
+      "title": "Representation, Authorization, Business by Proxy",
+      "first": 2299,
+      "last": 2319,
+      "count": 21,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 41,
+      "title": "Agriculture",
+      "first": 2320,
+      "last": 2350,
+      "count": 31,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 42,
+      "title": "Distribution of Water",
+      "first": 2351,
+      "last": 2384,
+      "count": 34,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 43,
+      "title": "Loans, Payment of Loans, Freezing of Property, Bankruptcy",
+      "first": 2385,
+      "last": 2409,
+      "count": 25,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 44,
+      "title": "Khusoomaat",
+      "first": 2410,
+      "last": 2425,
+      "count": 16,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 45,
+      "title": "Lost Things Picked up by Someone (Luqatah)",
+      "first": 2426,
+      "last": 2439,
+      "count": 14,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 46,
+      "title": "Oppressions",
+      "first": 2440,
+      "last": 2482,
+      "count": 43,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 47,
+      "title": "Partnership",
+      "first": 2483,
+      "last": 2507,
+      "count": 25,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 48,
+      "title": "Mortgaging",
+      "first": 2508,
+      "last": 2516,
+      "count": 9,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 49,
+      "title": "Manumission of Slaves",
+      "first": 2517,
+      "last": 2559,
+      "count": 43,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 50,
+      "title": "Makaatib",
+      "first": 2560,
+      "last": 2565,
+      "count": 6,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 51,
+      "title": "Gifts",
+      "first": 2566,
+      "last": 2636,
+      "count": 71,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 52,
+      "title": "Witnesses",
+      "first": 2637,
+      "last": 2689,
+      "count": 53,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 53,
+      "title": "Peacemaking",
+      "first": 2690,
+      "last": 2710,
+      "count": 21,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 54,
+      "title": "Conditions",
+      "first": 2711,
+      "last": 2737,
+      "count": 27,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 55,
+      "title": "Wills and Testaments (Wasaayaa)",
+      "first": 2738,
+      "last": 2781,
+      "count": 44,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 56,
+      "title": "Fighting for the Cause of Allah (Jihaad)",
+      "first": 2782,
+      "last": 3090,
+      "count": 309,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 57,
+      "title": "One-fifth of Booty to the Cause of Allah (Khumus)",
+      "first": 3091,
+      "last": 3155,
+      "count": 65,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 58,
+      "title": "Jizyah and Mawaada'ah",
+      "first": 3156,
+      "last": 3189,
+      "count": 34,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 59,
+      "title": "Beginning of Creation",
+      "first": 3190,
+      "last": 3325,
+      "count": 136,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 60,
+      "title": "Prophets",
+      "first": 3326,
+      "last": 3488,
+      "count": 163,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 61,
+      "title": "Virtues and Merits of the Prophet (pbuh) and his Companions",
+      "first": 3489,
+      "last": 3648,
+      "count": 160,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 62,
+      "title": "Companions of the Prophet",
+      "first": 3649,
+      "last": 3775,
+      "count": 127,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 63,
+      "title": "Merits of the Helpers in Madinah (Ansaar)",
+      "first": 3776,
+      "last": 3948,
+      "count": 173,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 64,
+      "title": "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)",
+      "first": 3949,
+      "last": 4473,
+      "count": 525,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 65,
+      "title": "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))",
+      "first": 4474,
+      "last": 4977,
+      "count": 504,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 66,
+      "title": "Virtues of the Qur'an",
+      "first": 4978,
+      "last": 5062,
+      "count": 85,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 67,
+      "title": "Wedlock, Marriage (Nikaah)",
+      "first": 5063,
+      "last": 5250,
+      "count": 188,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 68,
+      "title": "Divorce",
+      "first": 5251,
+      "last": 5350,
+      "count": 100,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 69,
+      "title": "Supporting the Family",
+      "first": 5351,
+      "last": 5372,
+      "count": 22,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 70,
+      "title": "Food, Meals",
+      "first": 5373,
+      "last": 5466,
+      "count": 94,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 71,
+      "title": "Sacrifice on Occasion of Birth (`Aqiqa)",
+      "first": 5467,
+      "last": 5474,
+      "count": 8,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 72,
+      "title": "Hunting, Slaughtering",
+      "first": 5475,
+      "last": 5544,
+      "count": 70,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 73,
+      "title": "Al-Adha Festival Sacrifice (Adaahi)",
+      "first": 5545,
+      "last": 5574,
+      "count": 30,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 74,
+      "title": "Drinks",
+      "first": 5575,
+      "last": 5639,
+      "count": 65,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 75,
+      "title": "Patients",
+      "first": 5640,
+      "last": 5677,
+      "count": 38,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 76,
+      "title": "Medicine",
+      "first": 5678,
+      "last": 5782,
+      "count": 105,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 77,
+      "title": "Dress",
+      "first": 5783,
+      "last": 5969,
+      "count": 187,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 78,
+      "title": "Good Manners and Form (Al-Adab)",
+      "first": 5970,
+      "last": 6226,
+      "count": 257,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 79,
+      "title": "Asking Permission",
+      "first": 6227,
+      "last": 6303,
+      "count": 77,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 80,
+      "title": "Invocations",
+      "first": 6304,
+      "last": 6411,
+      "count": 108,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 81,
+      "title": "To make the Heart Tender (Ar-Riqaq)",
+      "first": 6412,
+      "last": 6593,
+      "count": 182,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 82,
+      "title": "Divine Will (Al-Qadar)",
+      "first": 6594,
+      "last": 6620,
+      "count": 27,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 83,
+      "title": "Oaths and Vows",
+      "first": 6621,
+      "last": 6707,
+      "count": 87,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 84,
+      "title": "Expiation for Unfulfilled Oaths",
+      "first": 6708,
+      "last": 6722,
+      "count": 15,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 85,
+      "title": "Laws of Inheritance (Al-Faraa'id)",
+      "first": 6723,
+      "last": 6771,
+      "count": 49,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 86,
+      "title": "Limits and Punishments set by Allah (Hudood)",
+      "first": 6772,
+      "last": 6860,
+      "count": 89,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 87,
+      "title": "Blood Money (Ad-Diyat)",
+      "first": 6861,
+      "last": 6917,
+      "count": 57,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 88,
+      "title": "Apostates",
+      "first": 6918,
+      "last": 6939,
+      "count": 22,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 89,
+      "title": "(Statements made under) Coercion",
+      "first": 6940,
+      "last": 6952,
+      "count": 13,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 90,
+      "title": "Tricks",
+      "first": 6953,
+      "last": 6981,
+      "count": 29,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 91,
+      "title": "Interpretation of Dreams",
+      "first": 6982,
+      "last": 7047,
+      "count": 66,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 92,
+      "title": "Afflictions and the End of the World",
+      "first": 7048,
+      "last": 7136,
+      "count": 89,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 93,
+      "title": "Judgments (Ahkaam)",
+      "first": 7137,
+      "last": 7225,
+      "count": 89,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 94,
+      "title": "Wishes",
+      "first": 7226,
+      "last": 7245,
+      "count": 20,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 95,
+      "title": "Accepting Information Given by a Truthful Person",
+      "first": 7246,
+      "last": 7267,
+      "count": 22,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 96,
+      "title": "Holding Fast to the Qur'an and Sunnah",
+      "first": 7268,
+      "last": 7370,
+      "count": 103,
+      "missing": [],
+      "outsiders_in_span": []
+    },
+    {
+      "number": 97,
+      "title": "Oneness, Uniqueness of Allah (Tawheed)",
+      "first": 7371,
+      "last": 7563,
+      "count": 193,
+      "missing": [],
+      "outsiders_in_span": []
+    }
+  ],
+  "issues": []
+}
