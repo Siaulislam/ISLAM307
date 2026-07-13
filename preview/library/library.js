@@ -335,14 +335,12 @@ function ayahHeaderMenusHtml(a) {
     <div class="ayah-header-actions">
       <div class="ayah-dd ${trOpen ? 'is-open' : ''}">
         <button type="button" class="ayah-dd-btn ${state.quranTranslationLang ? 'is-on' : ''}" data-menu="translation" aria-expanded="${trOpen}">
-          <span class="ayah-dd-ico" aria-hidden="true">文A</span>
           <span>${escapeHtml(trLabel)}</span>
         </button>
         ${trOpen ? `<div class="ayah-dd-panel" role="menu">${trItems}</div>` : ''}
       </div>
       <div class="ayah-dd ${tfOpen ? 'is-open' : ''}">
         <button type="button" class="ayah-dd-btn ${state.quranTafsirSlug ? 'is-on' : ''}" data-menu="tafsir" aria-expanded="${tfOpen}">
-          <span class="ayah-dd-ico" aria-hidden="true">◈</span>
           <span>${escapeHtml(tfLabel)}</span>
         </button>
         ${tfOpen ? `<div class="ayah-dd-panel" role="menu">${tfItems}</div>` : ''}
