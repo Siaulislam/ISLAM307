@@ -481,27 +481,6 @@ function openWordFull(word) {
       </table>
       <h4>صرف کا درخت</h4>
       ${parts ? `<ul class="morph-tree">${parts}</ul>` : `<p class="muted">${NO_AUTH}</p>`}
-      <h4>AI وضاحت</h4>
-      <pre class="ai-box">${escapeHtml(
-        [
-          'Arabic: ' + word.ar,
-          'Urdu: ' + fieldOrMissing(word.ur),
-          lang !== 'ur' ? lang.toUpperCase() + ': ' + fieldOrMissing(selected) : '',
-          'English: ' + fieldOrMissing(word.en),
-          'Transliteration: ' + fieldOrMissing(word.tr),
-          'Root: ' + fieldOrMissing(word.root),
-          'Lemma: ' + fieldOrMissing(word.lemma),
-          'POS: ' + fieldOrMissing(word.pos),
-          'Grammar: ' + fieldOrMissing(word.gram),
-          'Morphology: ' + fieldOrMissing(word.morph),
-          'This word form: ' + occS,
-          'Same lemma: ' + occL,
-          'Same root: ' + occR,
-          'Source: local quran.db only',
-        ]
-          .filter(Boolean)
-          .join('\n')
-      )}</pre>
     </div>`;
   openHadithModal(`تفصیل لفظ · ${state.currentSurah}:${word.a}:${word.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');
