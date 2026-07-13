@@ -92,6 +92,72 @@ def export_quran() -> dict:
     return {"surahs": len(surahs), "ayahs": len(ayahs), "translations": lang_keys}
 
 
+def export_quran_words() -> dict:
+    """Export per-surah word knowledge for offline web preview (authenticated only)."""
+    conn = sqlite3.connect(QURAN_DB)
+    conn.row_factory = sqlite3.Row
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    if "quran_words" not in tables:
+        return {"surahs": 0, "words": 0}
+    out_dir = OUT / "quran" / "words"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    total = 0
+    surahs = 0
+    for surah in range(1, 115):
+        rows = list(
+            conn.execute(
+                """
+                SELECT id, surah, ayah, word_number, text_ar, transliteration,
+                       meaning_en, meaning_ur, root, lemma, pos, morphology,
+                       grammar_summary, syntax_summary, occurrence_count
+                FROM quran_words
+                WHERE surah = ?
+                ORDER BY ayah, word_number
+                """,
+                (surah,),
+            )
+        )
+        if not rows:
+            continue
+        words = [
+            {
+                "id": r["id"],
+                "a": r["ayah"],
+                "n": r["word_number"],
+                "ar": r["text_ar"] or "",
+                "tr": r["transliteration"] or "",
+                "en": r["meaning_en"] or "",
+                "ur": r["meaning_ur"] or "",
+                "root": r["root"] or "",
+                "lemma": r["lemma"] or "",
+                "pos": r["pos"] or "",
+                "morph": r["morphology"] or "",
+                "gram": r["grammar_summary"] or "",
+                "syn": r["syntax_summary"] or "",
+                "occ": r["occurrence_count"] or 0,
+            }
+            for r in rows
+        ]
+        # parts for this surah
+        ids = [w["id"] for w in words]
+        parts_by = {}
+        if ids and "quran_word_parts" in tables:
+            qmarks = ",".join("?" * len(ids))
+            for p in conn.execute(
+                f"SELECT word_id, part_index, tag, features FROM quran_word_parts WHERE word_id IN ({qmarks}) ORDER BY word_id, part_index",
+                ids,
+            ):
+                parts_by.setdefault(p["word_id"], []).append(
+                    {"i": p["part_index"], "tag": p["tag"] or "", "f": p["features"] or ""}
+                )
+        for w in words:
+            w["parts"] = parts_by.get(w["id"], [])
+        write_json_gz(out_dir / f"{surah}.json.gz", {"surah": surah, "words": words, "count": len(words)})
+        total += len(words)
+        surahs += 1
+    return {"surahs": surahs, "words": total}
+
+
 def export_hadith() -> dict:
     import re
     ar_re = re.compile(r"[\u0600-\u06FF]")
@@ -215,6 +281,7 @@ def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     summary = {
         "quran": export_quran(),
+        "quran_words": export_quran_words(),
         "hadith": export_hadith(),
         "tafsir": export_tafsir(),
     }

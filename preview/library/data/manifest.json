@@ -957,5 +957,9 @@
       "hadith": 134,
       "chain_length": 5
     }
+  },
+  "quran_words": {
+    "surahs": 114,
+    "words": 77429
   }
 }

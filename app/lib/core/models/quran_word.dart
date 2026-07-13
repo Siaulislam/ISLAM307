@@ -1,3 +1,5 @@
+import 'quran_grammar.dart';
+
 /// Offline Quran word knowledge row (QAC morphology + glosses).
 class QuranWord {
   const QuranWord({
@@ -65,23 +67,40 @@ class QuranWord {
 
   String get reference => '$surah:$ayah:$wordNumber';
 
+  QuranGrammarAnalysis get grammarAnalysis {
+    final feats = parts.map((p) => p.features).where((f) => f.isNotEmpty);
+    if (feats.isNotEmpty) return QuranGrammarAnalysis.fromFeatures(feats);
+    if (morphology.isNotEmpty) return QuranGrammarAnalysis.fromFeatures([morphology]);
+    return const QuranGrammarAnalysis();
+  }
+
+  String fieldOrMissing(String value) => value.trim().isEmpty ? kNoAuthenticReference : value;
+
   /// Local-only explanation built from authenticated DB fields — never invents.
   String localAiExplanation() {
+    final g = grammarAnalysis;
     final lines = <String>[
+      'Arabic Language Analysis (local quran.db only)',
       'Arabic: $textAr',
-      if (meaningUr.isNotEmpty) 'Urdu: $meaningUr',
-      if (meaningEn.isNotEmpty) 'English: $meaningEn',
-      if (transliteration.isNotEmpty) 'Transliteration: $transliteration',
-      if (root.isNotEmpty) 'Root: $root',
-      if (lemma.isNotEmpty) 'Lemma: $lemma',
-      if (pos.isNotEmpty) 'Part of speech: $pos',
-      if (grammarSummary.isNotEmpty) 'Grammar: $grammarSummary',
-      if (morphology.isNotEmpty) 'Morphology: $morphology',
-      if (syntaxSummary.isNotEmpty) 'Syntax: $syntaxSummary',
-      if (occurrenceCount > 0) 'Occurrences (same root/lemma/form): $occurrenceCount',
-      'Reference: $surah:$ayah (word $wordNumber)',
-      'Source: local quran.db only — no generated rulings.',
+      'Urdu: ${fieldOrMissing(meaningUr)}',
+      'English: ${fieldOrMissing(meaningEn)}',
+      'Transliteration: ${fieldOrMissing(transliteration)}',
+      'Root: ${fieldOrMissing(root)}',
+      'Lemma: ${fieldOrMissing(lemma)}',
+      'Part of speech: ${fieldOrMissing(pos)}',
+      'Grammar: ${fieldOrMissing(grammarSummary)}',
+      'Morphology: ${fieldOrMissing(morphology)}',
+      'Syntax: ${fieldOrMissing(syntaxSummary)}',
     ];
+    for (final e in g.displayRows.entries) {
+      lines.add('${e.key}: ${e.value}');
+    }
+    if (occurrenceCount > 0) {
+      lines.add('Root/lemma/form occurrences in Quran: $occurrenceCount');
+    }
+    lines.add('Reference: $surah:$ayah (word $wordNumber)');
+    lines.add('Source: ${source.isEmpty ? 'quran.db' : source}');
+    lines.add('AI must not invent meanings — only authenticated fields above.');
     return lines.join('\n');
   }
 }
@@ -106,5 +125,13 @@ class QuranWordPart {
       tag: '${m['tag'] ?? ''}',
       features: '${m['features'] ?? ''}',
     );
+  }
+
+  String get role {
+    final f = features.toUpperCase();
+    if (f.contains('PREFIX')) return 'Prefix';
+    if (f.contains('SUFFIX')) return 'Suffix';
+    if (f.contains('STEM')) return 'Stem';
+    return 'Segment';
   }
 }

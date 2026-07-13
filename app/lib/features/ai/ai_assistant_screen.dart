@@ -62,7 +62,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Searches only local quran.db, hadith.db, tafsir.db, and word/grammar/morphology/root tables. Never invents answers.',
+              'Searches only local quran.db (ayahs + word/grammar/morphology/root), hadith.db, and tafsir.db. Never invents Quran meanings. If nothing authenticated is found: “No authentic reference found.”',
               style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12, height: 1.4),
             ),
           ),

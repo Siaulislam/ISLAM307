@@ -285,4 +285,92 @@ class QuranDatabase {
     final rows = await db.query('meta', where: 'key = ?', whereArgs: [key], limit: 1);
     return rows.isEmpty ? null : rows.first;
   }
+
+  /// Authenticated root profile from quran_words only (no invented lexicon).
+  Future<Map<String, dynamic>?> rootProfile(String root) async {
+    final r = root.trim();
+    if (r.isEmpty) return null;
+    final db = await open();
+    final count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM quran_words WHERE root = ?', [r])) ?? 0;
+    if (count == 0) return null;
+    final forms = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(DISTINCT text_ar) FROM quran_words WHERE root = ?', [r])) ?? 0;
+    final lemmas = Sqflite.firstIntValue(
+          await db.rawQuery("SELECT COUNT(DISTINCT lemma) FROM quran_words WHERE root = ? AND IFNULL(lemma,'') != ''", [r]),
+        ) ??
+        0;
+    final meanings = await db.rawQuery(
+      'SELECT meaning_en, meaning_ur, COUNT(*) AS c FROM quran_words '
+      "WHERE root = ? AND (IFNULL(meaning_en,'') != '' OR IFNULL(meaning_ur,'') != '') "
+      'GROUP BY meaning_en, meaning_ur ORDER BY c DESC LIMIT 12',
+      [r],
+    );
+    final derived = await db.rawQuery(
+      'SELECT text_ar, lemma, pos, COUNT(*) AS c FROM quran_words WHERE root = ? '
+      'GROUP BY text_ar, lemma, pos ORDER BY c DESC LIMIT 40',
+      [r],
+    );
+    final ayahs = await db.rawQuery(
+      'SELECT DISTINCT surah, ayah, MIN(word_number) AS word_number, MIN(text_ar) AS text_ar, '
+      'MIN(meaning_en) AS meaning_en, MIN(meaning_ur) AS meaning_ur '
+      'FROM quran_words WHERE root = ? GROUP BY surah, ayah ORDER BY surah ASC, ayah ASC LIMIT 200',
+      [r],
+    );
+    return {
+      'root': r,
+      'occurrence_count': count,
+      'form_count': forms,
+      'lemma_count': lemmas,
+      'attested_meanings': meanings,
+      'derived_words': derived,
+      'ayahs': ayahs,
+    };
+  }
+
+  Future<List<Map<String, dynamic>>> similarWords({
+    required String lemma,
+    required String root,
+    required String textAr,
+    int? excludeId,
+    int limit = 20,
+  }) async {
+    final db = await open();
+    if (lemma.trim().isNotEmpty) {
+      final rows = await db.query(
+        'quran_words',
+        where: excludeId == null ? 'lemma = ?' : 'lemma = ? AND id != ?',
+        whereArgs: excludeId == null ? [lemma] : [lemma, excludeId],
+        orderBy: 'surah ASC, ayah ASC, word_number ASC',
+        limit: limit,
+      );
+      if (rows.isNotEmpty) return rows;
+    }
+    if (root.trim().isNotEmpty) {
+      return wordsByRoot(root, limit: limit, excludeId: excludeId);
+    }
+    if (textAr.trim().isEmpty) return [];
+    return db.query(
+      'quran_words',
+      where: excludeId == null ? 'text_ar = ?' : 'text_ar = ? AND id != ?',
+      whereArgs: excludeId == null ? [textAr] : [textAr, excludeId],
+      orderBy: 'surah ASC, ayah ASC',
+      limit: limit,
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> ayahsForSurface(String textAr, {int limit = 80}) async {
+    final db = await open();
+    final t = textAr.trim();
+    if (t.isEmpty) return [];
+    return db.rawQuery(
+      'SELECT DISTINCT surah, ayah, MIN(id) AS id, MIN(text_ar) AS text_ar, '
+      'MIN(meaning_en) AS meaning_en, MIN(meaning_ur) AS meaning_ur '
+      'FROM quran_words WHERE text_ar = ? GROUP BY surah, ayah ORDER BY surah ASC, ayah ASC LIMIT ?',
+      [t, limit],
+    );
+  }
+
+  Future<int> surfaceOccurrenceCount(String textAr) async {
+    final db = await open();
+    return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM quran_words WHERE text_ar = ?', [textAr])) ?? 0;
+  }
 }

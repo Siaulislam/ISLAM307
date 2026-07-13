@@ -32,6 +32,25 @@ class QuranWordRepository {
     return rows.map(QuranWord.fromMap).toList();
   }
 
+  Future<List<QuranWord>> similarWords(QuranWord word, {int limit = 20}) async {
+    final rows = await _db.similarWords(
+      lemma: word.lemma,
+      root: word.root,
+      textAr: word.textAr,
+      excludeId: word.id,
+      limit: limit,
+    );
+    return rows.map(QuranWord.fromMap).toList();
+  }
+
+  Future<List<Map<String, dynamic>>> versesContainingWord(QuranWord word, {int limit = 80}) {
+    return _db.ayahsForSurface(word.textAr, limit: limit);
+  }
+
+  Future<int> surfaceCount(QuranWord word) => _db.surfaceOccurrenceCount(word.textAr);
+
+  Future<Map<String, dynamic>?> rootProfile(String root) => _db.rootProfile(root);
+
   Future<List<QuranWord>> search(String query, {int limit = 40}) async {
     final rows = await _db.searchWords(query, limit: limit);
     return rows.map(QuranWord.fromMap).toList();

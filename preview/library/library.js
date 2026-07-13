@@ -90,7 +90,12 @@ const state = {
   quranTafsirSlug: localStorage.getItem('i307_quran_tafsir') || '',
   openMenu: null, // 'translation' | 'tafsir' | null
   openMenuAyah: null, // 's:a' for which card shows the dropdown
+  wordsBySurah: {}, // surah -> words[]
+  wordCacheLoading: {},
 };
+
+const NO_AUTH = 'No authentic reference found.';
+
 
 /** Languages for Muslim-majority / large Muslim communities. Text only from authenticated ayah fields. */
 const QURAN_TRANSLATION_LANGS = [
@@ -349,6 +354,191 @@ function ayahHeaderMenusHtml(a) {
   `;
 }
 
+
+async function ensureSurahWords(surah) {
+  if (state.wordsBySurah[surah]) return state.wordsBySurah[surah];
+  if (state.wordCacheLoading[surah]) return state.wordCacheLoading[surah];
+  state.wordCacheLoading[surah] = fetchJsonGz(`data/quran/words/${surah}.json.gz`)
+    .then((data) => {
+      state.wordsBySurah[surah] = data.words || [];
+      delete state.wordCacheLoading[surah];
+      return state.wordsBySurah[surah];
+    })
+    .catch(() => {
+      state.wordsBySurah[surah] = [];
+      delete state.wordCacheLoading[surah];
+      return [];
+    });
+  return state.wordCacheLoading[surah];
+}
+
+function wordsForAyah(surah, ayah) {
+  const all = state.wordsBySurah[surah] || [];
+  return all.filter((w) => w.a === ayah);
+}
+
+function ayahWordsHtml(a) {
+  const words = wordsForAyah(a.s, a.a);
+  if (!words.length) {
+    return `<span class="ayah-word-fallback">${escapeHtml(a.ar || '')}</span>`;
+  }
+  return words
+    .map(
+      (w) =>
+        `<button type="button" class="qword" data-word-id="${w.id}" data-s="${a.s}" data-a="${a.a}" data-n="${w.n}">${escapeHtml(w.ar)}</button>`
+    )
+    .join(' ');
+}
+
+function fieldOrMissing(v) {
+  const t = String(v || '').trim();
+  return t || NO_AUTH;
+}
+
+function openWordQuick(word) {
+  const body = `
+    <div class="word-quick">
+      <p class="ar" dir="rtl">${escapeHtml(word.ar)}</p>
+      ${word.tr ? `<p class="muted">${escapeHtml(word.tr)}</p>` : ''}
+      <p class="ur" dir="rtl">${escapeHtml(fieldOrMissing(word.ur))}</p>
+      <p class="en">${escapeHtml(fieldOrMissing(word.en))}</p>
+      ${word.root ? `<p class="root" dir="rtl">Root · ${escapeHtml(word.root)}</p>` : ''}
+      <button type="button" class="primary" data-word-more="${word.id}">More · Full Word Analysis</button>
+    </div>`;
+  openHadithModal(`Word Meaning · ${word.a ? `${state.currentSurah || ''}:${word.a}:${word.n}` : word.id}`, body);
+  // fix title with surah
+  const modal = document.getElementById('hadith-detail-modal');
+  const h = modal?.querySelector('h3');
+  if (h) h.textContent = `Word Meaning · ${state.currentSurah}:${word.a}:${word.n}`;
+  modal?.querySelector('[data-word-more]')?.addEventListener('click', () => {
+    closeHadithModal();
+    openWordFull(word);
+  });
+}
+
+function openWordFull(word) {
+  const parts = (word.parts || [])
+    .map(
+      (p) =>
+        `<li><strong>${escapeHtml(p.tag || 'seg')}</strong> · ${escapeHtml(fieldOrMissing(p.f))}</li>`
+    )
+    .join('');
+  const body = `
+    <div class="word-full">
+      <p class="ar" dir="rtl">${escapeHtml(word.ar)}</p>
+      <table class="ref-table">
+        <tbody>
+          <tr><th>Arabic Word</th><td dir="rtl">${escapeHtml(word.ar)}</td></tr>
+          <tr><th>Urdu Meaning</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.ur))}</td></tr>
+          <tr><th>English Meaning</th><td>${escapeHtml(fieldOrMissing(word.en))}</td></tr>
+          <tr><th>Transliteration</th><td>${escapeHtml(fieldOrMissing(word.tr))}</td></tr>
+          <tr><th>Root Letters</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.root))}${
+            word.root
+              ? ` · <button type="button" class="linkish" data-open-root="${escapeHtml(word.root)}">Open Root</button>`
+              : ''
+          }</td></tr>
+          <tr><th>Morphology</th><td>${escapeHtml(fieldOrMissing(word.morph))}</td></tr>
+          <tr><th>Grammar</th><td>${escapeHtml(fieldOrMissing(word.gram))}</td></tr>
+          <tr><th>Part of Speech</th><td>${escapeHtml(fieldOrMissing(word.pos))}</td></tr>
+          <tr><th>Syntax</th><td>${escapeHtml(fieldOrMissing(word.syn))}</td></tr>
+          <tr><th>Occurrences</th><td>${escapeHtml(String(word.occ || 0))}</td></tr>
+          <tr><th>Lemma</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.lemma))}</td></tr>
+        </tbody>
+      </table>
+      <h4>Morphology Tree</h4>
+      ${parts ? `<ul class="morph-tree">${parts}</ul>` : `<p class="muted">${NO_AUTH}</p>`}
+      <h4>AI Explanation</h4>
+      <p class="muted">Explains only authenticated grammar/morphology from the local database. Never generates new meanings.</p>
+      <pre class="ai-box">${escapeHtml(
+        [
+          'Arabic: ' + word.ar,
+          'Urdu: ' + fieldOrMissing(word.ur),
+          'English: ' + fieldOrMissing(word.en),
+          'Transliteration: ' + fieldOrMissing(word.tr),
+          'Root: ' + fieldOrMissing(word.root),
+          'Lemma: ' + fieldOrMissing(word.lemma),
+          'POS: ' + fieldOrMissing(word.pos),
+          'Grammar: ' + fieldOrMissing(word.gram),
+          'Morphology: ' + fieldOrMissing(word.morph),
+          'Syntax: ' + fieldOrMissing(word.syn),
+          'Occurrences: ' + (word.occ || 0),
+          'Source: local quran.db only',
+        ].join('\\n')
+      )}</pre>
+    </div>`;
+  openHadithModal(`Word Details · ${state.currentSurah}:${word.a}:${word.n}`, body);
+  const modal = document.getElementById('hadith-detail-modal');
+  modal?.querySelector('[data-open-root]')?.addEventListener('click', () => {
+    closeHadithModal();
+    openRootPage(word.root);
+  });
+}
+
+function openRootPage(root) {
+  if (!root) {
+    openHadithModal('Root', `<p class="muted">${NO_AUTH}</p>`);
+    return;
+  }
+  const all = Object.values(state.wordsBySurah).flat();
+  const hits = all.filter((w) => w.root === root);
+  const meanings = [];
+  const seen = new Set();
+  for (const w of hits) {
+    const key = `${w.en}|${w.ur}`;
+    if (!w.en && !w.ur) continue;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    meanings.push(w);
+    if (meanings.length >= 12) break;
+  }
+  // Collect across loaded surah packs with surah number from cache keys
+  const ayahRows = [];
+  const ayahSeen = new Set();
+  for (const [surah, words] of Object.entries(state.wordsBySurah)) {
+    for (const w of words) {
+      if (w.root !== root) continue;
+      const key = `${surah}:${w.a}`;
+      if (ayahSeen.has(key)) continue;
+      ayahSeen.add(key);
+      ayahRows.push({ s: Number(surah), a: w.a, ar: w.ar, en: w.en, ur: w.ur });
+      if (ayahRows.length >= 80) break;
+    }
+    if (ayahRows.length >= 80) break;
+  }
+  const meanHtml = meanings.length
+    ? meanings
+        .map(
+          (w) =>
+            `<li><span dir="rtl">${escapeHtml(fieldOrMissing(w.ur))}</span><br/><span>${escapeHtml(fieldOrMissing(w.en))}</span></li>`
+        )
+        .join('')
+    : `<li class="muted">${NO_AUTH}</li>`;
+  const ayahHtml = ayahRows.length
+    ? ayahRows
+        .map(
+          (r) =>
+            `<li><strong>${r.s}:${r.a}</strong> <span dir="rtl">${escapeHtml(r.ar)}</span> — ${escapeHtml(
+              fieldOrMissing(r.en || r.ur)
+            )}</li>`
+        )
+        .join('')
+    : `<li class="muted">${NO_AUTH}</li>`;
+  const body = `
+    <div class="root-page">
+      <p class="ar" dir="rtl">${escapeHtml(root)}</p>
+      <p class="muted">Attested meanings from local word glosses only — never AI-invented.</p>
+      <h4>Meaning</h4>
+      <ul>${meanHtml}</ul>
+      <h4>Total Occurrences (loaded packs)</h4>
+      <p>${hits.length}</p>
+      <h4>Related Roots</h4>
+      <p class="muted">${NO_AUTH}</p>
+      <h4>Every Ayah using this Root (from loaded surahs)</h4>
+      <ul class="root-ayahs">${ayahHtml}</ul>
+    </div>`;
+  openHadithModal(`Root · ${root}`, body);
+}
+
 function ayahCardHtml(a, lib) {
   const key = ayahKey(a.s, a.a);
   const bookmarked = lib.bookmarks.includes(key);
@@ -362,7 +552,8 @@ function ayahCardHtml(a, lib) {
         ${ayahHeaderMenusHtml(a)}
         <span class="ayah-page">Page ${a.p} · Juz ${a.j}</span>
       </div>
-      <p class="ar">${a.ar}</p>
+      <div class="ar ayah-words" dir="rtl" data-s="${a.s}" data-a="${a.a}">${ayahWordsHtml(a)}</div>
+      <p class="ayah-word-hint">Tap a word for meaning · More for full analysis</p>
       ${translationBlockHtml(a)}
       ${tafsirBlockHtml(a)}
       ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}
@@ -381,6 +572,7 @@ function escapeHtml(s) {
 
 async function openSurah(n, button, { preserveScroll = false } = {}) {
   await ensureAyahs();
+  await ensureSurahWords(n);
   $('surah-list').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
   if (button) button.classList.add('active');
   const surah = state.surahs.find((s) => s.n === n);
@@ -395,6 +587,7 @@ async function openSurah(n, button, { preserveScroll = false } = {}) {
   const lib = ensureUserLibrary();
   view.innerHTML = readerToolbarHtml(surah) + ayahs.map((a) => ayahCardHtml(a, lib)).join('');
   wireReaderEvents();
+  wireWordEvents();
   if (history.replaceState) {
     const url = new URL(location.href);
     url.searchParams.set('surah', String(n));
@@ -520,6 +713,26 @@ function openVerseActions(surah, ayah) {
         close();
         stopRecitation('Recitation stopped');
       }
+    };
+  });
+}
+
+
+function wireWordEvents() {
+  const view = $('ayah-view');
+  if (!view) return;
+  view.querySelectorAll('button.qword').forEach((btn) => {
+    btn.onclick = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const id = Number(btn.dataset.wordId);
+      const surah = Number(btn.dataset.s);
+      const word = (state.wordsBySurah[surah] || []).find((w) => w.id === id);
+      if (!word) {
+        toast(NO_AUTH);
+        return;
+      }
+      openWordQuick(word);
     };
   });
 }
