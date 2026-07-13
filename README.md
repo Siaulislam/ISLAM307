@@ -15,7 +15,8 @@
 | Search + Light/Dark | Wired |
 | Flutter Qibla | Live GPS + offline Kaaba bearing |
 | Flutter Prayer | Live GPS + offline timetable |
-| AI, Azkar, etc. | Next |
+| Flutter Azkar | Live Tasbeeh counter |
+| AI, etc. | Next |
 
 ## Quick start (local Chrome — same as XMONEY)
 

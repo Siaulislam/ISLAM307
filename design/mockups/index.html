@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <title>ISLAM 307 — UI Mockups</title>
-  <link rel="stylesheet" href="styles.css?v=qibla-1" />
+  <link rel="stylesheet" href="styles.css?v=azkar-1" />
   <link rel="stylesheet" href="kitab-icons.css" />
 </head>
 <body>
@@ -96,7 +96,7 @@
               <div class="grid-item" role="button" tabindex="0" data-goto="ai"><div class="icon">✨</div><span>AI</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🕌</div><span>Prayer</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="qibla"><div class="icon">🧭</div><span>Qibla</span></div>
-              <div class="grid-item is-disabled" title="Coming soon"><div class="icon">📿</div><span>Azkar</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="azkar"><div class="icon">📿</div><span>Azkar</span></div>
               <div class="grid-item is-disabled" title="Coming soon"><div class="icon">🤲</div><span>Duas</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="library"><div class="icon">📕</div><span>Library</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="audio"><div class="icon">🎧</div><span>Audio</span></div>
@@ -465,6 +465,46 @@
         <p class="screen-label">9b · Qibla (live GPS + compass)</p>
       </div>
 
+      <!-- 9c AZKAR TASBEEH -->
+      <div class="screen" data-id="azkar">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Azkar</div>
+          <div class="screen-body" style="display:flex;flex-direction:column">
+            <div class="top-bar" style="margin-bottom:8px">
+              <div class="icon-btn" role="button" tabindex="0" data-goto="home">←</div>
+              <strong style="flex:1;text-align:center;color:var(--emerald-deep)">Tasbeeh Counter</strong>
+              <div class="icon-btn" id="azkar-vibrate-btn" title="Vibration">📳</div>
+            </div>
+            <div class="card" style="text-align:center;border-color:var(--gold-light)">
+              <p id="azkar-arabic" style="font-size:28px;font-weight:700;color:var(--emerald-deep);line-height:1.7;direction:rtl">سُبْحَانَ ٱللَّهِ</p>
+              <p id="azkar-trans" style="font-weight:800;color:var(--emerald);margin-top:4px">SubhanAllah</p>
+              <p id="azkar-meaning" style="font-size:12px;color:var(--muted);margin-top:2px">Glory be to Allah</p>
+            </div>
+            <div class="tasbeeh-device" id="azkar-device" role="button" tabindex="0">
+              <div class="tasbeeh-ring">
+                <div class="tasbeeh-display" id="azkar-count">00</div>
+              </div>
+              <div class="tasbeeh-side-row">
+                <button type="button" class="tasbeeh-side" id="azkar-vib-toggle">📳</button>
+                <button type="button" class="tasbeeh-side" id="azkar-reset">↺</button>
+              </div>
+              <button type="button" class="tasbeeh-main-btn" id="azkar-tap">●</button>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:center;margin:8px 0">
+              <span class="chip azkar-target active" data-target="33">33</span>
+              <span class="chip azkar-target" data-target="99">99</span>
+              <span class="chip azkar-target" data-target="100">100</span>
+              <span class="chip azkar-target" data-target="0">Free</span>
+            </div>
+            <p id="azkar-stats" style="text-align:center;font-size:12px;color:var(--muted);font-weight:600">Round 0 / 33 · Total 0</p>
+            <div id="azkar-list" style="margin-top:8px;max-height:120px;overflow:auto"></div>
+            <button class="btn-primary" id="azkar-big-tap" style="margin-top:10px">Tap to count · اضغط للعد</button>
+          </div>
+        </div>
+        <p class="screen-label">9c · Azkar Tasbeeh Counter</p>
+      </div>
+
       <!-- 10 LIBRARY -->
       <div class="screen" data-id="library">
         <div class="phone">
@@ -580,7 +620,7 @@
           <div class="screen-body">
             <div class="list-row" role="button" tabindex="0" data-goto="qibla"><div class="num">🧭</div><div class="meta"><strong>Qibla Direction</strong></div><span>→</span></div>
             <div class="list-row" role="button" tabindex="0" data-goto="prayer"><div class="num">🕌</div><div class="meta"><strong>Prayer Times</strong></div><span>→</span></div>
-            <div class="list-row"><div class="num">📿</div><div class="meta"><strong>Azkar</strong></div><span>→</span></div>
+            <div class="list-row" role="button" tabindex="0" data-goto="azkar"><div class="num">📿</div><div class="meta"><strong>Azkar · Tasbeeh</strong></div><span>→</span></div>
             <div class="list-row"><div class="num">🤲</div><div class="meta"><strong>Duas</strong></div><span>→</span></div>
             <div class="list-row"><div class="num">🔖</div><div class="meta"><strong>Bookmarks</strong></div><span>→</span></div>
             <div class="list-row"><div class="num">📜</div><div class="meta"><strong>Reading History</strong></div><span>→</span></div>
@@ -613,6 +653,7 @@
       { id: 'ai', label: 'AI Assistant' },
       { id: 'prayer', label: 'Prayer' },
       { id: 'qibla', label: 'Qibla' },
+      { id: 'azkar', label: 'Azkar' },
       { id: 'library', label: 'Library' },
       { id: 'audio', label: 'Audio' },
       { id: 'videos', label: 'Videos' },
@@ -966,6 +1007,113 @@
         if (c.lat != null) renderPrayerTimes(c.lat, c.lng);
       }
     } catch (_) {}
+
+    // —— Azkar Tasbeeh counter ——
+    const AZKAR = [
+      { id: 'subhanallah', ar: 'سُبْحَانَ ٱللَّهِ', en: 'SubhanAllah', meaning: 'Glory be to Allah', target: 33 },
+      { id: 'alhamdulillah', ar: 'ٱلْحَمْدُ لِلَّهِ', en: 'Alhamdulillah', meaning: 'All praise is for Allah', target: 33 },
+      { id: 'allahu_akbar', ar: 'ٱللَّهُ أَكْبَرُ', en: 'Allahu Akbar', meaning: 'Allah is the Greatest', target: 33 },
+      { id: 'tahlil', ar: 'لَا إِلَٰهَ إِلَّا ٱللَّهُ', en: 'La ilaha illallah', meaning: 'There is no god but Allah', target: 100 },
+      { id: 'astaghfirullah', ar: 'أَسْتَغْفِرُ ٱللَّهَ', en: 'Astaghfirullah', meaning: 'I seek forgiveness from Allah', target: 100 },
+      { id: 'salawat', ar: 'ٱللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ', en: 'Allahumma salli ala Muhammad', meaning: 'O Allah, send blessings upon Muhammad', target: 100 },
+    ];
+    let azkarId = localStorage.getItem('islam307_azkar_id') || 'subhanallah';
+    let azkarCount = parseInt(localStorage.getItem('islam307_azkar_count_' + azkarId) || '0', 10);
+    let azkarTarget = parseInt(localStorage.getItem('islam307_azkar_target_' + azkarId) || String((AZKAR.find(a => a.id === azkarId) || AZKAR[0]).target), 10);
+    let azkarVibrate = localStorage.getItem('islam307_azkar_vib') !== '0';
+
+    function currentAzkar() { return AZKAR.find(a => a.id === azkarId) || AZKAR[0]; }
+    function saveAzkar() {
+      localStorage.setItem('islam307_azkar_id', azkarId);
+      localStorage.setItem('islam307_azkar_count_' + azkarId, String(azkarCount));
+      localStorage.setItem('islam307_azkar_target_' + azkarId, String(azkarTarget));
+      localStorage.setItem('islam307_azkar_vib', azkarVibrate ? '1' : '0');
+    }
+    function renderAzkar() {
+      const d = currentAzkar();
+      const ar = document.getElementById('azkar-arabic');
+      const tr = document.getElementById('azkar-trans');
+      const me = document.getElementById('azkar-meaning');
+      const ct = document.getElementById('azkar-count');
+      const st = document.getElementById('azkar-stats');
+      if (ar) ar.textContent = d.ar;
+      if (tr) tr.textContent = d.en;
+      if (me) me.textContent = d.meaning;
+      if (ct) ct.textContent = String(azkarCount).padStart(2, '0');
+      const round = azkarTarget > 0 ? (azkarCount % azkarTarget) : azkarCount;
+      const cycles = azkarTarget > 0 ? Math.floor(azkarCount / azkarTarget) : 0;
+      if (st) st.textContent = azkarTarget > 0
+        ? `Round ${round} / ${azkarTarget} · Cycles ${cycles} · Total ${azkarCount}`
+        : `Total ${azkarCount} · Free count`;
+      document.querySelectorAll('.azkar-target').forEach((el) => {
+        el.classList.toggle('active', String(azkarTarget) === el.getAttribute('data-target'));
+      });
+      const list = document.getElementById('azkar-list');
+      if (list) {
+        list.innerHTML = AZKAR.map((a) => `
+          <div class="azkar-dhikr-item ${a.id === azkarId ? 'active' : ''}" data-azkar="${a.id}">
+            <div><strong style="direction:rtl;display:block">${a.ar}</strong><span style="color:var(--muted)">${a.en}</span></div>
+            ${a.id === azkarId ? '<span style="color:var(--emerald);font-weight:800">✓</span>' : ''}
+          </div>`).join('');
+      }
+    }
+    function azkarTap() {
+      azkarCount += 1;
+      saveAzkar();
+      renderAzkar();
+      const device = document.getElementById('azkar-device');
+      if (device) {
+        device.classList.add('is-pressed');
+        setTimeout(() => device.classList.remove('is-pressed'), 100);
+      }
+      if (azkarVibrate && navigator.vibrate) {
+        const buzz = azkarTarget > 0 && azkarCount % azkarTarget === 0 ? 40 : 12;
+        navigator.vibrate(buzz);
+      }
+    }
+    function selectAzkar(id) {
+      saveAzkar();
+      azkarId = id;
+      const d = currentAzkar();
+      azkarCount = parseInt(localStorage.getItem('islam307_azkar_count_' + azkarId) || '0', 10);
+      azkarTarget = parseInt(localStorage.getItem('islam307_azkar_target_' + azkarId) || String(d.target), 10);
+      saveAzkar();
+      renderAzkar();
+    }
+    document.getElementById('azkar-tap')?.addEventListener('click', (e) => { e.stopPropagation(); azkarTap(); });
+    document.getElementById('azkar-big-tap')?.addEventListener('click', (e) => { e.stopPropagation(); azkarTap(); });
+    document.getElementById('azkar-device')?.addEventListener('click', (e) => {
+      if (e.target.closest('button')) return;
+      e.stopPropagation();
+      azkarTap();
+    });
+    document.getElementById('azkar-reset')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      azkarCount = 0;
+      saveAzkar();
+      renderAzkar();
+    });
+    const toggleVib = () => {
+      azkarVibrate = !azkarVibrate;
+      saveAzkar();
+    };
+    document.getElementById('azkar-vib-toggle')?.addEventListener('click', (e) => { e.stopPropagation(); toggleVib(); });
+    document.getElementById('azkar-vibrate-btn')?.addEventListener('click', (e) => { e.stopPropagation(); toggleVib(); });
+    document.querySelectorAll('.azkar-target').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        azkarTarget = parseInt(el.getAttribute('data-target') || '33', 10);
+        saveAzkar();
+        renderAzkar();
+      });
+    });
+    document.getElementById('azkar-list')?.addEventListener('click', (e) => {
+      const item = e.target.closest('[data-azkar]');
+      if (!item) return;
+      e.stopPropagation();
+      selectAzkar(item.getAttribute('data-azkar'));
+    });
+    renderAzkar();
   </script>
 </body>
 </html>

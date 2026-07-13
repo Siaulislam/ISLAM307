@@ -704,6 +704,104 @@ body {
   pointer-events: none;
 }
 
+.tasbeeh-device {
+  width: 210px;
+  margin: 12px auto;
+  padding: 22px 18px 18px;
+  border-radius: 48px 48px 56px 56px;
+  background: linear-gradient(180deg, #334155, #0f172a);
+  border: 3px solid var(--emerald);
+  box-shadow: 0 12px 28px rgba(13, 148, 136, 0.25), inset 0 0 0 1px rgba(201, 162, 39, 0.45);
+  text-align: center;
+  user-select: none;
+}
+.tasbeeh-ring {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  border: 7px solid #1e293b;
+  box-shadow: inset 0 0 0 3px rgba(13, 148, 136, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.tasbeeh-ring::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 7px solid transparent;
+  border-top-color: var(--emerald);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.tasbeeh-display {
+  min-width: 88px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  background: #0b1220;
+  color: #f8fafc;
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  border: 1.5px solid rgba(201, 162, 39, 0.55);
+}
+.tasbeeh-side-row {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 14px;
+}
+.tasbeeh-side {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: #1e293b;
+  color: var(--emerald);
+  font-size: 16px;
+  cursor: pointer;
+}
+.tasbeeh-main-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 3px solid #f5e6b8;
+  background: linear-gradient(135deg, #14b8a6, #065f46);
+  color: white;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(13, 148, 136, 0.4);
+}
+.tasbeeh-main-btn:active, .tasbeeh-device.is-pressed {
+  transform: scale(0.96);
+}
+.azkar-target {
+  cursor: pointer;
+}
+.azkar-target.active {
+  background: var(--emerald);
+  color: #fff;
+  border-color: var(--emerald);
+}
+.azkar-dhikr-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin-bottom: 6px;
+  background: #f8fafc;
+  cursor: pointer;
+  font-size: 12px;
+}
+.azkar-dhikr-item.active {
+  background: var(--emerald-soft);
+  border-color: rgba(13, 148, 136, 0.4);
+}
+
 .tasbeeh-count {
   font-size: 56px;
   font-weight: 900;
