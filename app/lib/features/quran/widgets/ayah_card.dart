@@ -32,6 +32,40 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   bool _ready = false;
   List<QuranWord> _words = const [];
   bool _wordsLoaded = false;
+  /// null = hide translation under the ayah
+  String? _translationLang;
+  /// null = hide tafsir panel; otherwise selected source slug
+  String? _tafsirSlug;
+  Map<String, dynamic>? _tafsirEntry;
+  bool _tafsirLoading = false;
+
+  static const _translationOptions = <(String id, String label, String region)>[
+    ('ur', 'Urdu', 'Pakistan'),
+    ('en', 'English', 'International'),
+    ('hi', 'Hindi', 'India'),
+    ('fil', 'Filipino', 'Philippines'),
+    ('bn', 'Bengali', 'Bangladesh'),
+    ('id', 'Indonesian', 'Indonesia'),
+    ('ms', 'Malay', 'Malaysia'),
+    ('tr', 'Turkish', 'Türkiye'),
+    ('fa', 'Persian', 'Iran / Afghanistan'),
+    ('fr', 'French', 'North & West Africa'),
+    ('ha', 'Hausa', 'Nigeria'),
+    ('so', 'Somali', 'Somalia'),
+    ('ps', 'Pashto', 'Afghanistan / Pakistan'),
+    ('sw', 'Swahili', 'East Africa'),
+  ];
+
+  static const _tafsirOptions = <(String id, String label, bool ready)>[
+    ('ibn-kathir', 'Tafsir Ibn Kathir', true),
+    ('tabari', 'Tafsir al-Tabari', false),
+    ('jalalayn', 'Tafsir al-Jalalayn', false),
+    ('qurtubi', 'Tafsir al-Qurtubi', false),
+    ('baghawi', 'Tafsir al-Baghawi', false),
+    ('saadi', 'Tafsir as-Sa‘di', false),
+    ('maariful', 'Ma‘ariful Quran', false),
+    ('kathir-ur', 'Ibn Kathir (Urdu)', false),
+  ];
 
   int get _surah => widget.ayah['surah_number'] as int;
   int get _ayahNo => widget.ayah['ayah_number'] as int;
@@ -70,30 +104,37 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   Widget build(BuildContext context) {
     final settings = ref.watch(appSettingsProvider);
     final scale = settings.fontScale;
-    final lang = settings.quranLanguage;
     final arabic = '${widget.ayah['text_uthmani'] ?? ''}';
     final urdu = '${widget.ayah['translation_ur'] ?? ''}';
     final english = '${widget.ayah['translation_en'] ?? ''}';
     final refLabel = '$_surah:$_ayahNo';
+    final page = widget.ayah['page_madani'] ?? widget.ayah['page'];
+    final juz = widget.ayah['juz'];
 
     String? translation;
     TextStyle? translationStyle;
+    var translationRtl = false;
     String ttsLang = 'en-US';
-    switch (lang) {
-      case QuranDisplayLanguage.urdu:
-        translation = urdu.isEmpty ? null : urdu;
-        translationStyle = Islam307Theme.urdu(size: 17 * scale);
-        ttsLang = 'ur-PK';
-      case QuranDisplayLanguage.english:
-        translation = english.isEmpty ? null : english;
-        translationStyle = TextStyle(color: Theme.of(context).hintColor, height: 1.6, fontSize: 15 * scale);
-        ttsLang = 'en-US';
-      case QuranDisplayLanguage.arabicOnly:
-        translation = null;
-        translationStyle = null;
+    if (_translationLang == 'ur') {
+      translation = urdu.isEmpty ? null : urdu;
+      translationStyle = Islam307Theme.urdu(size: 17 * scale);
+      translationRtl = true;
+      ttsLang = 'ur-PK';
+    } else if (_translationLang == 'en') {
+      translation = english.isEmpty ? null : english;
+      translationStyle = TextStyle(color: Theme.of(context).hintColor, height: 1.6, fontSize: 15 * scale);
+      ttsLang = 'en-US';
+    } else if (_translationLang != null) {
+      translation = null; // authenticated text not loaded for this language yet
     }
 
     final highlighted = _highlight != null;
+    final showMissingTranslation = _translationLang != null && translation == null;
+    final trLabel = _translationOptions
+            .where((e) => e.$1 == _translationLang)
+            .map((e) => e.$2)
+            .followedBy(const ['Translation'])
+            .first;
 
     return Card(
       margin: const EdgeInsets.only(bottom: 14),
@@ -105,17 +146,33 @@ class _AyahCardState extends ConsumerState<AyahCard> {
           children: [
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(color: Islam307Theme.emeraldSoft, borderRadius: BorderRadius.circular(8)),
-                  child: Text(refLabel, style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep, fontSize: 12)),
-                ),
+                Text(refLabel, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF0F172A))),
                 if (_bookmarked) ...[
-                  const SizedBox(width: 8),
-                  const Icon(Icons.bookmark_rounded, color: Islam307Theme.gold, size: 18),
+                  const SizedBox(width: 6),
+                  const Icon(Icons.bookmark_rounded, color: Islam307Theme.gold, size: 16),
                 ],
-                const Spacer(),
-                Text('Juz ${widget.ayah['juz']} · Ruku ${widget.ayah['ruku']}', style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _headerChoice(
+                        label: trLabel,
+                        active: _translationLang != null,
+                        onTap: _pickTranslationLang,
+                      ),
+                      const SizedBox(width: 8),
+                      _headerChoice(
+                        label: 'Tafseer',
+                        active: _tafsirSlug != null,
+                        onTap: _pickTafsirSource,
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  'Page $page · Juz $juz',
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emerald),
+                ),
               ],
             ),
             const SizedBox(height: 12),
@@ -131,15 +188,47 @@ class _AyahCardState extends ConsumerState<AyahCard> {
             if (translation != null) ...[
               const SizedBox(height: 12),
               Container(
-                padding: const EdgeInsets.only(left: 12, right: 4),
-                decoration: const BoxDecoration(border: Border(left: BorderSide(color: Islam307Theme.gold, width: 3))),
-                child: Text(
-                  translation,
-                  textAlign: lang == QuranDisplayLanguage.urdu ? TextAlign.right : TextAlign.left,
-                  textDirection: lang == QuranDisplayLanguage.urdu ? TextDirection.rtl : TextDirection.ltr,
-                  style: translationStyle,
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8FAFC),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      trLabel.toUpperCase(),
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep, letterSpacing: 0.3),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      translation,
+                      textAlign: translationRtl ? TextAlign.right : TextAlign.left,
+                      textDirection: translationRtl ? TextDirection.rtl : TextDirection.ltr,
+                      style: translationStyle,
+                    ),
+                  ],
                 ),
               ),
+            ] else if (showMissingTranslation) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFFBEB),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: const Color(0xFFFDE68A)),
+                ),
+                child: Text(
+                  'Authentic $trLabel translation is not in the library yet. ISLAM 307 never invents Quran translations.',
+                  style: const TextStyle(fontSize: 13, height: 1.45, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+                ),
+              ),
+            ],
+            if (_tafsirSlug != null) ...[
+              const SizedBox(height: 10),
+              _tafsirPanel(),
             ],
             if ((_note ?? '').isNotEmpty) ...[
               const SizedBox(height: 10),
@@ -166,7 +255,6 @@ class _AyahCardState extends ConsumerState<AyahCard> {
                 _tool(Icons.note_alt_outlined, 'Notes', _editNote),
                 _tool(Icons.copy_rounded, 'Copy', () => _copy(arabic, translation)),
                 _tool(Icons.ios_share_rounded, 'Share', () => _share(arabic, translation, refLabel)),
-                _tool(Icons.menu_book_outlined, 'Tafsir', () => _openTafsir(context)),
                 ListenableBuilder(
                   listenable: RecitationAudioService.instance,
                   builder: (context, _) {
@@ -238,6 +326,193 @@ class _AyahCardState extends ConsumerState<AyahCard> {
         ),
       ),
     );
+  }
+
+  Widget _headerChoice({required String label, required bool active, required VoidCallback onTap}) {
+    return Material(
+      color: active ? Islam307Theme.emerald : const Color(0xFFF0FDFA),
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: active ? Islam307Theme.emeraldDeep : const Color(0xFF99F6E4)),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: active ? Colors.white : Islam307Theme.emeraldDeep,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _tafsirPanel() {
+    final label = _tafsirOptions
+            .where((e) => e.$1 == _tafsirSlug)
+            .map((e) => e.$2)
+            .followedBy([_tafsirSlug!])
+            .first;
+    final ready = _tafsirOptions.any((e) => e.$1 == _tafsirSlug && e.$3);
+    if (!ready) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFFBEB),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFFDE68A)),
+        ),
+        child: Text(
+          '$label will be added from an authenticated classical source. Nothing is generated with AI.',
+          style: const TextStyle(fontSize: 13, height: 1.45, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
+        ),
+      );
+    }
+    if (_tafsirLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 12),
+        child: Center(child: CircularProgressIndicator(color: Islam307Theme.emerald)),
+      );
+    }
+    final unavailable = _tafsirEntry == null || _tafsirEntry?['unavailable'] == true;
+    final text = '${_tafsirEntry?['text'] ?? ''}';
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8FAFC),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(label.toUpperCase(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep, letterSpacing: 0.3)),
+          const SizedBox(height: 6),
+          Text(
+            unavailable
+                ? (_tafsirEntry?['message'] as String? ?? TafsirRepository.unavailableMessage)
+                : text,
+            style: TextStyle(
+              height: 1.7,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: unavailable ? const Color(0xFF92400E) : null,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _pickTranslationLang() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 8, 20, 4),
+              child: Text('Translation language', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Text(
+                'Translation stays hidden until you choose a language. Only authenticated texts are shown.',
+                style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13, height: 1.4),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.visibility_off_outlined),
+              title: const Text('Hide translation'),
+              selected: _translationLang == null,
+              onTap: () => Navigator.pop(ctx, ''),
+            ),
+            ..._translationOptions.map(
+              (o) => ListTile(
+                leading: const Icon(Icons.translate_rounded, color: Islam307Theme.emerald),
+                title: Text(o.$2, style: const TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text(o.$3),
+                selected: _translationLang == o.$1,
+                onTap: () => Navigator.pop(ctx, o.$1),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (choice == null || !mounted) return;
+    setState(() => _translationLang = choice.isEmpty ? null : choice);
+  }
+
+  Future<void> _pickTafsirSource() async {
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 8, 20, 4),
+              child: Text('Choose Tafseer', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Text(
+                'Pick the exact tafsir you need. Future sources will appear here when authenticated editions are added.',
+                style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13, height: 1.4),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.visibility_off_outlined),
+              title: const Text('Hide tafseer'),
+              selected: _tafsirSlug == null,
+              onTap: () => Navigator.pop(ctx, ''),
+            ),
+            ..._tafsirOptions.map(
+              (o) => ListTile(
+                leading: Icon(o.$3 ? Icons.menu_book_rounded : Icons.schedule_rounded, color: Islam307Theme.emerald),
+                title: Text(o.$2, style: const TextStyle(fontWeight: FontWeight.w700)),
+                subtitle: Text(o.$3 ? 'Available' : 'Coming soon'),
+                selected: _tafsirSlug == o.$1,
+                onTap: () => Navigator.pop(ctx, o.$1),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (choice == null || !mounted) return;
+    if (choice.isEmpty) {
+      setState(() {
+        _tafsirSlug = null;
+        _tafsirEntry = null;
+      });
+      return;
+    }
+    final ready = _tafsirOptions.any((e) => e.$1 == choice && e.$3);
+    setState(() {
+      _tafsirSlug = choice;
+      _tafsirEntry = null;
+      _tafsirLoading = ready;
+    });
+    if (!ready) return;
+    final entry = await TafsirRepository(DatabaseRegistry.instance).entry(choice, _surah, _ayahNo);
+    if (!mounted) return;
+    setState(() {
+      _tafsirEntry = entry;
+      _tafsirLoading = false;
+    });
+    ref.read(appSettingsProvider.notifier).setPreferredTafsir(choice);
   }
 
   Widget _tappableArabic(double scale) {

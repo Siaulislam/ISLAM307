@@ -84,7 +84,43 @@ const state = {
   audio: null,
   recite: null, // { reciterId, name, surah, ayah }
   ttsUtterance: null,
+  /** '' = hide translation under ayah */
+  quranTranslationLang: localStorage.getItem('i307_quran_tr_lang') || '',
+  /** '' = no inline tafsir panel */
+  quranTafsirSlug: localStorage.getItem('i307_quran_tafsir') || '',
+  openMenu: null, // 'translation' | 'tafsir' | null
+  openMenuAyah: null, // 's:a' for which card shows the dropdown
 };
+
+/** Languages for Muslim-majority / large Muslim communities. Text only from authenticated ayah fields. */
+const QURAN_TRANSLATION_LANGS = [
+  { id: 'ur', label: 'Urdu', region: 'Pakistan', field: 'ur', rtl: true },
+  { id: 'en', label: 'English', region: 'International', field: 'en', rtl: false },
+  { id: 'hi', label: 'Hindi', region: 'India', field: 'hi', rtl: false },
+  { id: 'fil', label: 'Filipino', region: 'Philippines', field: 'fil', rtl: false },
+  { id: 'bn', label: 'Bengali', region: 'Bangladesh', field: 'bn', rtl: false },
+  { id: 'id', label: 'Indonesian', region: 'Indonesia', field: 'id', rtl: false },
+  { id: 'ms', label: 'Malay', region: 'Malaysia', field: 'ms', rtl: false },
+  { id: 'tr', label: 'Turkish', region: 'Türkiye', field: 'tr', rtl: false },
+  { id: 'fa', label: 'Persian', region: 'Iran / Afghanistan', field: 'fa', rtl: true },
+  { id: 'fr', label: 'French', region: 'North & West Africa', field: 'fr', rtl: false },
+  { id: 'ha', label: 'Hausa', region: 'Nigeria', field: 'ha', rtl: false },
+  { id: 'so', label: 'Somali', region: 'Somalia', field: 'so', rtl: false },
+  { id: 'ps', label: 'Pashto', region: 'Afghanistan / Pakistan', field: 'ps', rtl: true },
+  { id: 'sw', label: 'Swahili', region: 'East Africa', field: 'sw', rtl: false },
+];
+
+/** Authenticated + future tafsir sources (future ones open as “coming soon”). */
+const QURAN_TAFSIR_OPTIONS = [
+  { id: 'ibn-kathir', label: 'Tafsir Ibn Kathir', ready: true },
+  { id: 'tabari', label: 'Tafsir al-Tabari', ready: false },
+  { id: 'jalalayn', label: 'Tafsir al-Jalalayn', ready: false },
+  { id: 'qurtubi', label: 'Tafsir al-Qurtubi', ready: false },
+  { id: 'baghawi', label: 'Tafsir al-Baghawi', ready: false },
+  { id: 'saadi', label: 'Tafsir as-Sa‘di', ready: false },
+  { id: 'maariful', label: 'Ma‘ariful Quran', ready: false },
+  { id: 'kathir-ur', label: 'Ibn Kathir (Urdu)', ready: false },
+];
 
 const $ = (id) => document.getElementById(id);
 
@@ -208,6 +244,113 @@ function readerToolbarHtml(surah) {
   `;
 }
 
+function translationLangMeta(id) {
+  return QURAN_TRANSLATION_LANGS.find((l) => l.id === id) || null;
+}
+
+function ayahTranslationText(a, langId) {
+  const meta = translationLangMeta(langId);
+  if (!meta) return '';
+  return String(a[meta.field] || '').trim();
+}
+
+function translationBlockHtml(a) {
+  const langId = state.quranTranslationLang;
+  if (!langId) return '';
+  const meta = translationLangMeta(langId);
+  if (!meta) return '';
+  const text = ayahTranslationText(a, langId);
+  if (!text) {
+    return `<div class="ayah-translation is-empty" data-lang="${escapeHtml(langId)}">
+      <span class="ayah-translation-label">${escapeHtml(meta.label)}</span>
+      <p>Authentic ${escapeHtml(meta.label)} translation is not in the library yet. ISLAM 307 never invents Quran translations.</p>
+    </div>`;
+  }
+  return `<div class="ayah-translation ${meta.rtl ? 'rtl' : ''}" data-lang="${escapeHtml(langId)}" dir="${meta.rtl ? 'rtl' : 'ltr'}">
+    <span class="ayah-translation-label">${escapeHtml(meta.label)} · ${escapeHtml(meta.region)}</span>
+    <p class="${meta.rtl ? 'ur' : 'en'}">${escapeHtml(text)}</p>
+  </div>`;
+}
+
+function tafsirBlockHtml(a) {
+  const slug = state.quranTafsirSlug;
+  if (!slug) return '';
+  const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
+  const label = opt?.label || slug;
+  if (!opt?.ready) {
+    return `<div class="ayah-tafsir is-soon" data-slug="${escapeHtml(slug)}">
+      <span class="ayah-tafsir-label">${escapeHtml(label)}</span>
+      <p>This tafsir will be added from an authenticated classical source. Nothing is generated with AI.</p>
+    </div>`;
+  }
+  const pack = state.tafsirCache[slug];
+  if (!pack) {
+    return `<div class="ayah-tafsir is-loading" data-slug="${escapeHtml(slug)}">
+      <span class="ayah-tafsir-label">${escapeHtml(label)}</span>
+      <p>Loading authenticated tafsir…</p>
+    </div>`;
+  }
+  const entry = (pack.entries || pack.ayahs || []).find((e) => Number(e.s || e.surah) === a.s && Number(e.a || e.ayah) === a.a)
+    || (pack.byKey && pack.byKey[`${a.s}:${a.a}`])
+    || null;
+  const text = entry ? String(entry.text || entry.t || entry.en || '').trim() : '';
+  if (!text) {
+    return `<div class="ayah-tafsir is-empty" data-slug="${escapeHtml(slug)}">
+      <span class="ayah-tafsir-label">${escapeHtml(label)}</span>
+      <p>No authentic tafsir entry for ${a.s}:${a.a} in ${escapeHtml(label)}.</p>
+    </div>`;
+  }
+  return `<div class="ayah-tafsir" data-slug="${escapeHtml(slug)}">
+    <span class="ayah-tafsir-label">${escapeHtml(label)}</span>
+    <p>${escapeHtml(text)}</p>
+  </div>`;
+}
+
+function ayahHeaderMenusHtml(a) {
+  const ayahKeyStr = `${a.s}:${a.a}`;
+  const isActiveCard = state.openMenuAyah === ayahKeyStr;
+  const trOpen = isActiveCard && state.openMenu === 'translation';
+  const tfOpen = isActiveCard && state.openMenu === 'tafsir';
+  const trMeta = translationLangMeta(state.quranTranslationLang);
+  const trLabel = trMeta ? trMeta.label : 'Translation';
+  const tfLabel = state.quranTafsirSlug ? 'Tafseer' : 'Tafseer';
+
+  const trItems = [
+    `<button type="button" class="ayah-menu-item ${!state.quranTranslationLang ? 'is-active' : ''}" data-tr-lang="">Hide translation</button>`,
+    ...QURAN_TRANSLATION_LANGS.map((l) => `<button type="button" class="ayah-menu-item ${state.quranTranslationLang === l.id ? 'is-active' : ''}" data-tr-lang="${l.id}">
+        <strong>${escapeHtml(l.label)}</strong>
+        <small>${escapeHtml(l.region)}</small>
+      </button>`),
+  ].join('');
+
+  const tfItems = [
+    `<button type="button" class="ayah-menu-item ${!state.quranTafsirSlug ? 'is-active' : ''}" data-tf-slug="">Hide tafseer</button>`,
+    ...QURAN_TAFSIR_OPTIONS.map((t) => `<button type="button" class="ayah-menu-item ${state.quranTafsirSlug === t.id ? 'is-active' : ''}" data-tf-slug="${t.id}">
+      <strong>${escapeHtml(t.label)}</strong>
+      <small>${t.ready ? 'Available' : 'Coming soon'}</small>
+    </button>`).join(''),
+  ].join('');
+
+  return `
+    <div class="ayah-header-actions">
+      <div class="ayah-dd ${trOpen ? 'is-open' : ''}">
+        <button type="button" class="ayah-dd-btn ${state.quranTranslationLang ? 'is-on' : ''}" data-menu="translation" aria-expanded="${trOpen}">
+          <span class="ayah-dd-ico" aria-hidden="true">文A</span>
+          <span>${escapeHtml(trLabel)}</span>
+        </button>
+        ${trOpen ? `<div class="ayah-dd-panel" role="menu">${trItems}</div>` : ''}
+      </div>
+      <div class="ayah-dd ${tfOpen ? 'is-open' : ''}">
+        <button type="button" class="ayah-dd-btn ${state.quranTafsirSlug ? 'is-on' : ''}" data-menu="tafsir" aria-expanded="${tfOpen}">
+          <span class="ayah-dd-ico" aria-hidden="true">◈</span>
+          <span>${escapeHtml(tfLabel)}</span>
+        </button>
+        ${tfOpen ? `<div class="ayah-dd-panel" role="menu">${tfItems}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
 function ayahCardHtml(a, lib) {
   const key = ayahKey(a.s, a.a);
   const bookmarked = lib.bookmarks.includes(key);
@@ -217,12 +360,13 @@ function ayahCardHtml(a, lib) {
   return `
     <div class="ayah ${highlighted ? 'is-highlighted' : ''} ${playing ? 'is-playing' : ''}" data-s="${a.s}" data-a="${a.a}">
       <div class="meta-row">
-        <span>${a.s}:${a.a}${bookmarked ? ' ★' : ''}</span>
-        <span>Page ${a.p} · Juz ${a.j}</span>
+        <span class="ayah-ref">${a.s}:${a.a}${bookmarked ? ' ★' : ''}</span>
+        ${ayahHeaderMenusHtml(a)}
+        <span class="ayah-page">Page ${a.p} · Juz ${a.j}</span>
       </div>
       <p class="ar">${a.ar}</p>
-      ${a.ur ? `<p class="en ur">${a.ur}</p>` : ''}
-      ${a.en ? `<p class="en">${a.en}</p>` : ''}
+      ${translationBlockHtml(a)}
+      ${tafsirBlockHtml(a)}
       ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}
       ${playing ? `<div class="recite-now">Playing · ${escapeHtml(state.recite.name)} · continues to next ayah</div>` : ''}
       <div class="ayah-tools">
@@ -247,7 +391,7 @@ function escapeHtml(s) {
     .replaceAll('"', '&quot;');
 }
 
-async function openSurah(n, button) {
+async function openSurah(n, button, { preserveScroll = false } = {}) {
   await ensureAyahs();
   $('surah-list').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
   if (button) button.classList.add('active');
@@ -257,9 +401,11 @@ async function openSurah(n, button) {
     $('ayah-view').innerHTML = `<p class="empty">Surah ${n} not found.</p>`;
     return;
   }
+  const view = $('ayah-view');
+  const top = preserveScroll ? view.scrollTop : 0;
   state.currentSurah = n;
   const lib = ensureUserLibrary();
-  $('ayah-view').innerHTML = readerToolbarHtml(surah) + ayahs.map((a) => ayahCardHtml(a, lib)).join('');
+  view.innerHTML = readerToolbarHtml(surah) + ayahs.map((a) => ayahCardHtml(a, lib)).join('');
   wireReaderEvents();
   if (history.replaceState) {
     const url = new URL(location.href);
@@ -267,7 +413,22 @@ async function openSurah(n, button) {
     url.hash = 'quran';
     history.replaceState(null, '', url.toString());
   }
-  $('ayah-view').scrollTop = 0;
+  view.scrollTop = preserveScroll ? top : 0;
+}
+
+function refreshCurrentSurah(preserveScroll = true) {
+  const active = $('surah-list').querySelector('button.active');
+  if (state.currentSurah) {
+    openSurah(state.currentSurah, active, { preserveScroll });
+  }
+}
+
+async function ensureTafsirPack(slug) {
+  if (!slug || state.tafsirCache[slug]) return state.tafsirCache[slug];
+  const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
+  if (!opt?.ready) return null;
+  state.tafsirCache[slug] = await fetchJsonGz(`data/tafsir/${slug}.json.gz`);
+  return state.tafsirCache[slug];
 }
 
 function wireReaderEvents() {
@@ -295,13 +456,66 @@ function wireReaderEvents() {
     const s = Number(card.dataset.s);
     const a = Number(card.dataset.a);
     const key = ayahKey(s, a);
+    const ayahKeyStr = `${s}:${a}`;
+
+    card.querySelectorAll('[data-menu]').forEach((btn) => {
+      btn.onclick = (ev) => {
+        ev.stopPropagation();
+        const menu = btn.dataset.menu;
+        if (state.openMenu === menu && state.openMenuAyah === ayahKeyStr) {
+          state.openMenu = null;
+          state.openMenuAyah = null;
+        } else {
+          state.openMenu = menu;
+          state.openMenuAyah = ayahKeyStr;
+        }
+        refreshCurrentSurah(true);
+      };
+    });
+
+    card.querySelectorAll('[data-tr-lang]').forEach((btn) => {
+      btn.onclick = (ev) => {
+        ev.stopPropagation();
+        state.quranTranslationLang = btn.dataset.trLang || '';
+        localStorage.setItem('i307_quran_tr_lang', state.quranTranslationLang);
+        state.openMenu = null;
+        state.openMenuAyah = null;
+        refreshCurrentSurah(true);
+        const meta = translationLangMeta(state.quranTranslationLang);
+        toast(meta ? `Translation · ${meta.label}` : 'Translation hidden');
+      };
+    });
+
+    card.querySelectorAll('[data-tf-slug]').forEach((btn) => {
+      btn.onclick = async (ev) => {
+        ev.stopPropagation();
+        const slug = btn.dataset.tfSlug || '';
+        state.quranTafsirSlug = slug;
+        localStorage.setItem('i307_quran_tafsir', slug);
+        state.openMenu = null;
+        state.openMenuAyah = null;
+        if (slug) {
+          const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
+          if (opt?.ready) {
+            try {
+              await ensureTafsirPack(slug);
+            } catch (err) {
+              toast(`Could not load ${opt.label}`);
+            }
+          }
+        }
+        refreshCurrentSurah(true);
+        const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
+        toast(opt ? (opt.ready ? `Tafseer · ${opt.label}` : `${opt.label} · coming soon`) : 'Tafseer hidden');
+      };
+    });
+
     card.querySelectorAll('[data-act]').forEach((btn) => {
       btn.onclick = async () => {
         const act = btn.dataset.act;
         const lib = ensureUserLibrary();
         const ar = card.querySelector('.ar')?.textContent || '';
-        const ur = card.querySelector('.ur')?.textContent || '';
-        const en = [...card.querySelectorAll('.en')].map((x) => x.textContent).filter((t) => t && t !== ur).join('\n');
+        const tr = card.querySelector('.ayah-translation p')?.textContent || '';
         if (act === 'bookmark') {
           const i = lib.bookmarks.indexOf(key);
           if (i >= 0) lib.bookmarks.splice(i, 1);
@@ -330,12 +544,12 @@ function wireReaderEvents() {
           openSurah(s, active);
         }
         if (act === 'copy') {
-          const text = `${key}\n${ar}\n${ur}\n${en}`.trim();
+          const text = `${key}\n${ar}\n${tr}`.trim();
           await navigator.clipboard.writeText(text);
           toast('Copied');
         }
         if (act === 'share') {
-          const text = `ISLAM 307 · Quran ${key}\n${ar}\n${ur}\n${en}`.trim();
+          const text = `ISLAM 307 · Quran ${key}\n${ar}\n${tr}`.trim();
           if (navigator.share) {
             try {
               await navigator.share({ title: `Quran ${key}`, text });
