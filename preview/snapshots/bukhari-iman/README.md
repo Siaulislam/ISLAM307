@@ -1,13 +1,13 @@
-# Bukhari — کتاب ایمان کے بیان میں — Snapshots
+# کتاب ایمان کے بیان میں — Snapshots only
 
-- Absolute Bukhari numbers: **8–58**
-- Count: **51**
+Sahih Bukhari **Hadith 8 to 58** (51 snapshots).
 
-## Download for local PC
+Each PNG matches the reader layout:
+- SAHIH BUKHARI
+- کتاب ایمان کے بیان میں
+- Hadith 8 to 58
+- Now reading Hadith N
+- Arabic text
 
-- ZIP: [bukhari-iman-snapshots.zip](../bukhari-iman-snapshots.zip)
-- Unzip, then open any `html/hadith-XX.html` in your browser (offline).
-
-## Layout
-
-Matches the Hadith reader: **SAHIH BUKHARI** · Urdu kitab · **Hadith 8 to 58** · Now reading · Arabic text from authenticated DB.
+## Download
+- [bukhari-iman-snapshots.zip](../bukhari-iman-snapshots.zip)
