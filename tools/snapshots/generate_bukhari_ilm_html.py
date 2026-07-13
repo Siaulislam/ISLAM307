@@ -71,6 +71,12 @@ html, body {
   font-weight: 800;
   color: var(--emerald);
 }
+.hadith-reader-now {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
 .hadith-progress {
   margin-top: 10px;
   height: 6px;
@@ -111,7 +117,7 @@ def open_db():
     return conn, Path(tmp)
 
 
-def page_html(local: int, total: int, arabic: str) -> str:
+def page_html(local: int, total: int, arabic: str, *, abs_n: int) -> str:
     progress = max(1, round((local / total) * 100))
     # escape
     ar = (
@@ -119,12 +125,13 @@ def page_html(local: int, total: int, arabic: str) -> str:
         .replace("<", "&lt;")
         .replace(">", "&gt;")
     )
+    range_label = f"Hadith {ABS_START} to {ABS_END}"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bukhari Knowledge Hadith {local} of {total}</title>
+  <title>Bukhari Knowledge — {range_label}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -135,7 +142,8 @@ def page_html(local: int, total: int, arabic: str) -> str:
     <div class="hadith-reader-heading">
       <p class="hadith-reader-book">{BOOK_EN}</p>
       <h2 class="hadith-reader-kitab" dir="rtl">{KITAB_UR}</h2>
-      <p class="hadith-reader-count">Hadith {local} of {total}</p>
+      <p class="hadith-reader-count">{range_label}</p>
+      <p class="hadith-reader-now">Now reading Hadith {abs_n}</p>
       <div class="hadith-progress" aria-hidden="true" dir="ltr"><span style="width:{progress}%"></span></div>
     </div>
     <section class="hadith-reader-arabic">
@@ -168,7 +176,7 @@ def main() -> int:
     for row in rows:
         abs_n = int(row["hadith_number"])
         local = abs_n - ABS_START + 1
-        html = page_html(local, TOTAL, row["text_ar"] or "")
+        html = page_html(local, TOTAL, row["text_ar"] or "", abs_n=abs_n)
         name = f"hadith-{local:02d}"
         path = HTML_DIR / f"{name}.html"
         path.write_text(html, encoding="utf-8")
@@ -178,7 +186,7 @@ def main() -> int:
                 "absolute": abs_n,
                 "html": f"html/{name}.html",
                 "png": f"png/{name}.png",
-                "title": f"Hadith {local} of {TOTAL}",
+                "title": f"Hadith {ABS_START} to {ABS_END}",
             }
         )
         print(f"wrote {path.name}")

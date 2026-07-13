@@ -748,7 +748,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-34`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-35`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -774,7 +774,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-34`);
+    const res = await fetch(`${path}?v=hadith-reader-35`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1191,6 +1191,22 @@ async function speakHadithText(text, lang) {
   }, 500);
 }
 
+function chapterRangeForHadith(pack, hadith) {
+  if (!pack || !hadith) return null;
+  const key = kitabTopicKey(hadith);
+  const peers = (pack.hadiths || []).filter((h) => kitabTopicKey(h) === key);
+  if (!peers.length) {
+    return { first: hadith.n, last: hadith.n, count: 1 };
+  }
+  let first = peers[0].n;
+  let last = peers[0].n;
+  for (const h of peers) {
+    if (h.n < first) first = h.n;
+    if (h.n > last) last = h.n;
+  }
+  return { first, last, count: peers.length };
+}
+
 function openHadithReader(slug, rows, index) {
   const pack = state.hadithCache[slug];
   if (!pack || !rows.length) {
@@ -1211,15 +1227,12 @@ function openHadithReader(slug, rows, index) {
   const topicTitle = state.hadithTopicTitle || localizedKitabName(hadith, pack);
   const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
   const progress = Math.round((pos / total) * 100);
-  const rangeFirst = rows[0]?.n;
-  const rangeLast = rows[rows.length - 1]?.n;
-  const inTopicRange = !!state.hadithTopicKey && rangeFirst != null && rangeLast != null;
-  // Topic mode: always show authentic chapter span (e.g. Hadith 135 to 247).
-  // Full-book mode: keep position counter.
-  const countLabel = inTopicRange
-    ? `Hadith ${rangeFirst} to ${rangeLast}`
-    : `Hadith ${pos} of ${total}`;
-  const nowLabel = inTopicRange ? `Now reading Hadith ${hadith.n}` : '';
+  // Always show authentic کتاب span on the right (e.g. Hadith 135 to 247).
+  const span = chapterRangeForHadith(pack, hadith);
+  const countLabel = !span
+    ? `Hadith ${hadith.n}`
+    : (span.first === span.last ? `Hadith ${span.first}` : `Hadith ${span.first} to ${span.last}`);
+  const nowLabel = `Now reading Hadith ${hadith.n}`;
 
   $('hadith-view').innerHTML = `
     <article class="hadith-reader" id="hadith-reader">
@@ -1235,7 +1248,7 @@ function openHadithReader(slug, rows, index) {
         <p class="hadith-reader-book">${escapeHtml(pack.book.en)}</p>
         <h2 class="hadith-reader-kitab" dir="rtl">${escapeHtml(topicTitle)}</h2>
         <p class="hadith-reader-count">${escapeHtml(countLabel)}</p>
-        ${nowLabel ? `<p class="hadith-reader-now">${escapeHtml(nowLabel)}</p>` : ''}
+        <p class="hadith-reader-now">${escapeHtml(nowLabel)}</p>
         <div class="hadith-progress" aria-hidden="true"><span style="width:${progress}%"></span></div>
       </div>
 

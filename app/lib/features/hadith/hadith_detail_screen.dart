@@ -569,13 +569,20 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final progress = pos / total;
     final bookName = h?['book_name']?.toString() ?? 'Hadith';
     final kitab = h?['kitab']?.toString() ?? '';
-    final inScopedReader = _numbers.isNotEmpty && (widget.chapterId != null || widget.unassigned);
-    final rangeLabel = !inScopedReader
-        ? 'Hadith $pos of $total'
-        : (_numbers.length == 1
-            ? 'Hadith ${_numbers.first}'
-            : 'Hadith ${_numbers.first} to ${_numbers.last}');
-    final nowLabel = inScopedReader ? 'Now reading Hadith ${widget.hadithNumber}' : '';
+    final inScopedNumbers = _numbers.isNotEmpty && (widget.chapterId != null || widget.unassigned);
+    final chapterFirst = h?['chapter_first'] ?? (inScopedNumbers ? _numbers.first : null);
+    final chapterLast = h?['chapter_last'] ?? (inScopedNumbers ? _numbers.last : null);
+    // Always show Hadith X to Y on the right for every reader box.
+    final rangeLabel = () {
+      final start = chapterFirst;
+      final end = chapterLast;
+      if (start != null && end != null) {
+        return '$start' == '$end' ? 'Hadith $start' : 'Hadith $start to $end';
+      }
+      if (_numbers.length >= 2) return 'Hadith ${_numbers.first} to ${_numbers.last}';
+      return 'Hadith ${widget.hadithNumber}';
+    }();
+    final nowLabel = 'Now reading Hadith ${widget.hadithNumber}';
 
     return Scaffold(
       body: SafeArea(

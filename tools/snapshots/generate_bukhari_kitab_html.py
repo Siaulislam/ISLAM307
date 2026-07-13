@@ -69,6 +69,12 @@ html, body {
   font-weight: 800;
   color: var(--emerald);
 }
+.hadith-reader-now {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
 .hadith-progress {
   margin-top: 10px;
   height: 6px;
@@ -109,7 +115,16 @@ def open_db():
     return conn, Path(tmp)
 
 
-def page_html(kitab_ur: str, local: int, total: int, arabic: str) -> str:
+def page_html(
+    kitab_ur: str,
+    local: int,
+    total: int,
+    arabic: str,
+    *,
+    start: int,
+    end: int,
+    abs_n: int,
+) -> str:
     progress = max(1, round((local / total) * 100))
     ar = (
         (arabic or "")
@@ -117,12 +132,13 @@ def page_html(kitab_ur: str, local: int, total: int, arabic: str) -> str:
         .replace("<", "&lt;")
         .replace(">", "&gt;")
     )
+    range_label = f"Hadith {start}" if start == end else f"Hadith {start} to {end}"
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bukhari {kitab_ur} — Hadith {local} of {total}</title>
+  <title>Bukhari {kitab_ur} — {range_label}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -133,7 +149,8 @@ def page_html(kitab_ur: str, local: int, total: int, arabic: str) -> str:
     <div class="hadith-reader-heading">
       <p class="hadith-reader-book">{BOOK_EN}</p>
       <h2 class="hadith-reader-kitab" dir="rtl">{kitab_ur}</h2>
-      <p class="hadith-reader-count">Hadith {local} of {total}</p>
+      <p class="hadith-reader-count">{range_label}</p>
+      <p class="hadith-reader-now">Now reading Hadith {abs_n}</p>
       <div class="hadith-progress" aria-hidden="true" dir="ltr"><span style="width:{progress}%"></span></div>
     </div>
     <section class="hadith-reader-arabic">
@@ -180,7 +197,15 @@ def main() -> int:
         local = abs_n - args.start + 1
         name = f"hadith-{local:0{digits}d}"
         (html_dir / f"{name}.html").write_text(
-            page_html(args.kitab_ur, local, total, row["text_ar"] or ""),
+            page_html(
+                args.kitab_ur,
+                local,
+                total,
+                row["text_ar"] or "",
+                start=args.start,
+                end=args.end,
+                abs_n=abs_n,
+            ),
             encoding="utf-8",
         )
         manifest.append(
@@ -189,7 +214,7 @@ def main() -> int:
                 "absolute": abs_n,
                 "html": f"html/{name}.html",
                 "png": f"png/{name}.png",
-                "title": f"Hadith {local} of {total}",
+                "title": f"Hadith {args.start} to {args.end}",
             }
         )
         print(f"wrote {name}.html")

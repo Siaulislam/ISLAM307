@@ -302,6 +302,14 @@ class HadithRepository {
         kitabNumber = chapters.first['number'];
         map['kitab_number'] = kitabNumber;
       }
+      final bounds = await db.rawQuery(
+        'SELECT MIN(hadith_number) AS first, MAX(hadith_number) AS last FROM hadiths WHERE chapter_id = ?',
+        [chapterId],
+      );
+      if (bounds.isNotEmpty) {
+        map['chapter_first'] = bounds.first['first'];
+        map['chapter_last'] = bounds.first['last'];
+      }
     }
 
     final ravi = (map['narrator'] as String?)?.trim();
