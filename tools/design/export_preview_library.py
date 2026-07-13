@@ -48,6 +48,18 @@ def write_json_gz(path: Path, payload) -> None:
 def export_quran() -> dict:
     conn = sqlite3.connect(QURAN_DB)
     conn.row_factory = sqlite3.Row
+    # Discover authenticated translation_* columns so preview packs stay in sync
+    # with quran.db (never invent text — only export what is stored).
+    cols = [
+        r[1]
+        for r in conn.execute("PRAGMA table_info(ayahs)")
+        if r[1].startswith("translation_")
+    ]
+    lang_keys = sorted(c.replace("translation_", "", 1) for c in cols)
+    select_cols = ", ".join(
+        ["surah_number", "ayah_number", "text_uthmani", "page_madani", "juz", "ruku"]
+        + [f"IFNULL({c},'') AS {c}" for c in cols]
+    )
     surahs = [
         {
             "n": r["number"],
@@ -60,25 +72,24 @@ def export_quran() -> dict:
             "SELECT number, name_en, name_ar, ayah_count, revelation_place FROM surahs ORDER BY number"
         )
     ]
-    ayahs = [
-        {
+    ayahs = []
+    for r in conn.execute(
+        f"SELECT {select_cols} FROM ayahs ORDER BY global_number"
+    ):
+        item = {
             "s": r["surah_number"],
             "a": r["ayah_number"],
             "ar": r["text_uthmani"],
-            "en": r["translation_en"] or "",
-            "ur": (r["translation_ur"] if "translation_ur" in r.keys() else "") or "",
             "p": r["page_madani"],
             "j": r["juz"],
             "ruku": r["ruku"],
         }
-        for r in conn.execute(
-            "SELECT surah_number, ayah_number, text_uthmani, translation_en, "
-            "IFNULL(translation_ur,'') AS translation_ur, page_madani, juz, ruku FROM ayahs ORDER BY global_number"
-        )
-    ]
+        for lang in lang_keys:
+            item[lang] = r[f"translation_{lang}"] or ""
+        ayahs.append(item)
     write_json(OUT / "quran" / "surahs.json", {"surahs": surahs, "count": len(surahs)})
     write_json_gz(OUT / "quran" / "ayahs.json.gz", {"ayahs": ayahs, "count": len(ayahs)})
-    return {"surahs": len(surahs), "ayahs": len(ayahs)}
+    return {"surahs": len(surahs), "ayahs": len(ayahs), "translations": lang_keys}
 
 
 def export_hadith() -> dict:

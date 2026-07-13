@@ -11,7 +11,7 @@ class QuranDatabase {
 
   Database? _db;
   static const _asset = 'assets/databases/quran.db';
-  static const _schemaMarker = '3_knowledge';
+  static const _schemaMarker = '4_translations_multi';
 
   Future<Database> open() async {
     if (_db != null) return _db!;

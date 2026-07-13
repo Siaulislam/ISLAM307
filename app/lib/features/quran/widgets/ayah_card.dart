@@ -105,27 +105,41 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     final settings = ref.watch(appSettingsProvider);
     final scale = settings.fontScale;
     final arabic = '${widget.ayah['text_uthmani'] ?? ''}';
-    final urdu = '${widget.ayah['translation_ur'] ?? ''}';
-    final english = '${widget.ayah['translation_en'] ?? ''}';
     final refLabel = '$_surah:$_ayahNo';
     final page = widget.ayah['page_madani'] ?? widget.ayah['page'];
     final juz = widget.ayah['juz'];
+
+    // Authenticated offline columns only (translation_<lang>). Never invent text.
+    const rtlLangs = {'ur', 'fa', 'ps'};
+    const ttsByLang = <String, String>{
+      'ur': 'ur-PK',
+      'en': 'en-US',
+      'hi': 'hi-IN',
+      'fil': 'fil-PH',
+      'bn': 'bn-BD',
+      'id': 'id-ID',
+      'ms': 'ms-MY',
+      'tr': 'tr-TR',
+      'fa': 'fa-IR',
+      'fr': 'fr-FR',
+      'ha': 'ha-NG',
+      'so': 'so-SO',
+      'ps': 'ps-AF',
+      'sw': 'sw-KE',
+    };
 
     String? translation;
     TextStyle? translationStyle;
     var translationRtl = false;
     String ttsLang = 'en-US';
-    if (_translationLang == 'ur') {
-      translation = urdu.isEmpty ? null : urdu;
-      translationStyle = Islam307Theme.urdu(size: 17 * scale);
-      translationRtl = true;
-      ttsLang = 'ur-PK';
-    } else if (_translationLang == 'en') {
-      translation = english.isEmpty ? null : english;
-      translationStyle = TextStyle(color: Theme.of(context).hintColor, height: 1.6, fontSize: 15 * scale);
-      ttsLang = 'en-US';
-    } else if (_translationLang != null) {
-      translation = null; // authenticated text not loaded for this language yet
+    if (_translationLang != null) {
+      final raw = '${widget.ayah['translation_$_translationLang'] ?? ''}'.trim();
+      translation = raw.isEmpty ? null : raw;
+      translationRtl = rtlLangs.contains(_translationLang);
+      ttsLang = ttsByLang[_translationLang] ?? 'en-US';
+      translationStyle = translationRtl
+          ? Islam307Theme.urdu(size: 17 * scale)
+          : TextStyle(color: Theme.of(context).hintColor, height: 1.6, fontSize: 15 * scale);
     }
 
     final highlighted = _highlight != null;

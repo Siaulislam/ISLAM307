@@ -64,6 +64,15 @@
       "url": "https://quran.com"
     },
     {
+      "id": "quran-translations-offline",
+      "title": "Offline ayah translations (authenticated)",
+      "purpose": "Exact ayah translations for the in-app language picker (never machine-translated).",
+      "license": "Distributed via Quran.com translation resources; preserve each translator attribution",
+      "attribution": "Downloaded from Quran.com API v4 into quran.db: Saheeh International (en, id 20); Junagarhi (ur, id 54); Maulana Azizul Haque al-Umari (hi, id 122); Dar Al-Salam Center (fil, id 211); Taisirul Quran (bn, id 161); Indonesian Islamic Affairs Ministry (id, id 33); Abdullah Muhammad Basmeih (ms, id 39); Diyanet (tr, id 77); IslamHouse Persian (fa, id 135); Muhammad Hamidullah (fr, id 31); Abubakar Mahmoud Gumi (ha, id 32); Mahmud Muhammad Abduh (so, id 46); Zakaria Abulsalam (ps, id 118); Ali Muhsin Al-Barwani (sw, id 49).",
+      "url": "https://quran.com",
+      "notes": "ISLAM 307 never invents or auto-converts Quran translations. Selecting Hindi (etc.) shows that language’s authenticated ayah text from the offline database."
+    },
+    {
       "id": "everyayah",
       "title": "EveryAyah recitation audio",
       "purpose": "Optional network Quran recitation playback (not stored per-word).",

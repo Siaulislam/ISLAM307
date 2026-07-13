@@ -30,6 +30,9 @@ CREATE TABLE IF NOT EXISTS ayahs (
   text_tajweed TEXT,
   translation_en TEXT,
   translation_ur TEXT,
+  -- Additional offline translations (translation_hi, translation_fil, …) are
+  -- added via tools/quran/import_ayah_translations.py (ALTER TABLE) from
+  -- authenticated Quran.com resources — never invented or machine-translated.
   page_madani INTEGER NOT NULL,
   page_13_line INTEGER,
   juz INTEGER NOT NULL,

@@ -6,8 +6,9 @@
 |------|--------|
 | Arabic Uthmani text | [Tanzil Project](https://tanzil.net) v1.1 via dotquran/corpus |
 | Page, Juz, Hizb, Ruku, Sajdah | Quran.com API v4 |
-| English translation | Sahih International (resource 131) |
+| English translation | Saheeh International (resource 20) |
 | Urdu translation | Maulana Muhammad Junagarhi (resource 54) |
+| Hindi / Filipino / Bengali / Indonesian / Malay / Turkish / Persian / French / Hausa / Somali / Pashto / Swahili | Quran.com API translation resources (see `import_ayah_translations.py`) |
 | Tajweed markup | Quran.com `text_uthmani_tajweed` |
 | Word morphology / roots / grammar | [Quranic Arabic Corpus](http://corpus.quran.com) morphology v0.4 |
 | Word EN/UR glosses + transliteration | Quran.com API word fields (build-time) |
@@ -22,6 +23,24 @@ python tools/quran/build_quran_db.py --skip-pdf
 ```
 
 Output: `app/assets/databases/quran.db`
+
+## Import offline ayah translations
+
+Downloads **authenticated** translations from Quran.com into `ayahs.translation_<lang>` columns. Never invents or machine-translates text.
+
+```bash
+python tools/quran/import_ayah_translations.py
+# optional: refresh Urdu as well
+python tools/quran/import_ayah_translations.py --include-ur
+```
+
+Then re-export the web preview pack:
+
+```bash
+python tools/design/export_preview_library.py
+```
+
+Selecting a language in the Quran reader shows that language’s exact stored ayah translation under the Arabic.
 
 ## Build Phase 4 word knowledge tables
 
@@ -38,7 +57,7 @@ This creates/updates inside `quran.db`:
 - `quran_word_parts` — QAC segments
 - `quran_words_fts` — offline FTS for Arabic / Urdu / English / root / morphology
 
-Sets `meta.schema_version = 3_knowledge`.
+Sets `meta.schema_version = 3_knowledge` (importer may later bump to `4_translations_multi`).
 
 Optional: `--skip-api` for morphology-only (no EN/UR glosses).
 

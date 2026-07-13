@@ -1,1 +1,961 @@
-{"quran": {"surahs": 114, "ayahs": 6236}, "hadith": {"bukhari": 7563, "muslim": 7563, "abudawud": 5274, "tirmidhi": 3956}, "tafsir": {"ibn-kathir": 6009}, "narrators": {"catalog": {"narrators": 26510, "primary_mappings": 24068}, "bukhari-1": {"book": "bukhari", "hadith": 1, "chain_length": 8}, "bukhari-2": {"book": "bukhari", "hadith": 2, "chain_length": 6}, "bukhari-3": {"book": "bukhari", "hadith": 3, "chain_length": 7}, "bukhari-4": {"book": "bukhari", "hadith": 4, "chain_length": 4}, "bukhari-5": {"book": "bukhari", "hadith": 5, "chain_length": 6}, "bukhari-6": {"book": "bukhari", "hadith": 6, "chain_length": 7}, "bukhari-7": {"book": "bukhari", "hadith": 7, "chain_length": 7}, "bukhari-8": {"book": "bukhari", "kitab": "Belief", "kitab_local": 1, "hadith": 8, "chain_length": 5}, "bukhari-9": {"book": "bukhari", "kitab": "Belief", "kitab_local": 2, "hadith": 9, "chain_length": 7}, "bukhari-10": {"book": "bukhari", "kitab": "Belief", "kitab_local": 3, "hadith": 10, "chain_length": 7}, "bukhari-11": {"book": "bukhari", "kitab": "Belief", "kitab_local": 4, "hadith": 11, "chain_length": 6}, "bukhari-12": {"book": "bukhari", "kitab": "Belief", "kitab_local": 5, "hadith": 12, "chain_length": 6}, "bukhari-13": {"book": "bukhari", "kitab": "Belief", "kitab_local": 6, "hadith": 13, "chain_length": 6}, "bukhari-14": {"book": "bukhari", "kitab": "Belief", "kitab_local": 7, "hadith": 14, "chain_length": 6}, "bukhari-15": {"book": "bukhari", "kitab": "Belief", "kitab_local": 8, "hadith": 15, "chain_length": 5}, "bukhari-16": {"book": "bukhari", "kitab": "Belief", "kitab_local": 9, "hadith": 16, "chain_length": 6}, "bukhari-17": {"book": "bukhari", "kitab": "Belief", "kitab_local": 10, "hadith": 17, "chain_length": 5}, "bukhari-18": {"book": "bukhari", "kitab": "Belief", "kitab_local": 11, "hadith": 18, "chain_length": 6}, "bukhari-19": {"book": "bukhari", "kitab": "Belief", "kitab_local": 12, "hadith": 19, "chain_length": 6}, "bukhari-20": {"book": "bukhari", "kitab": "Belief", "kitab_local": 13, "hadith": 20, "chain_length": 6}, "bukhari-21": {"book": "bukhari", "kitab": "Belief", "kitab_local": 14, "hadith": 21, "chain_length": 5}, "bukhari-22": {"book": "bukhari", "kitab": "Belief", "kitab_local": 15, "hadith": 22, "chain_length": 6}, "bukhari-23": {"book": "bukhari", "kitab": "Belief", "kitab_local": 16, "hadith": 23, "chain_length": 7}, "bukhari-24": {"book": "bukhari", "kitab": "Belief", "kitab_local": 17, "hadith": 24, "chain_length": 6}, "bukhari-25": {"book": "bukhari", "kitab": "Belief", "kitab_local": 18, "hadith": 25, "chain_length": 7}, "bukhari-26": {"book": "bukhari", "kitab": "Belief", "kitab_local": 19, "hadith": 26, "chain_length": 7}, "bukhari-27": {"book": "bukhari", "kitab": "Belief", "kitab_local": 20, "hadith": 27, "chain_length": 6}, "bukhari-28": {"book": "bukhari", "kitab": "Belief", "kitab_local": 21, "hadith": 28, "chain_length": 6}, "bukhari-29": {"book": "bukhari", "kitab": "Belief", "kitab_local": 22, "hadith": 29, "chain_length": 6}, "bukhari-30": {"book": "bukhari", "kitab": "Belief", "kitab_local": 23, "hadith": 30, "chain_length": 6}, "bukhari-31": {"book": "bukhari", "kitab": "Belief", "kitab_local": 24, "hadith": 31, "chain_length": 8}, "bukhari-32": {"book": "bukhari", "kitab": "Belief", "kitab_local": 25, "hadith": 32, "chain_length": 9}, "bukhari-33": {"book": "bukhari", "kitab": "Belief", "kitab_local": 26, "hadith": 33, "chain_length": 6}, "bukhari-34": {"book": "bukhari", "kitab": "Belief", "kitab_local": 27, "hadith": 34, "chain_length": 7}, "bukhari-35": {"book": "bukhari", "kitab": "Belief", "kitab_local": 28, "hadith": 35, "chain_length": 6}, "bukhari-36": {"book": "bukhari", "kitab": "Belief", "kitab_local": 29, "hadith": 36, "chain_length": 6}, "bukhari-37": {"book": "bukhari", "kitab": "Belief", "kitab_local": 30, "hadith": 37, "chain_length": 6}, "bukhari-38": {"book": "bukhari", "kitab": "Belief", "kitab_local": 31, "hadith": 38, "chain_length": 6}, "bukhari-39": {"book": "bukhari", "kitab": "Belief", "kitab_local": 32, "hadith": 39, "chain_length": 6}, "bukhari-40": {"book": "bukhari", "kitab": "Belief", "kitab_local": 33, "hadith": 40, "chain_length": 5}, "bukhari-41": {"book": "bukhari", "kitab": "Belief", "kitab_local": 34, "hadith": 41, "chain_length": 5}, "bukhari-42": {"book": "bukhari", "kitab": "Belief", "kitab_local": 35, "hadith": 42, "chain_length": 6}, "bukhari-43": {"book": "bukhari", "kitab": "Belief", "kitab_local": 36, "hadith": 43, "chain_length": 6}, "bukhari-44": {"book": "bukhari", "kitab": "Belief", "kitab_local": 37, "hadith": 44, "chain_length": 5}, "bukhari-45": {"book": "bukhari", "kitab": "Belief", "kitab_local": 38, "hadith": 45, "chain_length": 7}, "bukhari-46": {"book": "bukhari", "kitab": "Belief", "kitab_local": 39, "hadith": 46, "chain_length": 6}, "bukhari-47": {"book": "bukhari", "kitab": "Belief", "kitab_local": 40, "hadith": 47, "chain_length": 7}, "bukhari-48": {"book": "bukhari", "kitab": "Belief", "kitab_local": 41, "hadith": 48, "chain_length": 6}, "bukhari-49": {"book": "bukhari", "kitab": "Belief", "kitab_local": 42, "hadith": 49, "chain_length": 6}, "bukhari-50": {"book": "bukhari", "kitab": "Belief", "kitab_local": 43, "hadith": 50, "chain_length": 6}, "bukhari-51": {"book": "bukhari", "kitab": "Belief", "kitab_local": 44, "hadith": 51, "chain_length": 8}, "bukhari-52": {"book": "bukhari", "kitab": "Belief", "kitab_local": 45, "hadith": 52, "chain_length": 5}, "bukhari-53": {"book": "bukhari", "kitab": "Belief", "kitab_local": 46, "hadith": 53, "chain_length": 5}, "bukhari-54": {"book": "bukhari", "kitab": "Belief", "kitab_local": 47, "hadith": 54, "chain_length": 7}, "bukhari-55": {"book": "bukhari", "kitab": "Belief", "kitab_local": 48, "hadith": 55, "chain_length": 6}, "bukhari-56": {"book": "bukhari", "kitab": "Belief", "kitab_local": 49, "hadith": 56, "chain_length": 6}, "bukhari-57": {"book": "bukhari", "kitab": "Belief", "kitab_local": 50, "hadith": 57, "chain_length": 6}, "bukhari-58": {"book": "bukhari", "kitab": "Belief", "kitab_local": 51, "hadith": 58, "chain_length": 5}, "bukhari-59": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 1, "hadith": 59, "chain_length": 9}, "bukhari-60": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 2, "hadith": 60, "chain_length": 7}, "bukhari-61": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 3, "hadith": 61, "chain_length": 5}, "bukhari-62": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 4, "hadith": 62, "chain_length": 5}, "bukhari-63": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 5, "hadith": 63, "chain_length": 6}, "bukhari-64": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 6, "hadith": 64, "chain_length": 7}, "bukhari-65": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 7, "hadith": 65, "chain_length": 6}, "bukhari-66": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 8, "hadith": 66, "chain_length": 7}, "bukhari-67": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 9, "hadith": 67, "chain_length": 7}, "bukhari-68": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 10, "hadith": 68, "chain_length": 6}, "bukhari-69": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 11, "hadith": 69, "chain_length": 6}, "bukhari-70": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 12, "hadith": 70, "chain_length": 5}, "bukhari-71": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 13, "hadith": 71, "chain_length": 5}, "bukhari-72": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 14, "hadith": 72, "chain_length": 4}, "bukhari-73": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 15, "hadith": 73, "chain_length": 7}, "bukhari-74": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 16, "hadith": 74, "chain_length": 7}, "bukhari-75": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 17, "hadith": 75, "chain_length": 6}, "bukhari-76": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 18, "hadith": 76, "chain_length": 6}, "bukhari-77": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 19, "hadith": 77, "chain_length": 7}, "bukhari-78": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 20, "hadith": 78, "chain_length": 6}, "bukhari-79": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 21, "hadith": 79, "chain_length": 6}, "bukhari-80": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 22, "hadith": 80, "chain_length": 5}, "bukhari-81": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 23, "hadith": 81, "chain_length": 6}, "bukhari-82": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 24, "hadith": 82, "chain_length": 7}, "bukhari-83": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 25, "hadith": 83, "chain_length": 6}, "bukhari-84": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 26, "hadith": 84, "chain_length": 6}, "bukhari-85": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 27, "hadith": 85, "chain_length": 3}, "bukhari-86": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 28, "hadith": 86, "chain_length": 6}, "bukhari-87": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 29, "hadith": 87, "chain_length": 5}, "bukhari-88": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 30, "hadith": 88, "chain_length": 5}, "bukhari-89": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 31, "hadith": 89, "chain_length": 9}, "bukhari-90": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 32, "hadith": 90, "chain_length": 6}, "bukhari-91": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 33, "hadith": 91, "chain_length": 8}, "bukhari-92": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 34, "hadith": 92, "chain_length": 7}, "bukhari-93": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 35, "hadith": 93, "chain_length": 5}, "bukhari-94": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 36, "hadith": 94, "chain_length": 6}, "bukhari-95": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 37, "hadith": 95, "chain_length": 6}, "bukhari-96": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 38, "hadith": 96, "chain_length": 6}, "bukhari-97": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 39, "hadith": 97, "chain_length": 6}, "bukhari-98": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 40, "hadith": 98, "chain_length": 6}, "bukhari-99": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 41, "hadith": 99, "chain_length": 6}, "bukhari-100": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 42, "hadith": 100, "chain_length": 6}, "bukhari-101": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 43, "hadith": 101, "chain_length": 6}, "bukhari-102": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 44, "hadith": 102, "chain_length": 7}, "bukhari-103": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 45, "hadith": 103, "chain_length": 6}, "bukhari-104": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 46, "hadith": 104, "chain_length": 5}, "bukhari-105": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 47, "hadith": 105, "chain_length": 7}, "bukhari-106": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 48, "hadith": 106, "chain_length": 6}, "bukhari-107": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 49, "hadith": 107, "chain_length": 6}, "bukhari-108": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 50, "hadith": 108, "chain_length": 4}, "bukhari-109": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 51, "hadith": 109, "chain_length": 4}, "bukhari-110": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 52, "hadith": 110, "chain_length": 6}, "bukhari-111": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 53, "hadith": 111, "chain_length": 7}, "bukhari-112": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 54, "hadith": 112, "chain_length": 6}, "bukhari-113": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 55, "hadith": 113, "chain_length": 7}, "bukhari-114": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 56, "hadith": 114, "chain_length": 7}, "bukhari-115": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 57, "hadith": 115, "chain_length": 9}, "bukhari-116": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 58, "hadith": 116, "chain_length": 5}, "bukhari-117": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 59, "hadith": 117, "chain_length": 6}, "bukhari-118": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 60, "hadith": 118, "chain_length": 6}, "bukhari-119": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 61, "hadith": 119, "chain_length": 6}, "bukhari-120": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 62, "hadith": 120, "chain_length": 6}, "bukhari-121": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 63, "hadith": 121, "chain_length": 6}, "bukhari-122": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 64, "hadith": 122, "chain_length": 6}, "bukhari-123": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 65, "hadith": 123, "chain_length": 6}, "bukhari-124": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 66, "hadith": 124, "chain_length": 6}, "bukhari-125": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 67, "hadith": 125, "chain_length": 8}, "bukhari-126": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 68, "hadith": 126, "chain_length": 5}, "bukhari-127": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 69, "hadith": 127, "chain_length": 4}, "bukhari-128": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 70, "hadith": 128, "chain_length": 6}, "bukhari-129": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 71, "hadith": 129, "chain_length": 5}, "bukhari-130": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 72, "hadith": 130, "chain_length": 7}, "bukhari-131": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 73, "hadith": 131, "chain_length": 5}, "bukhari-132": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 74, "hadith": 132, "chain_length": 7}, "bukhari-133": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 75, "hadith": 133, "chain_length": 6}, "bukhari-134": {"book": "bukhari", "kitab": "Knowledge", "kitab_local": 76, "hadith": 134, "chain_length": 5}}}
+{
+  "quran": {
+    "surahs": 114,
+    "ayahs": 6236,
+    "translations": [
+      "bn",
+      "en",
+      "fa",
+      "fil",
+      "fr",
+      "ha",
+      "hi",
+      "id",
+      "ms",
+      "ps",
+      "so",
+      "sw",
+      "tr",
+      "ur"
+    ]
+  },
+  "hadith": {
+    "bukhari": 7563,
+    "muslim": 7563,
+    "abudawud": 5274,
+    "tirmidhi": 3956
+  },
+  "tafsir": {
+    "ibn-kathir": 6009
+  },
+  "narrators": {
+    "catalog": {
+      "narrators": 26510,
+      "primary_mappings": 24068
+    },
+    "bukhari-1": {
+      "book": "bukhari",
+      "hadith": 1,
+      "chain_length": 8
+    },
+    "bukhari-2": {
+      "book": "bukhari",
+      "hadith": 2,
+      "chain_length": 6
+    },
+    "bukhari-3": {
+      "book": "bukhari",
+      "hadith": 3,
+      "chain_length": 7
+    },
+    "bukhari-4": {
+      "book": "bukhari",
+      "hadith": 4,
+      "chain_length": 4
+    },
+    "bukhari-5": {
+      "book": "bukhari",
+      "hadith": 5,
+      "chain_length": 6
+    },
+    "bukhari-6": {
+      "book": "bukhari",
+      "hadith": 6,
+      "chain_length": 7
+    },
+    "bukhari-7": {
+      "book": "bukhari",
+      "hadith": 7,
+      "chain_length": 7
+    },
+    "bukhari-8": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 1,
+      "hadith": 8,
+      "chain_length": 5
+    },
+    "bukhari-9": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 2,
+      "hadith": 9,
+      "chain_length": 7
+    },
+    "bukhari-10": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 3,
+      "hadith": 10,
+      "chain_length": 7
+    },
+    "bukhari-11": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 4,
+      "hadith": 11,
+      "chain_length": 6
+    },
+    "bukhari-12": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 5,
+      "hadith": 12,
+      "chain_length": 6
+    },
+    "bukhari-13": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 6,
+      "hadith": 13,
+      "chain_length": 6
+    },
+    "bukhari-14": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 7,
+      "hadith": 14,
+      "chain_length": 6
+    },
+    "bukhari-15": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 8,
+      "hadith": 15,
+      "chain_length": 5
+    },
+    "bukhari-16": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 9,
+      "hadith": 16,
+      "chain_length": 6
+    },
+    "bukhari-17": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 10,
+      "hadith": 17,
+      "chain_length": 5
+    },
+    "bukhari-18": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 11,
+      "hadith": 18,
+      "chain_length": 6
+    },
+    "bukhari-19": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 12,
+      "hadith": 19,
+      "chain_length": 6
+    },
+    "bukhari-20": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 13,
+      "hadith": 20,
+      "chain_length": 6
+    },
+    "bukhari-21": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 14,
+      "hadith": 21,
+      "chain_length": 5
+    },
+    "bukhari-22": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 15,
+      "hadith": 22,
+      "chain_length": 6
+    },
+    "bukhari-23": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 16,
+      "hadith": 23,
+      "chain_length": 7
+    },
+    "bukhari-24": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 17,
+      "hadith": 24,
+      "chain_length": 6
+    },
+    "bukhari-25": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 18,
+      "hadith": 25,
+      "chain_length": 7
+    },
+    "bukhari-26": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 19,
+      "hadith": 26,
+      "chain_length": 7
+    },
+    "bukhari-27": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 20,
+      "hadith": 27,
+      "chain_length": 6
+    },
+    "bukhari-28": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 21,
+      "hadith": 28,
+      "chain_length": 6
+    },
+    "bukhari-29": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 22,
+      "hadith": 29,
+      "chain_length": 6
+    },
+    "bukhari-30": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 23,
+      "hadith": 30,
+      "chain_length": 6
+    },
+    "bukhari-31": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 24,
+      "hadith": 31,
+      "chain_length": 8
+    },
+    "bukhari-32": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 25,
+      "hadith": 32,
+      "chain_length": 9
+    },
+    "bukhari-33": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 26,
+      "hadith": 33,
+      "chain_length": 6
+    },
+    "bukhari-34": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 27,
+      "hadith": 34,
+      "chain_length": 7
+    },
+    "bukhari-35": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 28,
+      "hadith": 35,
+      "chain_length": 6
+    },
+    "bukhari-36": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 29,
+      "hadith": 36,
+      "chain_length": 6
+    },
+    "bukhari-37": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 30,
+      "hadith": 37,
+      "chain_length": 6
+    },
+    "bukhari-38": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 31,
+      "hadith": 38,
+      "chain_length": 6
+    },
+    "bukhari-39": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 32,
+      "hadith": 39,
+      "chain_length": 6
+    },
+    "bukhari-40": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 33,
+      "hadith": 40,
+      "chain_length": 5
+    },
+    "bukhari-41": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 34,
+      "hadith": 41,
+      "chain_length": 5
+    },
+    "bukhari-42": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 35,
+      "hadith": 42,
+      "chain_length": 6
+    },
+    "bukhari-43": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 36,
+      "hadith": 43,
+      "chain_length": 6
+    },
+    "bukhari-44": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 37,
+      "hadith": 44,
+      "chain_length": 5
+    },
+    "bukhari-45": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 38,
+      "hadith": 45,
+      "chain_length": 7
+    },
+    "bukhari-46": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 39,
+      "hadith": 46,
+      "chain_length": 6
+    },
+    "bukhari-47": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 40,
+      "hadith": 47,
+      "chain_length": 7
+    },
+    "bukhari-48": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 41,
+      "hadith": 48,
+      "chain_length": 6
+    },
+    "bukhari-49": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 42,
+      "hadith": 49,
+      "chain_length": 6
+    },
+    "bukhari-50": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 43,
+      "hadith": 50,
+      "chain_length": 6
+    },
+    "bukhari-51": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 44,
+      "hadith": 51,
+      "chain_length": 8
+    },
+    "bukhari-52": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 45,
+      "hadith": 52,
+      "chain_length": 5
+    },
+    "bukhari-53": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 46,
+      "hadith": 53,
+      "chain_length": 5
+    },
+    "bukhari-54": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 47,
+      "hadith": 54,
+      "chain_length": 7
+    },
+    "bukhari-55": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 48,
+      "hadith": 55,
+      "chain_length": 6
+    },
+    "bukhari-56": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 49,
+      "hadith": 56,
+      "chain_length": 6
+    },
+    "bukhari-57": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 50,
+      "hadith": 57,
+      "chain_length": 6
+    },
+    "bukhari-58": {
+      "book": "bukhari",
+      "kitab": "Belief",
+      "kitab_local": 51,
+      "hadith": 58,
+      "chain_length": 5
+    },
+    "bukhari-59": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 1,
+      "hadith": 59,
+      "chain_length": 9
+    },
+    "bukhari-60": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 2,
+      "hadith": 60,
+      "chain_length": 7
+    },
+    "bukhari-61": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 3,
+      "hadith": 61,
+      "chain_length": 5
+    },
+    "bukhari-62": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 4,
+      "hadith": 62,
+      "chain_length": 5
+    },
+    "bukhari-63": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 5,
+      "hadith": 63,
+      "chain_length": 6
+    },
+    "bukhari-64": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 6,
+      "hadith": 64,
+      "chain_length": 7
+    },
+    "bukhari-65": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 7,
+      "hadith": 65,
+      "chain_length": 6
+    },
+    "bukhari-66": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 8,
+      "hadith": 66,
+      "chain_length": 7
+    },
+    "bukhari-67": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 9,
+      "hadith": 67,
+      "chain_length": 7
+    },
+    "bukhari-68": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 10,
+      "hadith": 68,
+      "chain_length": 6
+    },
+    "bukhari-69": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 11,
+      "hadith": 69,
+      "chain_length": 6
+    },
+    "bukhari-70": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 12,
+      "hadith": 70,
+      "chain_length": 5
+    },
+    "bukhari-71": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 13,
+      "hadith": 71,
+      "chain_length": 5
+    },
+    "bukhari-72": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 14,
+      "hadith": 72,
+      "chain_length": 4
+    },
+    "bukhari-73": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 15,
+      "hadith": 73,
+      "chain_length": 7
+    },
+    "bukhari-74": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 16,
+      "hadith": 74,
+      "chain_length": 7
+    },
+    "bukhari-75": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 17,
+      "hadith": 75,
+      "chain_length": 6
+    },
+    "bukhari-76": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 18,
+      "hadith": 76,
+      "chain_length": 6
+    },
+    "bukhari-77": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 19,
+      "hadith": 77,
+      "chain_length": 7
+    },
+    "bukhari-78": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 20,
+      "hadith": 78,
+      "chain_length": 6
+    },
+    "bukhari-79": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 21,
+      "hadith": 79,
+      "chain_length": 6
+    },
+    "bukhari-80": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 22,
+      "hadith": 80,
+      "chain_length": 5
+    },
+    "bukhari-81": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 23,
+      "hadith": 81,
+      "chain_length": 6
+    },
+    "bukhari-82": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 24,
+      "hadith": 82,
+      "chain_length": 7
+    },
+    "bukhari-83": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 25,
+      "hadith": 83,
+      "chain_length": 6
+    },
+    "bukhari-84": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 26,
+      "hadith": 84,
+      "chain_length": 6
+    },
+    "bukhari-85": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 27,
+      "hadith": 85,
+      "chain_length": 3
+    },
+    "bukhari-86": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 28,
+      "hadith": 86,
+      "chain_length": 6
+    },
+    "bukhari-87": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 29,
+      "hadith": 87,
+      "chain_length": 5
+    },
+    "bukhari-88": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 30,
+      "hadith": 88,
+      "chain_length": 5
+    },
+    "bukhari-89": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 31,
+      "hadith": 89,
+      "chain_length": 9
+    },
+    "bukhari-90": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 32,
+      "hadith": 90,
+      "chain_length": 6
+    },
+    "bukhari-91": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 33,
+      "hadith": 91,
+      "chain_length": 8
+    },
+    "bukhari-92": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 34,
+      "hadith": 92,
+      "chain_length": 7
+    },
+    "bukhari-93": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 35,
+      "hadith": 93,
+      "chain_length": 5
+    },
+    "bukhari-94": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 36,
+      "hadith": 94,
+      "chain_length": 6
+    },
+    "bukhari-95": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 37,
+      "hadith": 95,
+      "chain_length": 6
+    },
+    "bukhari-96": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 38,
+      "hadith": 96,
+      "chain_length": 6
+    },
+    "bukhari-97": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 39,
+      "hadith": 97,
+      "chain_length": 6
+    },
+    "bukhari-98": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 40,
+      "hadith": 98,
+      "chain_length": 6
+    },
+    "bukhari-99": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 41,
+      "hadith": 99,
+      "chain_length": 6
+    },
+    "bukhari-100": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 42,
+      "hadith": 100,
+      "chain_length": 6
+    },
+    "bukhari-101": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 43,
+      "hadith": 101,
+      "chain_length": 6
+    },
+    "bukhari-102": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 44,
+      "hadith": 102,
+      "chain_length": 7
+    },
+    "bukhari-103": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 45,
+      "hadith": 103,
+      "chain_length": 6
+    },
+    "bukhari-104": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 46,
+      "hadith": 104,
+      "chain_length": 5
+    },
+    "bukhari-105": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 47,
+      "hadith": 105,
+      "chain_length": 7
+    },
+    "bukhari-106": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 48,
+      "hadith": 106,
+      "chain_length": 6
+    },
+    "bukhari-107": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 49,
+      "hadith": 107,
+      "chain_length": 6
+    },
+    "bukhari-108": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 50,
+      "hadith": 108,
+      "chain_length": 4
+    },
+    "bukhari-109": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 51,
+      "hadith": 109,
+      "chain_length": 4
+    },
+    "bukhari-110": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 52,
+      "hadith": 110,
+      "chain_length": 6
+    },
+    "bukhari-111": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 53,
+      "hadith": 111,
+      "chain_length": 7
+    },
+    "bukhari-112": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 54,
+      "hadith": 112,
+      "chain_length": 6
+    },
+    "bukhari-113": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 55,
+      "hadith": 113,
+      "chain_length": 7
+    },
+    "bukhari-114": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 56,
+      "hadith": 114,
+      "chain_length": 7
+    },
+    "bukhari-115": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 57,
+      "hadith": 115,
+      "chain_length": 9
+    },
+    "bukhari-116": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 58,
+      "hadith": 116,
+      "chain_length": 5
+    },
+    "bukhari-117": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 59,
+      "hadith": 117,
+      "chain_length": 6
+    },
+    "bukhari-118": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 60,
+      "hadith": 118,
+      "chain_length": 6
+    },
+    "bukhari-119": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 61,
+      "hadith": 119,
+      "chain_length": 6
+    },
+    "bukhari-120": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 62,
+      "hadith": 120,
+      "chain_length": 6
+    },
+    "bukhari-121": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 63,
+      "hadith": 121,
+      "chain_length": 6
+    },
+    "bukhari-122": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 64,
+      "hadith": 122,
+      "chain_length": 6
+    },
+    "bukhari-123": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 65,
+      "hadith": 123,
+      "chain_length": 6
+    },
+    "bukhari-124": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 66,
+      "hadith": 124,
+      "chain_length": 6
+    },
+    "bukhari-125": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 67,
+      "hadith": 125,
+      "chain_length": 8
+    },
+    "bukhari-126": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 68,
+      "hadith": 126,
+      "chain_length": 5
+    },
+    "bukhari-127": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 69,
+      "hadith": 127,
+      "chain_length": 4
+    },
+    "bukhari-128": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 70,
+      "hadith": 128,
+      "chain_length": 6
+    },
+    "bukhari-129": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 71,
+      "hadith": 129,
+      "chain_length": 5
+    },
+    "bukhari-130": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 72,
+      "hadith": 130,
+      "chain_length": 7
+    },
+    "bukhari-131": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 73,
+      "hadith": 131,
+      "chain_length": 5
+    },
+    "bukhari-132": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 74,
+      "hadith": 132,
+      "chain_length": 7
+    },
+    "bukhari-133": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 75,
+      "hadith": 133,
+      "chain_length": 6
+    },
+    "bukhari-134": {
+      "book": "bukhari",
+      "kitab": "Knowledge",
+      "kitab_local": 76,
+      "hadith": 134,
+      "chain_length": 5
+    }
+  }
+}
