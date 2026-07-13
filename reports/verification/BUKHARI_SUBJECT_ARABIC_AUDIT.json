@@ -1,0 +1,526 @@
+{
+  "summary": {
+    "bukhari_total": 7563,
+    "missing_subject_after_fix": 0,
+    "missing_arabic": [
+      5710,
+      5711,
+      5712,
+      5774,
+      5775,
+      6074,
+      6075,
+      6174,
+      6175
+    ],
+    "duplicate_hadith_numbers": []
+  },
+  "subjects_copied_from_sunnah_no_duplicates": [
+    {
+      "hadith": 521,
+      "subject": "Times of the Prayers",
+      "book": 9,
+      "url": "https://sunnah.com/bukhari:521"
+    },
+    {
+      "hadith": 2384,
+      "subject": "Distribution of Water",
+      "book": 42,
+      "url": "https://sunnah.com/bukhari:2384"
+    },
+    {
+      "hadith": 2516,
+      "subject": "Mortgaging",
+      "book": 48,
+      "url": "https://sunnah.com/bukhari:2516"
+    },
+    {
+      "hadith": 2711,
+      "subject": "Conditions",
+      "book": 54,
+      "url": "https://sunnah.com/bukhari:2711"
+    },
+    {
+      "hadith": 3156,
+      "subject": "Jizyah and Mawaada'ah",
+      "book": 58,
+      "url": "https://sunnah.com/bukhari:3156"
+    },
+    {
+      "hadith": 4978,
+      "subject": "Virtues of the Qur'an",
+      "book": 66,
+      "url": "https://sunnah.com/bukhari:4978"
+    }
+  ],
+  "need_your_arabic_detail": [
+    {
+      "hadith": 5710,
+      "db_subject_number": 76,
+      "db_subject_en": "Medicine",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:5712",
+      "sunnah_combined_range": "5709-5712",
+      "sunnah_book": "76 · Medicine",
+      "sunnah_bab_ar": "باب اللَّدُودِ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا عَلِيُّ بْنُ عَبْدِ اللَّهِ ، حَدَّثَنَا يَحْيَى بْنُ سَعِيدٍ ، حَدَّثَنَا سُفْيَانُ ، قَالَ حَدَّثَنِي مُوسَى بْنُ أَبِي عَائِشَةَ ، عَنْ عُبَيْدِ اللَّهِ بْنِ عَبْدِ اللَّهِ ، عَنِ ابْن",
+      "sunnah_english_preview": "> Narrated Ibn `Abbas and `Aisha: Abu Bakr kissed (the forehead of) the Prophet (ﷺ) when he was dead. `Aisha added: We put medicine in one side of his mouth but he started waving us not to insert the ",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 5707,
+          "ar_len": 287,
+          "en_len": 567
+        },
+        {
+          "hadith_number": 5708,
+          "ar_len": 563,
+          "en_len": 161
+        },
+        {
+          "hadith_number": 5709,
+          "ar_len": 709,
+          "en_len": 658
+        },
+        {
+          "hadith_number": 5710,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5711,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5712,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5713,
+          "ar_len": 890,
+          "en_len": 493
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 5711,
+      "db_subject_number": 76,
+      "db_subject_en": "Medicine",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:5712",
+      "sunnah_combined_range": "5709-5712",
+      "sunnah_book": "76 · Medicine",
+      "sunnah_bab_ar": "باب اللَّدُودِ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا عَلِيُّ بْنُ عَبْدِ اللَّهِ ، حَدَّثَنَا يَحْيَى بْنُ سَعِيدٍ ، حَدَّثَنَا سُفْيَانُ ، قَالَ حَدَّثَنِي مُوسَى بْنُ أَبِي عَائِشَةَ ، عَنْ عُبَيْدِ اللَّهِ بْنِ عَبْدِ اللَّهِ ، عَنِ ابْن",
+      "sunnah_english_preview": "> Narrated Ibn `Abbas and `Aisha: Abu Bakr kissed (the forehead of) the Prophet (ﷺ) when he was dead. `Aisha added: We put medicine in one side of his mouth but he started waving us not to insert the ",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 5708,
+          "ar_len": 563,
+          "en_len": 161
+        },
+        {
+          "hadith_number": 5709,
+          "ar_len": 709,
+          "en_len": 658
+        },
+        {
+          "hadith_number": 5710,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5711,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5712,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5713,
+          "ar_len": 890,
+          "en_len": 493
+        },
+        {
+          "hadith_number": 5714,
+          "ar_len": 1100,
+          "en_len": 983
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 5712,
+      "db_subject_number": 76,
+      "db_subject_en": "Medicine",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:5712",
+      "sunnah_combined_range": "5709-5712",
+      "sunnah_book": "76 · Medicine",
+      "sunnah_bab_ar": "باب اللَّدُودِ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا عَلِيُّ بْنُ عَبْدِ اللَّهِ ، حَدَّثَنَا يَحْيَى بْنُ سَعِيدٍ ، حَدَّثَنَا سُفْيَانُ ، قَالَ حَدَّثَنِي مُوسَى بْنُ أَبِي عَائِشَةَ ، عَنْ عُبَيْدِ اللَّهِ بْنِ عَبْدِ اللَّهِ ، عَنِ ابْن",
+      "sunnah_english_preview": "> Narrated Ibn `Abbas and `Aisha: Abu Bakr kissed (the forehead of) the Prophet (ﷺ) when he was dead. `Aisha added: We put medicine in one side of his mouth but he started waving us not to insert the ",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 5709,
+          "ar_len": 709,
+          "en_len": 658
+        },
+        {
+          "hadith_number": 5710,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5711,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5712,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5713,
+          "ar_len": 890,
+          "en_len": 493
+        },
+        {
+          "hadith_number": 5714,
+          "ar_len": 1100,
+          "en_len": 983
+        },
+        {
+          "hadith_number": 5715,
+          "ar_len": 770,
+          "en_len": 335
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 5774,
+      "db_subject_number": 76,
+      "db_subject_en": "Medicine",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:5775",
+      "sunnah_combined_range": "5773-5775",
+      "sunnah_book": "76 · Medicine",
+      "sunnah_bab_ar": "باب لاَ عَدْوَى",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا أَبُو الْيَمَانِ ، أَخْبَرَنَا شُعَيْبٌ ، عَنِ الزُّهْرِيِّ ، قَالَ حَدَّثَنِي أَبُو سَلَمَةَ بْنُ عَبْدِ الرَّحْمَنِ ، أَنَّ أَبَا هُرَيْرَةَ ، قَالَ إِنَّ رَسُولَ اللَّهِ صلى الله عليه ",
+      "sunnah_english_preview": "> Narrated Abu Huraira: Allah's Messenger (ﷺ) said, \"No 'Adwa.\" Abu Huraira also said: The Prophet (ﷺ) said, \"The cattle suffering from a disease should not be mixed up with healthy cattle (or said \"D",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 5771,
+          "ar_len": 334,
+          "en_len": 234
+        },
+        {
+          "hadith_number": 5772,
+          "ar_len": 369,
+          "en_len": 156
+        },
+        {
+          "hadith_number": 5773,
+          "ar_len": 802,
+          "en_len": 564
+        },
+        {
+          "hadith_number": 5774,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5775,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5776,
+          "ar_len": 316,
+          "en_len": 136
+        },
+        {
+          "hadith_number": 5777,
+          "ar_len": 1522,
+          "en_len": 1486
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 5775,
+      "db_subject_number": 76,
+      "db_subject_en": "Medicine",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:5775",
+      "sunnah_combined_range": "5773-5775",
+      "sunnah_book": "76 · Medicine",
+      "sunnah_bab_ar": "باب لاَ عَدْوَى",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا أَبُو الْيَمَانِ ، أَخْبَرَنَا شُعَيْبٌ ، عَنِ الزُّهْرِيِّ ، قَالَ حَدَّثَنِي أَبُو سَلَمَةَ بْنُ عَبْدِ الرَّحْمَنِ ، أَنَّ أَبَا هُرَيْرَةَ ، قَالَ إِنَّ رَسُولَ اللَّهِ صلى الله عليه ",
+      "sunnah_english_preview": "> Narrated Abu Huraira: Allah's Messenger (ﷺ) said, \"No 'Adwa.\" Abu Huraira also said: The Prophet (ﷺ) said, \"The cattle suffering from a disease should not be mixed up with healthy cattle (or said \"D",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 5772,
+          "ar_len": 369,
+          "en_len": 156
+        },
+        {
+          "hadith_number": 5773,
+          "ar_len": 802,
+          "en_len": 564
+        },
+        {
+          "hadith_number": 5774,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5775,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 5776,
+          "ar_len": 316,
+          "en_len": 136
+        },
+        {
+          "hadith_number": 5777,
+          "ar_len": 1522,
+          "en_len": 1486
+        },
+        {
+          "hadith_number": 5778,
+          "ar_len": 655,
+          "en_len": 553
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 6074,
+      "db_subject_number": 78,
+      "db_subject_en": "Good Manners and Form (Al-Adab)",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:6075",
+      "sunnah_combined_range": "6073-6075",
+      "sunnah_book": "78 · Good Manners and Form (Al-Adab)",
+      "sunnah_bab_ar": "باب الْهِجْرَةِ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا أَبُو الْيَمَانِ ، أَخْبَرَنَا شُعَيْبٌ ، عَنِ الزُّهْرِيِّ ، قَالَ حَدَّثَنِي عَوْفُ بْنُ مَالِكِ بْنِ الطُّفَيْلِ ـ هُوَ ابْنُ الْحَارِثِ وَهْوَ ابْنُ أَخِي عَائِشَةَ زَوْجِ النَّبِيِّ ",
+      "sunnah_english_preview": "> Narrated `Aisha: (the wife of the Prophet) that she was told that `Abdullah bin Az-Zubair (on hearing that she was selling or giving something as a gift) said, \"By Allah, if `Aisha does not give up ",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 6071,
+          "ar_len": 379,
+          "en_len": 378
+        },
+        {
+          "hadith_number": 6072,
+          "ar_len": 260,
+          "en_len": 142
+        },
+        {
+          "hadith_number": 6073,
+          "ar_len": 2091,
+          "en_len": 2290
+        },
+        {
+          "hadith_number": 6074,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6075,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6076,
+          "ar_len": 328,
+          "en_len": 291
+        },
+        {
+          "hadith_number": 6077,
+          "ar_len": 375,
+          "en_len": 351
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 6075,
+      "db_subject_number": 78,
+      "db_subject_en": "Good Manners and Form (Al-Adab)",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:6075",
+      "sunnah_combined_range": "6073-6075",
+      "sunnah_book": "78 · Good Manners and Form (Al-Adab)",
+      "sunnah_bab_ar": "باب الْهِجْرَةِ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا أَبُو الْيَمَانِ ، أَخْبَرَنَا شُعَيْبٌ ، عَنِ الزُّهْرِيِّ ، قَالَ حَدَّثَنِي عَوْفُ بْنُ مَالِكِ بْنِ الطُّفَيْلِ ـ هُوَ ابْنُ الْحَارِثِ وَهْوَ ابْنُ أَخِي عَائِشَةَ زَوْجِ النَّبِيِّ ",
+      "sunnah_english_preview": "> Narrated `Aisha: (the wife of the Prophet) that she was told that `Abdullah bin Az-Zubair (on hearing that she was selling or giving something as a gift) said, \"By Allah, if `Aisha does not give up ",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 6072,
+          "ar_len": 260,
+          "en_len": 142
+        },
+        {
+          "hadith_number": 6073,
+          "ar_len": 2091,
+          "en_len": 2290
+        },
+        {
+          "hadith_number": 6074,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6075,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6076,
+          "ar_len": 328,
+          "en_len": 291
+        },
+        {
+          "hadith_number": 6077,
+          "ar_len": 375,
+          "en_len": 351
+        },
+        {
+          "hadith_number": 6078,
+          "ar_len": 469,
+          "en_len": 327
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 6174,
+      "db_subject_number": 78,
+      "db_subject_en": "Good Manners and Form (Al-Adab)",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:6175",
+      "sunnah_combined_range": "6173-6175",
+      "sunnah_book": "78 · Good Manners and Form (Al-Adab)",
+      "sunnah_bab_ar": "باب قَوْلِ الرَّجُلِ لِلرَّجُلِ اخْسَأْ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا أَبُو الْيَمَانِ ، أَخْبَرَنَا شُعَيْبٌ ، عَنِ الزُّهْرِيِّ ، قَالَ أَخْبَرَنِي سَالِمُ بْنُ عَبْدِ اللَّهِ ، أَنَّ عَبْدَ اللَّهِ بْنَ عُمَرَ ، أَخْبَرَهُ أَنَّ عُمَرَ بْنَ الْخَطَّابِ ا",
+      "sunnah_english_preview": "> Narrated `Abdullah bin `Umar: `Umar bin Al-Khattab set out with Allah's Messenger (ﷺ), and a group of his companions to Ibn Saiyad. They found him playing with the boys in the fort or near the Hillo",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 6171,
+          "ar_len": 435,
+          "en_len": 339
+        },
+        {
+          "hadith_number": 6172,
+          "ar_len": 277,
+          "en_len": 167
+        },
+        {
+          "hadith_number": 6173,
+          "ar_len": 2622,
+          "en_len": 2442
+        },
+        {
+          "hadith_number": 6174,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6175,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6176,
+          "ar_len": 775,
+          "en_len": 834
+        },
+        {
+          "hadith_number": 6177,
+          "ar_len": 267,
+          "en_len": 234
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    },
+    {
+      "hadith": 6175,
+      "db_subject_number": 78,
+      "db_subject_en": "Good Manners and Form (Al-Adab)",
+      "db_text_ar_empty": true,
+      "db_text_en_empty": true,
+      "sunnah_url": "https://sunnah.com/bukhari:6175",
+      "sunnah_combined_range": "6173-6175",
+      "sunnah_book": "78 · Good Manners and Form (Al-Adab)",
+      "sunnah_bab_ar": "باب قَوْلِ الرَّجُلِ لِلرَّجُلِ اخْسَأْ",
+      "sunnah_arabic_exists_on_page": true,
+      "sunnah_arabic_preview": "> حَدَّثَنَا أَبُو الْيَمَانِ ، أَخْبَرَنَا شُعَيْبٌ ، عَنِ الزُّهْرِيِّ ، قَالَ أَخْبَرَنِي سَالِمُ بْنُ عَبْدِ اللَّهِ ، أَنَّ عَبْدَ اللَّهِ بْنَ عُمَرَ ، أَخْبَرَهُ أَنَّ عُمَرَ بْنَ الْخَطَّابِ ا",
+      "sunnah_english_preview": "> Narrated `Abdullah bin `Umar: `Umar bin Al-Khattab set out with Allah's Messenger (ﷺ), and a group of his companions to Ibn Saiyad. They found him playing with the boys in the fort or near the Hillo",
+      "nearby_db_rows": [
+        {
+          "hadith_number": 6172,
+          "ar_len": 277,
+          "en_len": 167
+        },
+        {
+          "hadith_number": 6173,
+          "ar_len": 2622,
+          "en_len": 2442
+        },
+        {
+          "hadith_number": 6174,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6175,
+          "ar_len": 0,
+          "en_len": 0
+        },
+        {
+          "hadith_number": 6176,
+          "ar_len": 775,
+          "en_len": 834
+        },
+        {
+          "hadith_number": 6177,
+          "ar_len": 267,
+          "en_len": 234
+        },
+        {
+          "hadith_number": 6178,
+          "ar_len": 276,
+          "en_len": 238
+        }
+      ],
+      "note": "Combined multi-number hadith on sunnah.com; DB row exists but Arabic/English empty. Awaiting your authenticated text — will not invent or duplicate."
+    }
+  ]
+}

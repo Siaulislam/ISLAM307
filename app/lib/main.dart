@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/settings/app_settings.dart';
 import 'core/theme/islam307_theme.dart';
 import 'core/router/app_router.dart';
 
@@ -14,11 +15,13 @@ class Islam307App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(appRouterProvider);
+    final settings = ref.watch(appSettingsProvider);
     return MaterialApp.router(
       title: 'ISLAM 307',
       debugShowCheckedModeBanner: false,
       theme: Islam307Theme.light,
       darkTheme: Islam307Theme.dark,
+      themeMode: settings.themeMode,
       routerConfig: router,
     );
   }
