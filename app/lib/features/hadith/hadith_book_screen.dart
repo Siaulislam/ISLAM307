@@ -168,21 +168,12 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
     }
     return ListView.builder(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      itemCount: _topics.length + 1,
+      itemCount: _topics.length,
       itemBuilder: (_, i) {
-        if (i == 0) {
-          return const Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: Text(
-              'Tap a کتاب/topic to open the full Hadith Reader immediately — e.g. کتاب وحی کے بیان میں. No number list.',
-              style: TextStyle(color: Islam307Theme.textMuted, height: 1.45, fontSize: 13),
-            ),
-          );
-        }
-        final topic = _topics[i - 1];
+        final topic = _topics[i];
         final count = topic['hadith_count'] ?? 0;
         final unassigned = topic['is_unassigned'] == true;
-        final indexLabel = unassigned ? '—' : '${topic['number'] ?? i}'.padLeft(2, '0');
+        final indexLabel = unassigned ? '—' : '${topic['number'] ?? (i + 1)}'.padLeft(2, '0');
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Material(

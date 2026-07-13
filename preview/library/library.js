@@ -748,7 +748,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-35`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-36`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -774,7 +774,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-35`);
+    const res = await fetch(`${path}?v=hadith-reader-36`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1543,7 +1543,6 @@ function paintHadithTopics(slug, pack, topics) {
       </div>
       <button type="button" class="hadith-action" data-act="read-all">Read all ▶</button>
     </div>
-    <p class="hadith-list-hint">Tap a topic such as <strong dir="rtl">کتاب وحی کے بیان میں</strong> to open the full Hadith Reader immediately — no number list.</p>
     <div class="hadith-topic-grid" id="hadith-topic-grid"></div>
   `;
   $('hadith-view').onscroll = null;
