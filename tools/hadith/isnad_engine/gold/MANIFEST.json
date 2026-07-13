@@ -1,0 +1,17 @@
+{
+  "title": "Arabic Isnad Engine Gold Standard",
+  "rule": "No parser update may merge unless all Gold Standard tests pass.",
+  "books": {
+    "bukhari": 100,
+    "muslim": 100,
+    "abudawud": 100,
+    "tirmidhi": 100,
+    "nasai": 100,
+    "ibnmajah": 100
+  },
+  "reserved": {
+    "musnad_ahmad": "Parser supports book_slug=ahmad; corpus not in hadith.db yet.",
+    "muwatta": "Covered by regression scan when malik/muwatta rows exist."
+  },
+  "edge_cases": "See tools/hadith/tests/test_isnad_edge_cases.py (patterns 1–20)."
+}

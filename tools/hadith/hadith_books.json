@@ -37,43 +37,80 @@
       "slug": "bukhari",
       "collection": "bukhari",
       "name_en": "Sahih Bukhari",
-      "name_ar": "صحيح البخاري"
+      "name_ar": "صحيح البخاري",
+      "compiler_ar": "محمد بن إسماعيل البخاري",
+      "compiler_en": "Muhammad ibn Ismail al-Bukhari"
     },
     {
       "slug": "muslim",
       "collection": "muslim",
       "name_en": "Sahih Muslim",
-      "name_ar": "صحيح مسلم"
+      "name_ar": "صحيح مسلم",
+      "compiler_ar": "مسلم بن الحجاج",
+      "compiler_en": "Muslim ibn al-Hajjaj"
     },
     {
       "slug": "abudawud",
       "collection": "abudawud",
       "name_en": "Sunan Abu Dawood",
-      "name_ar": "سنن أبي داود"
+      "name_ar": "سنن أبي داود",
+      "compiler_ar": "أبو داود سليمان بن الأشعث",
+      "compiler_en": "Abu Dawud Sulayman ibn al-Ash'ath"
     },
     {
       "slug": "tirmidhi",
       "collection": "tirmidhi",
       "name_en": "Jami' at-Tirmidhi",
-      "name_ar": "جامع الترمذي"
+      "name_ar": "جامع الترمذي",
+      "compiler_ar": "محمد بن عيسى الترمذي",
+      "compiler_en": "Muhammad ibn Isa al-Tirmidhi"
     },
     {
       "slug": "nasai",
       "collection": "nasai",
       "name_en": "Sunan an-Nasa'i",
-      "name_ar": "سنن النسائي"
+      "name_ar": "سنن النسائي",
+      "compiler_ar": "أحمد بن شعيب النسائي",
+      "compiler_en": "Ahmad ibn Shu'ayb al-Nasa'i"
     },
     {
       "slug": "ibnmajah",
       "collection": "ibnmajah",
       "name_en": "Sunan Ibn Majah",
-      "name_ar": "سنن ابن ماجه"
+      "name_ar": "سنن ابن ماجه",
+      "compiler_ar": "محمد بن يزيد ابن ماجه",
+      "compiler_en": "Muhammad ibn Yazid Ibn Majah"
     },
     {
       "slug": "malik",
       "collection": "malik",
       "name_en": "Muwatta Imam Malik",
-      "name_ar": "موطأ الإمام مالك"
+      "name_ar": "موطأ الإمام مالك",
+      "compiler_ar": "مالك بن أنس",
+      "compiler_en": "Malik ibn Anas"
     }
-  ]
+  ],
+  "future_books": [
+    {
+      "slug": "ahmad",
+      "collection": "ahmad",
+      "name_en": "Musnad Ahmad",
+      "name_ar": "مسند أحمد",
+      "compiler_ar": "أحمد بن حنبل",
+      "compiler_en": "Ahmad ibn Hanbal",
+      "notes": "Same Isnad Engine parser; import when authenticated corpus is available."
+    }
+  ],
+  "isnad_engine": {
+    "review_threshold": 95,
+    "rules": [
+      "sanad_only",
+      "compiler_separate",
+      "parallel_ha_separate",
+      "relative_not_name",
+      "narrator_ids",
+      "citation_ready_bio",
+      "manual_review_before_production"
+    ]
+  }
 }

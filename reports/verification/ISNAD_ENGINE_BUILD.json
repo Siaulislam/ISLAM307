@@ -1,0 +1,35 @@
+{
+  "books": {
+    "bukhari": {
+      "sanads": 7596,
+      "review": 417
+    },
+    "muslim": {
+      "sanads": 9113,
+      "review": 1336
+    },
+    "abudawud": {
+      "sanads": 5568,
+      "review": 275
+    },
+    "tirmidhi": {
+      "sanads": 3986,
+      "review": 225
+    },
+    "nasai": {
+      "sanads": 5807,
+      "review": 399
+    },
+    "ibnmajah": {
+      "sanads": 4558,
+      "review": 182
+    },
+    "malik": {
+      "sanads": 1858,
+      "review": 320
+    }
+  },
+  "review_queue": 3154,
+  "sanads": 38486,
+  "narrators": 18318
+}

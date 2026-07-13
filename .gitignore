@@ -33,3 +33,6 @@ Thumbs.db
 
 # GitHub Pages build output
 _site/
+
+# Isnad engine: keep compressed asset only
+app/assets/databases/isnad.db

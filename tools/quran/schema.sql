@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS ayahs (
   text_uthmani TEXT NOT NULL,
   text_tajweed TEXT,
   translation_en TEXT,
+  translation_ur TEXT,
   page_madani INTEGER NOT NULL,
   page_13_line INTEGER,
   juz INTEGER NOT NULL,

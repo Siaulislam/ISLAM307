@@ -1,0 +1,36 @@
+{
+  "module": "quran_translations",
+  "default_language": "ur",
+  "languages": [
+    {
+      "code": "ur",
+      "label_en": "Urdu",
+      "label_native": "اردو",
+      "field": "translation_ur",
+      "direction": "rtl",
+      "font_family": "NotoNastaliqUrdu",
+      "source": "Quran.com translation_id=54 — Maulana Muhammad Junagarhi",
+      "required": true
+    },
+    {
+      "code": "en",
+      "label_en": "English",
+      "label_native": "English",
+      "field": "translation_en",
+      "direction": "ltr",
+      "font_family": null,
+      "source": "Sahih International (Quran.com translation_id=131)",
+      "required": true
+    },
+    {
+      "code": "ar_only",
+      "label_en": "Arabic Only",
+      "label_native": "عربي فقط",
+      "field": null,
+      "direction": "rtl",
+      "font_family": "NotoNaskhArabic",
+      "source": "Tanzil Project Uthmani v1.1",
+      "required": true
+    }
+  ]
+}
