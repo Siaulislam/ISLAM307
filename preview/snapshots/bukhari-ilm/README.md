@@ -1,37 +1,13 @@
 # Bukhari — کتاب علم کے بیان میں — Snapshots
 
-Full hadith-reader style snapshots for Sahih Bukhari **Knowledge** chapter.
-
 - Absolute Bukhari numbers: **59–134**
-- Local numbers: **Hadith 1–76 of 76**
-- Each item has matching HTML + PNG (full Arabic text)
+- Count: **76**
 
-## Download all together
+## Download for local PC
 
-- ZIP: [bukhari-ilm-snapshots.zip](bukhari-ilm-snapshots.zip) (~14 MB)
-- Live: https://siaulislam.github.io/ISLAM307/preview/snapshots/bukhari-ilm/bukhari-ilm-snapshots.zip
+- ZIP: [bukhari-ilm-snapshots.zip](../bukhari-ilm-snapshots.zip)
+- Unzip, then open any `html/hadith-XX.html` in your browser (offline).
 
-## Local path (on this machine / repo)
+## Layout
 
-```
-preview/snapshots/bukhari-ilm/
-  index.html
-  manifest.json
-  html/hadith-01.html … hadith-76.html
-  png/hadith-01.png  … hadith-76.png
-```
-
-Open locally:
-
-```bash
-open preview/snapshots/bukhari-ilm/index.html
-# or
-xdg-open preview/snapshots/bukhari-ilm/index.html
-```
-
-## Regenerate
-
-```bash
-python3 tools/snapshots/generate_bukhari_ilm_html.py
-node tools/snapshots/render_bukhari_ilm_pngs.js
-```
+Matches the Hadith reader: **SAHIH BUKHARI** · Urdu kitab · **Hadith 59 to 134** · Now reading · Arabic text from authenticated DB.

@@ -1,0 +1,368 @@
+{
+  "slug": "bukhari-iman",
+  "kitab_en": "Belief",
+  "kitab_ur": "کتاب ایمان کے بیان میں",
+  "chapter_number": 2,
+  "abs_start": 8,
+  "abs_end": 58,
+  "total": 51,
+  "items": [
+    {
+      "local": 1,
+      "absolute": 8,
+      "html": "html/hadith-01.html",
+      "png": "png/hadith-01.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 2,
+      "absolute": 9,
+      "html": "html/hadith-02.html",
+      "png": "png/hadith-02.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 3,
+      "absolute": 10,
+      "html": "html/hadith-03.html",
+      "png": "png/hadith-03.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 4,
+      "absolute": 11,
+      "html": "html/hadith-04.html",
+      "png": "png/hadith-04.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 5,
+      "absolute": 12,
+      "html": "html/hadith-05.html",
+      "png": "png/hadith-05.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 6,
+      "absolute": 13,
+      "html": "html/hadith-06.html",
+      "png": "png/hadith-06.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 7,
+      "absolute": 14,
+      "html": "html/hadith-07.html",
+      "png": "png/hadith-07.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 8,
+      "absolute": 15,
+      "html": "html/hadith-08.html",
+      "png": "png/hadith-08.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 9,
+      "absolute": 16,
+      "html": "html/hadith-09.html",
+      "png": "png/hadith-09.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 10,
+      "absolute": 17,
+      "html": "html/hadith-10.html",
+      "png": "png/hadith-10.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 11,
+      "absolute": 18,
+      "html": "html/hadith-11.html",
+      "png": "png/hadith-11.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 12,
+      "absolute": 19,
+      "html": "html/hadith-12.html",
+      "png": "png/hadith-12.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 13,
+      "absolute": 20,
+      "html": "html/hadith-13.html",
+      "png": "png/hadith-13.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 14,
+      "absolute": 21,
+      "html": "html/hadith-14.html",
+      "png": "png/hadith-14.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 15,
+      "absolute": 22,
+      "html": "html/hadith-15.html",
+      "png": "png/hadith-15.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 16,
+      "absolute": 23,
+      "html": "html/hadith-16.html",
+      "png": "png/hadith-16.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 17,
+      "absolute": 24,
+      "html": "html/hadith-17.html",
+      "png": "png/hadith-17.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 18,
+      "absolute": 25,
+      "html": "html/hadith-18.html",
+      "png": "png/hadith-18.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 19,
+      "absolute": 26,
+      "html": "html/hadith-19.html",
+      "png": "png/hadith-19.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 20,
+      "absolute": 27,
+      "html": "html/hadith-20.html",
+      "png": "png/hadith-20.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 21,
+      "absolute": 28,
+      "html": "html/hadith-21.html",
+      "png": "png/hadith-21.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 22,
+      "absolute": 29,
+      "html": "html/hadith-22.html",
+      "png": "png/hadith-22.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 23,
+      "absolute": 30,
+      "html": "html/hadith-23.html",
+      "png": "png/hadith-23.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 24,
+      "absolute": 31,
+      "html": "html/hadith-24.html",
+      "png": "png/hadith-24.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 25,
+      "absolute": 32,
+      "html": "html/hadith-25.html",
+      "png": "png/hadith-25.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 26,
+      "absolute": 33,
+      "html": "html/hadith-26.html",
+      "png": "png/hadith-26.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 27,
+      "absolute": 34,
+      "html": "html/hadith-27.html",
+      "png": "png/hadith-27.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 28,
+      "absolute": 35,
+      "html": "html/hadith-28.html",
+      "png": "png/hadith-28.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 29,
+      "absolute": 36,
+      "html": "html/hadith-29.html",
+      "png": "png/hadith-29.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 30,
+      "absolute": 37,
+      "html": "html/hadith-30.html",
+      "png": "png/hadith-30.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 31,
+      "absolute": 38,
+      "html": "html/hadith-31.html",
+      "png": "png/hadith-31.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 32,
+      "absolute": 39,
+      "html": "html/hadith-32.html",
+      "png": "png/hadith-32.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 33,
+      "absolute": 40,
+      "html": "html/hadith-33.html",
+      "png": "png/hadith-33.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 34,
+      "absolute": 41,
+      "html": "html/hadith-34.html",
+      "png": "png/hadith-34.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 35,
+      "absolute": 42,
+      "html": "html/hadith-35.html",
+      "png": "png/hadith-35.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 36,
+      "absolute": 43,
+      "html": "html/hadith-36.html",
+      "png": "png/hadith-36.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 37,
+      "absolute": 44,
+      "html": "html/hadith-37.html",
+      "png": "png/hadith-37.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 38,
+      "absolute": 45,
+      "html": "html/hadith-38.html",
+      "png": "png/hadith-38.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 39,
+      "absolute": 46,
+      "html": "html/hadith-39.html",
+      "png": "png/hadith-39.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 40,
+      "absolute": 47,
+      "html": "html/hadith-40.html",
+      "png": "png/hadith-40.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 41,
+      "absolute": 48,
+      "html": "html/hadith-41.html",
+      "png": "png/hadith-41.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 42,
+      "absolute": 49,
+      "html": "html/hadith-42.html",
+      "png": "png/hadith-42.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 43,
+      "absolute": 50,
+      "html": "html/hadith-43.html",
+      "png": "png/hadith-43.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 44,
+      "absolute": 51,
+      "html": "html/hadith-44.html",
+      "png": "png/hadith-44.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 45,
+      "absolute": 52,
+      "html": "html/hadith-45.html",
+      "png": "png/hadith-45.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 46,
+      "absolute": 53,
+      "html": "html/hadith-46.html",
+      "png": "png/hadith-46.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 47,
+      "absolute": 54,
+      "html": "html/hadith-47.html",
+      "png": "png/hadith-47.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 48,
+      "absolute": 55,
+      "html": "html/hadith-48.html",
+      "png": "png/hadith-48.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 49,
+      "absolute": 56,
+      "html": "html/hadith-49.html",
+      "png": "png/hadith-49.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 50,
+      "absolute": 57,
+      "html": "html/hadith-50.html",
+      "png": "png/hadith-50.png",
+      "title": "Hadith 8 to 58"
+    },
+    {
+      "local": 51,
+      "absolute": 58,
+      "html": "html/hadith-51.html",
+      "png": "png/hadith-51.png",
+      "title": "Hadith 8 to 58"
+    }
+  ]
+}

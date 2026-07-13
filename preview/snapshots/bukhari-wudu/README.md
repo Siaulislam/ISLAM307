@@ -1,15 +1,13 @@
 # Bukhari — کتاب وضو کے بیان میں — Snapshots
 
 - Absolute Bukhari numbers: **135–247**
-- Local numbers: **Hadith 1–113 of 113**
+- Count: **113**
 
-## Download all together
+## Download for local PC
 
-- ZIP: [bukhari-wudu-snapshots.zip](bukhari-wudu-snapshots.zip)
-- Live: https://siaulislam.github.io/ISLAM307/preview/snapshots/bukhari-wudu/bukhari-wudu-snapshots.zip
+- ZIP: [bukhari-wudu-snapshots.zip](../bukhari-wudu-snapshots.zip)
+- Unzip, then open any `html/hadith-XX.html` in your browser (offline).
 
-## Local path
+## Layout
 
-```
-preview/snapshots/bukhari-wudu/
-```
+Matches the Hadith reader: **SAHIH BUKHARI** · Urdu kitab · **Hadith 135 to 247** · Now reading · Arabic text from authenticated DB.
