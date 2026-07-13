@@ -748,7 +748,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-33`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-34`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -774,7 +774,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-33`);
+    const res = await fetch(`${path}?v=hadith-reader-34`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1211,6 +1211,15 @@ function openHadithReader(slug, rows, index) {
   const topicTitle = state.hadithTopicTitle || localizedKitabName(hadith, pack);
   const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
   const progress = Math.round((pos / total) * 100);
+  const rangeFirst = rows[0]?.n;
+  const rangeLast = rows[rows.length - 1]?.n;
+  const inTopicRange = !!state.hadithTopicKey && rangeFirst != null && rangeLast != null;
+  // Topic mode: always show authentic chapter span (e.g. Hadith 135 to 247).
+  // Full-book mode: keep position counter.
+  const countLabel = inTopicRange
+    ? `Hadith ${rangeFirst} to ${rangeLast}`
+    : `Hadith ${pos} of ${total}`;
+  const nowLabel = inTopicRange ? `Now reading Hadith ${hadith.n}` : '';
 
   $('hadith-view').innerHTML = `
     <article class="hadith-reader" id="hadith-reader">
@@ -1225,7 +1234,8 @@ function openHadithReader(slug, rows, index) {
       <div class="hadith-reader-heading">
         <p class="hadith-reader-book">${escapeHtml(pack.book.en)}</p>
         <h2 class="hadith-reader-kitab" dir="rtl">${escapeHtml(topicTitle)}</h2>
-        <p class="hadith-reader-count">Hadith ${pos} of ${total}</p>
+        <p class="hadith-reader-count">${escapeHtml(countLabel)}</p>
+        ${nowLabel ? `<p class="hadith-reader-now">${escapeHtml(nowLabel)}</p>` : ''}
         <div class="hadith-progress" aria-hidden="true"><span style="width:${progress}%"></span></div>
       </div>
 

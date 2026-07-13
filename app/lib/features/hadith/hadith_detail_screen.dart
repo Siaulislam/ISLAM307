@@ -569,6 +569,13 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final progress = pos / total;
     final bookName = h?['book_name']?.toString() ?? 'Hadith';
     final kitab = h?['kitab']?.toString() ?? '';
+    final inScopedReader = _numbers.isNotEmpty && (widget.chapterId != null || widget.unassigned);
+    final rangeLabel = !inScopedReader
+        ? 'Hadith $pos of $total'
+        : (_numbers.length == 1
+            ? 'Hadith ${_numbers.first}'
+            : 'Hadith ${_numbers.first} to ${_numbers.last}');
+    final nowLabel = inScopedReader ? 'Now reading Hadith ${widget.hadithNumber}' : '';
 
     return Scaffold(
       body: SafeArea(
@@ -637,9 +644,16 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                               ],
                               const SizedBox(height: 6),
                               Text(
-                                'Hadith $pos of $total',
+                                rangeLabel,
                                 style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emerald, fontSize: 13),
                               ),
+                              if (nowLabel.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  nowLabel,
+                                  style: const TextStyle(fontWeight: FontWeight.w600, color: Islam307Theme.textMuted, fontSize: 12),
+                                ),
+                              ],
                               const SizedBox(height: 10),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(999),

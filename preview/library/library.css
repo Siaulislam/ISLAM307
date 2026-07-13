@@ -1001,6 +1001,12 @@ body.dark .ayah.is-highlighted { background: #3b3418; }
   font-weight: 800;
   color: var(--emerald);
 }
+.hadith-reader-now {
+  margin: 2px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
 .hadith-progress {
   margin-top: 10px;
   height: 6px;
