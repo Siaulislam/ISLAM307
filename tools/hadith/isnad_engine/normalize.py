@@ -34,6 +34,9 @@ RELATIVE_FORMS: dict[str, str] = {
     "اخاه": "brother",
     "عمه": "uncle_paternal",
     "خاله": "uncle_maternal",
+    "مولاه": "mawla",
+    "مولاها": "mawla",
+    "مولاهم": "mawla",
 }
 
 

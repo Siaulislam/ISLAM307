@@ -43,6 +43,7 @@ class NormalizeTests(unittest.TestCase):
         self.assertTrue(is_relative_token("أخيه"))
         self.assertTrue(is_relative_token("عمه"))
         self.assertTrue(is_relative_token("خاله"))
+        self.assertTrue(is_relative_token("مولاه"))
         self.assertFalse(is_relative_token("هشام بن عروة"))
 
     def test_extract_ibn_parent(self):

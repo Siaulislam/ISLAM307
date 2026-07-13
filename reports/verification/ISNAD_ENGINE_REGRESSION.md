@@ -5,11 +5,11 @@ Parallel `ح` chains stay separate. Confidence < 95% → review queue.
 
 - **PASS** — `bukhari` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈18; parallel_split=4/5
 - **PASS** — `muslim` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈111; parallel_split=36/39
-- **PASS** — `abudawud` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈16; parallel_split=14/14
+- **PASS** — `abudawud` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈17; parallel_split=14/14
 - **PASS** — `tirmidhi` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈8; parallel_split=5/5
-- **PASS** — `nasai` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈22; parallel_split=4/4
-- **PASS** — `ibnmajah` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈9; parallel_split=22/25
-- **PASS** — `malik` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈38; parallel_split=0/0
+- **PASS** — `nasai` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈23; parallel_split=4/4
+- **PASS** — `ibnmajah` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈10; parallel_split=22/25
+- **PASS** — `malik` (300 hadiths): 0 matn leaks, 0 relative-as-name; review_flagged≈39; parallel_split=0/0
 
 ## Spot checks
 
@@ -44,7 +44,7 @@ Parallel `ح` chains stay separate. Confidence < 95% → review queue.
     "n": 300,
     "leaks": 0,
     "relative_as_name": 0,
-    "review": 16,
+    "review": 17,
     "parallel_ok": 14,
     "parallel_seen": 14,
     "ok": true
@@ -62,7 +62,7 @@ Parallel `ح` chains stay separate. Confidence < 95% → review queue.
     "n": 300,
     "leaks": 0,
     "relative_as_name": 0,
-    "review": 22,
+    "review": 23,
     "parallel_ok": 4,
     "parallel_seen": 4,
     "ok": true
@@ -71,7 +71,7 @@ Parallel `ح` chains stay separate. Confidence < 95% → review queue.
     "n": 300,
     "leaks": 0,
     "relative_as_name": 0,
-    "review": 9,
+    "review": 10,
     "parallel_ok": 22,
     "parallel_seen": 25,
     "ok": true
@@ -80,7 +80,7 @@ Parallel `ح` chains stay separate. Confidence < 95% → review queue.
     "n": 300,
     "leaks": 0,
     "relative_as_name": 0,
-    "review": 38,
+    "review": 39,
     "parallel_ok": 0,
     "parallel_seen": 0,
     "ok": true

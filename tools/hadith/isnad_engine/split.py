@@ -13,9 +13,11 @@ if str(_TOOLS) not in sys.path:
 
 from hadith_meta import _cut_isnad_ar, _fold_ar, _strip_diac  # noqa: E402
 
-# Parallel-chain markers used across Bukhari / Muslim / Sunan corpora.
+# Parallel-chain markers: ح / ح وحدثنا / ثم حدثنا / وحدثنا (not واخبرني continuation).
 _PARALLEL_SPLIT = re.compile(
-    r"(?:^|[\s،,;])(?:ح)\s*و?\s*(?=حدثنا|حدثني|اخبرنا|اخبرني)",
+    r"(?:^|[\s،,;])(?:ح)\s*و?\s*(?=حدثنا|حدثني|اخبرنا|اخبرني)"
+    r"|(?:^|[\s،,;])ثم\s+(?=حدثنا|حدثني|اخبرنا|اخبرني)"
+    r"|(?:^|[\s،,;])و(?=حدثنا|حدثني)",
     re.UNICODE,
 )
 

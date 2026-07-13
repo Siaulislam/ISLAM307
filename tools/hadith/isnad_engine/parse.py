@@ -27,7 +27,7 @@ from .normalize import (
     normalize_display_ar,
     relative_type,
 )
-from .matn_guards import looks_like_matn_verb_name
+from .matn_guards import is_story_character, looks_like_matn_verb_name
 from .registry import NarratorRegistry
 from .models import NarratorRef, SanadLink
 
@@ -98,8 +98,10 @@ def _surface_tokens_from_isnad(isnad: str) -> list[tuple[int, str, str | None]]:
         folded_for_peel = _fold_ar(chunk)
         m_peel = re.search(
             r"[،,]?\s*قال(?:ت)?\s*:?\s*"
-            r"(?=قام|جلس|خرج|دخل|اتي|جاء|خطب|بعث|ارسل|نزل|بينا|بينما|كان|"
-            r"سئل|سيل|سال|سالت|رسول|النبي|بلغ|وهو)",
+            r"(?=(?:[فو])?(?:قام|جلس|خرج|دخل|اتي|جاء|خطب|بعث|ارسل|نزل|بينا|بينما|كان|"
+            r"سئل|سيل|سال|سالت|صلي|نهي|امر)|"
+            r"رسول|النبي|بلغ|وهو|نحن|اذا|اذ|"
+            r"ان\s+(?!ه\s+سمع))",
             folded_for_peel,
         )
         if m_peel:
@@ -146,7 +148,7 @@ def parse_links(
     leak = bool(_MATN_LEAK.search(isnad_ar or ""))
 
     for surface, verb in ((t[1], t[2]) for t in tokens):
-        if looks_like_matn_verb_name(surface):
+        if looks_like_matn_verb_name(surface) or is_story_character(surface):
             continue
         rel = relative_type(surface)
         if rel:

@@ -67,7 +67,7 @@ _TX_VERBS = (
 _TX_FIND = re.compile(
     r"(?:^|[\s،,;:]+|(?:قال|قالت)\s*:?\s*)"
     r"و?"
-    r"(?P<verb>حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن)"
+    r"(?P<verb>حدثنا|حدثني|حدثتنا|حدثتني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن)"
     r"(?=[\s،,;:]+|$)",
     re.UNICODE,
 )
@@ -98,7 +98,7 @@ _QALA_NAME = re.compile(
     r"(?P<verb>قال|قالت)\s+"
     r"(?!"
     r"رسول\s*الله|رسول\s*اللہ|النبي|النبی|نبي\s*الله|"
-    r"حدثنا|حدثني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن\s"
+    r"حدثنا|حدثني|حدثتنا|حدثتني|اخبرنا|اخبرني|انبانا|انباني|سمعت|عن\s"
     r")"
     r"(?P<name>[^،,;:\n\"«»‏]{2,80}?)"
     r"(?=\s*(?:،|,|:|و(?:اخبر|حدث|انبان)|$))",
@@ -135,7 +135,10 @@ def _strip_diac(text: str) -> str:
 
 
 def _fold_ar(text: str) -> str:
-    """Fold hamza forms for verb / boundary matching only."""
+    """Fold hamza / alef-maqsura for verb / boundary matching only.
+
+    Display text keeps original ى; search offsets stay 1:1 after this fold.
+    """
     t = _strip_diac(text)
     return (
         t.replace("أ", "ا")
@@ -144,6 +147,7 @@ def _fold_ar(text: str) -> str:
         .replace("ٱ", "ا")
         .replace("ؤ", "و")
         .replace("ئ", "ي")
+        .replace("ى", "ي")
     )
 
 
@@ -280,9 +284,9 @@ def _cut_isnad_ar(text_ar: str) -> str:
         r"قالت\s+رسول\s*الله",
         r"قال\s+كان\s+رسول\s*الله",
         r"كان\s+رسول\s*الله",
-        r"ان\s+رسول\s*الله(?:\s+صلى\s+الله\s+عليه(?:\s+واله)?\s+وسلم)?\s+قال",
-        r"ان\s+النبي(?:\s+صلى\s+الله\s+عليه(?:\s+واله)?\s+وسلم)?\s+قال",
-        r"عن\s+النبي\s+(?:صلى|انه\s+قال|قال)",
+        r"ان\s+رسول\s*الله(?:\s+صلي\s+الله\s+عليه(?:\s+واله)?\s+وسلم)?\s+قال",
+        r"ان\s+النبي(?:\s+صلي\s+الله\s+عليه(?:\s+واله)?\s+وسلم)?\s+قال",
+        r"عن\s+النبي\s+(?:صلي|انه\s+قال|قال)",
         r"قال\s+النبي",
         r"سمعت\s+النبي",
     ):
@@ -290,11 +294,12 @@ def _cut_isnad_ar(text_ar: str) -> str:
         if m:
             add_cut(m.start())
 
-    # --- Matn-opening verbs (+ optional فينا) before Prophet ---
-    # e.g. قال قام فينا رسول الله / خرج رسول الله / خطب رسول الله
+    # --- Matn-opening verbs (+ optional ف/و and فينا) before Prophet ---
+    # Plain text is ى-folded to ي, so use ي forms (اتي/صلي/نهي).
     matn_verbs = (
-        r"قام|جلس|خرج|دخل|اتي|جاء|ذهب|راي|خطب|خطبنا|قرا|كتب|تكلم|دعا|"
-        r"سال|سالت|سيل|سئل|اجاب|بعث|ارسل|نزل|بينا|بينما|كان|كنت|كنا|دخلنا|خرجنا"
+        r"(?:[فو])?(?:قام|جلس|خرج|دخل|اتي|جاء|ذهب|راي|خطب|خطبنا|قرا|كتب|تكلم|دعا|"
+        r"سال|سالت|سيل|سئل|اجاب|بعث|ارسل|نزل|بينا|بينما|كان|كنت|كنا|دخلنا|خرجنا|"
+        r"صلي|نهي|امر)"
     )
     for m in re.finditer(
         rf"(?:^|[\s،,;:])(?:{matn_verbs})"
@@ -302,7 +307,6 @@ def _cut_isnad_ar(text_ar: str) -> str:
         rf"\s+(?:رسول\s*الله|النبي\b|نبي\s*الله)",
         plain,
     ):
-        # Cut at the verb (skip leading whitespace from the non-capturing prefix)
         pos = m.start()
         while pos < len(plain) and plain[pos] in " \t،,;:":
             pos += 1
@@ -322,10 +326,10 @@ def _cut_isnad_ar(text_ar: str) -> str:
         add_cut(m.start())
 
     # --- Immediate story subject only (هرقل / أبو سفيان / الحارث + story verb) ---
-    # Do NOT match Companion sanad links like أن ابن عباس أخبره أن هرقل أرسل.
     for m in re.finditer(
         rf"\sان\s+"
-        rf"(?:هرقل|ابا\s+سفيان|ابو\s+سفيان|الحارث\b)[^\n،]{{0,40}}?"
+        rf"(?:هرقل|ابا\s+سفيان|ابو\s+سفيان|الحارث\b|كسري|النجاشي|المقوقس)"
+        rf"[^\n،]{{0,40}}?"
         rf"\s*[،,]?\s*{story_verb}",
         plain,
     ):
@@ -351,16 +355,18 @@ def _cut_isnad_ar(text_ar: str) -> str:
     ):
         add_cut(m.start("tail"))
 
-    # --- قال / قالت: opens matn when followed by action verb or Prophet ---
+    # --- قال / قالت: opens matn when followed by action / إن / إذا / نحن / Prophet ---
     for m in re.finditer(
-        r"قال(?:ت)?\s*:?\s*(?!حدثنا|حدثني|اخبرنا|اخبرني|سمعت|انبانا|انباني)",
+        r"قال(?:ت)?\s*:?\s*(?!حدثنا|حدثني|حدثتنا|حدثتني|اخبرنا|اخبرني|سمعت|انبانا|انباني)",
         plain,
     ):
         ahead = plain[m.end() : m.end() + 60]
         if re.match(
             rf"\s*(?:(?:{matn_verbs})\b|سمعت\s+رسول|رسول\s*الله|النبي\b|"
             r"ان\s+الحارث|ان\s+ابا\s+سفيان|ان\s+هرقل|"
-            r"بلغ\s+|وهو\s+|"
+            r"بلغ\s+|وهو\s+|نحن\b|"
+            r"اذا\b|اذ\b|"
+            r"ان\s+(?!ه\s+سمع)(?!ها\s+سمعت)(?!\s*[^\n]{2,40}?\s+(?:اخبره|حدثه))|"
             r"اخبرني\s+(?:ابو|ابا)\s+سفيان)",
             ahead,
         ):
@@ -393,14 +399,19 @@ def _is_matn_noise(name: str) -> bool:
         return True
     if re.search(
         r"^(?:في|وهو|فقال|بينا|بينما|فترة|حديثه|نحوه|له\s+سالتك|سالتك|قالوا|"
-        r"ابو\s+سفيان|ابا\s+سفيان|هرقل|"
-        r"قام|جلس|خرج|دخل|خطب|بعث|ارسل|نزل|كان|سئل)\b",
+        r"ابو\s+سفيان|ابا\s+سفيان|هرقل|كسري|النجاشي|المقوقس|"
+        r"ابو\s+جهل|ابا\s+جهل|ابو\s+لهب|ابا\s+لهب|ابليس|شيطان|"
+        r"اميه\s+بن\s+خلف|عتبه\s+بن\s+ربيعه|"
+        r"قام|جلس|خرج|دخل|خطب|بعث|ارسل|نزل|كان|سئل|صلي|نهي|امر|اتي|جاء)\b",
         n,
     ):
         return True
     if re.search(r"(?:سالتك|يزعم|ارسل|دعا|يزيدون|ينقصون|فزعمت|بشاشته|القريش|الشام|قام\s+فينا)", n):
         return True
-    if re.search(r"^(?:هرقل|الملك|اصحابه|ملك|فينا)$", n):
+    if re.search(
+        r"^(?:هرقل|الملك|اصحابه|ملك|فينا|رجل|امراة|قوم|ناس|الحارث\s+بن\s+هشام)$",
+        n,
+    ):
         return True
     # Long multi-clause blobs (not ordinary ibn-chains).
     if len(n.split()) > 12:
@@ -514,8 +525,10 @@ def _extract_names_from_ar_isnad(isnad: str) -> list[str]:
         folded_for_peel = _fold_ar(chunk)
         m_peel = re.search(
             r"[،,]?\s*قال(?:ت)?\s*:?\s*"
-            r"(?=قام|جلس|خرج|دخل|اتي|جاء|خطب|بعث|ارسل|نزل|بينا|بينما|كان|"
-            r"سئل|سيل|سال|سالت|رسول|النبي|بلغ|وهو)",
+            r"(?=(?:[فو])?(?:قام|جلس|خرج|دخل|اتي|جاء|خطب|بعث|ارسل|نزل|بينا|بينما|كان|"
+            r"سئل|سيل|سال|سالت|صلي|نهي|امر)|"
+            r"رسول|النبي|بلغ|وهو|نحن|اذا|اذ|"
+            r"ان\s+(?!ه\s+سمع))",
             folded_for_peel,
         )
         if m_peel:
