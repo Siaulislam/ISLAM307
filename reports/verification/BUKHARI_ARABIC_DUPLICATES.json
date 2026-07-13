@@ -1,10 +1,21 @@
 {
   "total": 7563,
   "empty_arabic": 0,
-  "exact_duplicate_groups": 292,
-  "hadiths_involved": 600,
-  "note": "After fixing 272-273 and 521-522 from BN iHadis split",
+  "exact_duplicate_groups": 294,
+  "hadiths_involved": 604,
+  "note": "Duplicates retained where iHadis EN also has identical Arabic. See BUKHARI_IHADIS_DUP_VERIFY.md",
   "groups": [
+    {
+      "numbers": [
+        272,
+        273
+      ],
+      "count": 2,
+      "chapters": [
+        "Bathing (Ghusl)"
+      ],
+      "arabic_length": 559
+    },
     {
       "numbers": [
         299,
@@ -13,7 +24,7 @@
       ],
       "count": 3,
       "chapters": [
-        6
+        "Menstrual Periods"
       ],
       "arabic_length": 375
     },
@@ -24,7 +35,7 @@
       ],
       "count": 2,
       "chapters": [
-        6
+        "Menstrual Periods"
       ],
       "arabic_length": 355
     },
@@ -35,7 +46,7 @@
       ],
       "count": 2,
       "chapters": [
-        8
+        "Prayers (Salat)"
       ],
       "arabic_length": 564
     },
@@ -46,7 +57,7 @@
       ],
       "count": 2,
       "chapters": [
-        8
+        "Prayers (Salat)"
       ],
       "arabic_length": 477
     },
@@ -57,7 +68,7 @@
       ],
       "count": 2,
       "chapters": [
-        8
+        "Prayers (Salat)"
       ],
       "arabic_length": 504
     },
@@ -68,7 +79,7 @@
       ],
       "count": 2,
       "chapters": [
-        8
+        "Prayers (Salat)"
       ],
       "arabic_length": 496
     },
@@ -79,7 +90,7 @@
       ],
       "count": 2,
       "chapters": [
-        8
+        "Prayers (Salat)"
       ],
       "arabic_length": 632
     },
@@ -90,9 +101,20 @@
       ],
       "count": 2,
       "chapters": [
-        8
+        "Prayers (Salat)"
       ],
       "arabic_length": 189
+    },
+    {
+      "numbers": [
+        521,
+        522
+      ],
+      "count": 2,
+      "chapters": [
+        "Times of the Prayers"
+      ],
+      "arabic_length": 1136
     },
     {
       "numbers": [
@@ -101,7 +123,7 @@
       ],
       "count": 2,
       "chapters": [
-        9
+        "Times of the Prayers"
       ],
       "arabic_length": 460
     },
@@ -112,7 +134,7 @@
       ],
       "count": 2,
       "chapters": [
-        9
+        "Times of the Prayers"
       ],
       "arabic_length": 564
     },
@@ -123,7 +145,7 @@
       ],
       "count": 2,
       "chapters": [
-        9
+        "Times of the Prayers"
       ],
       "arabic_length": 1712
     },
@@ -134,7 +156,7 @@
       ],
       "count": 2,
       "chapters": [
-        9
+        "Times of the Prayers"
       ],
       "arabic_length": 509
     },
@@ -145,7 +167,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 556
     },
@@ -157,7 +179,7 @@
       ],
       "count": 3,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 754
     },
@@ -168,7 +190,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 776
     },
@@ -179,7 +201,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 445
     },
@@ -190,7 +212,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 825
     },
@@ -201,7 +223,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 839
     },
@@ -212,7 +234,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 1071
     },
@@ -223,7 +245,7 @@
       ],
       "count": 2,
       "chapters": [
-        10
+        "Call to Prayers (Adhaan)"
       ],
       "arabic_length": 1531
     },
@@ -234,7 +256,7 @@
       ],
       "count": 2,
       "chapters": [
-        11
+        "Friday Prayer"
       ],
       "arabic_length": 708
     },
@@ -245,7 +267,7 @@
       ],
       "count": 2,
       "chapters": [
-        13
+        "The Two Festivals (Eids)"
       ],
       "arabic_length": 952
     },
@@ -258,7 +280,7 @@
       ],
       "count": 4,
       "chapters": [
-        13
+        "The Two Festivals (Eids)"
       ],
       "arabic_length": 1193
     },
@@ -269,7 +291,7 @@
       ],
       "count": 2,
       "chapters": [
-        13
+        "The Two Festivals (Eids)"
       ],
       "arabic_length": 771
     },
@@ -280,7 +302,7 @@
       ],
       "count": 2,
       "chapters": [
-        15
+        "Invoking Allah for Rain (Istisqaa)"
       ],
       "arabic_length": 642
     },
@@ -291,7 +313,7 @@
       ],
       "count": 2,
       "chapters": [
-        16
+        "Eclipses"
       ],
       "arabic_length": 1329
     },
@@ -302,7 +324,7 @@
       ],
       "count": 2,
       "chapters": [
-        16
+        "Eclipses"
       ],
       "arabic_length": 1359
     },
@@ -313,7 +335,7 @@
       ],
       "count": 2,
       "chapters": [
-        16
+        "Eclipses"
       ],
       "arabic_length": 1192
     },
@@ -324,7 +346,7 @@
       ],
       "count": 2,
       "chapters": [
-        18
+        "Shortening the Prayers (At-Taqseer)"
       ],
       "arabic_length": 1253
     },
@@ -335,7 +357,7 @@
       ],
       "count": 2,
       "chapters": [
-        19
+        "Prayer at Night (Tahajjud)"
       ],
       "arabic_length": 1127
     },
@@ -347,7 +369,7 @@
       ],
       "count": 3,
       "chapters": [
-        19
+        "Prayer at Night (Tahajjud)"
       ],
       "arabic_length": 1027
     },
@@ -358,7 +380,7 @@
       ],
       "count": 2,
       "chapters": [
-        19
+        "Prayer at Night (Tahajjud)"
       ],
       "arabic_length": 961
     },
@@ -369,7 +391,7 @@
       ],
       "count": 2,
       "chapters": [
-        19
+        "Prayer at Night (Tahajjud)"
       ],
       "arabic_length": 583
     },
@@ -380,7 +402,7 @@
       ],
       "count": 2,
       "chapters": [
-        19
+        "Prayer at Night (Tahajjud)"
       ],
       "arabic_length": 3093
     },
@@ -391,7 +413,7 @@
       ],
       "count": 2,
       "chapters": [
-        20
+        "Virtues of Prayer at Masjid Makkah and Madinah"
       ],
       "arabic_length": 845
     },
@@ -402,7 +424,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 1545
     },
@@ -413,7 +435,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 630
     },
@@ -424,7 +446,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 824
     },
@@ -435,7 +457,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 892
     },
@@ -447,7 +469,7 @@
       ],
       "count": 3,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 2051
     },
@@ -458,7 +480,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 802
     },
@@ -469,7 +491,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 508
     },
@@ -480,7 +502,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 568
     },
@@ -491,7 +513,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 1071
     },
@@ -502,7 +524,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 2183
     },
@@ -513,7 +535,7 @@
       ],
       "count": 2,
       "chapters": [
-        23
+        "Funerals (Al-Janaa'iz)"
       ],
       "arabic_length": 708
     },
@@ -524,7 +546,7 @@
       ],
       "count": 2,
       "chapters": [
-        24
+        "Obligatory Charity Tax (Zakat)"
       ],
       "arabic_length": 1054
     },
@@ -535,7 +557,7 @@
       ],
       "count": 2,
       "chapters": [
-        24
+        "Obligatory Charity Tax (Zakat)"
       ],
       "arabic_length": 1531
     },
@@ -546,7 +568,7 @@
       ],
       "count": 2,
       "chapters": [
-        24
+        "Obligatory Charity Tax (Zakat)"
       ],
       "arabic_length": 486
     },
@@ -557,7 +579,7 @@
       ],
       "count": 2,
       "chapters": [
-        24
+        "Obligatory Charity Tax (Zakat)"
       ],
       "arabic_length": 605
     },
@@ -568,7 +590,7 @@
       ],
       "count": 2,
       "chapters": [
-        24
+        "Obligatory Charity Tax (Zakat)"
       ],
       "arabic_length": 1078
     },
@@ -579,7 +601,7 @@
       ],
       "count": 2,
       "chapters": [
-        24
+        "Obligatory Charity Tax (Zakat)"
       ],
       "arabic_length": 2058
     },
@@ -590,7 +612,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 398
     },
@@ -601,7 +623,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 506
     },
@@ -612,7 +634,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 677
     },
@@ -623,7 +645,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 597
     },
@@ -634,7 +656,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 507
     },
@@ -645,7 +667,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 1586
     },
@@ -656,7 +678,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 608
     },
@@ -667,7 +689,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 877
     },
@@ -678,7 +700,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 512
     },
@@ -689,7 +711,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 442
     },
@@ -700,7 +722,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 479
     },
@@ -711,7 +733,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 330
     },
@@ -722,7 +744,7 @@
       ],
       "count": 2,
       "chapters": [
-        25
+        "Hajj (Pilgrimage)"
       ],
       "arabic_length": 1151
     },
@@ -733,7 +755,7 @@
       ],
       "count": 2,
       "chapters": [
-        26
+        "`Umrah (Minor pilgrimage)"
       ],
       "arabic_length": 951
     },
@@ -744,7 +766,7 @@
       ],
       "count": 2,
       "chapters": [
-        26
+        "`Umrah (Minor pilgrimage)"
       ],
       "arabic_length": 567
     },
@@ -755,7 +777,7 @@
       ],
       "count": 2,
       "chapters": [
-        26
+        "`Umrah (Minor pilgrimage)"
       ],
       "arabic_length": 599
     },
@@ -766,7 +788,7 @@
       ],
       "count": 2,
       "chapters": [
-        30
+        "Fasting"
       ],
       "arabic_length": 476
     },
@@ -777,7 +799,7 @@
       ],
       "count": 2,
       "chapters": [
-        30
+        "Fasting"
       ],
       "arabic_length": 1417
     },
@@ -788,9 +810,9 @@
       ],
       "count": 2,
       "chapters": [
-        30
+        "Fasting"
       ],
-      "arabic_length": 503
+      "arabic_length": 504
     },
     {
       "numbers": [
@@ -799,7 +821,7 @@
       ],
       "count": 2,
       "chapters": [
-        30
+        "Fasting"
       ],
       "arabic_length": 342
     },
@@ -810,7 +832,7 @@
       ],
       "count": 2,
       "chapters": [
-        30
+        "Fasting"
       ],
       "arabic_length": 321
     },
@@ -821,7 +843,7 @@
       ],
       "count": 2,
       "chapters": [
-        33
+        "Retiring to a Mosque for Remembrance of Allah (I'tikaf)"
       ],
       "arabic_length": 310
     },
@@ -832,7 +854,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 756
     },
@@ -843,7 +865,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 511
     },
@@ -854,7 +876,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 467
     },
@@ -865,7 +887,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 406
     },
@@ -876,7 +898,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 715
     },
@@ -887,7 +909,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 393
     },
@@ -898,7 +920,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 547
     },
@@ -909,7 +931,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 662
     },
@@ -920,8 +942,8 @@
       ],
       "count": 2,
       "chapters": [
-        34,
-        72
+        "Hunting, Slaughtering",
+        "Sales and Trade"
       ],
       "arabic_length": 449
     },
@@ -932,7 +954,7 @@
       ],
       "count": 2,
       "chapters": [
-        34
+        "Sales and Trade"
       ],
       "arabic_length": 442
     },
@@ -943,7 +965,7 @@
       ],
       "count": 2,
       "chapters": [
-        35
+        "Sales in which a Price is paid for Goods to be Delivered Later (As-Salam)"
       ],
       "arabic_length": 679
     },
@@ -954,7 +976,7 @@
       ],
       "count": 2,
       "chapters": [
-        35
+        "Sales in which a Price is paid for Goods to be Delivered Later (As-Salam)"
       ],
       "arabic_length": 457
     },
@@ -965,7 +987,7 @@
       ],
       "count": 2,
       "chapters": [
-        35
+        "Sales in which a Price is paid for Goods to be Delivered Later (As-Salam)"
       ],
       "arabic_length": 533
     },
@@ -976,7 +998,7 @@
       ],
       "count": 2,
       "chapters": [
-        35
+        "Sales in which a Price is paid for Goods to be Delivered Later (As-Salam)"
       ],
       "arabic_length": 657
     },
@@ -987,7 +1009,7 @@
       ],
       "count": 2,
       "chapters": [
-        37
+        "Hiring"
       ],
       "arabic_length": 866
     },
@@ -998,7 +1020,7 @@
       ],
       "count": 2,
       "chapters": [
-        37
+        "Hiring"
       ],
       "arabic_length": 563
     },
@@ -1009,7 +1031,7 @@
       ],
       "count": 2,
       "chapters": [
-        40
+        "Representation, Authorization, Business by Proxy"
       ],
       "arabic_length": 629
     },
@@ -1020,7 +1042,7 @@
       ],
       "count": 2,
       "chapters": [
-        40
+        "Representation, Authorization, Business by Proxy"
       ],
       "arabic_length": 1742
     },
@@ -1031,7 +1053,7 @@
       ],
       "count": 2,
       "chapters": [
-        40
+        "Representation, Authorization, Business by Proxy"
       ],
       "arabic_length": 284
     },
@@ -1042,7 +1064,7 @@
       ],
       "count": 2,
       "chapters": [
-        41
+        "Agriculture"
       ],
       "arabic_length": 637
     },
@@ -1053,7 +1075,7 @@
       ],
       "count": 2,
       "chapters": [
-        41
+        "Agriculture"
       ],
       "arabic_length": 690
     },
@@ -1064,7 +1086,7 @@
       ],
       "count": 2,
       "chapters": [
-        41
+        "Agriculture"
       ],
       "arabic_length": 688
     },
@@ -1075,7 +1097,7 @@
       ],
       "count": 2,
       "chapters": [
-        42
+        "Distribution of Water"
       ],
       "arabic_length": 787
     },
@@ -1086,7 +1108,7 @@
       ],
       "count": 2,
       "chapters": [
-        42
+        "Distribution of Water"
       ],
       "arabic_length": 951
     },
@@ -1097,7 +1119,7 @@
       ],
       "count": 2,
       "chapters": [
-        42
+        "Distribution of Water"
       ],
       "arabic_length": 479
     },
@@ -1108,7 +1130,7 @@
       ],
       "count": 2,
       "chapters": [
-        43
+        "Loans, Payment of Loans, Freezing of Property, Bankruptcy"
       ],
       "arabic_length": 1565
     },
@@ -1119,7 +1141,7 @@
       ],
       "count": 2,
       "chapters": [
-        44
+        "Khusoomaat"
       ],
       "arabic_length": 822
     },
@@ -1130,7 +1152,7 @@
       ],
       "count": 2,
       "chapters": [
-        47
+        "Partnership"
       ],
       "arabic_length": 534
     },
@@ -1141,7 +1163,7 @@
       ],
       "count": 2,
       "chapters": [
-        47
+        "Partnership"
       ],
       "arabic_length": 827
     },
@@ -1152,7 +1174,7 @@
       ],
       "count": 2,
       "chapters": [
-        47
+        "Partnership"
       ],
       "arabic_length": 1317
     },
@@ -1163,7 +1185,7 @@
       ],
       "count": 2,
       "chapters": [
-        48
+        "Mortgaging"
       ],
       "arabic_length": 1179
     },
@@ -1174,7 +1196,7 @@
       ],
       "count": 2,
       "chapters": [
-        49
+        "Manumission of Slaves"
       ],
       "arabic_length": 1669
     },
@@ -1185,7 +1207,7 @@
       ],
       "count": 2,
       "chapters": [
-        49
+        "Manumission of Slaves"
       ],
       "arabic_length": 392
     },
@@ -1196,7 +1218,7 @@
       ],
       "count": 2,
       "chapters": [
-        51
+        "Gifts"
       ],
       "arabic_length": 681
     },
@@ -1207,7 +1229,7 @@
       ],
       "count": 2,
       "chapters": [
-        51
+        "Gifts"
       ],
       "arabic_length": 1666
     },
@@ -1218,7 +1240,7 @@
       ],
       "count": 2,
       "chapters": [
-        51
+        "Gifts"
       ],
       "arabic_length": 513
     },
@@ -1229,7 +1251,7 @@
       ],
       "count": 2,
       "chapters": [
-        52
+        "Witnesses"
       ],
       "arabic_length": 849
     },
@@ -1240,7 +1262,7 @@
       ],
       "count": 2,
       "chapters": [
-        52
+        "Witnesses"
       ],
       "arabic_length": 964
     },
@@ -1251,7 +1273,7 @@
       ],
       "count": 2,
       "chapters": [
-        52
+        "Witnesses"
       ],
       "arabic_length": 603
     },
@@ -1262,7 +1284,7 @@
       ],
       "count": 2,
       "chapters": [
-        53
+        "Peacemaking"
       ],
       "arabic_length": 965
     },
@@ -1273,7 +1295,7 @@
       ],
       "count": 2,
       "chapters": [
-        54
+        "Conditions"
       ],
       "arabic_length": 1335
     },
@@ -1284,7 +1306,7 @@
       ],
       "count": 2,
       "chapters": [
-        54
+        "Conditions"
       ],
       "arabic_length": 1258
     },
@@ -1295,7 +1317,7 @@
       ],
       "count": 2,
       "chapters": [
-        54
+        "Conditions"
       ],
       "arabic_length": 14114
     },
@@ -1306,7 +1328,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 1383
     },
@@ -1317,7 +1339,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 986
     },
@@ -1328,7 +1350,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 1747
     },
@@ -1339,7 +1361,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 1025
     },
@@ -1350,7 +1372,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 924
     },
@@ -1361,7 +1383,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 981
     },
@@ -1372,7 +1394,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 6691
     },
@@ -1383,7 +1405,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 646
     },
@@ -1394,7 +1416,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 366
     },
@@ -1405,7 +1427,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 779
     },
@@ -1416,7 +1438,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 1114
     },
@@ -1427,7 +1449,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 389
     },
@@ -1438,7 +1460,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 428
     },
@@ -1449,7 +1471,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 1079
     },
@@ -1460,7 +1482,7 @@
       ],
       "count": 2,
       "chapters": [
-        56
+        "Fighting for the Cause of Allah (Jihaad)"
       ],
       "arabic_length": 396
     },
@@ -1471,7 +1493,7 @@
       ],
       "count": 2,
       "chapters": [
-        57
+        "One-fifth of Booty to the Cause of Allah (Khumus)"
       ],
       "arabic_length": 1663
     },
@@ -1482,7 +1504,7 @@
       ],
       "count": 2,
       "chapters": [
-        57
+        "One-fifth of Booty to the Cause of Allah (Khumus)"
       ],
       "arabic_length": 1767
     },
@@ -1493,7 +1515,7 @@
       ],
       "count": 2,
       "chapters": [
-        58
+        "Jizyah and Mawaada'ah"
       ],
       "arabic_length": 651
     },
@@ -1504,7 +1526,7 @@
       ],
       "count": 2,
       "chapters": [
-        58
+        "Jizyah and Mawaada'ah"
       ],
       "arabic_length": 2354
     },
@@ -1515,7 +1537,7 @@
       ],
       "count": 2,
       "chapters": [
-        58
+        "Jizyah and Mawaada'ah"
       ],
       "arabic_length": 1864
     },
@@ -1526,7 +1548,7 @@
       ],
       "count": 2,
       "chapters": [
-        58
+        "Jizyah and Mawaada'ah"
       ],
       "arabic_length": 333
     },
@@ -1537,9 +1559,9 @@
       ],
       "count": 2,
       "chapters": [
-        59
+        "Beginning of Creation"
       ],
-      "arabic_length": 468
+      "arabic_length": 469
     },
     {
       "numbers": [
@@ -1548,7 +1570,7 @@
       ],
       "count": 2,
       "chapters": [
-        59
+        "Beginning of Creation"
       ],
       "arabic_length": 503
     },
@@ -1559,7 +1581,7 @@
       ],
       "count": 2,
       "chapters": [
-        59
+        "Beginning of Creation"
       ],
       "arabic_length": 674
     },
@@ -1570,7 +1592,7 @@
       ],
       "count": 2,
       "chapters": [
-        59
+        "Beginning of Creation"
       ],
       "arabic_length": 622
     },
@@ -1581,7 +1603,7 @@
       ],
       "count": 2,
       "chapters": [
-        59
+        "Beginning of Creation"
       ],
       "arabic_length": 267
     },
@@ -1592,7 +1614,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 776
     },
@@ -1603,7 +1625,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 583
     },
@@ -1614,7 +1636,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 1139
     },
@@ -1625,7 +1647,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 959
     },
@@ -1636,7 +1658,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 1004
     },
@@ -1648,7 +1670,7 @@
       ],
       "count": 3,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 1513
     },
@@ -1659,7 +1681,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 516
     },
@@ -1670,7 +1692,7 @@
       ],
       "count": 2,
       "chapters": [
-        60
+        "Prophets"
       ],
       "arabic_length": 508
     },
@@ -1681,7 +1703,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 498
     },
@@ -1692,9 +1714,9 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
-      "arabic_length": 508
+      "arabic_length": 510
     },
     {
       "numbers": [
@@ -1703,7 +1725,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 771
     },
@@ -1714,7 +1736,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 705
     },
@@ -1726,9 +1748,9 @@
       ],
       "count": 3,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
-      "arabic_length": 699
+      "arabic_length": 701
     },
     {
       "numbers": [
@@ -1737,7 +1759,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 855
     },
@@ -1748,7 +1770,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 1205
     },
@@ -1759,7 +1781,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 1069
     },
@@ -1770,7 +1792,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 556
     },
@@ -1781,7 +1803,7 @@
       ],
       "count": 2,
       "chapters": [
-        61
+        "Virtues and Merits of the Prophet (pbuh) and his Companions"
       ],
       "arabic_length": 923
     },
@@ -1792,7 +1814,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 2544
     },
@@ -1803,7 +1825,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 679
     },
@@ -1814,7 +1836,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 1237
     },
@@ -1825,7 +1847,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 556
     },
@@ -1836,7 +1858,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 305
     },
@@ -1847,7 +1869,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 1079
     },
@@ -1858,7 +1880,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 247
     },
@@ -1869,7 +1891,7 @@
       ],
       "count": 2,
       "chapters": [
-        62
+        "Companions of the Prophet"
       ],
       "arabic_length": 498
     },
@@ -1880,7 +1902,7 @@
       ],
       "count": 2,
       "chapters": [
-        63
+        "Merits of the Helpers in Madinah (Ansaar)"
       ],
       "arabic_length": 846
     },
@@ -1891,7 +1913,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 893
     },
@@ -1902,7 +1924,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 528
     },
@@ -1913,7 +1935,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 448
     },
@@ -1924,7 +1946,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 298
     },
@@ -1935,7 +1957,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 4663
     },
@@ -1946,7 +1968,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 556
     },
@@ -1957,7 +1979,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1832
     },
@@ -1968,7 +1990,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 256
     },
@@ -1979,7 +2001,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1013
     },
@@ -1990,7 +2012,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 558
     },
@@ -2001,7 +2023,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1137
     },
@@ -2012,7 +2034,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1302
     },
@@ -2023,7 +2045,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1540
     },
@@ -2034,7 +2056,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 324
     },
@@ -2045,7 +2067,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 278
     },
@@ -2056,7 +2078,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 3053
     },
@@ -2067,7 +2089,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 618
     },
@@ -2078,9 +2100,9 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
-      "arabic_length": 353
+      "arabic_length": 354
     },
     {
       "numbers": [
@@ -2089,7 +2111,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 667
     },
@@ -2100,7 +2122,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 700
     },
@@ -2111,9 +2133,9 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
-      "arabic_length": 530
+      "arabic_length": 531
     },
     {
       "numbers": [
@@ -2122,7 +2144,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 506
     },
@@ -2133,7 +2155,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1899
     },
@@ -2144,7 +2166,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 928
     },
@@ -2155,7 +2177,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1362
     },
@@ -2166,7 +2188,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1181
     },
@@ -2177,7 +2199,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 742
     },
@@ -2188,7 +2210,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1349
     },
@@ -2199,7 +2221,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 767
     },
@@ -2210,7 +2232,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1629
     },
@@ -2221,7 +2243,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1139
     },
@@ -2232,7 +2254,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 576
     },
@@ -2243,7 +2265,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 430
     },
@@ -2255,7 +2277,7 @@
       ],
       "count": 3,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 1701
     },
@@ -2267,7 +2289,7 @@
       ],
       "count": 3,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 314
     },
@@ -2278,7 +2300,7 @@
       ],
       "count": 2,
       "chapters": [
-        64
+        "Military Expeditions led by the Prophet (pbuh) (Al-Maghaazi)"
       ],
       "arabic_length": 257
     },
@@ -2290,7 +2312,7 @@
       ],
       "count": 3,
       "chapters": [
-        65
+        "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))"
       ],
       "arabic_length": 2012
     },
@@ -2301,7 +2323,7 @@
       ],
       "count": 2,
       "chapters": [
-        65
+        "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))"
       ],
       "arabic_length": 788
     },
@@ -2312,7 +2334,7 @@
       ],
       "count": 2,
       "chapters": [
-        65
+        "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))"
       ],
       "arabic_length": 673
     },
@@ -2323,7 +2345,7 @@
       ],
       "count": 2,
       "chapters": [
-        65
+        "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))"
       ],
       "arabic_length": 994
     },
@@ -2334,7 +2356,7 @@
       ],
       "count": 2,
       "chapters": [
-        65
+        "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))"
       ],
       "arabic_length": 750
     },
@@ -2345,7 +2367,7 @@
       ],
       "count": 2,
       "chapters": [
-        65
+        "Prophetic Commentary on the Qur'an (Tafseer of the Prophet (pbuh))"
       ],
       "arabic_length": 684
     },
@@ -2356,9 +2378,9 @@
       ],
       "count": 2,
       "chapters": [
-        66
+        "Virtues of the Qur'an"
       ],
-      "arabic_length": 284
+      "arabic_length": 285
     },
     {
       "numbers": [
@@ -2367,7 +2389,7 @@
       ],
       "count": 2,
       "chapters": [
-        67
+        "Wedlock, Marriage (Nikaah)"
       ],
       "arabic_length": 448
     },
@@ -2378,7 +2400,7 @@
       ],
       "count": 2,
       "chapters": [
-        67
+        "Wedlock, Marriage (Nikaah)"
       ],
       "arabic_length": 302
     },
@@ -2389,7 +2411,7 @@
       ],
       "count": 2,
       "chapters": [
-        67
+        "Wedlock, Marriage (Nikaah)"
       ],
       "arabic_length": 410
     },
@@ -2400,7 +2422,7 @@
       ],
       "count": 2,
       "chapters": [
-        67
+        "Wedlock, Marriage (Nikaah)"
       ],
       "arabic_length": 496
     },
@@ -2411,7 +2433,7 @@
       ],
       "count": 2,
       "chapters": [
-        67
+        "Wedlock, Marriage (Nikaah)"
       ],
       "arabic_length": 307
     },
@@ -2422,7 +2444,7 @@
       ],
       "count": 2,
       "chapters": [
-        68
+        "Divorce"
       ],
       "arabic_length": 1111
     },
@@ -2433,7 +2455,7 @@
       ],
       "count": 2,
       "chapters": [
-        68
+        "Divorce"
       ],
       "arabic_length": 731
     },
@@ -2444,7 +2466,7 @@
       ],
       "count": 2,
       "chapters": [
-        68
+        "Divorce"
       ],
       "arabic_length": 254
     },
@@ -2455,7 +2477,7 @@
       ],
       "count": 2,
       "chapters": [
-        68
+        "Divorce"
       ],
       "arabic_length": 662
     },
@@ -2466,7 +2488,7 @@
       ],
       "count": 2,
       "chapters": [
-        68
+        "Divorce"
       ],
       "arabic_length": 167
     },
@@ -2477,7 +2499,7 @@
       ],
       "count": 2,
       "chapters": [
-        72
+        "Hunting, Slaughtering"
       ],
       "arabic_length": 205
     },
@@ -2488,8 +2510,8 @@
       ],
       "count": 2,
       "chapters": [
-        74,
-        76
+        "Drinks",
+        "Medicine"
       ],
       "arabic_length": 224
     },
@@ -2500,7 +2522,7 @@
       ],
       "count": 2,
       "chapters": [
-        75
+        "Patients"
       ],
       "arabic_length": 476
     },
@@ -2511,7 +2533,7 @@
       ],
       "count": 2,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 506
     },
@@ -2522,7 +2544,7 @@
       ],
       "count": 2,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 491
     },
@@ -2533,7 +2555,7 @@
       ],
       "count": 2,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 450
     },
@@ -2545,7 +2567,7 @@
       ],
       "count": 3,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 709
     },
@@ -2557,7 +2579,7 @@
       ],
       "count": 3,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 692
     },
@@ -2568,7 +2590,7 @@
       ],
       "count": 2,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 688
     },
@@ -2579,7 +2601,7 @@
       ],
       "count": 2,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 802
     },
@@ -2590,7 +2612,7 @@
       ],
       "count": 2,
       "chapters": [
-        76
+        "Medicine"
       ],
       "arabic_length": 994
     },
@@ -2601,7 +2623,7 @@
       ],
       "count": 2,
       "chapters": [
-        77
+        "Dress"
       ],
       "arabic_length": 525
     },
@@ -2612,7 +2634,7 @@
       ],
       "count": 2,
       "chapters": [
-        77
+        "Dress"
       ],
       "arabic_length": 291
     },
@@ -2623,7 +2645,7 @@
       ],
       "count": 2,
       "chapters": [
-        77
+        "Dress"
       ],
       "arabic_length": 200
     },
@@ -2634,7 +2656,7 @@
       ],
       "count": 2,
       "chapters": [
-        78
+        "Good Manners and Form (Al-Adab)"
       ],
       "arabic_length": 551
     },
@@ -2645,7 +2667,7 @@
       ],
       "count": 2,
       "chapters": [
-        78
+        "Good Manners and Form (Al-Adab)"
       ],
       "arabic_length": 2091
     },
@@ -2656,7 +2678,7 @@
       ],
       "count": 2,
       "chapters": [
-        78
+        "Good Manners and Form (Al-Adab)"
       ],
       "arabic_length": 381
     },
@@ -2667,7 +2689,7 @@
       ],
       "count": 2,
       "chapters": [
-        78
+        "Good Manners and Form (Al-Adab)"
       ],
       "arabic_length": 1433
     },
@@ -2679,7 +2701,7 @@
       ],
       "count": 3,
       "chapters": [
-        78
+        "Good Manners and Form (Al-Adab)"
       ],
       "arabic_length": 2622
     },
@@ -2690,7 +2712,7 @@
       ],
       "count": 2,
       "chapters": [
-        79
+        "Asking Permission"
       ],
       "arabic_length": 1297
     },
@@ -2701,7 +2723,7 @@
       ],
       "count": 2,
       "chapters": [
-        79
+        "Asking Permission"
       ],
       "arabic_length": 1626
     },
@@ -2712,7 +2734,7 @@
       ],
       "count": 2,
       "chapters": [
-        80
+        "Invocations"
       ],
       "arabic_length": 370
     },
@@ -2723,7 +2745,7 @@
       ],
       "count": 2,
       "chapters": [
-        80
+        "Invocations"
       ],
       "arabic_length": 267
     },
@@ -2734,7 +2756,7 @@
       ],
       "count": 2,
       "chapters": [
-        81
+        "To make the Heart Tender (Ar-Riqaq)"
       ],
       "arabic_length": 931
     },
@@ -2745,7 +2767,7 @@
       ],
       "count": 2,
       "chapters": [
-        82
+        "Divine Will (Al-Qadar)"
       ],
       "arabic_length": 503
     },
@@ -2756,7 +2778,7 @@
       ],
       "count": 2,
       "chapters": [
-        83
+        "Oaths and Vows"
       ],
       "arabic_length": 1206
     },
@@ -2767,7 +2789,7 @@
       ],
       "count": 2,
       "chapters": [
-        83
+        "Oaths and Vows"
       ],
       "arabic_length": 645
     },
@@ -2778,7 +2800,7 @@
       ],
       "count": 2,
       "chapters": [
-        83
+        "Oaths and Vows"
       ],
       "arabic_length": 995
     },
@@ -2789,7 +2811,7 @@
       ],
       "count": 2,
       "chapters": [
-        85
+        "Laws of Inheritance (Al-Faraa'id)"
       ],
       "arabic_length": 747
     },
@@ -2800,7 +2822,7 @@
       ],
       "count": 2,
       "chapters": [
-        85
+        "Laws of Inheritance (Al-Faraa'id)"
       ],
       "arabic_length": 440
     },
@@ -2811,7 +2833,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 867
     },
@@ -2822,9 +2844,9 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
-      "arabic_length": 1069
+      "arabic_length": 1068
     },
     {
       "numbers": [
@@ -2833,7 +2855,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 1229
     },
@@ -2844,7 +2866,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 450
     },
@@ -2855,7 +2877,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 934
     },
@@ -2866,7 +2888,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 493
     },
@@ -2877,7 +2899,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 1223
     },
@@ -2888,7 +2910,7 @@
       ],
       "count": 2,
       "chapters": [
-        86
+        "Limits and Punishments set by Allah (Hudood)"
       ],
       "arabic_length": 1089
     },
@@ -2899,7 +2921,7 @@
       ],
       "count": 2,
       "chapters": [
-        87
+        "Blood Money (Ad-Diyat)"
       ],
       "arabic_length": 1150
     },
@@ -2910,7 +2932,7 @@
       ],
       "count": 2,
       "chapters": [
-        87
+        "Blood Money (Ad-Diyat)"
       ],
       "arabic_length": 427
     },
@@ -2921,7 +2943,7 @@
       ],
       "count": 2,
       "chapters": [
-        87
+        "Blood Money (Ad-Diyat)"
       ],
       "arabic_length": 424
     },
@@ -2932,7 +2954,7 @@
       ],
       "count": 2,
       "chapters": [
-        88
+        "Apostates"
       ],
       "arabic_length": 1012
     },
@@ -2943,7 +2965,7 @@
       ],
       "count": 2,
       "chapters": [
-        90
+        "Tricks"
       ],
       "arabic_length": 922
     },
@@ -2954,7 +2976,7 @@
       ],
       "count": 2,
       "chapters": [
-        91
+        "Interpretation of Dreams"
       ],
       "arabic_length": 1305
     },
@@ -2965,7 +2987,7 @@
       ],
       "count": 2,
       "chapters": [
-        91
+        "Interpretation of Dreams"
       ],
       "arabic_length": 461
     },
@@ -2976,7 +2998,7 @@
       ],
       "count": 2,
       "chapters": [
-        91
+        "Interpretation of Dreams"
       ],
       "arabic_length": 1668
     },
@@ -2987,7 +3009,7 @@
       ],
       "count": 2,
       "chapters": [
-        91
+        "Interpretation of Dreams"
       ],
       "arabic_length": 1070
     },
@@ -2998,7 +3020,7 @@
       ],
       "count": 2,
       "chapters": [
-        91
+        "Interpretation of Dreams"
       ],
       "arabic_length": 631
     },
@@ -3009,7 +3031,7 @@
       ],
       "count": 2,
       "chapters": [
-        92
+        "Afflictions and the End of the World"
       ],
       "arabic_length": 662
     },
@@ -3020,7 +3042,7 @@
       ],
       "count": 2,
       "chapters": [
-        92
+        "Afflictions and the End of the World"
       ],
       "arabic_length": 325
     },
@@ -3032,7 +3054,7 @@
       ],
       "count": 3,
       "chapters": [
-        92
+        "Afflictions and the End of the World"
       ],
       "arabic_length": 540
     },
@@ -3044,7 +3066,7 @@
       ],
       "count": 3,
       "chapters": [
-        92
+        "Afflictions and the End of the World"
       ],
       "arabic_length": 755
     },
@@ -3055,7 +3077,7 @@
       ],
       "count": 2,
       "chapters": [
-        93
+        "Judgments (Ahkaam)"
       ],
       "arabic_length": 660
     },
@@ -3066,7 +3088,7 @@
       ],
       "count": 2,
       "chapters": [
-        93
+        "Judgments (Ahkaam)"
       ],
       "arabic_length": 733
     },
@@ -3077,7 +3099,7 @@
       ],
       "count": 2,
       "chapters": [
-        93
+        "Judgments (Ahkaam)"
       ],
       "arabic_length": 946
     },
@@ -3088,7 +3110,7 @@
       ],
       "count": 2,
       "chapters": [
-        93
+        "Judgments (Ahkaam)"
       ],
       "arabic_length": 432
     },
@@ -3099,7 +3121,7 @@
       ],
       "count": 2,
       "chapters": [
-        93
+        "Judgments (Ahkaam)"
       ],
       "arabic_length": 321
     },
@@ -3110,7 +3132,7 @@
       ],
       "count": 2,
       "chapters": [
-        95
+        "Accepting Information Given by a Truthful Person"
       ],
       "arabic_length": 303
     },
@@ -3121,7 +3143,7 @@
       ],
       "count": 2,
       "chapters": [
-        96
+        "Holding Fast to the Qur'an and Sunnah"
       ],
       "arabic_length": 251
     },
@@ -3132,7 +3154,7 @@
       ],
       "count": 2,
       "chapters": [
-        96
+        "Holding Fast to the Qur'an and Sunnah"
       ],
       "arabic_length": 1085
     },
@@ -3143,7 +3165,7 @@
       ],
       "count": 2,
       "chapters": [
-        96
+        "Holding Fast to the Qur'an and Sunnah"
       ],
       "arabic_length": 769
     },
@@ -3154,7 +3176,7 @@
       ],
       "count": 2,
       "chapters": [
-        96
+        "Holding Fast to the Qur'an and Sunnah"
       ],
       "arabic_length": 544
     },
@@ -3165,7 +3187,7 @@
       ],
       "count": 2,
       "chapters": [
-        96
+        "Holding Fast to the Qur'an and Sunnah"
       ],
       "arabic_length": 272
     },
@@ -3176,7 +3198,7 @@
       ],
       "count": 2,
       "chapters": [
-        96
+        "Holding Fast to the Qur'an and Sunnah"
       ],
       "arabic_length": 766
     },
@@ -3187,7 +3209,7 @@
       ],
       "count": 2,
       "chapters": [
-        97
+        "Oneness, Uniqueness of Allah (Tawheed)"
       ],
       "arabic_length": 501
     },
@@ -3198,7 +3220,7 @@
       ],
       "count": 2,
       "chapters": [
-        97
+        "Oneness, Uniqueness of Allah (Tawheed)"
       ],
       "arabic_length": 690
     },
@@ -3209,7 +3231,7 @@
       ],
       "count": 2,
       "chapters": [
-        97
+        "Oneness, Uniqueness of Allah (Tawheed)"
       ],
       "arabic_length": 536
     },
@@ -3220,7 +3242,7 @@
       ],
       "count": 2,
       "chapters": [
-        97
+        "Oneness, Uniqueness of Allah (Tawheed)"
       ],
       "arabic_length": 5004
     },
@@ -3231,7 +3253,7 @@
       ],
       "count": 2,
       "chapters": [
-        97
+        "Oneness, Uniqueness of Allah (Tawheed)"
       ],
       "arabic_length": 336
     }

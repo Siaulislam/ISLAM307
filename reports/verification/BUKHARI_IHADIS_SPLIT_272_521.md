@@ -27,3 +27,10 @@
 | 522 | 150 | 161 | https://ihadis.com/bukhari/hadith/522 |
 
 Verified: `text_ar(272) != text_ar(273)` and `text_ar(521) != text_ar(522)` (same for English).
+
+
+---
+
+## SUPERSEDED
+
+Per later policy (`BUKHARI_IHADIS_DUP_VERIFY.md`): EN iHadis keeps 272=273 and 521=522 as identical duplicates. Those splits were **reverted** to match iHadis EN exactly.
