@@ -1,0 +1,733 @@
+:root {
+  --emerald: #0d9488;
+  --emerald-deep: #065f46;
+  --emerald-soft: #ecfdf5;
+  --gold: #c9a227;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --bg: #ffffff;
+  --wash: linear-gradient(160deg, #f8fafc 0%, #ecfdf5 48%, #fffbeb 100%);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  color: var(--text);
+  background: var(--wash);
+  min-height: 100vh;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 28px 20px 12px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.eyebrow {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+h1 {
+  margin: 6px 0 8px;
+  color: var(--emerald-deep);
+  font-size: clamp(28px, 4vw, 40px);
+}
+.lead { margin: 0; color: var(--muted); max-width: 54ch; line-height: 1.5; }
+.back {
+  color: var(--emerald-deep);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px 12px;
+}
+.tabs button {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tabs button.active {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+main { max-width: 1100px; margin: 0 auto; padding: 0 20px 40px; }
+.panel { display: none; }
+.panel.active { display: block; }
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.toolbar input[type="search"],
+.toolbar input[type="number"] {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-width: 220px;
+  font: inherit;
+}
+.toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.toolbar button,
+.pill {
+  border: 0;
+  border-radius: 12px;
+  background: var(--emerald);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: 14px;
+  min-height: 70vh;
+}
+.list, .reader {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, .05);
+}
+.list {
+  overflow: auto;
+  max-height: 75vh;
+  padding: 8px;
+}
+.list button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+  padding: 12px;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+}
+.list button:hover,
+.list button.active {
+  background: var(--emerald-soft);
+}
+.list strong { color: var(--emerald-deep); font-size: 14px; }
+.list small { color: var(--muted); font-size: 12px; }
+.reader {
+  padding: 18px;
+  overflow: auto;
+  max-height: 75vh;
+}
+.empty { color: var(--muted); }
+.ayah, .hadith-card, .tafsir-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #fbfdff;
+}
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--emerald);
+}
+.ar {
+  font-size: 22px;
+  line-height: 1.9;
+  text-align: right;
+  direction: rtl;
+  margin: 0 0 8px;
+}
+.en { margin: 0; color: var(--muted); line-height: 1.6; }
+.badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #fff7db;
+  color: #8a6d12;
+  font-size: 11px;
+  font-weight: 800;
+}
+.hadith-meta {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 10px 0 12px;
+}
+.hadith-meta-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.hadith-meta-row:last-child { border-bottom: 0; }
+.hadith-meta-row span {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--emerald-deep);
+}
+.hadith-meta-row strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.45;
+}
+.hadith-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+.hadith-action {
+  border: 1px solid var(--emerald);
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  border-radius: 12px;
+  padding: 8px 14px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.hadith-action:hover { background: var(--emerald); color: #fff; }
+.hadith-number-list {
+  display: grid;
+  gap: 8px;
+}
+.hadith-list-more {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+.hadith-list-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.hadith-number-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px 16px;
+  align-items: center;
+  text-align: left;
+  width: 100%;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.hadith-number-row:hover { background: var(--emerald-soft); border-color: var(--emerald); }
+.hadith-number-row .hadith-n {
+  color: var(--emerald-deep);
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+}
+.hadith-number-row .hadith-kitab {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.55;
+  text-align: right;
+  direction: rtl;
+  font-family: "Noto Nastaliq Urdu", "Noto Naskh Arabic", "Segoe UI", Tahoma, sans-serif;
+}
+.hadith-number-row .hadith-kitab.is-ltr {
+  text-align: left;
+  direction: ltr;
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: 650;
+}
+@media (max-width: 640px) {
+  .hadith-number-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .hadith-number-row .hadith-kitab { font-size: 18px; }
+}
+.hadith-detail-top {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.back-hadith {
+  justify-self: start;
+  padding: 0;
+  font-size: 13px;
+}
+.lang-toggle {
+  display: flex;
+  gap: 6px;
+  margin: 4px 0 14px;
+  flex-wrap: wrap;
+}
+.lang-toggle button {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+.lang-toggle button.active {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+.lang-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.lang-dropdown select {
+  appearance: none;
+  border: 1px solid var(--emerald);
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  border-radius: 999px;
+  padding: 8px 36px 8px 14px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--emerald-deep) 50%), linear-gradient(135deg, var(--emerald-deep) 50%, transparent 50%);
+  background-position: calc(100% - 16px) calc(50% - 3px), calc(100% - 11px) calc(50% - 3px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  min-width: 140px;
+}
+.hadith-control-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin: 4px 0 12px;
+}
+.hadith-audio-box {
+  border: 1px solid var(--gold-light, #f5e6b8);
+  background:
+    linear-gradient(180deg, #fffdf7 0%, #ffffff 70%);
+  border-radius: 16px;
+  padding: 12px 14px;
+  margin: 0 0 16px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+.hadith-audio-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.hadith-audio-head strong {
+  display: block;
+  color: var(--emerald-deep);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+.hadith-audio-hint {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+.hadith-audio-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.hadith-audio-play,
+.hadith-audio-stop {
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.hadith-audio-play {
+  border: 1px solid var(--emerald);
+  background: var(--emerald);
+  color: #fff;
+}
+.hadith-audio-stop {
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--emerald-deep);
+}
+.hadith-audio-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 999px;
+  background: #f1f5f9;
+}
+.hadith-audio-mode {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 10px 12px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.hadith-audio-mode.active {
+  background: #fff;
+  color: var(--emerald-deep);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--gold-light, #f5e6b8);
+}
+body.dark .hadith-audio-box {
+  background: linear-gradient(180deg, #172033 0%, #121a2a 70%);
+  border-color: #334155;
+}
+body.dark .hadith-audio-modes { background: #0f172a; }
+body.dark .hadith-audio-mode.active {
+  background: #1e293b;
+  color: #a7f3d0;
+  border-color: #334155;
+}
+body.dark .hadith-audio-stop {
+  background: #121a2a;
+  color: #a7f3d0;
+  border-color: #334155;
+}
+.hadith-arabic {
+  margin: 0 0 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.hadith-translation.rtl { direction: rtl; text-align: right; }
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.modal-head h3 { margin: 0; }
+.hadith-detail-modal {
+  width: min(560px, 100%);
+  max-height: min(86vh, 720px);
+  overflow: auto;
+}
+.ravi-chain {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.ravi-chain li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.ravi-chain li div { display: grid; gap: 2px; }
+.ravi-chain small { color: var(--muted); font-size: 11px; font-weight: 600; }
+.ravi-chain li.is-last-rawi {
+  border-color: var(--emerald);
+  background: var(--emerald-soft);
+}
+.ravi-step {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--emerald);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.ravi-chain strong {
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+.isnad-box {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.isnad-box > span {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.isnad-highlight {
+  color: #1d4ed8;
+  background: #eff6ff;
+  padding: 12px;
+  border-radius: 12px;
+  line-height: 1.7;
+}
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ref-table th,
+.ref-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+  font-size: 14px;
+}
+.ref-table tr:last-child th,
+.ref-table tr:last-child td { border-bottom: 0; }
+.ref-table th {
+  width: 38%;
+  color: var(--emerald-deep);
+  font-weight: 800;
+  background: rgba(6, 95, 70, .06);
+}
+.ref-table td {
+  font-weight: 600;
+  color: var(--text);
+  min-height: 1.2em;
+}
+.ref-modal-dark .modal-head h3,
+.ref-modal-dark .ghost { color: #e2e8f0; }
+.ref-modal-dark {
+  background: #111827;
+  color: #f8fafc;
+}
+.ref-table-shot {
+  border-color: #334155;
+  background: #0f172a;
+}
+.ref-table-shot th,
+.ref-table-shot td {
+  border-bottom-color: #334155;
+  color: #f1f5f9;
+}
+.ref-table-shot th {
+  background: #111827;
+  color: #94a3b8;
+  font-weight: 700;
+  border-right: 1px solid #334155;
+}
+.ref-table-shot td {
+  text-align: right;
+  font-weight: 600;
+}
+.ref-link {
+  display: inline-block;
+  margin-top: 12px;
+  color: var(--emerald);
+  font-weight: 700;
+  font-size: 12px;
+}
+body.dark .hadith-meta-row span,
+body.dark .ref-table th { color: #6ee7b7; }
+body.dark .hadith-action {
+  background: #102018;
+  color: #a7f3d0;
+}
+body.dark .ref-table th { background: #102018; }
+body.dark .ravi-chain li { background: #0f172a; }
+body.dark .hadith-number-row,
+body.dark .lang-toggle button,
+body.dark .lang-dropdown select {
+  background: #121a2a;
+  color: var(--text);
+  border-color: var(--border);
+}
+body.dark .hadith-number-row .hadith-n { color: #6ee7b7; }
+body.dark .hadith-number-row .hadith-kitab { color: var(--text); }
+body.dark .isnad-highlight {
+  background: #172554;
+  color: #93c5fd;
+}
+.status { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+.ur { direction: rtl; text-align: right; font-size: calc(17px * var(--reader-scale, 1)); }
+.ar { font-size: calc(22px * var(--reader-scale, 1)); }
+.reader-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.reader-tools button,
+.ayah-tools button {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12px;
+}
+.ayah-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.ayah-tools .primary,
+.reader-tools .primary {
+  background: var(--emerald);
+  border-color: var(--emerald);
+  color: #fff;
+}
+.ayah.is-highlighted {
+  background: #fff4cc;
+  border-color: #e7c96a;
+}
+.note-box {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--emerald-soft);
+  color: var(--emerald-deep);
+  font-size: 13px;
+}
+.user-pill {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-left: auto;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(20px);
+  background: #065f46;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s ease;
+  z-index: 50;
+  font-weight: 700;
+  font-size: 13px;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  display: grid;
+  place-items: center;
+  z-index: 60;
+  padding: 20px;
+}
+.modal {
+  width: min(520px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.2);
+}
+.modal h3 { margin: 0 0 6px; color: var(--emerald-deep); }
+.reciter-list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+}
+.reciter-list button {
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  gap: 2px;
+}
+.reciter-list button:hover { background: var(--emerald-soft); }
+.reciter-list strong { color: var(--emerald-deep); }
+.reciter-list small { color: var(--muted); }
+.modal .ghost {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+}
+body.dark {
+  --bg: #121a2a;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --border: #243044;
+  --wash: linear-gradient(160deg, #0b1220, #102018 50%, #1a1408);
+}
+body.dark .list,
+body.dark .reader,
+body.dark .ayah,
+body.dark .hadith-card,
+body.dark .tafsir-card,
+body.dark .modal,
+body.dark .reader-tools button,
+body.dark .ayah-tools button,
+body.dark .reciter-list button,
+body.dark .tabs button {
+  background: #121a2a;
+  color: var(--text);
+  border-color: var(--border);
+}
+body.dark .ayah.is-highlighted { background: #3b3418; }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; }
+  .list { max-height: 240px; }
+  .reader { max-height: none; }
+  .top { flex-direction: column; }
+}
