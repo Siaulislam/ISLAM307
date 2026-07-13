@@ -211,21 +211,11 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text(
-                            _topicTitle(topic),
-                            textAlign: TextAlign.right,
-                            textDirection: TextDirection.rtl,
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1.5),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            _topicRangeLabel(topic),
-                            style: const TextStyle(fontSize: 12, color: Islam307Theme.textMuted, fontWeight: FontWeight.w700),
-                          ),
-                        ],
+                      child: Text(
+                        _topicTitle(topic),
+                        textAlign: TextAlign.right,
+                        textDirection: TextDirection.rtl,
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1.5),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -233,10 +223,15 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          '$count',
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep),
+                          _topicRangeLabel(topic),
+                          textAlign: TextAlign.right,
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: Islam307Theme.emeraldDeep),
                         ),
-                        const Text('Hadith', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.emerald)),
+                        const SizedBox(height: 2),
+                        Text(
+                          '$count Hadith',
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Islam307Theme.textMuted),
+                        ),
                       ],
                     ),
                   ],

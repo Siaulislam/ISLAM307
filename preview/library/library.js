@@ -748,7 +748,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-36`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-37`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -774,7 +774,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-36`);
+    const res = await fetch(`${path}?v=hadith-reader-37`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1565,11 +1565,10 @@ function paintHadithTopics(slug, pack, topics) {
       <div class="hadith-topic-index">${indexLabel}</div>
       <div class="hadith-topic-main">
         <p class="hadith-topic-title" dir="rtl">${escapeHtml(t.title || t.en || '—')}</p>
-        <p class="hadith-topic-meta">${escapeHtml(topicRangeLabel(t))}</p>
       </div>
       <div class="hadith-topic-side">
-        <span class="hadith-topic-count">${t.count.toLocaleString()}</span>
-        <span class="hadith-topic-count-label">Hadith</span>
+        <span class="hadith-topic-range">${escapeHtml(topicRangeLabel(t))}</span>
+        <span class="hadith-topic-count-label">${t.count.toLocaleString()} Hadith</span>
       </div>
     `;
     card.onclick = () => openHadithTopic(slug, t);

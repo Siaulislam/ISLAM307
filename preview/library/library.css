@@ -378,8 +378,16 @@ body.dark .list button .book-icon {
 .hadith-topic-side {
   display: grid;
   justify-items: end;
-  gap: 2px;
-  min-width: 64px;
+  gap: 4px;
+  min-width: 118px;
+  text-align: right;
+}
+.hadith-topic-range {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--emerald-deep);
+  line-height: 1.25;
+  white-space: nowrap;
 }
 .hadith-topic-count {
   font-size: 22px;
