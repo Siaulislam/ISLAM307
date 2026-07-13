@@ -17,11 +17,13 @@ class HadithDetailScreen extends StatefulWidget {
     required this.bookId,
     required this.hadithNumber,
     this.chapterId,
+    this.unassigned = false,
   });
 
   final int bookId;
   final int hadithNumber;
   final int? chapterId;
+  final bool unassigned;
 
   @override
   State<HadithDetailScreen> createState() => _HadithDetailScreenState();
@@ -72,7 +74,8 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.hadithNumber != widget.hadithNumber ||
         oldWidget.bookId != widget.bookId ||
-        oldWidget.chapterId != widget.chapterId) {
+        oldWidget.chapterId != widget.chapterId ||
+        oldWidget.unassigned != widget.unassigned) {
       _loadCurrent();
     }
   }
@@ -85,7 +88,11 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     _speechRate = prefs.getDouble('i307_hadith_rate') ?? 1.0;
     if (!_rates.contains(_speechRate)) _speechRate = 1.0;
 
-    if (widget.chapterId != null) {
+    if (widget.unassigned) {
+      _numbers = await _repo.hadithNumbersUnassigned(widget.bookId);
+      final i = _numbers.indexOf(widget.hadithNumber);
+      _index = i >= 0 ? i : 0;
+    } else if (widget.chapterId != null) {
       _numbers = await _repo.hadithNumbersForChapter(widget.bookId, widget.chapterId!);
       final i = _numbers.indexOf(widget.hadithNumber);
       _index = i >= 0 ? i : 0;
@@ -96,9 +103,9 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   Future<void> _loadCurrent() async {
     setState(() => _loading = true);
     final row = await _repo.hadith(widget.bookId, widget.hadithNumber);
-    final chapterId = widget.chapterId ?? (row?['chapter_id'] as int?);
+    final chapterId = widget.unassigned ? null : (widget.chapterId ?? (row?['chapter_id'] as int?));
 
-    if (widget.chapterId != null && _numbers.isNotEmpty) {
+    if ((widget.chapterId != null || widget.unassigned) && _numbers.isNotEmpty) {
       final i = _numbers.indexOf(widget.hadithNumber);
       _index = i >= 0 ? i : 0;
       _prevNumber = _index > 0 ? _numbers[_index - 1] : null;
@@ -384,8 +391,10 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
   }
 
   void _goTo(int number) {
-    final chapter = widget.chapterId ?? _hadith?['chapter_id'];
-    final q = chapter == null ? '' : '?chapterId=$chapter';
+    final chapter = widget.unassigned ? null : (widget.chapterId ?? _hadith?['chapter_id']);
+    final q = widget.unassigned
+        ? '?unassigned=1'
+        : (chapter == null ? '' : '?chapterId=$chapter');
     context.replace('/hadith/read/${widget.bookId}/$number$q');
   }
 

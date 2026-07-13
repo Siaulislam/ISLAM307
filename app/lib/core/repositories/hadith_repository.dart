@@ -60,22 +60,54 @@ class HadithRepository {
       LEFT JOIN hadiths h ON h.chapter_id = c.id
       WHERE c.book_id = ? AND TRIM(IFNULL(c.title, '')) != ''
       GROUP BY c.id
+      HAVING COUNT(h.id) > 0
       ORDER BY $order
       ''',
       [bookId],
     );
     final bookRows = await db.query('books', where: 'id = ?', whereArgs: [bookId], limit: 1);
     final slug = bookRows.isEmpty ? 'hadith' : '${bookRows.first['slug']}';
-    return rows.map((row) {
+    final topics = rows.map((row) {
       final map = Map<String, dynamic>.from(row);
       final titleEn = '${map['title'] ?? ''}';
       map['title_en'] = titleEn;
       map['title_ur'] = localizedChapterTitle(slug, titleEn, 'ur');
       map['title_ar'] = localizedChapterTitle(slug, titleEn, 'ar');
-      map['hadith_start'] = map['hadith_start'] ?? map['first_hadith'];
-      map['hadith_end'] = map['hadith_end'] ?? map['last_hadith'];
+      map['hadith_start'] = map['first_hadith'];
+      map['hadith_end'] = map['last_hadith'];
+      map['is_unassigned'] = false;
       return map;
     }).toList();
+
+    // Authenticated source section 0 / missing chapter_id — never invent a kitab name.
+    final orphanNums = await db.rawQuery(
+      '''
+      SELECT hadith_number FROM hadiths
+      WHERE book_id = ? AND chapter_id IS NULL
+      ORDER BY hadith_number ASC
+      ''',
+      [bookId],
+    );
+    if (orphanNums.isNotEmpty) {
+      final nums = orphanNums.map((r) => r['hadith_number'] as int).toList();
+      topics.add({
+        'id': null,
+        'book_id': bookId,
+        'number': null,
+        'title': 'Unassigned',
+        'title_en': 'Unassigned',
+        'title_ur': 'غیر منسوب',
+        'title_ar': 'غير منسوب',
+        'hadith_start': nums.first,
+        'hadith_end': nums.last,
+        'hadith_count': nums.length,
+        'first_hadith': nums.first,
+        'last_hadith': nums.last,
+        'hadith_numbers': nums,
+        'is_unassigned': true,
+      });
+    }
+    return topics;
   }
 
   Future<List<Map<String, dynamic>>> hadithsForBook(int bookId, {int limit = 100, int offset = 0}) async {
@@ -129,6 +161,19 @@ class HadithRepository {
       columns: ['hadith_number'],
       where: 'book_id = ? AND chapter_id = ?',
       whereArgs: [bookId, chapterId],
+      orderBy: 'hadith_number ASC',
+    );
+    return rows.map((r) => r['hadith_number'] as int).toList();
+  }
+
+  /// Hadiths with no chapter_id (authenticated source section 0 / uncategorized).
+  Future<List<int>> hadithNumbersUnassigned(int bookId) async {
+    final db = await _registry.open('hadith');
+    final rows = await db.query(
+      'hadiths',
+      columns: ['hadith_number'],
+      where: 'book_id = ? AND chapter_id IS NULL',
+      whereArgs: [bookId],
       orderBy: 'hadith_number ASC',
     );
     return rows.map((r) => r['hadith_number'] as int).toList();

@@ -46,6 +46,19 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
     if (_opening) return;
     setState(() => _opening = true);
     try {
+      final unassigned = topic['is_unassigned'] == true;
+      if (unassigned) {
+        final nums = await _repo.hadithNumbersUnassigned(widget.bookId);
+        if (!mounted) return;
+        if (nums.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No authentic reference found.')),
+          );
+          return;
+        }
+        context.push('/hadith/read/${widget.bookId}/${nums.first}?unassigned=1');
+        return;
+      }
       final chapterId = topic['id'] as int;
       final first = await _repo.firstHadithNumberForChapter(widget.bookId, chapterId);
       if (!mounted) return;
@@ -89,14 +102,27 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
   }
 
   String _topicRangeLabel(Map<String, dynamic> topic) {
-    final start = topic['hadith_start'] ?? topic['first'];
-    final end = topic['hadith_end'] ?? topic['last'];
-    if (start != null && end != null && '$start'.isNotEmpty && '$end'.isNotEmpty) {
-      return 'Hadith $start to $end';
+    final count = int.tryParse('${topic['hadith_count'] ?? ''}') ?? 0;
+    final start = topic['hadith_start'] ?? topic['first_hadith'] ?? topic['first'];
+    final end = topic['hadith_end'] ?? topic['last_hadith'] ?? topic['last'];
+    final nums = (topic['hadith_numbers'] as List?)?.cast<int>();
+
+    if (count == 1 || (start != null && end != null && '$start' == '$end')) {
+      return 'Hadith $start';
     }
-    final count = topic['hadith_count'];
-    if (count != null) return '$count Hadith';
-    return '';
+    if (start == null || end == null || '$start'.isEmpty || '$end'.isEmpty) {
+      return count > 0 ? '$count Hadith' : '';
+    }
+
+    final span = (int.tryParse('$end') ?? 0) - (int.tryParse('$start') ?? 0) + 1;
+    final dense = span > 0 && count / span >= 0.5;
+    if (dense) return 'Hadith $start to $end';
+
+    if (nums != null && nums.isNotEmpty) {
+      if (nums.length <= 8) return 'Hadith ${nums.join(', ')}';
+      return 'Hadith ${nums.take(4).join(', ')}… (+${nums.length - 4} more)';
+    }
+    return '$count hadith · from $start to $end';
   }
 
   @override
@@ -155,7 +181,8 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
         }
         final topic = _topics[i - 1];
         final count = topic['hadith_count'] ?? 0;
-        final index = topic['number'] ?? i;
+        final unassigned = topic['is_unassigned'] == true;
+        final indexLabel = unassigned ? '—' : '${topic['number'] ?? i}'.padLeft(2, '0');
         return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: Material(
@@ -187,7 +214,7 @@ class _HadithBookScreenState extends State<HadithBookScreen> {
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Text(
-                        '$index'.padLeft(2, '0'),
+                        indexLabel,
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 12),
                       ),
                     ),

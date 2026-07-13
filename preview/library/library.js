@@ -504,7 +504,10 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;');
 }
 
-/** Kitab/book chapter name for list rows — Urdu first, then Arabic, never English grade/status. */
+/** Kitab/book chapter name for list rows — Urdu first, then Arabic.
+ * Never fall back to the collection name (e.g. "Sahih Bukhari") — that created
+ * a fake topic card with a huge min–max range for uncategorized hadiths.
+ */
 function localizedKitabName(hadith, pack) {
   const by = hadith.reference_detail?.by_lang || {};
   const ur = by.ur?.values?.kitab || '';
@@ -515,37 +518,71 @@ function localizedKitabName(hadith, pack) {
   if (ar) return ar;
   if (ur) return ur;
   if (hadith.reference_detail?.kitab) return hadith.reference_detail.kitab;
-  return hadith.kitab || pack?.book?.en || '';
+  if (hadith.kitab && String(hadith.kitab).trim()) return hadith.kitab;
+  return '';
 }
 
 function kitabTopicKey(hadith) {
   if (hadith.kitab_number != null && hadith.kitab_number !== '') return `n:${hadith.kitab_number}`;
-  return `t:${hadith.kitab || localizedKitabName(hadith) || 'unknown'}`;
+  const name = (hadith.kitab || '').trim();
+  if (name) return `t:${name}`;
+  // Source section 0 / missing chapter — keep a single honest bucket.
+  return 'unassigned';
+}
+
+/** Honest range label: never imply a continuous block when count << span. */
+function topicRangeLabel(topic) {
+  const count = Number(topic.count || 0);
+  const first = topic.first;
+  const last = topic.last;
+  const nums = Array.isArray(topic.nums) ? topic.nums : [];
+  if (count <= 0) return '';
+  if (count === 1 || first === last) return `Hadith ${first}`;
+  const span = Number(last) - Number(first) + 1;
+  const dense = span > 0 && count / span >= 0.5;
+  if (dense) return `Hadith ${first} to ${last}`;
+  if (nums.length > 0 && nums.length <= 8) return `Hadith ${nums.join(', ')}`;
+  if (nums.length > 8) {
+    return `Hadith ${nums.slice(0, 4).join(', ')}… (+${nums.length - 4} more)`;
+  }
+  return `${count} hadith · from ${first} to ${last}`;
 }
 
 function buildKitabTopics(pack) {
   const map = new Map();
+  const bookName = (pack?.book?.en || '').trim().toLowerCase();
   for (const h of pack.hadiths || []) {
-    const title = localizedKitabName(h, pack);
-    if (!title || !String(title).trim()) continue;
-    const key = kitabTopicKey(h);
+    let title = localizedKitabName(h, pack);
+    let key = kitabTopicKey(h);
+    // Uncategorized in authenticated source (empty chapter / section 0).
+    if (!title || !String(title).trim() || (bookName && String(title).trim().toLowerCase() === bookName)) {
+      title = 'Unassigned';
+      key = 'unassigned';
+    }
     if (!map.has(key)) {
       map.set(key, {
         key,
-        kitab_number: h.kitab_number,
-        en: h.kitab || '',
+        kitab_number: key === 'unassigned' ? null : h.kitab_number,
+        en: key === 'unassigned' ? '' : (h.kitab || ''),
         title,
         count: 0,
         first: h.n,
         last: h.n,
+        nums: [],
       });
     }
     const row = map.get(key);
     row.count += 1;
-    row.last = h.n;
-    if (!row.title) row.title = title;
+    if (h.n < row.first) row.first = h.n;
+    if (h.n > row.last) row.last = h.n;
+    row.nums.push(h.n);
+  }
+  for (const row of map.values()) {
+    row.nums.sort((a, b) => a - b);
   }
   return [...map.values()].sort((a, b) => {
+    if (a.key === 'unassigned') return 1;
+    if (b.key === 'unassigned') return -1;
     const an = a.kitab_number == null ? 9999 : Number(a.kitab_number);
     const bn = b.kitab_number == null ? 9999 : Number(b.kitab_number);
     return an - bn || a.first - b.first;
@@ -711,7 +748,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-30`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-31`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -737,7 +774,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-30`);
+    const res = await fetch(`${path}?v=hadith-reader-31`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1499,11 +1536,14 @@ function paintHadithTopics(slug, pack, topics) {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'hadith-topic-card';
+    const indexLabel = t.key === 'unassigned'
+      ? '—'
+      : String(t.kitab_number || idx + 1).padStart(2, '0');
     card.innerHTML = `
-      <div class="hadith-topic-index">${String(t.kitab_number || idx + 1).padStart(2, '0')}</div>
+      <div class="hadith-topic-index">${indexLabel}</div>
       <div class="hadith-topic-main">
         <p class="hadith-topic-title" dir="rtl">${escapeHtml(t.title || t.en || '—')}</p>
-        <p class="hadith-topic-meta">Hadith ${t.first} to ${t.last}</p>
+        <p class="hadith-topic-meta">${escapeHtml(topicRangeLabel(t))}</p>
       </div>
       <div class="hadith-topic-side">
         <span class="hadith-topic-count">${t.count.toLocaleString()}</span>

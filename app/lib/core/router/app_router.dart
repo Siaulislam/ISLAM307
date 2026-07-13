@@ -60,10 +60,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final bookId = int.parse(state.pathParameters['bookId']!);
           final hadithNumber = int.parse(state.pathParameters['hadithNumber']!);
           final chapterId = int.tryParse(state.uri.queryParameters['chapterId'] ?? '');
+          final unassigned = state.uri.queryParameters['unassigned'] == '1';
           return HadithDetailScreen(
             bookId: bookId,
             hadithNumber: hadithNumber,
             chapterId: chapterId,
+            unassigned: unassigned,
           );
         },
       ),
