@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Repair Sahih Muslim Book 43 so it contains Hadith 5938–6168 only."""
+"""Repair Sahih Muslim book boundaries from verified source-page mappings."""
 
 from __future__ import annotations
 
@@ -7,6 +7,7 @@ import gzip
 import json
 import sqlite3
 import tempfile
+from copy import deepcopy
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,10 +17,36 @@ PREVIEW_PATH = (
     ROOT / "preview" / "library" / "data" / "hadith" / "muslim.json.gz"
 )
 
-BOOK_NUMBER = 43
-FIRST_HADITH = 5938
-LAST_HADITH = 6168
-EXPECTED_OUTLIERS = {4968, 4969, 4970, 4971, 5384, 5885, 5886}
+BOOK_43_NUMBER = 43
+BOOK_43_FIRST = 5938
+BOOK_43_LAST = 6168
+
+# Verified against archived sunnah.com pages:
+# - /muslim/33: Book 33, Hadith 263–266 (Sahih Muslim 715 aa–ad)
+# - /muslim/36: Urdu continuation after Book 36, Hadith 257
+# - /muslim/41: Book 41, Hadith 1 (Sahih Muslim 2255 a,b)
+BOOK_ASSIGNMENTS = {
+    4968: (33, 263),
+    4969: (33, 264),
+    4970: (33, 265),
+    4971: (33, 266),
+    5384: (36, 258),
+    5885: (41, 1),
+    5886: (41, 1),
+}
+
+CHAPTER_BOUNDARIES = {
+    33: (4701, 4971),
+    36: (5114, 5384),
+    41: (5885, 5896),
+    43: (5938, 6168),
+}
+
+PREVIEW_TEMPLATES = {
+    33: 4967,
+    36: 5383,
+    41: 5887,
+}
 
 
 def main() -> int:
@@ -31,116 +58,138 @@ def main() -> int:
         book_id = conn.execute(
             "SELECT id FROM books WHERE slug = 'muslim'"
         ).fetchone()[0]
-        chapter = conn.execute(
-            "SELECT id FROM chapters WHERE book_id = ? AND number = ?",
-            (book_id, BOOK_NUMBER),
-        ).fetchone()
-        if chapter is None:
-            raise SystemExit("Sahih Muslim Book 43 was not found")
-        chapter_id = chapter[0]
-
-        outliers = {
-            row[0]
-            for row in conn.execute(
+        chapter_ids = {
+            number: chapter_id
+            for number, chapter_id in conn.execute(
                 """
-                SELECT hadith_number
-                FROM hadiths
-                WHERE book_id = ?
-                  AND chapter_id = ?
-                  AND hadith_number NOT BETWEEN ? AND ?
+                SELECT number, id
+                FROM chapters
+                WHERE book_id = ? AND number IN (33, 36, 41, 43)
                 """,
-                (book_id, chapter_id, FIRST_HADITH, LAST_HADITH),
+                (book_id,),
             )
         }
-        if outliers not in (set(), EXPECTED_OUTLIERS):
-            raise SystemExit(
-                f"Unexpected Book 43 outliers: {sorted(outliers)}; "
-                f"expected {sorted(EXPECTED_OUTLIERS)}"
+        if set(chapter_ids) != set(CHAPTER_BOUNDARIES):
+            raise SystemExit(f"Required Muslim books not found: {chapter_ids}")
+
+        for hadith_number, (book_number, in_book_number) in BOOK_ASSIGNMENTS.items():
+            exists = conn.execute(
+                """
+                SELECT 1 FROM hadiths
+                WHERE book_id = ? AND hadith_number = ?
+                """,
+                (book_id, hadith_number),
+            ).fetchone()
+            if exists is None:
+                raise SystemExit(f"Sahih Muslim Hadith {hadith_number} was not found")
+            conn.execute(
+                """
+                UPDATE hadiths
+                SET chapter_id = ?, reference_book = ?, reference_hadith = ?
+                WHERE book_id = ? AND hadith_number = ?
+                """,
+                (
+                    chapter_ids[book_number],
+                    book_number,
+                    in_book_number,
+                    book_id,
+                    hadith_number,
+                ),
             )
 
-        conn.execute(
-            """
-            UPDATE hadiths
-            SET chapter_id = NULL
-            WHERE book_id = ?
-              AND chapter_id = ?
-              AND hadith_number NOT BETWEEN ? AND ?
-            """,
-            (book_id, chapter_id, FIRST_HADITH, LAST_HADITH),
-        )
-        conn.execute(
-            """
-            UPDATE chapters
-            SET hadith_start = ?, hadith_end = ?
-            WHERE id = ?
-            """,
-            (FIRST_HADITH, LAST_HADITH, chapter_id),
-        )
+        for book_number, (first_hadith, last_hadith) in CHAPTER_BOUNDARIES.items():
+            conn.execute(
+                """
+                UPDATE chapters
+                SET hadith_start = ?, hadith_end = ?
+                WHERE id = ?
+                """,
+                (first_hadith, last_hadith, chapter_ids[book_number]),
+            )
         conn.commit()
 
-        remaining = conn.execute(
+        book_43 = conn.execute(
             """
             SELECT MIN(hadith_number), MAX(hadith_number), COUNT(*)
             FROM hadiths
             WHERE book_id = ? AND chapter_id = ?
             """,
-            (book_id, chapter_id),
+            (book_id, chapter_ids[BOOK_43_NUMBER]),
         ).fetchone()
+        mapped = {
+            row[0]: row[1]
+            for row in conn.execute(
+                """
+                SELECT hadith_number, c.number
+                FROM hadiths h
+                JOIN chapters c ON c.id = h.chapter_id
+                WHERE h.book_id = ?
+                  AND h.hadith_number IN (4968,4969,4970,4971,5384,5885,5886)
+                """,
+                (book_id,),
+            )
+        }
         conn.close()
-        if remaining != (FIRST_HADITH, LAST_HADITH, 231):
-            raise SystemExit(f"Book 43 validation failed: {remaining}")
+        if book_43 != (BOOK_43_FIRST, BOOK_43_LAST, 231):
+            raise SystemExit(f"Book 43 validation failed: {book_43}")
+        expected_mapping = {
+            number: assignment[0]
+            for number, assignment in BOOK_ASSIGNMENTS.items()
+        }
+        if mapped != expected_mapping:
+            raise SystemExit(f"Boundary mapping validation failed: {mapped}")
 
         raw = db_path.read_bytes()
         GZ_PATH.write_bytes(gzip.compress(raw, compresslevel=9, mtime=0))
         LOCAL_DB_PATH.write_bytes(raw)
 
     preview = json.loads(gzip.decompress(PREVIEW_PATH.read_bytes()))
-    preview_outliers = []
-    for hadith in preview["hadiths"]:
-        number = int(hadith.get("n", 0))
-        if number not in EXPECTED_OUTLIERS:
-            continue
-        if hadith.get("kitab_number") != BOOK_NUMBER:
-            continue
-        preview_outliers.append(number)
-        hadith["kitab"] = ""
-        hadith["kitab_number"] = None
-        detail = hadith.get("reference_detail") or {}
-        for key in ("kitab", "baab", "baab_number", "chapter_number"):
-            detail[key] = ""
-        for language in (detail.get("by_lang") or {}).values():
-            values = language.get("values") or {}
-            values["kitab"] = ""
-            values["baab"] = ""
-            for row in language.get("rows") or []:
-                if row and row[0] in {
-                    "Kitab",
-                    "Baab",
-                    "کتاب",
-                    "باب",
-                    "كتاب",
-                }:
-                    row[1] = ""
+    preview_by_number = {
+        int(hadith["n"]): hadith for hadith in preview["hadiths"]
+    }
+    for hadith_number, (book_number, in_book_number) in BOOK_ASSIGNMENTS.items():
+        hadith = preview_by_number[hadith_number]
+        template = preview_by_number[PREVIEW_TEMPLATES[book_number]]
+        hadith["kitab"] = template["kitab"]
+        hadith["kitab_number"] = book_number
+        hadith["reference_book"] = book_number
+        hadith["reference_hadith"] = in_book_number
+        hadith["reference"] = (
+            f"Sahih Muslim · Book {book_number} · Hadith {in_book_number}"
+        )
+        hadith["reference_detail"] = deepcopy(template["reference_detail"])
+        hadith["reference_detail"]["hadith_number"] = str(in_book_number)
 
     remaining_preview = [
         int(hadith["n"])
         for hadith in preview["hadiths"]
-        if hadith.get("kitab_number") == BOOK_NUMBER
+        if hadith.get("kitab_number") == BOOK_43_NUMBER
     ]
-    if min(remaining_preview) != FIRST_HADITH or max(remaining_preview) != LAST_HADITH:
+    if (
+        min(remaining_preview) != BOOK_43_FIRST
+        or max(remaining_preview) != BOOK_43_LAST
+    ):
         raise SystemExit(
             "Preview Book 43 validation failed: "
             f"{min(remaining_preview)}–{max(remaining_preview)}"
         )
+    unassigned = [
+        int(hadith["n"])
+        for hadith in preview["hadiths"]
+        if hadith.get("kitab_number") is None
+        or not str(hadith.get("kitab") or "").strip()
+    ]
+    if unassigned:
+        raise SystemExit(f"Preview still has unassigned Muslim rows: {unassigned}")
     preview_raw = json.dumps(
         preview, ensure_ascii=False, separators=(",", ":")
     ).encode("utf-8")
     PREVIEW_PATH.write_bytes(gzip.compress(preview_raw, compresslevel=9, mtime=0))
 
     print(
-        f"Repaired Sahih Muslim Book 43: {FIRST_HADITH}–{LAST_HADITH}; "
-        f"detached database outliers {sorted(outliers)}; "
-        f"preview outliers {sorted(preview_outliers)}"
+        f"Repaired Sahih Muslim boundaries; Book 43 is "
+        f"{BOOK_43_FIRST}–{BOOK_43_LAST}; mapped "
+        f"{sorted(BOOK_ASSIGNMENTS)} to Books 33, 36, and 41"
     )
     return 0
 
