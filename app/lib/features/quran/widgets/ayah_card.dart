@@ -41,6 +41,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   List<Map<String, dynamic>> _tafsirSources = const [];
   String? _tafsirCatalogError;
   bool _tafsirCatalogLoading = false;
+  int _tafsirRequestId = 0;
 
   static const _translationOptions = <(String id, String label, String region)>[
     ('ur', 'Urdu', 'Pakistan'),
@@ -615,24 +616,30 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     );
     if (choice == null || !mounted) return;
     if (choice.isEmpty) {
+      _tafsirRequestId++;
       setState(() {
         _tafsirSlug = null;
         _tafsirEntry = null;
       });
       return;
     }
+    final requestId = ++_tafsirRequestId;
     setState(() {
       _tafsirSlug = choice;
       _tafsirEntry = null;
       _tafsirLoading = true;
     });
+    await ref.read(appSettingsProvider.notifier).setPreferredTafsir(choice);
     final entry = await _tafsirRepo.entry(choice, _surah, _ayahNo);
-    if (!mounted) return;
+    if (!mounted ||
+        requestId != _tafsirRequestId ||
+        _tafsirSlug != choice) {
+      return;
+    }
     setState(() {
       _tafsirEntry = entry;
       _tafsirLoading = false;
     });
-    ref.read(appSettingsProvider.notifier).setPreferredTafsir(choice);
   }
 
   Widget _tappableArabic(double scale) {
