@@ -1296,6 +1296,30 @@ body.dark .ai-box {
   color: var(--emerald-deep);
   text-align: right;
 }
+.hadith-reader-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.hadith-subject-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: #fff;
+  font-family: "Noto Naskh Arabic", "Noto Nastaliq Urdu", serif;
+  font-size: clamp(1rem, 2.4vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+body.dark .hadith-subject-badge {
+  background: #2563eb;
+}
 .hadith-reader-kitab-en {
   margin: 0;
   font-size: 14px;
