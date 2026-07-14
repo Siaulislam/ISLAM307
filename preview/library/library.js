@@ -42,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=hadith-reader-54' : '?v=hadith-reader-54';
+  const bust = url.includes('?') ? '&v=hadith-reader-55' : '?v=hadith-reader-55';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
