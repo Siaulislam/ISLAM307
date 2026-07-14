@@ -135,6 +135,22 @@ def main() -> int:
             f"Unexpected preview shell files: "
             f"{sorted(preview_shell - ALLOWED_PREVIEW_SHELL)}"
         )
+    automatic_network_markers = (
+        'fonts.googleapis.com',
+        'fonts.gstatic.com',
+        '<script src="http',
+        '<link href="http',
+        "fetch('http",
+        'fetch("http',
+    )
+    for relative in ALLOWED_PREVIEW_SHELL:
+        text = (ROOT / relative).read_text(encoding="utf-8", errors="replace")
+        for marker in automatic_network_markers:
+            if marker in text:
+                errors.append(
+                    f"Preview performs an automatic network request: "
+                    f"{relative} ({marker})"
+                )
 
     for dataset_id, record in records.items():
         evidence = ROOT / record["evidence"]
