@@ -421,6 +421,18 @@ body.dark .list button .book-icon {
   flex-wrap: wrap;
 }
 .hadith-browse-head.compact { margin-bottom: 8px; }
+.hadith-browse-head.hadith-topic-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  width: 100%;
+}
+.hadith-topic-head .hadith-browse-kicker { justify-self: start; }
+.hadith-topic-head .hadith-browse-title {
+  justify-self: center;
+  text-align: center;
+}
+.hadith-topic-head .hadith-action { justify-self: end; }
 .hadith-browse-kicker {
   margin: 0 0 4px;
   color: var(--emerald);

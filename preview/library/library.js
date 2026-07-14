@@ -2102,11 +2102,9 @@ function paintHadithTopics(slug, pack, topics) {
   const preface = prefaceHadithRows(pack.hadiths || []);
   const showPreface = preface.length > 0 && (!q || 'moqdema muqaddimah introduction المقدمة'.includes(q.toLowerCase()));
   $('hadith-view').innerHTML = `
-    <div class="hadith-browse-head">
-      <div>
-        <p class="hadith-browse-kicker">${escapeHtml(pack.book.en)}</p>
-        <h2 class="hadith-browse-title" dir="rtl">موضوعات · کتب</h2>
-      </div>
+    <div class="hadith-browse-head hadith-topic-head">
+      <p class="hadith-browse-kicker">${escapeHtml(pack.book.en)}</p>
+      <h2 class="hadith-browse-title" dir="rtl">موضوعات · کتب</h2>
       <button type="button" class="hadith-action" data-act="read-all">Read all ▶</button>
     </div>
     <div class="hadith-topic-grid" id="hadith-topic-grid"></div>
