@@ -181,6 +181,23 @@
       "evidence": "LICENSES/islamic-learning-content.md"
     },
     {
+      "id": "noto-fonts",
+      "title": "Noto Arabic and Urdu Fonts",
+      "feature_ids": [],
+      "status": "approved_for_bundling",
+      "original_source": "https://fonts.google.com/noto",
+      "license": "SIL Open Font License 1.1",
+      "copyright_owner": "Google and contributing font authors",
+      "contact": "https://github.com/notofonts",
+      "version": "Bundled release",
+      "download_date": "2026-07-11",
+      "checksum_sha256": "c5cf1203c2fc5624eb4839f9b298a2fcc14bde873e8d8018ab60420553b2369d",
+      "offline_redistribution": true,
+      "commercial_distribution": true,
+      "attribution": "Noto fonts under SIL Open Font License 1.1",
+      "evidence": "LICENSES/noto-fonts.md"
+    },
+    {
       "id": "app-owned-branding",
       "title": "ISLAM 307 Branding and Feature Artwork",
       "feature_ids": [],

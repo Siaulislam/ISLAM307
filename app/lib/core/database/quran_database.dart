@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -12,7 +13,6 @@ class QuranDatabase {
 
   Database? _db;
   static const _asset = 'assets/databases/quran.db';
-  static const _schemaMarker = '6_tanzil_arabic_only';
 
   Future<Database> open() async {
     if (_db != null) return _db!;
@@ -23,24 +23,22 @@ class QuranDatabase {
     }
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, 'quran.db');
+    final data = await rootBundle.load(_asset);
+    final assetBytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     final exists = await File(path).exists();
     var needsCopy = !exists;
     if (exists) {
-      final probe = await openDatabase(path, readOnly: true);
       try {
-        final rows = await probe.query('meta', where: 'key = ?', whereArgs: ['schema_version'], limit: 1);
-        final version = rows.isEmpty ? null : rows.first['value'] as String?;
-        if (version != _schemaMarker) needsCopy = true;
+        final installedBytes = await File(path).readAsBytes();
+        needsCopy = !listEquals(installedBytes, assetBytes);
       } catch (_) {
         needsCopy = true;
-      } finally {
-        await probe.close();
       }
     }
     if (needsCopy) {
-      final data = await rootBundle.load(_asset);
       await File(path).writeAsBytes(
-        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+        assetBytes,
         flush: true,
       );
     }

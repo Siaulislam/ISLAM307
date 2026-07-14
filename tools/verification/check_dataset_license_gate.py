@@ -39,6 +39,15 @@ ALLOWED_PREVIEW_SHELL = {
     "preview/library/library.js",
 }
 
+ALLOWED_FLUTTER_ASSETS = {
+    "assets/databases/quran.db",
+    "assets/branding/",
+    "assets/branding/hadith/",
+    "assets/branding/books/",
+    "assets/branding/books/covers/",
+    "assets/modules/",
+}
+
 FORBIDDEN_PATHS = [
     "app/assets/databases/hadith.db",
     "app/assets/databases/hadith.db.gz",
@@ -147,6 +156,32 @@ def main() -> int:
             ROOT / "preview/branding"
         ) != branding.get("preview_checksum_sha256"):
             errors.append("Preview branding checksum does not match license record")
+    fonts = records.get("noto-fonts")
+    if fonts is None or fonts.get("status") != "approved_for_bundling":
+        errors.append("Bundled fonts lack an approved license record")
+    elif tree_checksum(
+        ROOT / "app/assets/fonts"
+    ) != fonts.get("checksum_sha256"):
+        errors.append("Bundled font checksum does not match license record")
+
+    pubspec_lines = (
+        ROOT / "app/pubspec.yaml"
+    ).read_text(encoding="utf-8").splitlines()
+    in_assets = False
+    declared_assets: set[str] = set()
+    for line in pubspec_lines:
+        if line.strip() == "assets:":
+            in_assets = True
+            continue
+        if in_assets and line.strip() == "fonts:":
+            break
+        if in_assets and line.strip().startswith("- "):
+            declared_assets.add(line.strip()[2:])
+    if declared_assets != ALLOWED_FLUTTER_ASSETS:
+        errors.append(
+            f"Unexpected Flutter asset declarations: "
+            f"{sorted(declared_assets - ALLOWED_FLUTTER_ASSETS)}"
+        )
     for feature_id, feature in features.items():
         if feature["dataset_id"] not in records:
             errors.append(
@@ -168,6 +203,7 @@ def main() -> int:
     quran_db = sqlite3.connect(ROOT / "app/assets/databases/quran.db")
     quran_meta = dict(quran_db.execute("SELECT key,value FROM meta"))
     digest = hashlib.sha256()
+    ayah_counts: dict[int, int] = {}
     for surah, ayah, text in quran_db.execute(
         """
         SELECT surah_number, ayah_number, text_uthmani
@@ -175,6 +211,7 @@ def main() -> int:
         """
     ):
         digest.update(f"{surah}:{ayah}\t{text}\n".encode("utf-8"))
+        ayah_counts[surah] = ayah_counts.get(surah, 0) + 1
     actual_checksum = digest.hexdigest()
     translated = quran_db.execute(
         """
@@ -217,6 +254,7 @@ def main() -> int:
         FROM surahs ORDER BY number
         """
     ).fetchall()
+    foreign_key_errors = list(quran_db.execute("PRAGMA foreign_key_check"))
     quran_db.close()
     if quran_meta.get("schema_version") != "6_tanzil_arabic_only":
         errors.append("quran.db is not the sanitized Arabic-only schema")
@@ -234,8 +272,12 @@ def main() -> int:
         errors.append(
             "quran.db contains permission-pending structural/Tajweed metadata"
         )
+    if foreign_key_errors:
+        errors.append(f"quran.db foreign key errors: {foreign_key_errors[:3]}")
     if len(surah_rows) != 114:
         errors.append("quran.db Surah catalog must contain 114 generated rows")
+    if [row[0] for row in surah_rows] != list(range(1, 115)):
+        errors.append("quran.db Surah numbers are not exactly 1–114")
     for number, name_ar, name_en, transliteration, place, count, bismillah in surah_rows:
         if (
             name_ar != f"سورة {number}"
@@ -245,6 +287,7 @@ def main() -> int:
             or bismillah != 0
             or not isinstance(count, int)
             or count <= 0
+            or count != ayah_counts.get(number)
         ):
             errors.append("quran.db contains unverified Surah metadata")
             break
@@ -304,12 +347,15 @@ def main() -> int:
     preview_surahs = surahs.get("surahs", [])
     if len(preview_surahs) != 114:
         errors.append("Quran preview Surah catalog must contain 114 rows")
+    if [row.get("n") for row in preview_surahs] != list(range(1, 115)):
+        errors.append("Quran preview Surah numbers are not exactly 1–114")
     for row in preview_surahs:
         number = row.get("n")
         if (
             set(row) != {"n", "en", "ar", "ayahs"}
             or row.get("en") != f"Surah {number}"
             or row.get("ar") != f"سورة {number}"
+            or row.get("ayahs") != ayah_counts.get(number)
         ):
             errors.append("Quran preview contains unverified Surah metadata")
             break

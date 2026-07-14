@@ -16,7 +16,7 @@ class UserDatabase {
     final path = p.join(documents.path, 'user.db');
     _database = await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -129,24 +129,28 @@ class UserDatabase {
           )
         ''');
         await db.execute('''
-          CREATE VIRTUAL TABLE licensed_content_fts USING fts5(
-            dataset_id UNINDEXED,
-            content_type UNINDEXED,
-            source_ref UNINDEXED,
-            title,
-            body,
-            tokenize = 'unicode61 remove_diacritics 2'
+          CREATE TABLE licensed_search_documents(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            dataset_id TEXT NOT NULL,
+            content_type TEXT NOT NULL,
+            source_ref TEXT NOT NULL,
+            title TEXT,
+            body TEXT
           )
         ''');
         await db.execute('''
-          CREATE VIRTUAL TABLE user_search_fts USING fts5(
-            kind,
-            title,
-            body,
-            target_uri UNINDEXED,
-            tokenize = 'unicode61 remove_diacritics 2'
+          CREATE TABLE user_search_documents(
+            kind TEXT NOT NULL,
+            title TEXT,
+            body TEXT,
+            target_uri TEXT NOT NULL,
+            PRIMARY KEY(kind, target_uri)
           )
         ''');
+        await db.execute(
+          'CREATE INDEX idx_licensed_search_dataset '
+          'ON licensed_search_documents(dataset_id, content_type)',
+        );
         await db.insert('schema_meta', {
           'key': 'schema_version',
           'value': '$version',
@@ -180,22 +184,39 @@ class UserDatabase {
                 REFERENCES installed_datasets(dataset_id) ON DELETE CASCADE
             )
           ''');
+        }
+        if (oldVersion < 3) {
+          await db.execute('DROP TABLE IF EXISTS licensed_content_fts');
+          await db.execute('DROP TABLE IF EXISTS user_search_fts');
           await db.execute('''
-            CREATE VIRTUAL TABLE IF NOT EXISTS licensed_content_fts USING fts5(
-              dataset_id UNINDEXED,
-              content_type UNINDEXED,
-              source_ref UNINDEXED,
-              title,
-              body,
-              tokenize = 'unicode61 remove_diacritics 2'
+            CREATE TABLE IF NOT EXISTS licensed_search_documents(
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              dataset_id TEXT NOT NULL,
+              content_type TEXT NOT NULL,
+              source_ref TEXT NOT NULL,
+              title TEXT,
+              body TEXT
             )
           ''');
-          await db.insert(
-            'schema_meta',
-            {'key': 'schema_version', 'value': '$newVersion'},
-            conflictAlgorithm: ConflictAlgorithm.replace,
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS user_search_documents(
+              kind TEXT NOT NULL,
+              title TEXT,
+              body TEXT,
+              target_uri TEXT NOT NULL,
+              PRIMARY KEY(kind, target_uri)
+            )
+          ''');
+          await db.execute(
+            'CREATE INDEX IF NOT EXISTS idx_licensed_search_dataset '
+            'ON licensed_search_documents(dataset_id, content_type)',
           );
         }
+        await db.insert(
+          'schema_meta',
+          {'key': 'schema_version', 'value': '$newVersion'},
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
       },
     );
     return _database!;
@@ -263,7 +284,7 @@ class UserDatabase {
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
         if (inserted > 0) {
-          await txn.insert('user_search_fts', {
+          await txn.insert('user_search_documents', {
             'kind': 'note',
             'title': 'Personal note',
             'body': '${entry.value}',
@@ -468,38 +489,17 @@ class UserDatabase {
     final db = await open();
     final clean = query.trim();
     if (clean.isEmpty) return const [];
-    final tokens = RegExp(r'[A-Za-z0-9\u0600-\u06FF]+')
-        .allMatches(clean)
-        .map((match) => match.group(0)!)
-        .where((token) => token.isNotEmpty)
-        .toList();
-    if (tokens.isEmpty) return const [];
-    final ftsQuery = tokens
-        .map((token) => '"${token.replaceAll('"', '""')}"')
-        .join(' AND ');
-    try {
-      return await db.rawQuery(
-        '''
-        SELECT kind, title, body, target_uri
-        FROM user_search_fts
-        WHERE user_search_fts MATCH ?
-        LIMIT ?
-        ''',
-        [ftsQuery, limit],
-      );
-    } on DatabaseException {
-      final like = '%${clean.replaceAll('%', '').replaceAll('_', '')}%';
-      return db.rawQuery(
-        '''
-        SELECT 'note' AS kind, 'Personal note' AS title, body, target_uri
-        FROM notes
-        WHERE body LIKE ?
-        ORDER BY updated_at DESC
-        LIMIT ?
-        ''',
-        [like, limit],
-      );
-    }
+    final like = '%${clean.replaceAll('%', '').replaceAll('_', '')}%';
+    return db.rawQuery(
+      '''
+      SELECT kind, title, body, target_uri
+      FROM user_search_documents
+      WHERE title LIKE ? OR body LIKE ?
+      ORDER BY rowid DESC
+      LIMIT ?
+      ''',
+      [like, like, limit],
+    );
   }
 
   Future<void> _replaceSearchEntry(
@@ -510,17 +510,21 @@ class UserDatabase {
   ) async {
     final db = await open();
     await db.delete(
-      'user_search_fts',
+      'user_search_documents',
       where: 'target_uri = ? AND kind = ?',
       whereArgs: [targetUri, kind],
     );
     if (body.isNotEmpty || title.isNotEmpty) {
-      await db.insert('user_search_fts', {
+      await db.insert(
+        'user_search_documents',
+        {
         'kind': kind,
         'title': title,
         'body': body,
         'target_uri': targetUri,
-      });
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     }
   }
 }
