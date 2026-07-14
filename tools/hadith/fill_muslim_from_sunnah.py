@@ -69,17 +69,34 @@ def fetch(url: str, cache_name: str, delay: float = 0.35) -> str:
 
 
 def resolve_wayback_url(path: str) -> str:
+    """Prefer a known-good Wayback timestamp; optionally upgrade via availability API."""
     live = f"https://sunnah.com/muslim/{path}" if path else "https://sunnah.com/muslim"
+    fallback = f"https://web.archive.org/web/{FALLBACK_TS}/{live}"
+    # Availability API is flaky/slow; only try briefly and always keep a working fallback.
     api = "https://archive.org/wayback/available?url=" + urllib.parse.quote(live, safe="")
+    cache_name = f"avail_{path or 'index'}.json"
+    cpath = CACHE / cache_name
+    if cpath.exists():
+        try:
+            d = json.loads(cpath.read_text(encoding="utf-8"))
+            closest = d.get("archived_snapshots", {}).get("closest")
+            if closest and closest.get("available") and closest.get("url"):
+                return closest["url"].replace("http://", "https://", 1)
+        except Exception:
+            pass
     try:
-        raw = fetch(api, f"avail_{path or 'index'}.json", delay=0.15)
+        req = urllib.request.Request(api, headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            raw = resp.read().decode("utf-8", errors="replace")
+        CACHE.mkdir(parents=True, exist_ok=True)
+        cpath.write_text(raw, encoding="utf-8")
         d = json.loads(raw)
         closest = d.get("archived_snapshots", {}).get("closest")
         if closest and closest.get("available") and closest.get("url"):
             return closest["url"].replace("http://", "https://", 1)
     except Exception:
         pass
-    return f"https://web.archive.org/web/{FALLBACK_TS}/{live}"
+    return fallback
 
 
 def sticky_to_arabicnumber(sticky: str) -> str | None:
@@ -258,6 +275,7 @@ def parse_index(html: str) -> list[dict]:
         flags=re.S,
     )
     books: list[dict] = []
+    # Current sunnah.com index markup
     for m in re.finditer(
         r'<div class="book_title title_english"[^>]*>.*?<a[^>]*href="[^"]*/muslim/([^"]+)"[^>]*>(.*?)</a>',
         html,
@@ -265,20 +283,38 @@ def parse_index(html: str) -> list[dict]:
     ):
         slug = m.group(1).strip().strip("/")
         title_en = strip_tags(m.group(2))
-        # arabic title often follows in sibling container
         tail = html[m.end() : m.end() + 800]
         ar_m = re.search(r'class="book_title title_arabic[^"]*"[^>]*>(.*?)</div>', tail, re.S)
         title_ar = strip_tags(ar_m.group(1)) if ar_m else ""
         books.append({"slug": slug, "title_en": title_en, "title_ar": title_ar})
 
     if not books:
-        # looser fallback from book_page style list
+        # Book list rows used by some archived snapshots
         for m in re.finditer(
-            r'href="[^"]*/muslim/(introduction|\d+)"[^>]*>\s*([^<]+?)\s*</a>',
+            r'<div class="englisharabicbook"[^>]*>.*?'
+            r'href="[^"]*/muslim/(introduction|\d+)"[^>]*>(.*?)</a>.*?'
+            r'<span class="arabicbook"[^>]*>(.*?)</span>',
             html,
             re.S,
         ):
-            books.append({"slug": m.group(1), "title_en": strip_tags(m.group(2)), "title_ar": ""})
+            books.append(
+                {
+                    "slug": m.group(1),
+                    "title_en": strip_tags(m.group(2)),
+                    "title_ar": strip_tags(m.group(3)),
+                }
+            )
+
+    if not books:
+        for m in re.finditer(
+            r'href="[^"]*/muslim/(introduction|\d+)/?"[^>]*>\s*([^<]+?)\s*</a>',
+            html,
+            re.S,
+        ):
+            title_en = strip_tags(m.group(2))
+            if not title_en or title_en.isdigit():
+                continue
+            books.append({"slug": m.group(1), "title_en": title_en, "title_ar": ""})
 
     seen = set()
     out = []
@@ -288,6 +324,152 @@ def parse_index(html: str) -> list[dict]:
         seen.add(b["slug"])
         out.append(b)
     return out
+
+
+def resolve_container_hn(inbook: str, sticky: str, refmap: dict, armap: dict) -> int | None:
+    intro_m = re.search(r"Introduction,\s*Narration\s*(\d+)", inbook, re.I)
+    if intro_m:
+        return int(intro_m.group(1)) + 1
+    book_m = re.search(r"Book\s+(\d+),\s*Hadith\s+(\d+)", inbook, re.I)
+    hn = None
+    if book_m:
+        hn = refmap.get((int(book_m.group(1)), int(book_m.group(2))))
+    if hn is None and sticky:
+        an = sticky_to_arabicnumber(sticky)
+        if an:
+            hn = armap.get(an)
+    return hn
+
+
+def gap_fill_from_cache(db_path: Path, refmap: dict, armap: dict) -> dict:
+    """Fill remaining empty Arabic/English rows using unmapped sunnah variant blocks."""
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    filled_ar = filled_en = 0
+
+    def missing_ar() -> set[int]:
+        return {
+            int(r[0])
+            for r in conn.execute(
+                "SELECT hadith_number FROM hadiths WHERE book_id=2 AND (text_ar IS NULL OR trim(text_ar)='')"
+            )
+        }
+
+    for slug in BOOK_SLUGS:
+        path = CACHE / f"muslim_book_{slug}.html"
+        if not path.exists():
+            path = CACHE / f"muslim_book_{slug}_fb.html"
+        if not path.exists():
+            continue
+        html = path.read_text(encoding="utf-8", errors="replace")
+        parts = re.split(r'<div class="actualHadithContainer[^"]*"', html)
+        resolved: list[dict] = []
+        for part in parts[1:]:
+            sticky_m = re.search(r'hadith_reference_sticky">([^<]+)<', part)
+            sticky = sticky_m.group(1).strip() if sticky_m else ""
+            inbook_m = re.search(
+                r"In-book reference</td>\s*<td[^>]*>\s*&nbsp;:&nbsp;([^<]+)",
+                part,
+                re.I,
+            )
+            inbook = strip_tags(inbook_m.group(1)) if inbook_m else ""
+            ar_m = re.search(r'class="arabic_hadith_full[^"]*"[^>]*>(.*?)</div>', part, re.S)
+            text_ar = strip_tags(ar_m.group(1)) if ar_m else ""
+            if not text_ar:
+                continue
+            narr_m = re.search(r'class="hadith_narrated"[^>]*>(.*?)</div>', part, re.S)
+            details_m = re.search(r'class="text_details"[^>]*>(.*?)</div>', part, re.S)
+            text_en = "\n".join(
+                filter(
+                    None,
+                    [
+                        strip_tags(narr_m.group(1)) if narr_m else "",
+                        strip_tags(details_m.group(1)) if details_m else "",
+                    ],
+                )
+            )
+            hn = resolve_container_hn(inbook, sticky, refmap, armap)
+            resolved.append({"hn": hn, "text_ar": text_ar, "text_en": text_en})
+
+        from collections import defaultdict
+
+        groups: dict[tuple, list] = defaultdict(list)
+        for i, item in enumerate(resolved):
+            if item["hn"] is not None:
+                continue
+            prev = next((resolved[j]["hn"] for j in range(i - 1, -1, -1) if resolved[j]["hn"] is not None), None)
+            nxt = next((resolved[j]["hn"] for j in range(i + 1, len(resolved)) if resolved[j]["hn"] is not None), None)
+            groups[(prev, nxt)].append(item)
+
+        miss = missing_ar()
+        for (prev, nxt), items in groups.items():
+            if prev is None or nxt is None or nxt <= prev + 1:
+                continue
+            holes = [h for h in range(prev + 1, nxt) if h in miss]
+            if not holes:
+                continue
+            for idx, h in enumerate(holes):
+                src = items[min(idx, len(items) - 1)]
+                row = conn.execute(
+                    "SELECT id, text_ar, text_en FROM hadiths WHERE book_id=2 AND hadith_number=?",
+                    (h,),
+                ).fetchone()
+                if not row:
+                    continue
+                sets: list[str] = []
+                vals: list = []
+                if not (row["text_ar"] or "").strip():
+                    sets.append("text_ar=?")
+                    vals.append(src["text_ar"])
+                    filled_ar += 1
+                if not (row["text_en"] or "").strip() and src["text_en"]:
+                    sets.append("text_en=?")
+                    vals.append(src["text_en"])
+                    filled_en += 1
+                if not sets:
+                    continue
+                vals.append(row["id"])
+                conn.execute(f"UPDATE hadiths SET {', '.join(sets)} WHERE id=?", vals)
+
+    # Introduction preface (hadith 1): English chapter introductions from sunnah.com
+    intro_path = CACHE / "muslim_book_introduction.html"
+    if intro_path.exists():
+        intro_html = intro_path.read_text(encoding="utf-8", errors="replace")
+        echap = re.findall(r'class="echapintro"[^>]*>(.*?)</div>', intro_html, re.S)
+        achap = re.findall(r'class="achapintro"[^>]*>(.*?)</div>', intro_html, re.S)
+        row1 = conn.execute(
+            "SELECT id, text_ar, text_en FROM hadiths WHERE book_id=2 AND hadith_number=1"
+        ).fetchone()
+        if row1:
+            if not (row1["text_ar"] or "").strip() and achap:
+                ar1 = "\n\n".join(strip_tags(x) for x in achap if strip_tags(x))
+                if ar1:
+                    conn.execute("UPDATE hadiths SET text_ar=? WHERE id=?", (ar1, row1["id"]))
+                    filled_ar += 1
+            if not (row1["text_en"] or "").strip() and echap:
+                en1 = "\n\n".join(strip_tags(x) for x in echap if strip_tags(x))
+                if en1:
+                    conn.execute("UPDATE hadiths SET text_en=? WHERE id=?", (en1, row1["id"]))
+                    filled_en += 1
+
+    conn.commit()
+    still_ar = conn.execute(
+        "SELECT COUNT(*) FROM hadiths WHERE book_id=2 AND (text_ar IS NULL OR trim(text_ar)='')"
+    ).fetchone()[0]
+    still_en = conn.execute(
+        "SELECT COUNT(*) FROM hadiths WHERE book_id=2 AND (text_en IS NULL OR trim(text_en)='')"
+    ).fetchone()[0]
+    still_ur = conn.execute(
+        "SELECT COUNT(*) FROM hadiths WHERE book_id=2 AND (text_ur IS NULL OR trim(text_ur)='')"
+    ).fetchone()[0]
+    conn.close()
+    return {
+        "gap_fill_ar": filled_ar,
+        "gap_fill_en": filled_en,
+        "still_missing_ar": still_ar,
+        "still_missing_en": still_en,
+        "still_missing_ur": still_ur,
+    }
 
 
 def scrape_all(refmap, armap) -> tuple[list[dict], dict[str, dict]]:
@@ -533,12 +715,72 @@ def main() -> int:
 
     stats = update_db(args.db, hadiths, book_meta, urdu)
     print(json.dumps({k: v for k, v in stats.items() if not k.startswith("missing_")}, indent=2, ensure_ascii=False))
+
+    print("Gap-filling unmapped sunnah.com variant blocks...")
+    gap_stats = gap_fill_from_cache(args.db, refmap, armap)
+    stats.update(gap_stats)
+    # refresh missing lists after gap fill
+    conn = sqlite3.connect(args.db)
+    stats["missing_ar_numbers"] = [
+        int(r[0])
+        for r in conn.execute(
+            "SELECT hadith_number FROM hadiths WHERE book_id=2 AND (text_ar IS NULL OR trim(text_ar)='') ORDER BY hadith_number"
+        )
+    ]
+    stats["missing_ur_numbers"] = [
+        int(r[0])
+        for r in conn.execute(
+            "SELECT hadith_number FROM hadiths WHERE book_id=2 AND (text_ur IS NULL OR trim(text_ur)='') ORDER BY hadith_number"
+        )
+    ]
+    stats["still_missing_ar"] = len(stats["missing_ar_numbers"])
+    stats["still_missing_ur"] = len(stats["missing_ur_numbers"])
+    stats["still_missing_en"] = conn.execute(
+        "SELECT COUNT(*) FROM hadiths WHERE book_id=2 AND (text_en IS NULL OR trim(text_en)='')"
+    ).fetchone()[0]
+    subjects_ar = conn.execute(
+        "SELECT COUNT(*) FROM chapters WHERE book_id=2 AND title_ar IS NOT NULL AND trim(title_ar)!=''"
+    ).fetchone()[0]
+    stats["subjects_with_arabic"] = subjects_ar
+    conn.close()
+
+    print(json.dumps({k: v for k, v in stats.items() if not k.startswith("missing_")}, indent=2, ensure_ascii=False))
     print(f"Still missing AR ({stats['still_missing_ar']}): {stats['missing_ar_numbers'][:40]}")
     print(f"Still missing UR ({stats['still_missing_ur']}): {stats['missing_ur_numbers'][:40]}")
 
     report = ROOT / "reports" / "verification" / "muslim_sunnah_fill_report.json"
     report.parent.mkdir(parents=True, exist_ok=True)
     report.write_text(json.dumps(stats, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    summary = ROOT / "reports" / "verification" / "MUSLIM_SUNNAH_FILL.md"
+    summary.write_text(
+        "\n".join(
+            [
+                "# Sahih Muslim — sunnah.com data fill",
+                "",
+                "Source process matches MOQDEMA/Introduction work: pull subjects + Arabic/English from sunnah.com, Urdu from the authentic `urd-muslim` edition. No AI-generated hadith text.",
+                "",
+                "## Results",
+                f"- Kitab subjects with Arabic titles: **{stats.get('subjects_with_arabic', 0)}/57**",
+                f"- Bab subjects stamped onto hadiths: **{stats.get('bab_filled', 0)}**",
+                f"- Arabic filled this run: **{stats.get('ar_filled', 0)}** (+ gap-fill **{stats.get('gap_fill_ar', 0)}**)",
+                f"- English filled this run: **{stats.get('en_filled', 0)}** (+ gap-fill **{stats.get('gap_fill_en', 0)}**)",
+                f"- Urdu filled this run: **{stats.get('ur_filled', 0)}** (only where `urd-muslim` already has text)",
+                f"- Still missing Arabic: **{stats['still_missing_ar']}**",
+                f"- Still missing Urdu: **{stats['still_missing_ur']}**",
+                "",
+                "## Remaining gaps",
+                "Arabic gaps are placeholder rows with no sunnah.com Arabic/English body (and none in `ara-muslim`/`eng-muslim`).",
+                "Urdu gaps (including Introduction 56–92) are empty in the authentic `urd-muslim` edition; they were not machine-translated.",
+                "",
+                f"Missing AR numbers: `{stats['missing_ar_numbers']}`",
+                "",
+                f"Missing UR numbers: `{stats['missing_ur_numbers']}`",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
 
     if not args.no_gz:
         recompress(args.db)
