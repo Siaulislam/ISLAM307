@@ -1,4 +1,4 @@
-import 'quran_database.dart';
+import '../database/quran_database.dart';
 
 class QuranRepository {
   QuranRepository({QuranDatabase? db}) : _db = db ?? QuranDatabase.instance;
