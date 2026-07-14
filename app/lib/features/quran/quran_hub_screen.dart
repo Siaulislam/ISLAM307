@@ -70,6 +70,20 @@ class QuranHubScreen extends ConsumerWidget {
             subtitle: 'Permission pending for packaged Ruku metadata',
             onTap: () => context.push('/quran/rukus'),
           ),
+          const SizedBox(height: 14),
+          _ChoiceCard(
+            icon: Icons.auto_stories_rounded,
+            title: 'Browse by Juz',
+            subtitle: 'Permission pending for packaged Juz metadata',
+            onTap: () => context.push('/feature/quran-structure'),
+          ),
+          const SizedBox(height: 14),
+          _ChoiceCard(
+            icon: Icons.description_outlined,
+            title: 'Browse by Page',
+            subtitle: 'Permission pending for packaged page metadata',
+            onTap: () => context.push('/feature/quran-structure'),
+          ),
         ],
       ),
     );

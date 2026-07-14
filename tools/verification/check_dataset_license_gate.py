@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import gzip
+import hashlib
 import sqlite3
 from pathlib import Path
 
@@ -120,6 +121,15 @@ def main() -> int:
 
     quran_db = sqlite3.connect(ROOT / "app/assets/databases/quran.db")
     quran_meta = dict(quran_db.execute("SELECT key,value FROM meta"))
+    digest = hashlib.sha256()
+    for surah, ayah, text in quran_db.execute(
+        """
+        SELECT surah_number, ayah_number, text_uthmani
+        FROM ayahs ORDER BY global_number
+        """
+    ):
+        digest.update(f"{surah}:{ayah}\t{text}\n".encode("utf-8"))
+    actual_checksum = digest.hexdigest()
     translated = quran_db.execute(
         """
         SELECT COUNT(*) FROM ayahs
@@ -158,7 +168,10 @@ def main() -> int:
     if quran_meta.get("schema_version") != "6_tanzil_arabic_only":
         errors.append("quran.db is not the sanitized Arabic-only schema")
     expected_checksum = records["quran-arabic-tanzil"].get("checksum_sha256")
-    if quran_meta.get("text_sha256") != expected_checksum:
+    if (
+        quran_meta.get("text_sha256") != expected_checksum
+        or actual_checksum != expected_checksum
+    ):
         errors.append("quran.db Arabic text checksum does not match registry")
     if translated:
         errors.append(f"quran.db contains {translated} permission-pending translations")
@@ -171,17 +184,58 @@ def main() -> int:
 
     preview_path = ROOT / "preview/library/data/quran/ayahs.json.gz"
     preview = json.loads(gzip.decompress(preview_path.read_bytes()))
+    preview_digest = hashlib.sha256()
     forbidden_translation_keys = {
         "en", "ur", "hi", "fil", "bn", "idn", "ms", "tr", "fa", "fr",
         "ha", "so", "ps", "sw",
     }
-    for ayah in preview.get("ayahs", []):
+    preview_ayahs = preview.get("ayahs", [])
+    if len(preview_ayahs) != 6236:
+        errors.append("Quran preview does not contain exactly 6236 ayahs")
+    allowed_ayah_keys = {"s", "a", "ar", "p", "j", "ruku"}
+    for ayah in preview_ayahs:
+        if set(ayah) - allowed_ayah_keys:
+            errors.append(
+                f"Quran preview contains unexpected fields: "
+                f"{sorted(set(ayah) - allowed_ayah_keys)}"
+            )
+            break
         if forbidden_translation_keys.intersection(ayah):
             errors.append("Quran preview contains permission-pending translation fields")
             break
         if any(ayah.get(key) is not None for key in ("p", "j", "ruku")):
             errors.append("Quran preview contains permission-pending structure metadata")
             break
+        preview_digest.update(
+            f"{ayah['s']}:{ayah['a']}\t{ayah['ar']}\n".encode("utf-8")
+        )
+    if preview_digest.hexdigest() != expected_checksum:
+        errors.append("Quran preview Arabic checksum does not match registry")
+
+    books = json.loads(
+        (ROOT / "preview/library/data/hadith/books.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if books.get("books") != [] or books.get("count") != 0:
+        errors.append("Hadith preview placeholder contains bundled records")
+    manifest = json.loads(
+        (ROOT / "preview/library/data/manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if manifest.get("quran", {}).get("translations") != []:
+        errors.append("Preview manifest claims permission-pending translations")
+    for key in ("hadith", "tafsir", "narrators"):
+        if manifest.get(key, {}).get("status") != "permission_pending":
+            errors.append(f"Preview manifest does not gate {key}")
+    surahs = json.loads(
+        (ROOT / "preview/library/data/quran/surahs.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    if len(surahs.get("surahs", [])) != 114:
+        errors.append("Quran preview Surah catalog must contain 114 rows")
 
     if errors:
         raise SystemExit("\n".join(errors))

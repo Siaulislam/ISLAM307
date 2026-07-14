@@ -39,7 +39,10 @@ class QuranDatabase {
     }
     if (needsCopy) {
       final data = await rootBundle.load(_asset);
-      await File(path).writeAsBytes(data.buffer.asUint8List(), flush: true);
+      await File(path).writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+        flush: true,
+      );
     }
     _db = await openDatabase(path, readOnly: false);
     return _db!;

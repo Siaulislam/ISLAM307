@@ -27,6 +27,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/about', builder: (_, __) => const AboutScreen()),
       GoRoute(path: '/about/licenses', builder: (_, __) => const DataSourcesLicensesScreen()),
       GoRoute(path: '/updates', builder: (_, __) => const ContentUpdatesScreen()),
+      GoRoute(path: '/downloads', builder: (_, __) => const ContentUpdatesScreen()),
+      GoRoute(path: '/settings', builder: (_, __) => const ContentUpdatesScreen()),
+      GoRoute(path: '/more', builder: (_, __) => const FeatureLibraryScreen()),
+      GoRoute(
+        path: '/prayer',
+        builder: (_, __) => const LicensedFeaturePlaceholderScreen(
+          featureId: 'prayer-guide',
+        ),
+      ),
+      GoRoute(
+        path: '/audio',
+        builder: (_, __) => const LicensedFeaturePlaceholderScreen(
+          featureId: 'audio',
+        ),
+      ),
       GoRoute(path: '/library', builder: (_, __) => const FeatureLibraryScreen()),
       GoRoute(
         path: '/library/:section',

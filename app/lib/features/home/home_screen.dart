@@ -222,9 +222,9 @@ class HomeScreen extends ConsumerWidget {
     const items = [
       ('Home', Icons.home_rounded, '/home'),
       ('Quran', Icons.menu_book_rounded, '/quran'),
-      ('Hadith', Icons.auto_stories_rounded, '/hadith'),
-      ('Tafsir', Icons.library_books_rounded, '/tafsir'),
-      ('Search', Icons.search_rounded, '/search'),
+      ('AI', Icons.auto_awesome_rounded, '/ai'),
+      ('Library', Icons.local_library_rounded, '/library'),
+      ('More', Icons.grid_view_rounded, '/more'),
     ];
     return Container(
       decoration: BoxDecoration(

@@ -31,6 +31,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Enforce dataset license gate
+        run: python tools/verification/check_dataset_license_gate.py
+
       - name: Build static preview site
         run: python tools/design/build_gh_pages_site.py
 
