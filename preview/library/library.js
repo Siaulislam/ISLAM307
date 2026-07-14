@@ -42,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=hadith-reader-52' : '?v=hadith-reader-52';
+  const bust = url.includes('?') ? '&v=hadith-reader-53' : '?v=hadith-reader-53';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
@@ -445,9 +445,6 @@ function openWordQuick(word) {
 function openWordFull(word) {
   const lang = activeWordLang();
   const selected = wordMeaningForLang(word, lang);
-  const parts = (word.parts || [])
-    .map((p) => `<li><strong>${escapeHtml(p.tag || 'seg')}</strong> · ${escapeHtml(fieldOrMissing(p.f))}</li>`)
-    .join('');
   const occS = word.occ_s || 0;
   const occL = word.occ_l || 0;
   const occR = word.occ_r || word.occ || 0;
@@ -480,29 +477,6 @@ function openWordFull(word) {
           <tr><th>Lemma</th><td dir="rtl">${escapeHtml(fieldOrMissing(word.lemma))}</td></tr>
         </tbody>
       </table>
-      <h4>صرف کا درخت</h4>
-      ${parts ? `<ul class="morph-tree">${parts}</ul>` : `<p class="muted">${NO_AUTH}</p>`}
-      <h4>AI وضاحت</h4>
-      <pre class="ai-box">${escapeHtml(
-        [
-          'Arabic: ' + word.ar,
-          'Urdu: ' + fieldOrMissing(word.ur),
-          lang !== 'ur' ? lang.toUpperCase() + ': ' + fieldOrMissing(selected) : '',
-          'English: ' + fieldOrMissing(word.en),
-          'Transliteration: ' + fieldOrMissing(word.tr),
-          'Root: ' + fieldOrMissing(word.root),
-          'Lemma: ' + fieldOrMissing(word.lemma),
-          'POS: ' + fieldOrMissing(word.pos),
-          'Grammar: ' + fieldOrMissing(word.gram),
-          'Morphology: ' + fieldOrMissing(word.morph),
-          'This word form: ' + occS,
-          'Same lemma: ' + occL,
-          'Same root: ' + occR,
-          'Source: local quran.db only',
-        ]
-          .filter(Boolean)
-          .join('\n')
-      )}</pre>
     </div>`;
   openHadithModal(`تفصیل لفظ · ${state.currentSurah}:${word.a}:${word.n}`, body);
   const modal = document.getElementById('hadith-detail-modal');
