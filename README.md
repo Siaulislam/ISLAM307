@@ -7,13 +7,13 @@
 | Phase | Status |
 |-------|--------|
 | UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
-| `quran.db` | Built (6,236 ayahs + English + Urdu + word knowledge) |
-| `hadith.db` | Bundled; Flutter module wired |
-| Flutter Quran module | Surah/Ruku browse, word-by-word, Urdu/EN/Arabic-only, View Tafsir, audio + TTS |
-| Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
-| Flutter Tafsir module | Official runtime API · dynamic source registry · no bundled Tafseer corpus |
+| `quran.db` | 6,236 licensed Tanzil Arabic ayahs only |
+| Hadith / translations / Tafseer | Permission-pending placeholders; no corpus bundled |
+| Flutter Quran module | Surah browse, Arabic reading, personal bookmarks/history/notes |
+| Flutter Hadith module | License-status placeholder |
+| Flutter Tafsir module | License-status placeholder for permanent offline rights |
 | Search + Light/Dark | Wired (ayah, word, root, morphology, juz, page) |
-| AI Assistant | Local Quran/Hadith search + official verse-Tafseer API lookup (never invents) |
+| AI Assistant | Approved local Arabic Quran + user-note search only |
 | About / Licenses | Data Sources & Licenses acknowledgements |
 | Prayer, etc. | Next |
 
@@ -66,13 +66,13 @@ flutter run \
   --dart-define=QF_TOKEN_BROKER_URL=https://your-secure-backend.example/qf-token
 ```
 
-Quran Foundation requires OAuth client secrets to remain on a backend. See
-[`docs/TAFSEER_SOURCES_AND_LICENSES.md`](docs/TAFSEER_SOURCES_AND_LICENSES.md)
-for API setup, source availability, attribution, and caching restrictions.
+See [`LICENSE_REQUEST.md`](LICENSE_REQUEST.md), [`LICENSES/`](LICENSES/) and
+[`docs/DATASET_LICENSE_TODO.md`](docs/DATASET_LICENSE_TODO.md) for pending
+content permissions.
 
 ### Rebuild Quran database
 ```bash
-python tools/quran/build_quran_db.py --skip-pdf
+python tools/quran/sanitize_commercial_quran_db.py
 ```
 
 Output: `app/assets/databases/quran.db`
@@ -82,23 +82,13 @@ Output: `app/assets/databases/quran.db`
 | Data | Source |
 |------|--------|
 | Arabic Uthmani | Tanzil Project v1.1 (CC BY-ND — unmodified) |
-| Page, Juz, Ruku, Sajdah, Tajweed | Quran.com API v4 |
-| English translation | Sahih International |
-| Urdu translation | Maulana Muhammad Junagarhi |
-| Word morphology / roots / grammar | Quranic Arabic Corpus v0.4 |
-| Word EN/UR meanings | Quran.com word glosses (build-time) |
-| 13-line pages | Optional PDF import (not runtime) |
 
-The app reads **quran.db only** — never the PDF. Acknowledgements live in **About → Data Sources & Licenses**.
-
-### Rebuild word knowledge (Phase 4)
-
-```bash
-python tools/quran/import_quran_knowledge.py --chapters 1-114
-```
+Translations, page/Juz/Ruku metadata, Tajweed and word knowledge remain empty
+until their exact licenses permit offline commercial redistribution.
 
 ## Tech
 
 Flutter + SQLite · No Firebase · 100% offline
 
-Planned DBs: hadith, tafsir, duas, azkar, library, audio, bookmarks, history, notes, usersettings
+User-generated bookmarks, favorites, notes and history are stored in `user.db`.
+Religious content packs are enabled only after passing the dataset license gate.

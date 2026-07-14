@@ -1,20 +1,25 @@
 import '../tafsir/legacy_tafsir_cleanup.dart';
 import '../tafsir/quran_verse_validator.dart';
-import '../tafsir/tafsir_provider.dart';
-import '../tafsir/tafsir_provider_registry.dart';
+import '../tafsir/tafsir_models.dart';
 
+/// Offline-only Tafseer facade.
+///
+/// Provider code is retained for a future user-triggered licensed update
+/// workflow, but normal reading never calls an internet API.
 class TafsirRepository {
-  TafsirRepository({TafsirProviderRegistry? providers})
-      : _providers = providers ?? TafsirProviderRegistry.instance;
-
-  final TafsirProviderRegistry _providers;
-
   static const unavailableMessage =
-      'Licensed Tafseer is unavailable for this selection. ISLAM 307 never generates Tafseer with AI.';
+      'Offline Tafseer is permission pending. No content is installed, streamed, or generated.';
 
   Future<List<Map<String, dynamic>>> catalogSources() async {
     await LegacyTafsirCleanup.run();
-    return _providers.catalog();
+    return requestedTafsirSources
+        .map(
+          (source) => source.toCatalogMap(
+            unavailableReason:
+                '${source.licenseNote} Permanent offline commercial redistribution permission is required.',
+          ),
+        )
+        .toList();
   }
 
   Future<List<Map<String, dynamic>>> sources() => catalogSources();
@@ -24,84 +29,30 @@ class TafsirRepository {
     int surah,
     int ayah,
   ) async {
-    if (!QuranVerseValidator.isValid(surah, ayah)) {
-      return {
-        'unavailable': true,
-        'message': 'Invalid Quran verse reference: $surah:$ayah.',
-        'slug': sourceSlug,
-        'source_slug': sourceSlug,
-        'surah_number': surah,
-        'ayah_number': ayah,
-        'citation': 'Invalid Quran reference',
-        'retryable': false,
-      };
-    }
-    final catalog = await catalogSources();
-    Map<String, dynamic>? meta;
-    for (final s in catalog) {
-      if (s['slug'] == sourceSlug) {
-        meta = s;
-        break;
-      }
-    }
-    if (meta == null) return null;
-    if (meta['available'] != true) {
-      return _unavailable(meta, sourceSlug, surah, ayah);
-    }
-
-    try {
-      final entry = await _providers.fetch(sourceSlug, surah, ayah);
-      return entry.toMap();
-    } on TafsirProviderException catch (error) {
-      return _unavailable(
-        meta,
-        sourceSlug,
-        surah,
-        ayah,
-        message: error.message,
-        retryable: error.retryable,
-      );
-    } catch (_) {
-      return _unavailable(
-        meta,
-        sourceSlug,
-        surah,
-        ayah,
-        message:
-            'The official Tafseer service could not be reached. No substitute text was generated.',
-        retryable: true,
-      );
-    }
-  }
-
-  /// Remote full-corpus search is deliberately unsupported. It would require
-  /// scraping or maintaining a local Tafseer index, both forbidden by policy.
-  Future<List<Map<String, dynamic>>> search(String query, {int limit = 30}) async {
-    return const [];
-  }
-
-  Map<String, dynamic> _unavailable(
-    Map<String, dynamic> meta,
-    String sourceSlug,
-    int surah,
-    int ayah, {
-    String? message,
-    bool retryable = false,
-  }) {
+    await LegacyTafsirCleanup.run();
     return {
       'unavailable': true,
-      'message': message ?? unavailableMessage,
-      'source_name': meta['name_en'],
-      'author': meta['author'],
-      'source': meta['provider_name'] ?? 'Quran Foundation Content API',
-      'language': meta['language'],
+      'message': QuranVerseValidator.isValid(surah, ayah)
+          ? unavailableMessage
+          : 'Invalid Quran verse reference: $surah:$ayah.',
+      'source_name': 'Offline Tafseer',
+      'author': 'Permission pending',
+      'source': 'No dataset installed',
+      'language': '—',
       'slug': sourceSlug,
       'source_slug': sourceSlug,
       'surah_number': surah,
       'ayah_number': ayah,
       'citation': 'Quran $surah:$ayah',
-      'notes': meta['notes'],
-      'retryable': retryable,
+      'notes': 'See LICENSES/tafsir.md and LICENSE_REQUEST.md.',
+      'retryable': false,
     };
+  }
+
+  Future<List<Map<String, dynamic>>> search(
+    String query, {
+    int limit = 30,
+  }) async {
+    return const [];
   }
 }

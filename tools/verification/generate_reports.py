@@ -282,6 +282,26 @@ def write_markdown_hadith(data: dict, path: Path) -> None:
 def main() -> int:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
+    if not HADITH_DB.exists():
+        summary = {
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "quran": {
+                "dataset": "quran-arabic-tanzil",
+                "status": "approved_for_bundling",
+            },
+            "hadith": {"status": "permission_pending", "bundled_entries": 0},
+            "tafsir": {"status": "permission_pending", "bundled_entries": 0},
+            "narrators": {"status": "permission_pending", "bundled_entries": 0},
+            "license_registry": "app/assets/modules/dataset_registry.json",
+            "permission_report": "LICENSE_REQUEST.md",
+        }
+        (REPORT_DIR / "VERIFICATION_SUMMARY.json").write_text(
+            json.dumps(summary, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+        print("No permission-pending religious database is bundled.")
+        return 0
+
     print("Analyzing hadith.db...")
     hadith = analyze_hadith()
     (REPORT_DIR / "hadith_full_report.json").write_text(

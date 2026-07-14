@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import '../datasets/dataset_license_registry.dart';
 
 /// Copies bundled SQLite assets once; supports .db or .db.gz (modular registry).
 class DatabaseRegistry {
@@ -12,13 +13,12 @@ class DatabaseRegistry {
 
   final _cache = <String, Database>{};
 
-  /// Asset paths — add new databases here (no hardcoding in features).
-  /// `narrators.db.gz` ships schema + approved-source catalog (0 biography rows
-  /// until a licensed import is added).
+  /// Only datasets approved by DatasetLicenseRegistry may be added here.
   static const bundled = {
     'quran': 'assets/databases/quran.db',
-    'hadith': 'assets/databases/hadith.db.gz',
-    'narrators': 'assets/databases/narrators.db.gz',
+  };
+  static const datasetIds = {
+    'quran': 'quran-arabic-tanzil',
   };
 
   bool isRegistered(String name) => bundled.containsKey(name);
@@ -28,6 +28,15 @@ class DatabaseRegistry {
     final asset = bundled[name];
     if (asset == null) {
       throw ArgumentError('Unknown database: $name');
+    }
+    final datasetId = datasetIds[name];
+    final license = datasetId == null
+        ? null
+        : await DatasetLicenseRegistry.instance.dataset(datasetId);
+    if (license?.mayBundle != true) {
+      throw StateError(
+        'Dataset $datasetId is not approved for offline commercial bundling.',
+      );
     }
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, '$name.db');

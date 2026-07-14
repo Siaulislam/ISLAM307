@@ -59,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Instant offline search across Quran, words/roots/grammar, Hadith, and Tafsir. Try: 2:255 · juz 1 · page 2 · root رحم · نماز',
+              'Offline search uses only approved local Arabic Quran text and your personal notes. Permission-pending datasets are excluded.',
               style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12),
             ),
           ),

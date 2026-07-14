@@ -11,27 +11,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "preview" / "library" / "data"
 QURAN_DB = ROOT / "app" / "assets" / "databases" / "quran.db"
-HADITH_GZ = ROOT / "app" / "assets" / "databases" / "hadith.db.gz"
-
-import sys
-
-sys.path.insert(0, str(ROOT / "tools" / "hadith"))
-from hadith_meta import (  # noqa: E402
-    build_reference_detail,
-    extract_ravi_by_lang,
-    isnad_by_lang,
-)
-
-
-
-def connect_gz(path: Path) -> sqlite3.Connection:
-    raw = gzip.decompress(path.read_bytes())
-    tmp = Path("/tmp") / f"islam307_{path.stem}.db"
-    tmp.write_bytes(raw)
-    conn = sqlite3.connect(tmp)
-    conn.row_factory = sqlite3.Row
-    return conn
-
 
 def write_json(path: Path, payload) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -47,13 +26,9 @@ def write_json_gz(path: Path, payload) -> None:
 def export_quran() -> dict:
     conn = sqlite3.connect(QURAN_DB)
     conn.row_factory = sqlite3.Row
-    # Discover authenticated translation_* columns so preview packs stay in sync
-    # with quran.db (never invent text — only export what is stored).
-    cols = [
-        r[1]
-        for r in conn.execute("PRAGMA table_info(ayahs)")
-        if r[1].startswith("translation_")
-    ]
+    # Translation licenses are permission-pending. Placeholder columns may
+    # exist in the schema, but no translation field is exported.
+    cols: list[str] = []
     lang_keys = sorted(c.replace("translation_", "", 1) for c in cols)
     select_cols = ", ".join(
         ["surah_number", "ayah_number", "text_uthmani", "page_madani", "juz", "ruku"]
@@ -65,7 +40,6 @@ def export_quran() -> dict:
             "en": r["name_en"],
             "ar": r["name_ar"],
             "ayahs": r["ayah_count"],
-            "place": r["revelation_place"],
         }
         for r in conn.execute(
             "SELECT number, name_en, name_ar, ayah_count, revelation_place FROM surahs ORDER BY number"
@@ -175,92 +149,19 @@ def export_quran_words() -> dict:
 
 
 def export_hadith() -> dict:
-    import re
-    ar_re = re.compile(r"[\u0600-\u06FF]")
-    conn = connect_gz(HADITH_GZ)
-    books = [
+    write_json(
+        OUT / "hadith" / "books.json",
         {
-            "id": r["id"],
-            "slug": r["slug"],
-            "en": r["name_en"],
-            "ar": r["name_ar"],
-            "count": r["hadith_count"],
-        }
-        for r in conn.execute(
-            "SELECT id, slug, name_en, name_ar, hadith_count FROM books "
-            "WHERE slug IN ('bukhari','muslim','tirmidhi','abudawud') ORDER BY sort_order"
-        )
-    ]
-    write_json(OUT / "hadith" / "books.json", {"books": books, "count": sum(b["count"] for b in books)})
-    totals = {}
-    for book in books:
-        rows = []
-        for r in conn.execute(
-            """
-            SELECT h.hadith_number, h.text_ar, h.text_en, h.text_ur, h.grade, h.narrator,
-                   h.reference_book, h.reference_hadith, c.number AS chapter_number, c.title AS chapter_title
-            FROM hadiths h
-            LEFT JOIN chapters c ON c.id = h.chapter_id
-            WHERE h.book_id = ?
-            ORDER BY h.hadith_number
-            """,
-            (book["id"],),
-        ):
-            ref_book = r["reference_book"]
-            ref_hadith = r["reference_hadith"] or r["hadith_number"]
-            reference = f"{book['en']} · Hadith {ref_hadith}"
-            if ref_book not in (None, 0, "0"):
-                reference = f"{book['en']} · Book {ref_book} · Hadith {ref_hadith}"
-            ravi_primary = (r["narrator"] or "").strip()
-            text_ar = (r["text_ar"] or "").strip()
-            if text_ar and not ar_re.search(text_ar):
-                text_ar = ""
-            ravi_by_lang = extract_ravi_by_lang(
-                text_ar,
-                ravi_primary,
-                r["text_en"] or "",
-                r["text_ur"] or "",
-            )
-            isnads = isnad_by_lang(text_ar, r["text_en"] or "", r["text_ur"] or "")
-            ref_detail = build_reference_detail(
-                book_name=book["en"],
-                book_slug=book["slug"],
-                book_name_ar=book.get("ar") or "",
-                hadith_number=r["hadith_number"],
-                reference_book=ref_book,
-                reference_hadith=ref_hadith,
-                chapter_title=r["chapter_title"],
-                chapter_number=r["chapter_number"],
-                grade=r["grade"],
-            )
-            # Omit external Reference URL / Source Provider from preview packs.
-            if isinstance(ref_detail, dict):
-                ref_detail = {k: v for k, v in ref_detail.items() if k != "source_url"}
-            rows.append(
-                {
-                    "n": r["hadith_number"],
-                    "ar": text_ar,
-                    "en": r["text_en"] or "",
-                    "ur": r["text_ur"] or "",
-                    "grade": r["grade"] or "",
-                    "ravi": ravi_primary,
-                    "narrator": ravi_primary,
-                    "ravi_chain": ravi_by_lang.get("ar") or [],
-                    "ravi_by_lang": ravi_by_lang,
-                    "isnad": isnads.get("ar") or "",
-                    "isnad_ur": isnads.get("ur") or "",
-                    "isnad_by_lang": isnads,
-                    "reference": reference,
-                    "reference_detail": ref_detail,
-                    "reference_book": ref_book,
-                    "reference_hadith": ref_hadith,
-                    "kitab": r["chapter_title"] or "",
-                    "kitab_number": r["chapter_number"],
-                }
-            )
-        write_json_gz(OUT / "hadith" / f"{book['slug']}.json.gz", {"book": book, "hadiths": rows})
-        totals[book["slug"]] = len(rows)
-    return totals
+            "books": [],
+            "count": 0,
+            "status": "permission_pending",
+            "message": (
+                "Hadith content is not bundled until offline commercial "
+                "redistribution rights are verified."
+            ),
+        },
+    )
+    return {"status": "permission_pending", "books": []}
 
 
 def main() -> int:

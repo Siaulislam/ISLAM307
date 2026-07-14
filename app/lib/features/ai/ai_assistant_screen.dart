@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/ai/source_reference_search.dart';
-import '../../core/database/database_registry.dart';
-import '../../core/repositories/tafsir_repository.dart';
-import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
 
 /// Source-only AI assistant — never invents religious content.
@@ -17,36 +14,10 @@ class AiAssistantScreen extends ConsumerStatefulWidget {
 
 class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   final _controller = TextEditingController();
-  final _search = SourceReferenceSearch(registry: DatabaseRegistry.instance);
-  final _tafsirRepo = TafsirRepository();
+  final _search = SourceReferenceSearch();
   SourceReferenceResult? _result;
-  List<Map<String, dynamic>> _tafsirSources = const [];
-  String _tafsirSlug = 'ibn-kathir';
   bool _loading = false;
   int _requestId = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadTafsirSources();
-  }
-
-  Future<void> _loadTafsirSources() async {
-    try {
-      final sources = await _tafsirRepo.catalogSources();
-      final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
-      if (!mounted) return;
-      setState(() {
-        _tafsirSources = sources;
-        _tafsirSlug = sources.any((source) => source['slug'] == preferred)
-            ? preferred
-            : 'ibn-kathir';
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _tafsirSources = const []);
-    }
-  }
 
   Future<void> _run() async {
     if (_loading) return;
@@ -55,10 +26,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
     final requestId = ++_requestId;
     setState(() => _loading = true);
     try {
-      final result = await _search.search(
-        q,
-        tafsirSourceSlug: _tafsirSlug,
-      );
+      final result = await _search.search(q);
       if (!mounted || requestId != _requestId) return;
       setState(() => _result = result);
     } catch (_) {
@@ -104,37 +72,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               ),
             ),
           ),
-          if (_tafsirSources.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: DropdownButtonFormField<String>(
-                value: _tafsirSlug,
-                decoration: const InputDecoration(
-                  labelText: 'Tafseer source for verse explanations',
-                ),
-                items: _tafsirSources
-                    .map(
-                      (source) => DropdownMenuItem(
-                        value: source['slug'] as String,
-                        child: Text(
-                          '${source['name_en']}${source['available'] == true ? '' : ' · unavailable'}',
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) async {
-                  if (value == null) return;
-                  setState(() => _tafsirSlug = value);
-                  await ref
-                      .read(appSettingsProvider.notifier)
-                      .setPreferredTafsir(value);
-                },
-              ),
-            ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Quran and Hadith search locally. Explicit requests such as “Explain Quran 2:255” retrieve the selected Tafseer directly from an authorized official API. Tafseer is never generated or read from bundled files.',
+              'Searches only approved local Arabic Quran text and your personal SQLite notes. Permission-pending Hadith, translations and Tafseer are not searched, streamed or generated.',
               style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12, height: 1.4),
             ),
           ),
@@ -166,6 +107,10 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
                               ..._orEmpty(result.byType(SourceType.tafsir)),
                               _sectionHeader('Word meanings / grammar'),
                               ..._orEmpty(result.byType(SourceType.word)),
+                              _sectionHeader('Personal notes'),
+                              ..._orEmpty(result.byType(SourceType.user)),
+                              _sectionHeader('Application features'),
+                              ..._orEmpty(result.byType(SourceType.feature)),
                               const SizedBox(height: 12),
                               const Text('References', style: TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
                               const SizedBox(height: 6),
@@ -233,11 +178,19 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
           } else if (r.type == SourceType.hadith && r.hadithBook != null && r.hadithNumber != null) {
             // Book id is not always on the reference; stay on AI and keep citation visible.
           } else if (r.type == SourceType.tafsir && r.surah != null && r.ayah != null) {
-            context.push(
-              '/tafsir/${r.tafsirSlug ?? _tafsirSlug}/${r.surah}/${r.ayah}',
-            );
+            context.push('/feature/tafsir');
           } else if (r.type == SourceType.word && r.surah != null && r.ayah != null) {
             context.push('/quran/read/${r.surah}/${r.ayah}');
+          } else if (r.type == SourceType.feature &&
+              r.targetUri?.startsWith('/') == true) {
+            context.push(r.targetUri!);
+          } else if (r.type == SourceType.user &&
+              r.targetUri?.startsWith('quran://') == true) {
+            final match =
+                RegExp(r'^quran://(\d+)/(\d+)$').firstMatch(r.targetUri!);
+            if (match != null) {
+              context.push('/quran/read/${match.group(1)}/${match.group(2)}');
+            }
           }
         },
       ),

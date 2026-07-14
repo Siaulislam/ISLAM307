@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
-/// Plays authentic Quran recitation from trusted EveryAyah CDN.
-/// Supports continuous ayah playback with an explicit Stop control.
+/// Audio architecture placeholder. Streaming remains disabled until licensed.
 class RecitationAudioService extends ChangeNotifier {
   RecitationAudioService._() {
     _player.onPlayerComplete.listen((_) => _onComplete());
@@ -16,7 +13,6 @@ class RecitationAudioService extends ChangeNotifier {
   static final RecitationAudioService instance = RecitationAudioService._();
 
   final AudioPlayer _player = AudioPlayer();
-  Map<String, dynamic>? _catalog;
   PlayerState _playerState = PlayerState.stopped;
 
   String? _reciterId;
@@ -49,27 +45,14 @@ class RecitationAudioService extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Map<String, dynamic>> _load() async {
-    _catalog ??= jsonDecode(await rootBundle.loadString('assets/modules/audio_reciters.json')) as Map<String, dynamic>;
-    return _catalog!;
-  }
+  Future<List<Map<String, dynamic>>> reciters() async => const [];
 
-  Future<List<Map<String, dynamic>>> reciters() async {
-    final catalog = await _load();
-    return (catalog['reciters'] as List).cast<Map<String, dynamic>>();
-  }
-
-  Future<String> defaultReciterId() async {
-    final catalog = await _load();
-    return catalog['default_reciter'] as String? ?? 'sudais';
-  }
+  Future<String> defaultReciterId() async => '';
 
   Future<void> stop() async {
     _userStopped = true;
     await _clearSession(stopPlayer: true);
   }
-
-  String _pad(int n) => n.toString().padLeft(3, '0');
 
   Future<String?> playAyah({
     required int surah,
@@ -79,33 +62,7 @@ class RecitationAudioService extends ChangeNotifier {
     bool continueThroughSurah = false,
     int? endAyah,
   }) async {
-    final catalog = await _load();
-    final reciters = (catalog['reciters'] as List).cast<Map<String, dynamic>>();
-    final id = reciterId ?? _reciterId ?? catalog['default_reciter'] as String;
-    final reciter = reciters.firstWhere((r) => r['id'] == id, orElse: () => reciters.first);
-
-    _userStopped = false;
-    _continueThroughSurah = continueThroughSurah;
-    _endAyah = endAyah;
-    _reciterId = reciter['id'] as String;
-    _reciterName = reciter['name_en'] as String? ?? _reciterId;
-    _surah = surah;
-    _ayah = ayah;
-    notifyListeners();
-
-    var template = reciter['url_template'] as String;
-    template = template
-        .replaceAll('{sss}', _pad(surah))
-        .replaceAll('{aaa}', _pad(ayah))
-        .replaceAll('{global}', '${globalNumber ?? 0}');
-    await _player.stop();
-    try {
-      await _player.play(UrlSource(template));
-      return null;
-    } catch (_) {
-      await _clearSession(stopPlayer: true);
-      return 'Recitation audio unavailable from trusted source right now.';
-    }
+    return 'Recitation audio is permission pending and is not streamed.';
   }
 
   Future<void> _onComplete() async {

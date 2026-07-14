@@ -15,12 +15,12 @@ class HomeScreen extends ConsumerWidget {
     ('Search', Icons.search_rounded, '/search'),
     ('AI', Icons.auto_awesome_rounded, '/ai'),
     ('About', Icons.info_outline_rounded, '/about'),
-    ('Prayer', Icons.mosque_rounded, null),
-    ('Qibla', Icons.explore_rounded, null),
-    ('Azkar', Icons.favorite_rounded, null),
-    ('Duas', Icons.volunteer_activism_rounded, null),
-    ('Library', Icons.local_library_rounded, null),
-    ('Audio', Icons.headphones_rounded, null),
+    ('Prayer', Icons.mosque_rounded, '/feature/prayer-guide'),
+    ('Qibla', Icons.explore_rounded, '/utilities/qibla'),
+    ('Azkar', Icons.favorite_rounded, '/feature/adhkar'),
+    ('Duas', Icons.volunteer_activism_rounded, '/feature/duas'),
+    ('Library', Icons.local_library_rounded, '/library'),
+    ('Audio', Icons.headphones_rounded, '/feature/audio'),
   ];
 
   @override
@@ -47,7 +47,7 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 16),
             _verseCard(context),
             const SizedBox(height: 14),
-            _prayerCard(),
+            _offlineToolsCard(context),
             const SizedBox(height: 20),
             const Text('Quick Access', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
             const SizedBox(height: 12),
@@ -61,9 +61,10 @@ class HomeScreen extends ConsumerWidget {
               children: _quick.map((e) => _gridItem(context, e.$1, e.$2, e.$3)).toList(),
             ),
             const SizedBox(height: 16),
-            _infoCard('Continue Reading', 'Al-Baqarah · Page 42 · Juz 1', onTap: () => context.push('/quran/read/2/1')),
-            _infoCard('Daily Hadith', 'Actions are judged by intentions…', subtitle: 'Sahih Bukhari · 1', onTap: () => context.push('/hadith/read/1/1')),
-            _infoCard('About & Licenses', 'Tanzil · Quranic Arabic Corpus · Data Sources', onTap: () => context.push('/about/licenses')),
+            _infoCard('Personal Library', 'Bookmarks · Favorites · Reading History · Notes', onTap: () => context.push('/library')),
+            _infoCard('Hadith permission status', 'Content placeholder remains disabled until commercial offline redistribution is approved.', onTap: () => context.push('/feature/hadith')),
+            _infoCard('Optional Content Updates', 'No background checks · approved signed endpoints only', onTap: () => context.push('/updates')),
+            _infoCard('About & Licenses', 'Approved datasets · pending permissions · attribution', onTap: () => context.push('/about/licenses')),
             const SizedBox(height: 20),
             _dashboardFooter(),
           ],
@@ -113,16 +114,14 @@ class HomeScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: Islam307Theme.goldLight.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(999)),
-            child: const Text("Today's Verse", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.gold)),
+            child: const Text("Quran Arabic", style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: Islam307Theme.gold)),
           ),
           const SizedBox(height: 12),
           Text('بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ', textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 20)),
           const SizedBox(height: 8),
-          Text(
-            'شروع کرتا ہوں اللہ تعالیٰ کے نام سے جو بڑا مہربان نہایت رحم والا ہے۔',
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
-            style: Islam307Theme.urdu(size: 16),
+          const Text(
+            'Translations remain disabled until explicit offline commercial redistribution permission is documented.',
+            style: TextStyle(color: Islam307Theme.textMuted, height: 1.4),
           ),
           TextButton(onPressed: () => context.push('/quran/read/1/1'), child: const Text('Read More →', style: TextStyle(fontWeight: FontWeight.w700, color: Islam307Theme.emerald))),
         ],
@@ -130,8 +129,7 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _prayerCard() {
-    const times = [('Fajr', '05:12'), ('Dhuhr', '12:45'), ('Asr', '16:20'), ('Maghrib', '18:52'), ('Isha', '20:15')];
+  Widget _offlineToolsCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -141,28 +139,38 @@ class HomeScreen extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'Offline Utilities',
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: Islam307Theme.emeraldDeep,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
             children: [
-              Text('Prayer Times', style: TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
-              Text('Karachi', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emerald)),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/utilities/qibla'),
+                icon: const Icon(Icons.explore_rounded),
+                label: const Text('Qibla'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/utilities/calendar'),
+                icon: const Icon(Icons.calendar_month_rounded),
+                label: const Text('Calendar'),
+              ),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/utilities/zakat'),
+                icon: const Icon(Icons.calculate_rounded),
+                label: const Text('Zakat'),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
-          ...times.map((t) {
-            final active = t.$1 == 'Dhuhr';
-            return Container(
-              padding: EdgeInsets.symmetric(vertical: 8, horizontal: active ? 10 : 0),
-              decoration: active ? BoxDecoration(color: Islam307Theme.emerald.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(10)) : null,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(t.$1, style: TextStyle(fontWeight: active ? FontWeight.w700 : FontWeight.w500)),
-                  Text(t.$2, style: TextStyle(fontWeight: FontWeight.w800, color: active ? Islam307Theme.emeraldDeep : null)),
-                ],
-              ),
-            );
-          }),
         ],
       ),
     );

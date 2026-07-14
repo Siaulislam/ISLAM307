@@ -31,10 +31,11 @@ class HadithRepository {
   }
 
   Future<List<Map<String, dynamic>>> books({bool enabledOnly = true}) async {
+    final allowed = (await _catalog.enabledHadithSlugs()).toSet();
+    if (enabledOnly && allowed.isEmpty) return const [];
     final db = await _registry.open('hadith');
     final rows = await db.query('books', orderBy: 'sort_order ASC');
     if (!enabledOnly) return rows;
-    final allowed = (await _catalog.enabledHadithSlugs()).toSet();
     return rows.where((b) => allowed.contains(b['slug'])).toList();
   }
 

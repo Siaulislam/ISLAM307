@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import '../datasets/dataset_license_registry.dart';
 
 /// Opens bundled quran.db — app NEVER reads PDF at runtime.
 class QuranDatabase {
@@ -11,10 +12,15 @@ class QuranDatabase {
 
   Database? _db;
   static const _asset = 'assets/databases/quran.db';
-  static const _schemaMarker = '5_wbw_multilang';
+  static const _schemaMarker = '6_tanzil_arabic_only';
 
   Future<Database> open() async {
     if (_db != null) return _db!;
+    final license = await DatasetLicenseRegistry.instance
+        .dataset('quran-arabic-tanzil');
+    if (license?.mayBundle != true) {
+      throw StateError('Quran Arabic dataset is not approved for bundling.');
+    }
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, 'quran.db');
     final exists = await File(path).exists();

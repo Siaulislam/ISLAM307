@@ -5,17 +5,15 @@ import '../../features/welcome/welcome_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/quran/quran_hub_screen.dart';
 import '../../features/quran/quran_surah_list_screen.dart';
-import '../../features/quran/quran_ruku_list_screen.dart';
 import '../../features/quran/quran_reader_screen.dart';
-import '../../features/hadith/hadith_screen.dart';
-import '../../features/hadith/hadith_book_screen.dart';
-import '../../features/hadith/hadith_detail_screen.dart';
-import '../../features/hadith/narrator_profile_screen.dart';
-import '../../features/tafsir/tafsir_screen.dart';
-import '../../features/tafsir/tafsir_reader_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/ai/ai_assistant_screen.dart';
+import '../../features/library/feature_library_screen.dart';
+import '../../features/library/user_library_screen.dart';
+import '../../features/placeholders/licensed_feature_placeholder_screen.dart';
+import '../../features/utilities/offline_utility_screen.dart';
+import '../../features/settings/content_updates_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -28,15 +26,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/ai', builder: (_, __) => const AiAssistantScreen()),
       GoRoute(path: '/about', builder: (_, __) => const AboutScreen()),
       GoRoute(path: '/about/licenses', builder: (_, __) => const DataSourcesLicensesScreen()),
+      GoRoute(path: '/updates', builder: (_, __) => const ContentUpdatesScreen()),
+      GoRoute(path: '/library', builder: (_, __) => const FeatureLibraryScreen()),
+      GoRoute(
+        path: '/library/:section',
+        builder: (_, state) => UserLibraryScreen(
+          section: state.pathParameters['section'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/feature/:id',
+        builder: (_, state) => LicensedFeaturePlaceholderScreen(
+          featureId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/utilities/:id',
+        builder: (_, state) => OfflineUtilityScreen(
+          utility: state.pathParameters['id'] ?? '',
+        ),
+      ),
       GoRoute(path: '/quran', builder: (_, __) => const QuranHubScreen()),
       GoRoute(path: '/quran/surahs', builder: (_, __) => const QuranSurahListScreen()),
-      GoRoute(path: '/quran/rukus', builder: (_, __) => const QuranRukuListScreen()),
+      GoRoute(
+        path: '/quran/rukus',
+        builder: (_, __) => const LicensedFeaturePlaceholderScreen(
+          featureId: 'quran-structure',
+        ),
+      ),
       GoRoute(
         path: '/quran/ruku/:ruku',
-        builder: (_, state) {
-          final ruku = int.parse(state.pathParameters['ruku']!);
-          return QuranReaderScreen(rukuNumber: ruku);
-        },
+        builder: (_, __) => const LicensedFeaturePlaceholderScreen(
+          featureId: 'quran-structure',
+        ),
       ),
       GoRoute(
         path: '/quran/read/:surah/:ayah',
@@ -46,58 +68,36 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return QuranReaderScreen(surahNumber: surah, startAyah: ayah);
         },
       ),
-      GoRoute(path: '/hadith', builder: (_, __) => const HadithScreen()),
+      GoRoute(
+        path: '/hadith',
+        builder: (_, __) =>
+            const LicensedFeaturePlaceholderScreen(featureId: 'hadith'),
+      ),
       GoRoute(
         path: '/hadith/book/:bookId',
-        builder: (_, state) {
-          final bookId = int.parse(state.pathParameters['bookId']!);
-          return HadithBookScreen(bookId: bookId);
-        },
+        builder: (_, __) =>
+            const LicensedFeaturePlaceholderScreen(featureId: 'hadith'),
       ),
       GoRoute(
         path: '/hadith/read/:bookId/:hadithNumber',
-        builder: (_, state) {
-          final bookId = int.parse(state.pathParameters['bookId']!);
-          final hadithNumber = int.parse(state.pathParameters['hadithNumber']!);
-          final chapterId = int.tryParse(state.uri.queryParameters['chapterId'] ?? '');
-          final unassigned = state.uri.queryParameters['unassigned'] == '1';
-          return HadithDetailScreen(
-            bookId: bookId,
-            hadithNumber: hadithNumber,
-            chapterId: chapterId,
-            unassigned: unassigned,
-          );
-        },
+        builder: (_, __) =>
+            const LicensedFeaturePlaceholderScreen(featureId: 'hadith'),
       ),
       GoRoute(
         path: '/narrator',
-        builder: (_, state) {
-          final id = int.tryParse(state.uri.queryParameters['id'] ?? '');
-          final slug = state.uri.queryParameters['slug'];
-          final name = state.uri.queryParameters['name'];
-          final bookSlug = state.uri.queryParameters['book'];
-          final hadithNumber = int.tryParse(state.uri.queryParameters['n'] ?? '');
-          final lang = state.uri.queryParameters['lang'] ?? 'en';
-          return NarratorProfileScreen(
-            narratorId: id,
-            slug: slug,
-            displayName: name,
-            bookSlug: bookSlug,
-            hadithNumber: hadithNumber,
-            lang: lang,
-          );
-        },
+        builder: (_, __) => const LicensedFeaturePlaceholderScreen(
+          featureId: 'narrators',
+        ),
       ),
-      GoRoute(path: '/tafsir', builder: (_, __) => const TafsirScreen()),
+      GoRoute(
+        path: '/tafsir',
+        builder: (_, __) =>
+            const LicensedFeaturePlaceholderScreen(featureId: 'tafsir'),
+      ),
       GoRoute(
         path: '/tafsir/:slug/:surah/:ayah',
-        builder: (_, state) {
-          final slug = state.pathParameters['slug']!;
-          final surah =
-              int.tryParse(state.pathParameters['surah'] ?? '') ?? 0;
-          final ayah = int.tryParse(state.pathParameters['ayah'] ?? '') ?? 0;
-          return TafsirReaderScreen(sourceSlug: slug, surah: surah, ayah: ayah);
-        },
+        builder: (_, __) =>
+            const LicensedFeaturePlaceholderScreen(featureId: 'tafsir'),
       ),
     ],
   );

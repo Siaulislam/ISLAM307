@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Per-user personal library file (bookmarks, highlights, notes).
-/// One JSON file per user under app documents — never AI content.
+import '../database/user_database.dart';
+
+/// Offline per-user data backed by writable SQLite, never religious content.
 class UserLibraryStore {
   UserLibraryStore._();
   static final UserLibraryStore instance = UserLibraryStore._();
 
   static const _userIdKey = 'islam307_user_id';
   String? _userId;
-  Map<String, dynamic>? _cache;
+  Future<void>? _migration;
 
   Future<String> userId() async {
     if (_userId != null) return _userId!;
@@ -22,113 +24,142 @@ class UserLibraryStore {
       id = 'user_${DateTime.now().millisecondsSinceEpoch}';
       await prefs.setString(_userIdKey, id);
     }
-    _userId = id;
-    return id;
+    return _userId = id;
   }
 
-  Future<File> _file() async {
-    final id = await userId();
-    final dir = await getApplicationDocumentsDirectory();
-    final folder = Directory(p.join(dir.path, 'users', id));
-    if (!await folder.exists()) await folder.create(recursive: true);
-    return File(p.join(folder.path, 'library.json'));
-  }
-
-  Future<Map<String, dynamic>> _load() async {
-    if (_cache != null) return _cache!;
-    final file = await _file();
-    if (!await file.exists()) {
-      _cache = {
-        'user_id': await userId(),
-        'bookmarks': <String>[],
-        'highlights': <String, dynamic>{},
-        'notes': <String, dynamic>{},
-        'updated_at': DateTime.now().toIso8601String(),
-      };
-      await _persist();
-      return _cache!;
-    }
-    _cache = jsonDecode(await file.readAsString()) as Map<String, dynamic>;
-    _cache!.putIfAbsent('bookmarks', () => <dynamic>[]);
-    _cache!.putIfAbsent('highlights', () => <String, dynamic>{});
-    _cache!.putIfAbsent('notes', () => <String, dynamic>{});
-    return _cache!;
-  }
-
-  Future<void> _persist() async {
-    final data = await _load();
-    data['updated_at'] = DateTime.now().toIso8601String();
-    data['user_id'] = await userId();
-    final file = await _file();
-    await file.writeAsString(const JsonEncoder.withIndent('  ').convert(data));
-  }
-
-  String _ayahKey(int surah, int ayah) => '$surah:$ayah';
+  String _ayahUri(int surah, int ayah) => 'quran://$surah/$ayah';
 
   Future<List<String>> bookmarks() async {
-    final data = await _load();
-    return (data['bookmarks'] as List).map((e) => '$e').toList();
+    final rows = await UserDatabase.instance.items('bookmark');
+    return rows
+        .map((row) => '${row['target_uri']}')
+        .where((uri) => uri.startsWith('quran://'))
+        .map((uri) => uri.replaceFirst('quran://', '').replaceAll('/', ':'))
+        .toList();
   }
 
-  Future<bool> isBookmarked(int surah, int ayah) async {
-    final key = _ayahKey(surah, ayah);
-    return (await bookmarks()).contains(key);
+  Future<bool> isBookmarked(int surah, int ayah) {
+    return UserDatabase.instance.hasItem('bookmark', _ayahUri(surah, ayah));
   }
 
-  Future<bool> toggleBookmark(int surah, int ayah) async {
-    final data = await _load();
-    final key = _ayahKey(surah, ayah);
-    final list = (data['bookmarks'] as List).map((e) => '$e').toList();
-    final nowOn = !list.contains(key);
-    if (nowOn) {
-      list.add(key);
-    } else {
-      list.remove(key);
+  Future<void> migrateLegacyJson() {
+    return _migration ??= _migrateLegacyJson();
+  }
+
+  Future<void> _migrateLegacyJson() async {
+    final id = await userId();
+    final documents = await getApplicationDocumentsDirectory();
+    final file = File(p.join(documents.path, 'users', id, 'library.json'));
+    if (!await file.exists()) return;
+    try {
+      final data =
+          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      for (final raw in (data['bookmarks'] as List?) ?? const []) {
+        final parts = '$raw'.split(':');
+        if (parts.length != 2) continue;
+        final surah = int.tryParse(parts[0]);
+        final ayah = int.tryParse(parts[1]);
+        if (surah == null || ayah == null) continue;
+        if (!await isBookmarked(surah, ayah)) {
+          await toggleBookmark(surah, ayah);
+        }
+      }
+      for (final entry
+          in Map<String, dynamic>.from(data['notes'] as Map? ?? const {})
+              .entries) {
+        final parts = entry.key.split(':');
+        if (parts.length != 2) continue;
+        final surah = int.tryParse(parts[0]);
+        final ayah = int.tryParse(parts[1]);
+        if (surah != null && ayah != null) {
+          await setNote(surah, ayah, '${entry.value}');
+        }
+      }
+      for (final entry
+          in Map<String, dynamic>.from(
+            data['highlights'] as Map? ?? const {},
+          ).entries) {
+        final parts = entry.key.split(':');
+        if (parts.length != 2) continue;
+        final surah = int.tryParse(parts[0]);
+        final ayah = int.tryParse(parts[1]);
+        if (surah != null && ayah != null) {
+          final target = _ayahUri(surah, ayah);
+          final color = '${entry.value}';
+          if (await UserDatabase.instance.highlight(target) != color) {
+            await UserDatabase.instance.toggleHighlight(
+              target,
+              color: color,
+            );
+          }
+        }
+      }
+      await file.delete();
+    } catch (_) {
+      // Keep the original user file untouched when migration cannot complete.
     }
-    data['bookmarks'] = list;
-    await _persist();
-    return nowOn;
   }
 
-  Future<String?> highlight(int surah, int ayah) async {
-    final data = await _load();
-    final map = Map<String, dynamic>.from(data['highlights'] as Map);
-    return map[_ayahKey(surah, ayah)] as String?;
+  Future<bool> toggleBookmark(int surah, int ayah) {
+    return UserDatabase.instance.toggleItem(
+      'bookmark',
+      _ayahUri(surah, ayah),
+      title: 'Quran $surah:$ayah',
+      metadata: {'surah': surah, 'ayah': ayah},
+    );
   }
 
-  Future<String?> toggleHighlight(int surah, int ayah, {String color = 'gold'}) async {
-    final data = await _load();
-    final map = Map<String, dynamic>.from(data['highlights'] as Map);
-    final key = _ayahKey(surah, ayah);
-    if (map[key] == color) {
-      map.remove(key);
-    } else {
-      map[key] = color;
-    }
-    data['highlights'] = map;
-    await _persist();
-    return map[key] as String?;
+  Future<bool> toggleFavorite(
+    String targetUri, {
+    String? title,
+    String? subtitle,
+  }) {
+    return UserDatabase.instance.toggleItem(
+      'favorite',
+      targetUri,
+      title: title,
+      subtitle: subtitle,
+    );
   }
 
-  Future<String?> note(int surah, int ayah) async {
-    final data = await _load();
-    final map = Map<String, dynamic>.from(data['notes'] as Map);
-    return map[_ayahKey(surah, ayah)] as String?;
+  Future<bool> isFavorite(String targetUri) {
+    return UserDatabase.instance.hasItem('favorite', targetUri);
   }
 
-  Future<void> setNote(int surah, int ayah, String text) async {
-    final data = await _load();
-    final map = Map<String, dynamic>.from(data['notes'] as Map);
-    final key = _ayahKey(surah, ayah);
-    final clean = text.trim();
-    if (clean.isEmpty) {
-      map.remove(key);
-    } else {
-      map[key] = clean;
-    }
-    data['notes'] = map;
-    await _persist();
+  Future<String?> highlight(int surah, int ayah) {
+    return UserDatabase.instance.highlight(_ayahUri(surah, ayah));
   }
 
-  Future<String> exportPath() async => (await _file()).path;
+  Future<String?> toggleHighlight(
+    int surah,
+    int ayah, {
+    String color = 'gold',
+  }) {
+    return UserDatabase.instance.toggleHighlight(
+      _ayahUri(surah, ayah),
+      color: color,
+    );
+  }
+
+  Future<String?> note(int surah, int ayah) {
+    return UserDatabase.instance.note(_ayahUri(surah, ayah));
+  }
+
+  Future<void> setNote(int surah, int ayah, String text) {
+    return UserDatabase.instance.setNote(_ayahUri(surah, ayah), text);
+  }
+
+  Future<void> recordQuranHistory(int surah, int ayah, {String? title}) {
+    return UserDatabase.instance.recordHistory(
+      targetUri: _ayahUri(surah, ayah),
+      contentType: 'quran',
+      title: title ?? 'Quran $surah:$ayah',
+      position: {'surah': surah, 'ayah': ayah},
+    );
+  }
+
+  Future<String> exportPath() async {
+    final documents = await getApplicationDocumentsDirectory();
+    return p.join(documents.path, 'user.db');
+  }
 }

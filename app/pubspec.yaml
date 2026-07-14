@@ -29,8 +29,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/databases/quran.db
-    - assets/databases/hadith.db.gz
-    - assets/databases/narrators.db.gz
     - assets/branding/
     - assets/branding/hadith/
     - assets/branding/books/
