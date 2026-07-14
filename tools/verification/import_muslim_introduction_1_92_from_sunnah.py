@@ -9,7 +9,8 @@ Rules (per product owner):
   - Map In-book Narration 1..91 -> hadith_number 1..91.
   - Sahih Muslim 4a / 4b -> display as Introduction, Narration 4A / 4B
     (sunnah lists 4b as Narration 5; we still label it 4B as requested).
-  - Stop after Introduction 92 (In-book Narration 91). Slot 92 stays empty AR/EN.
+  - Import sunnah In-book Narrations 1–91. Slot 92 may hold user-provided
+    باب صحة الاحتجاج بالحديث المعنعن prose (do not clear if already filled).
   - Copy Subject (باب) headings; each subject covers until the next subject.
   - Preserve existing text_ur on each row.
 """
@@ -266,20 +267,12 @@ def apply_to_db(conn: sqlite3.Connection, hadiths: list[dict]) -> dict:
             }
         )
 
-    # Clear AR/EN on slot 92 (no In-book Narration 92 on sunnah; last is Intro 92 = Narration 91)
+    # Slot 92: keep user-provided mu'an'an chapter if already filled; otherwise leave empty.
     row92 = conn.execute(
-        "SELECT id FROM hadiths WHERE book_id=? AND hadith_number=92", (BOOK_ID,)
+        "SELECT id, length(trim(coalesce(text_ar,''))) AS ar_len, source_provider FROM hadiths WHERE book_id=? AND hadith_number=92",
+        (BOOK_ID,),
     ).fetchone()
-    if row92:
-        conn.execute(
-            """
-            UPDATE hadiths
-            SET text_ar = '', text_en = '', reference_url = '',
-                source_provider = 'sunnah-intro-meta:{"src":"sunnah.com/muslim/introduction","note":"no In-book Narration 92; content ends at Introduction 92 / Narration 91"}'
-            WHERE book_id=? AND hadith_number=92
-            """,
-            (BOOK_ID, ),
-        )
+    preserved_92 = bool(row92 and int(row92["ar_len"] or 0) > 0)
 
     # Sanity: preface untouched
     for pref in (-1, 0):
@@ -291,7 +284,7 @@ def apply_to_db(conn: sqlite3.Connection, hadiths: list[dict]) -> dict:
             raise RuntimeError(f"preface hadith {pref} was altered or missing")
 
     conn.commit()
-    return {"updated": updated, "skipped": skipped, "cleared_92": bool(row92)}
+    return {"updated": updated, "skipped": skipped, "preserved_92": preserved_92}
 
 
 def patch_preview_pack(hadiths: list[dict]) -> None:
@@ -356,10 +349,19 @@ def patch_preview_pack(hadiths: list[dict]) -> None:
             item["display_n"] = disp
             item["reference_detail"] = _set_baab(rd, baab, baab_en=baab_en, hadith_disp=str(disp))
         elif n == 92:
-            item["reference"] = "Introduction (no Narration 92 on sunnah.com)"
-            item["ar"] = ""
-            item["en"] = ""
-            item["reference_detail"] = _set_baab(rd, "المقدمة", baab_en="Introduction", hadith_disp="92")
+            # Prefer DB content (may be user-provided باب صحة الاحتجاج بالحديث المعنعن).
+            item["ar"] = db["text_ar"] or ""
+            item["en"] = db["text_en"] or ""
+            item["ur"] = db["text_ur"] or item.get("ur") or ""
+            baab = meta.get("subject_ar") or "باب صِحَّةِ الاِحْتِجَاجِ بِالْحَدِيثِ الْمُعَنْعَنِ"
+            baab_en = meta.get("subject_en") or "The Soundness of Relying on Ḥadīth Related with the Term Meaning 'On Authority of'"
+            if item["ar"] or item["en"]:
+                item["reference"] = meta.get("tracking_reference") or "Introduction, Narration 92"
+                item["display_n"] = meta.get("display_narration") or "92"
+                item["reference_detail"] = _set_baab(rd, baab, baab_en=baab_en, hadith_disp="92")
+            else:
+                item["reference"] = "Introduction (no Narration 92 on sunnah.com)"
+                item["reference_detail"] = _set_baab(rd, "المقدمة", baab_en="Introduction", hadith_disp="92")
 
     with gzip.open(PREVIEW_GZ, "wt", encoding="utf-8") as f:
         json.dump(pack, f, ensure_ascii=False, separators=(",", ":"))
