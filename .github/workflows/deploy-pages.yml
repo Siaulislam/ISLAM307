@@ -7,7 +7,8 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Deploy preview on each update for online checking (Quran WBW restore + Muslim Urdu).
+    branches: [main, cursor/restore-quran-wbw-c4fa]
   workflow_dispatch:
 
 permissions:
