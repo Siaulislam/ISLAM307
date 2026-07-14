@@ -42,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=hadith-reader-72' : '?v=hadith-reader-72';
+  const bust = url.includes('?') ? '&v=hadith-reader-73' : '?v=hadith-reader-73';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
@@ -1281,7 +1281,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-72`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-73`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -2098,7 +2098,6 @@ function renderHadithList(slug, filter = '') {
 }
 
 function paintHadithTopics(slug, pack, topics) {
-  const totalAll = (pack.hadiths || []).length;
   const q = (state.hadithFilter || '').trim();
   const preface = prefaceHadithRows(pack.hadiths || []);
   const showPreface = preface.length > 0 && (!q || 'moqdema muqaddimah introduction المقدمة'.includes(q.toLowerCase()));
@@ -2107,7 +2106,6 @@ function paintHadithTopics(slug, pack, topics) {
       <div>
         <p class="hadith-browse-kicker">${escapeHtml(pack.book.en)}</p>
         <h2 class="hadith-browse-title" dir="rtl">موضوعات · کتب</h2>
-        <p class="hadith-browse-sub">${topics.length.toLocaleString()} topics${showPreface ? ' + MOQDEMA' : ''} · ${totalAll.toLocaleString()} entries${q ? ` · filter “${escapeHtml(q)}”` : ''}</p>
       </div>
       <button type="button" class="hadith-action" data-act="read-all">Read all ▶</button>
     </div>
@@ -2130,7 +2128,6 @@ function paintHadithTopics(slug, pack, topics) {
       <div class="hadith-topic-index">00</div>
       <div class="hadith-topic-main">
         <p class="hadith-topic-title" dir="rtl">المقدمة</p>
-        <span class="hadith-kitab-hint">MOQDEMA</span>
       </div>
       <div class="hadith-topic-side">
         <span class="hadith-topic-range">Before Hadith 1</span>
