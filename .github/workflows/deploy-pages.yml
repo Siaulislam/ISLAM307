@@ -8,7 +8,7 @@ name: Deploy GitHub Pages
 on:
   push:
     # Deploy preview on each update for online checking.
-    branches: [main, cursor/restore-quran-wbw-c4fa, cursor/abudawud-urdu-topics-c4fa, cursor/tirmidhi-urdu-topics-c4fa]
+    branches: [main, cursor/restore-quran-wbw-c4fa, cursor/abudawud-urdu-topics-c4fa, cursor/tirmidhi-urdu-topics-c4fa, cursor/muslim-missing-arabic-c4fa]
   workflow_dispatch:
 
 permissions:
