@@ -16,6 +16,13 @@ ALLOWED_BUNDLED = {
     "app/assets/databases/quran.db": "quran-arabic-tanzil",
 }
 
+ALLOWED_PREVIEW_DATA = {
+    "preview/library/data/hadith/books.json",
+    "preview/library/data/manifest.json",
+    "preview/library/data/quran/ayahs.json.gz",
+    "preview/library/data/quran/surahs.json",
+}
+
 FORBIDDEN_PATHS = [
     "app/assets/databases/hadith.db",
     "app/assets/databases/hadith.db.gz",
@@ -71,6 +78,16 @@ def main() -> int:
     ] if (ROOT / "preview/snapshots").exists() else []
     if snapshot_files:
         errors.append("Generated religious-content snapshots are bundled")
+    preview_files = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "preview/library/data").rglob("*")
+        if path.is_file()
+    }
+    unexpected_preview = preview_files - ALLOWED_PREVIEW_DATA
+    if unexpected_preview:
+        errors.append(
+            f"Unexpected preview content packs: {sorted(unexpected_preview)}"
+        )
 
     for dataset_id, record in records.items():
         evidence = ROOT / record["evidence"]
@@ -116,13 +133,41 @@ def main() -> int:
         """
     ).fetchone()[0]
     word_count = quran_db.execute("SELECT COUNT(*) FROM quran_words").fetchone()[0]
+    structure_count = quran_db.execute(
+        """
+        SELECT
+          (SELECT COUNT(*) FROM pages_madani) +
+          (SELECT COUNT(*) FROM pages_13_line) +
+          (SELECT COUNT(*) FROM juz) +
+          (SELECT COUNT(*) FROM ruku) +
+          (SELECT COUNT(*) FROM sajdah)
+        """
+    ).fetchone()[0]
+    structured_ayahs = quran_db.execute(
+        """
+        SELECT COUNT(*) FROM ayahs
+        WHERE text_tajweed IS NOT NULL OR page_madani IS NOT NULL
+           OR page_13_line IS NOT NULL OR juz IS NOT NULL
+           OR hizb IS NOT NULL OR rub_el_hizb IS NOT NULL
+           OR ruku IS NOT NULL OR manzil IS NOT NULL
+           OR sajda_number IS NOT NULL OR has_sajda != 0
+           OR has_rub_el_hizb != 0
+        """
+    ).fetchone()[0]
     quran_db.close()
     if quran_meta.get("schema_version") != "6_tanzil_arabic_only":
         errors.append("quran.db is not the sanitized Arabic-only schema")
+    expected_checksum = records["quran-arabic-tanzil"].get("checksum_sha256")
+    if quran_meta.get("text_sha256") != expected_checksum:
+        errors.append("quran.db Arabic text checksum does not match registry")
     if translated:
         errors.append(f"quran.db contains {translated} permission-pending translations")
     if word_count:
         errors.append(f"quran.db contains {word_count} permission-pending word rows")
+    if structure_count or structured_ayahs:
+        errors.append(
+            "quran.db contains permission-pending structural/Tajweed metadata"
+        )
 
     preview_path = ROOT / "preview/library/data/quran/ayahs.json.gz"
     preview = json.loads(gzip.decompress(preview_path.read_bytes()))
@@ -133,6 +178,9 @@ def main() -> int:
     for ayah in preview.get("ayahs", []):
         if forbidden_translation_keys.intersection(ayah):
             errors.append("Quran preview contains permission-pending translation fields")
+            break
+        if any(ayah.get(key) is not None for key in ("p", "j", "ruku")):
+            errors.append("Quran preview contains permission-pending structure metadata")
             break
 
     if errors:

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import sqlite3
 import tempfile
+import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -129,6 +130,10 @@ def main() -> int:
     source.close()
     if len(surahs) != 114 or len(ayahs) != 6236:
         raise SystemExit("Unexpected Quran row counts")
+    digest = hashlib.sha256()
+    for row in ayahs:
+        digest.update(f"{row[2]}:{row[3]}\t{row[4]}\n".encode("utf-8"))
+    text_checksum = digest.hexdigest()
 
     with tempfile.TemporaryDirectory(prefix="islam307-quran-license-") as tmp:
         output = Path(tmp) / "quran.db"
@@ -171,6 +176,7 @@ def main() -> int:
                 ("license", "CC BY-ND 3.0"),
                 ("attribution", "Quran text courtesy of Tanzil Project"),
                 ("ayah_count", "6236"),
+                ("text_sha256", text_checksum),
                 ("content_policy", "Arabic only; pending datasets removed"),
             ],
         )

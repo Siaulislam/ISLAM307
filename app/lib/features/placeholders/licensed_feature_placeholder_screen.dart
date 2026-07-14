@@ -91,6 +91,7 @@ class _LicensedFeaturePlaceholderScreenState
                 _row('Copyright owner', _dataset?.copyrightOwner ?? '—'),
                 _row('Contact', _dataset?.contact ?? '—'),
                 _row('Version', _dataset?.version ?? '—'),
+                _row('Checksum', _dataset?.checksumSha256 ?? 'Not installed'),
                 _row(
                   'Offline redistribution',
                   _dataset?.offlineRedistribution == true

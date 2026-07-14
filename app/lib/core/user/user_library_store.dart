@@ -54,46 +54,7 @@ class UserLibraryStore {
     try {
       final data =
           jsonDecode(await file.readAsString()) as Map<String, dynamic>;
-      for (final raw in (data['bookmarks'] as List?) ?? const []) {
-        final parts = '$raw'.split(':');
-        if (parts.length != 2) continue;
-        final surah = int.tryParse(parts[0]);
-        final ayah = int.tryParse(parts[1]);
-        if (surah == null || ayah == null) continue;
-        if (!await isBookmarked(surah, ayah)) {
-          await toggleBookmark(surah, ayah);
-        }
-      }
-      for (final entry
-          in Map<String, dynamic>.from(data['notes'] as Map? ?? const {})
-              .entries) {
-        final parts = entry.key.split(':');
-        if (parts.length != 2) continue;
-        final surah = int.tryParse(parts[0]);
-        final ayah = int.tryParse(parts[1]);
-        if (surah != null && ayah != null) {
-          await setNote(surah, ayah, '${entry.value}');
-        }
-      }
-      for (final entry
-          in Map<String, dynamic>.from(
-            data['highlights'] as Map? ?? const {},
-          ).entries) {
-        final parts = entry.key.split(':');
-        if (parts.length != 2) continue;
-        final surah = int.tryParse(parts[0]);
-        final ayah = int.tryParse(parts[1]);
-        if (surah != null && ayah != null) {
-          final target = _ayahUri(surah, ayah);
-          final color = '${entry.value}';
-          if (await UserDatabase.instance.highlight(target) != color) {
-            await UserDatabase.instance.toggleHighlight(
-              target,
-              color: color,
-            );
-          }
-        }
-      }
+      await UserDatabase.instance.importLegacyLibrary(data);
       await file.delete();
     } catch (_) {
       // Keep the original user file untouched when migration cannot complete.

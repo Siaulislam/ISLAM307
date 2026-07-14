@@ -236,35 +236,35 @@ class _IslamicCalendar extends StatelessWidget {
   ];
 
   static (int, int, int) _civilHijri(int year, int month, int day) {
-    var y = year;
-    var m = month;
-    if (m <= 2) {
-      y -= 1;
-      m += 12;
-    }
-    final a = y ~/ 100;
-    final b = 2 - a + a ~/ 4;
-    final jd = (365.25 * (y + 4716)).floor() +
-        (30.6001 * (m + 1)).floor() +
-        day +
-        b -
-        1524;
-    final days = jd - 1948440 + 10632;
-    final cycle = (days - 1) ~/ 10631;
-    var remaining = days - 10631 * cycle + 354;
-    final correction = ((10985 - remaining) / 5316).floor() *
-            ((50 * remaining) / 17719).floor() +
-        (remaining / 5670).floor() *
-            ((43 * remaining) / 15238).floor();
-    final hijriYear = 30 * cycle + correction - 30;
-    remaining -= ((30 - correction) / 15).floor() *
-            ((17719 * correction) / 50).floor() +
-        (correction / 16).floor() *
-            ((15238 * correction) / 43).floor() +
-        29;
-    final hijriMonth = math.min(12, ((24 * remaining) / 709).ceil());
+    final a = (14 - month) ~/ 12;
+    final y = year + 4800 - a;
+    final m = month + 12 * a - 3;
+    final julianDay = day +
+        (153 * m + 2) ~/ 5 +
+        365 * y +
+        y ~/ 4 -
+        y ~/ 100 +
+        y ~/ 400 -
+        32045;
+    final hijriYear =
+        ((30 * (julianDay - 1948439) + 10646) / 10631).floor();
+    final hijriMonth = math.min(
+      12,
+      ((julianDay - (29 + _islamicJulianDay(hijriYear, 1, 1))) / 29.5)
+              .ceil() +
+          1,
+    );
     final hijriDay =
-        remaining - ((709 * hijriMonth) / 24).floor();
+        julianDay - _islamicJulianDay(hijriYear, hijriMonth, 1) + 1;
     return (hijriYear, hijriMonth, hijriDay);
+  }
+
+  static int _islamicJulianDay(int year, int month, int day) {
+    return day +
+        (29.5 * (month - 1)).ceil() +
+        (year - 1) * 354 +
+        (3 + 11 * year) ~/ 30 +
+        1948439 -
+        1;
   }
 }

@@ -23,6 +23,7 @@ class DatasetLicenseRecord {
     required this.contact,
     required this.version,
     required this.downloadDate,
+    required this.checksumSha256,
     required this.offlineRedistribution,
     required this.commercialDistribution,
     required this.attribution,
@@ -38,6 +39,7 @@ class DatasetLicenseRecord {
   final String contact;
   final String version;
   final String? downloadDate;
+  final String? checksumSha256;
   final bool offlineRedistribution;
   final bool commercialDistribution;
   final String attribution;
@@ -60,6 +62,7 @@ class DatasetLicenseRecord {
       contact: '${json['contact'] ?? ''}',
       version: '${json['version'] ?? ''}',
       downloadDate: json['download_date'] as String?,
+      checksumSha256: json['checksum_sha256'] as String?,
       offlineRedistribution: json['offline_redistribution'] == true,
       commercialDistribution: json['commercial_distribution'] == true,
       attribution: '${json['attribution'] ?? ''}',

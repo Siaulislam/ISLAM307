@@ -210,6 +210,99 @@ class UserDatabase {
     return (count ?? 0) > 0;
   }
 
+  Future<void> importLegacyLibrary(Map<String, dynamic> data) async {
+    final db = await open();
+    await db.transaction((txn) async {
+      final migrated = await txn.query(
+        'schema_meta',
+        where: 'key = ?',
+        whereArgs: ['legacy_library_json_migrated'],
+        limit: 1,
+      );
+      if (migrated.isNotEmpty) return;
+      final now = DateTime.now().millisecondsSinceEpoch;
+      for (final raw in (data['bookmarks'] as List?) ?? const []) {
+        final parts = '$raw'.split(':');
+        if (parts.length != 2 ||
+            int.tryParse(parts[0]) == null ||
+            int.tryParse(parts[1]) == null) {
+          continue;
+        }
+        final uri = 'quran://${parts[0]}/${parts[1]}';
+        await txn.insert(
+          'user_items',
+          {
+            'target_uri': uri,
+            'item_type': 'bookmark',
+            'title': 'Quran ${parts[0]}:${parts[1]}',
+            'metadata_json': '{}',
+            'created_at': now,
+            'updated_at': now,
+          },
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+      }
+      for (final entry
+          in Map<String, dynamic>.from(data['notes'] as Map? ?? const {})
+              .entries) {
+        final parts = entry.key.split(':');
+        if (parts.length != 2 ||
+            int.tryParse(parts[0]) == null ||
+            int.tryParse(parts[1]) == null) {
+          continue;
+        }
+        final uri = 'quran://${parts[0]}/${parts[1]}';
+        final inserted = await txn.insert(
+          'notes',
+          {
+            'target_uri': uri,
+            'body': '${entry.value}',
+            'created_at': now,
+            'updated_at': now,
+          },
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+        if (inserted > 0) {
+          await txn.insert('user_search_fts', {
+            'kind': 'note',
+            'title': 'Personal note',
+            'body': '${entry.value}',
+            'target_uri': uri,
+          });
+        }
+      }
+      for (final entry
+          in Map<String, dynamic>.from(
+            data['highlights'] as Map? ?? const {},
+          ).entries) {
+        final parts = entry.key.split(':');
+        if (parts.length != 2 ||
+            int.tryParse(parts[0]) == null ||
+            int.tryParse(parts[1]) == null) {
+          continue;
+        }
+        await txn.insert(
+          'highlights',
+          {
+            'target_uri': 'quran://${parts[0]}/${parts[1]}',
+            'color': '${entry.value}',
+            'created_at': now,
+            'updated_at': now,
+          },
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+      }
+      await txn.insert(
+        'schema_meta',
+        {
+          'key': 'legacy_library_json_migrated',
+          'value': DateTime.now().toUtc().toIso8601String(),
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    });
+  }
+
   Future<bool> toggleItem(
     String type,
     String targetUri, {
