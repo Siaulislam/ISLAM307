@@ -302,8 +302,12 @@ class HadithRepository {
         kitabNumber = chapters.first['number'];
         map['kitab_number'] = kitabNumber;
       }
+      // Counted range excludes preface/MOQDEMA rows (hadith_number <= 0).
       final bounds = await db.rawQuery(
-        'SELECT MIN(hadith_number) AS first, MAX(hadith_number) AS last FROM hadiths WHERE chapter_id = ?',
+        '''SELECT MIN(hadith_number) AS first, MAX(hadith_number) AS last
+           FROM hadiths
+           WHERE chapter_id = ? AND hadith_number > 0
+             AND length(trim(coalesce(text_ar,''))) > 0''',
         [chapterId],
       );
       if (bounds.isNotEmpty) {

@@ -572,16 +572,23 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final chapterFirst = h?['chapter_first'] ?? (inScopedNumbers ? _numbers.first : null);
     final chapterLast = h?['chapter_last'] ?? (inScopedNumbers ? _numbers.last : null);
     // Always show Hadith X to Y on the right for every reader box.
+    final isPreface = widget.hadithNumber <= 0;
     final rangeLabel = () {
       final start = chapterFirst;
       final end = chapterLast;
+      if (isPreface) {
+        if (start != null && end != null) {
+          return 'المقدمة · before Hadith $start to $end';
+        }
+        return 'المقدمة';
+      }
       if (start != null && end != null) {
         return '$start' == '$end' ? 'Hadith $start' : 'Hadith $start to $end';
       }
-      if (_numbers.length >= 2) return 'Hadith ${_numbers.first} to ${_numbers.last}';
+      final positive = _numbers.where((n) => n > 0).toList();
+      if (positive.length >= 2) return 'Hadith ${positive.first} to ${positive.last}';
       return 'Hadith ${widget.hadithNumber}';
     }();
-    final nowLabel = 'Now reading Hadith ${widget.hadithNumber}';
 
     return Scaffold(
       body: SafeArea(
@@ -653,13 +660,6 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
                                 rangeLabel,
                                 style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emerald, fontSize: 13),
                               ),
-                              if (nowLabel.isNotEmpty) ...[
-                                const SizedBox(height: 2),
-                                Text(
-                                  nowLabel,
-                                  style: const TextStyle(fontWeight: FontWeight.w600, color: Islam307Theme.textMuted, fontSize: 12),
-                                ),
-                              ],
                               const SizedBox(height: 10),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(999),
