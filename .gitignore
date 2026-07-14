@@ -33,3 +33,4 @@ Thumbs.db
 
 # GitHub Pages build output
 _site/
+tools/verification/cache/

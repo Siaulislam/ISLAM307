@@ -1,0 +1,158 @@
+{
+  "module": "narrator_rijal",
+  "policy": [
+    "Never generate narrator names, biographies, teachers, students, birth/death, or reliability with AI.",
+    "Never scrape Wikipedia, blogs, forums, or unapproved websites.",
+    "Use ONLY approved classical Ahl al-Sunnah wa al-Jama'ah references accepted by Hanafi/Deobandi scholars.",
+    "Every classical field MUST include citation: Book Name, Author, Volume Number, Page Number (Edition/Publisher if available).",
+    "If authentic information cannot be verified, leave the field empty — never guess.",
+    "Never use Shia, Ahmadi/Qadiani, or other non-Sunni sources.",
+    "Never assume classical data is unavailable. Never invent. Never merge opinions from different books."
+  ],
+  "not_imported_message": "This narrator profile has not been imported into the local database yet.",
+  "database": "narrators",
+  "database_asset": "assets/databases/narrators.db.gz",
+  "schema_version": "1_rijal_citations",
+  "pack": {
+    "slug": "rijal-scaffold",
+    "name_en": "Narrator (Rijāl) Knowledge Pack",
+    "installed": true,
+    "has_biography_rows": true,
+    "has_hadith_mappings": true,
+    "notes": "Authenticated identity scaffold for 26510 narrators across four Hadith books. Classical biography fields populated only where licensed/research import exists (currently 8 rows, including Bukhari Hadith 1). Never AI-invented.",
+    "last_import_batch": "authenticated_attribution_scaffold_2026-07-12"
+  },
+  "approved_sources": [
+    {
+      "slug": "tahdhib-al-kamal",
+      "name_en": "Tahdhib al-Kamal",
+      "name_ar": "تهذيب الكمال",
+      "author": "Imam al-Mizzi",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "tahdhib-al-tahdhib",
+      "name_en": "Tahdhib al-Tahdhib",
+      "name_ar": "تهذيب التهذيب",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "taqrib-al-tahdhib",
+      "name_en": "Taqrib al-Tahdhib",
+      "name_ar": "تقريب التهذيب",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "siyar-alam-al-nubala",
+      "name_en": "Siyar A'lam al-Nubala",
+      "name_ar": "سير أعلام النبلاء",
+      "author": "Imam al-Dhahabi",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-isabah",
+      "name_en": "Al-Isabah fi Tamyiz al-Sahabah",
+      "name_ar": "الإصابة في تمييز الصحابة",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "mizan-al-itidal",
+      "name_en": "Mizan al-I'tidal",
+      "name_ar": "ميزان الاعتدال",
+      "author": "Imam al-Dhahabi",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "lisan-al-mizan",
+      "name_en": "Lisan al-Mizan",
+      "name_ar": "لسان الميزان",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "tabaqat-ibn-sad",
+      "name_en": "Tabaqat Ibn Sa'd",
+      "name_ar": "الطبقات الكبرى",
+      "author": "Ibn Sa'd",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "tarikh-al-kabir",
+      "name_en": "Tarikh al-Kabir",
+      "name_ar": "التاريخ الكبير",
+      "author": "Imam al-Bukhari",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-jarh-wa-al-tadil",
+      "name_en": "Al-Jarh wa al-Ta'dil",
+      "name_ar": "الجرح والتعديل",
+      "author": "Ibn Abi Hatim",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-istiab",
+      "name_en": "Al-Isti'ab fi Ma'rifat al-Ashab",
+      "name_ar": "الاستيعاب في معرفة الأصحاب",
+      "author": "Ibn Abd al-Barr",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "usd-al-ghabah",
+      "name_en": "Usd al-Ghabah fi Ma'rifat al-Sahabah",
+      "name_ar": "أسد الغابة في معرفة الصحابة",
+      "author": "Ibn al-Athir",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "fath-al-bari",
+      "name_en": "Fath al-Bari",
+      "name_ar": "فتح الباري شرح صحيح البخاري",
+      "author": "Imam Ibn Hajar al-Asqalani",
+      "license_status": "permission_required"
+    },
+    {
+      "slug": "al-kashif",
+      "name_en": "Al-Kashif",
+      "name_ar": "الكاشف",
+      "author": "Imam al-Dhahabi",
+      "license_status": "permission_required"
+    }
+  ],
+  "forbidden": [
+    "AI-generated biographies",
+    "Wikipedia",
+    "Blogs",
+    "Forums",
+    "User-generated content",
+    "Unapproved websites",
+    "Guessing or merging classical opinions",
+    "Shia sources",
+    "Ahmadi/Qadiani sources",
+    "Hardcoding that classical biographies are unavailable",
+    "Fields without Book/Author/Volume/Page citation"
+  ],
+  "citation_rule": {
+    "required_fields": [
+      "book_name",
+      "author",
+      "volume",
+      "page"
+    ],
+    "optional_fields": [
+      "edition",
+      "publisher"
+    ],
+    "display_example": {
+      "reliability": "Thiqah",
+      "reference": [
+        "Tahdhib al-Tahdhib",
+        "Vol. 11",
+        "Page 245"
+      ]
+    }
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "source": "https://ihadis.com/en/subjectwise-hadith and https://ihadis.com/en/bukhari/hadith/{n}",
+  "filled": [
+    {
+      "hadith": 5710,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Medicine",
+      "chapter_number": 76,
+      "ar_len": 709,
+      "en_len": 661,
+      "source": "https://ihadis.com/en/bukhari/hadith/5710"
+    },
+    {
+      "hadith": 5711,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Medicine",
+      "chapter_number": 76,
+      "ar_len": 709,
+      "en_len": 661,
+      "source": "https://ihadis.com/en/bukhari/hadith/5711"
+    },
+    {
+      "hadith": 5712,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Medicine",
+      "chapter_number": 76,
+      "ar_len": 709,
+      "en_len": 661,
+      "source": "https://ihadis.com/en/bukhari/hadith/5712"
+    },
+    {
+      "hadith": 5774,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Medicine",
+      "chapter_number": 76,
+      "ar_len": 802,
+      "en_len": 566,
+      "source": "https://ihadis.com/en/bukhari/hadith/5774"
+    },
+    {
+      "hadith": 5775,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Medicine",
+      "chapter_number": 76,
+      "ar_len": 802,
+      "en_len": 566,
+      "source": "https://ihadis.com/en/bukhari/hadith/5775"
+    },
+    {
+      "hadith": 6074,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Good Manners and Form (Al-Adab)",
+      "chapter_number": 78,
+      "ar_len": 2091,
+      "en_len": 2294,
+      "source": "https://ihadis.com/en/bukhari/hadith/6074"
+    },
+    {
+      "hadith": 6075,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Good Manners and Form (Al-Adab)",
+      "chapter_number": 78,
+      "ar_len": 2091,
+      "en_len": 2294,
+      "source": "https://ihadis.com/en/bukhari/hadith/6075"
+    },
+    {
+      "hadith": 6174,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Good Manners and Form (Al-Adab)",
+      "chapter_number": 78,
+      "ar_len": 2622,
+      "en_len": 2445,
+      "source": "https://ihadis.com/en/bukhari/hadith/6174"
+    },
+    {
+      "hadith": 6175,
+      "fields": [
+        "text_ar=?",
+        "text_en=?"
+      ],
+      "subject": "Good Manners and Form (Al-Adab)",
+      "chapter_number": 78,
+      "ar_len": 2622,
+      "en_len": 2445,
+      "source": "https://ihadis.com/en/bukhari/hadith/6175"
+    }
+  ],
+  "errors": [],
+  "remaining_missing_arabic": [],
+  "remaining_missing_english": [],
+  "remaining_missing_subject": [],
+  "duplicates": []
+}

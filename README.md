@@ -6,10 +6,16 @@
 
 | Phase | Status |
 |-------|--------|
-| UI mockups | Approved |
-| `quran.db` | Built (6,236 ayahs, Tanzil verified) |
-| Flutter app scaffold | Splash, Welcome, Home, Quran reader |
-| Hadith, AI, Prayer, etc. | Next |
+| UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
+| `quran.db` | Built (6,236 ayahs + English + Urdu + word knowledge) |
+| `hadith.db` / `tafsir.db` | Bundled; Flutter modules wired |
+| Flutter Quran module | Surah/Ruku browse, word-by-word, Urdu/EN/Arabic-only, View Tafsir, audio + TTS |
+| Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
+| Flutter Tafsir module | Source/Surah/Ayah picker · authentic packs only |
+| Search + Light/Dark | Wired (ayah, word, root, morphology, juz, page) |
+| AI Assistant | Source-only local DB search (never invents) |
+| About / Licenses | Data Sources & Licenses acknowledgements |
+| Prayer, etc. | Next |
 
 ## Quick start (local Chrome — same as XMONEY)
 
@@ -24,6 +30,7 @@ Then open in Chrome:
 | Page | URL |
 |------|-----|
 | **Preview hub** | http://localhost:5500/preview/ |
+| **Live library (Quran/Hadith/Tafsir)** | http://localhost:5500/preview/library/ |
 | **Phase 1 mockups (15 screens)** | http://localhost:5500/design/mockups/index.html |
 | **Phase 3 mockups (Hadith/Tafsir/AI)** | http://localhost:5500/design/mockups/phase3-mockups.html |
 
@@ -36,6 +43,7 @@ Press `Ctrl+C` in the terminal to stop the server.
 | Page | URL |
 |------|-----|
 | Preview hub | https://siaulislam.github.io/ISLAM307/preview/ |
+| Live library | https://siaulislam.github.io/ISLAM307/preview/library/ |
 | Phase 1 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/index.html |
 | Phase 3 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/phase3-mockups.html |
 | Book icons | https://siaulislam.github.io/ISLAM307/preview/icons.html |
@@ -68,12 +76,21 @@ Output: `app/assets/databases/quran.db`
 
 | Data | Source |
 |------|--------|
-| Arabic Uthmani | Tanzil Project v1.1 |
+| Arabic Uthmani | Tanzil Project v1.1 (CC BY-ND — unmodified) |
 | Page, Juz, Ruku, Sajdah, Tajweed | Quran.com API v4 |
 | English translation | Sahih International |
+| Urdu translation | Maulana Muhammad Junagarhi |
+| Word morphology / roots / grammar | Quranic Arabic Corpus v0.4 |
+| Word EN/UR meanings | Quran.com word glosses (build-time) |
 | 13-line pages | Optional PDF import (not runtime) |
 
-The app reads **quran.db only** — never the PDF.
+The app reads **quran.db only** — never the PDF. Acknowledgements live in **About → Data Sources & Licenses**.
+
+### Rebuild word knowledge (Phase 4)
+
+```bash
+python tools/quran/import_quran_knowledge.py --chapters 1-114
+```
 
 ## Tech
 

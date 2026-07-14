@@ -228,8 +228,10 @@ def build(output: Path, sample_limit: int | None = None) -> None:
                 ar = lang_block(h.get("hadith") or [], "ar")
                 text_en = (en.get("body") or "").strip() or None
                 text_ar = (ar.get("body") or "").strip()
-                if not text_ar and text_en:
-                    text_ar = text_en
+                # NEVER invent Arabic and NEVER copy English into text_ar.
+                # If authenticated Arabic is missing, leave empty.
+                if not text_ar:
+                    text_ar = ""
                 bab_id = str(h.get("chapterId", ""))
                 chapter_id = chapter_key_map.get((kitab_number, bab_id))
                 narrator = extract_narrator(text_en or "")

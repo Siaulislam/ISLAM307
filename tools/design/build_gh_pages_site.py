@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,6 +14,7 @@ COPY_DIRS = [
     ("preview", "preview"),
     ("design/mockups", "design/mockups"),
     ("app/assets/branding", "app/assets/branding"),
+    ("app/assets/modules", "app/assets/modules"),
     ("reports/verification", "reports/verification"),
 ]
 
@@ -55,6 +57,14 @@ def patch_icons_html(path: Path) -> None:
 
 
 def main() -> int:
+    # Ensure web library packs exist for Pages (Quran/Hadith/Tafsir).
+    export_script = ROOT / "tools" / "design" / "export_preview_library.py"
+    library_manifest = ROOT / "preview" / "library" / "data" / "manifest.json"
+    if export_script.exists() and not library_manifest.exists():
+        import subprocess
+
+        subprocess.check_call([sys.executable, str(export_script)], cwd=ROOT)
+
     if OUT.exists():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)

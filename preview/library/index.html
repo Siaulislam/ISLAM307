@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISLAM 307 — Quran · Hadith · Tafsir Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="library.css?v=hadith-reader-69" />
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="eyebrow">ISLAM 307</p>
+      <h1>Offline Library Preview</h1>
+      <p class="lead">Browse Quran, Hadith, and Tafsir. Topic → full Hadith Reader. Narrator Rijāl system · verified bios only · male TTS.</p>
+    </div>
+    <a class="back" href="../index.html">← Preview hub</a>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="active" data-tab="quran">Quran</button>
+    <button data-tab="hadith">Hadith</button>
+    <button data-tab="tafsir">Tafsir</button>
+  </nav>
+
+  <main>
+    <section id="panel-quran" class="panel active">
+      <div class="toolbar">
+        <input id="quran-search" type="search" placeholder="Search surah name…" />
+      </div>
+      <div class="layout">
+        <aside id="surah-list" class="list"></aside>
+        <article id="ayah-view" class="reader">
+          <p class="empty">Select a surah to read Arabic + English offline.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="panel-hadith" class="panel">
+      <div class="toolbar">
+        <input id="hadith-search" type="search" placeholder="Type hadith number (e.g. 1) or search topic…" />
+      </div>
+      <div class="layout">
+        <aside id="hadith-books" class="list"></aside>
+        <article id="hadith-view" class="reader">
+          <p class="empty">Select a collection, or type a hadith number (e.g. <strong>1</strong> or <strong>7048</strong>) to search.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="panel-tafsir" class="panel">
+      <div class="toolbar">
+        <label>
+          Surah
+          <input id="tafsir-surah" type="number" min="1" max="114" value="1" />
+        </label>
+        <label>
+          Ayah
+          <input id="tafsir-ayah" type="number" min="1" value="1" />
+        </label>
+        <button id="tafsir-go" type="button">Open</button>
+      </div>
+      <div class="layout">
+        <aside id="tafsir-sources" class="list"></aside>
+        <article id="tafsir-view" class="reader">
+          <p class="empty">Select Ibn Kathir (or another source) to read tafsir for an ayah.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script src="library.js?v=hadith-reader-69"></script>
+</body>
+</html>

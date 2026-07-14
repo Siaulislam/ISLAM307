@@ -1,0 +1,560 @@
+{
+  "generated_at": "2026-07-14T08:06:11.639377+00:00",
+  "source": "https://sunnah.com/muslim/introduction",
+  "count_parsed": 91,
+  "updated": 91,
+  "skipped": [],
+  "cleared_92": true,
+  "preface_preserved": [
+    -1,
+    0
+  ],
+  "mapping_note": "DB hadith_number = sunnah In-book Narration (1..91). 4a->4A, 4b->4B. Introduction 92 is Narration 91.",
+  "samples": [
+    {
+      "n": 1,
+      "tracking": "Introduction, Narration 1",
+      "subject": "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَ",
+      "en_start": "Abū Bakr ibn Abī Shaybah narrated to us that Ghundar narrated to us, on authorit",
+      "ar_start": "وَحَدَّثَنَا أَبُو بَكْرِ بْنُ أَبِي شَيْبَةَ، حَدَّثَنَا غُ"
+    },
+    {
+      "n": 4,
+      "tracking": "Introduction, Narration 4A",
+      "subject": "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَ",
+      "en_start": "Muhammad bin Abd Allah ibn Numayr narrated to us, my father narrated to us, Sa’ī",
+      "ar_start": "وَحَدَّثَنَا مُحَمَّدُ بْنُ عَبْدِ اللَّهِ بْنِ نُمَيْرٍ، حَ"
+    },
+    {
+      "n": 5,
+      "tracking": "Introduction, Narration 4B",
+      "subject": "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَ",
+      "en_start": "’ Alī bin Hujr as-Sa’dī narrated to us, Alī bin Mushir narrated to us, Muhammad ",
+      "ar_start": "وَحَدَّثَنِي عَلِيُّ بْنُ حُجْرٍ السَّعْدِيُّ، حَدَّثَنَا عَ"
+    },
+    {
+      "n": 6,
+      "tracking": "Introduction, Narration 6",
+      "subject": "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "en_start": "Ubayd Allah bin Mu’ādh al-Anbarī narrated to us, my father narrated to us; and M",
+      "ar_start": "وَحَدَّثَنَا عُبَيْدُ اللَّهِ بْنُ مُعَاذٍ الْعَنْبَرِيُّ، ح"
+    },
+    {
+      "n": 14,
+      "tracking": "Introduction, Narration 14",
+      "subject": "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْ",
+      "en_start": "Muhammad bin Abd Allah bin Numayr and Zuhayr bin Harb narrated to me, they said ",
+      "ar_start": "وَحَدَّثَنِي مُحَمَّدُ بْنُ عَبْدِ اللَّهِ بْنِ نُمَيْرٍ، وَ"
+    },
+    {
+      "n": 25,
+      "tracking": "Introduction, Narration 25",
+      "subject": "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ",
+      "en_start": "Hasan bin ur-Rabī’ narrated to us, Hammād bin Zayd narrated to us, on authority ",
+      "ar_start": "حَدَّثَنَا حَسَنُ بْنُ الرَّبِيعِ، حَدَّثَنَا حَمَّادُ بْنُ "
+    },
+    {
+      "n": 32,
+      "tracking": "Introduction, Narration 32",
+      "subject": "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ ",
+      "en_start": "Abū Bakr ibn in-Naḍr bin Abīn-Naḍr narrated to me, he said Abūn-Naḍr Hāshim bin ",
+      "ar_start": "وَحَدَّثَنِي أَبُو بَكْرِ بْنُ النَّضْرِ بْنِ أَبِي النَّضْر"
+    },
+    {
+      "n": 91,
+      "tracking": "Introduction, Narration 91",
+      "subject": "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ ",
+      "en_start": "Bishr bin al-Hakam narrated to me, he said, I heard Yahyā bin Sa’īd al-Qattān we",
+      "ar_start": "حَدَّثَنِي بِشْرُ بْنُ الْحَكَمِ، قَالَ سَمِعْتُ يَحْيَى بْن"
+    }
+  ],
+  "subjects": [
+    [
+      "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+      "Warning about Lying Upon the Messenger of Allah [peace and blessings of Allah upon him]",
+      1
+    ],
+    [
+      "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+      "Warning about Lying Upon the Messenger of Allah [peace and blessings of Allah upon him]",
+      2
+    ],
+    [
+      "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+      "Warning about Lying Upon the Messenger of Allah [peace and blessings of Allah upon him]",
+      3
+    ],
+    [
+      "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+      "Warning about Lying Upon the Messenger of Allah [peace and blessings of Allah upon him]",
+      4
+    ],
+    [
+      "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+      "Warning about Lying Upon the Messenger of Allah [peace and blessings of Allah upon him]",
+      5
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      6
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      7
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      8
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      9
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      10
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      11
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      12
+    ],
+    [
+      "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "The Prohibition of Narrating Everything One Hears",
+      13
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      14
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      15
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      16
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      17
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      18
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      19
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      20
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      21
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      22
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      23
+    ],
+    [
+      "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      24
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      25
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      26
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      27
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      28
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      29
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      30
+    ],
+    [
+      "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      31
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      32
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      33
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      34
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      35
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      36
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      37
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      38
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      39
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      40
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      41
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      42
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      43
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      44
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      45
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      46
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      47
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      48
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      49
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      50
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      51
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      52
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      53
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      54
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      55
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      56
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      57
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      58
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      59
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      60
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      61
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      62
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      63
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      64
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      65
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      66
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      67
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      68
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      69
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      70
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      71
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      72
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      73
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      74
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      75
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      76
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      77
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      78
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      79
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      80
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      81
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      82
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      83
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      84
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      85
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      86
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      87
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      88
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      89
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      90
+    ],
+    [
+      "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      91
+    ]
+  ],
+  "subject_ranges": [
+    {
+      "subject_ar": "باب فِي التَّحْذِيرِ مِنَ الْكَذِبِ عَلَى رَسُولِ اللَّهِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ",
+      "subject_en": "Warning about Lying Upon the Messenger of Allah [peace and blessings of Allah upon him]",
+      "from": 1,
+      "to": 5
+    },
+    {
+      "subject_ar": "باب النَّهْىِ عَنِ الْحَدِيثِ، بِكُلِّ مَا سَمِعَ",
+      "subject_en": "The Prohibition of Narrating Everything One Hears",
+      "from": 6,
+      "to": 13
+    },
+    {
+      "subject_ar": "باب النَّهْىِ عَنِ الرِّوَايَةِ، عَنِ الضُّعَفَاءِ، وَالاِحْتِيَاطِ، فِي تَحَمُّلِهَا",
+      "subject_en": "The Weak Narrators, Liars, and Those Whose Hadith are Avoided",
+      "from": 14,
+      "to": 24
+    },
+    {
+      "subject_ar": "باب فِي أَنَّ الإِسْنَادَ مِنَ الدِّينِ وَأَنَّ الرِّوَايَةَ لَا تَكُونُ إِلَّا عَنْ الثِّقَاتِ وَأَنَّ جَرْحَ الرُّوَاةِ بِمَا هُوَ فِيهِمْ جَائِزٌ بَلْ وَاجِبٌ وَأَنَّهُ لَيْسَ مِنْ الْغِيبَةِ الْمُحَرَّمَةِ بَلْ مِنْ الذَّبِّ عَنْ الشَّرِيعَةِ الْمُكَرَّمَةِ",
+      "subject_en": "That Which is Related to the Statements ‘The Chain of Narration is from the Religion’; ‘Transmissions are not Taken Except from Trustworthy Narrators’; and ‘Criticism of the Narrators With What is Permissible Regarding Them, Even Obligatory and That It is not the Prohibited Kind of Backbiting, Rather it is the Defense of the Noble Sharī’ah’",
+      "from": 25,
+      "to": 31
+    },
+    {
+      "subject_ar": "باب الْكَشْفِ عَنْ مَعَايِبِ، رُوَاةِ الْحَدِيثِ وَنَقَلَةِ الأَخْبَارِ وَقَوْلِ الأَئِمَّةِ فِي ذَلِكَ",
+      "subject_en": "Unveiling Defects of the Transmitters of Ḥadīth and Relaters of Reports and the Statements of the A’immah Regarding That",
+      "from": 32,
+      "to": 91
+    }
+  ]
+}
