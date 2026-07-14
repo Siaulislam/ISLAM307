@@ -563,6 +563,7 @@ function ayahCardHtml(a, lib) {
         <span class="ayah-page">Page ${a.p} · Juz ${a.j}</span>
       </div>
       <div class="ar ayah-words" dir="rtl" data-s="${a.s}" data-a="${a.a}">${ayahWordsHtml(a)}</div>
+      <p class="ayah-word-hint">لفظ پر ٹیپ کریں · مزید کے لیے مکمل تجزیہ</p>
       ${translationBlockHtml(a)}
       ${tafsirBlockHtml(a)}
       ${note ? `<div class="note-box">Note: ${escapeHtml(note)}</div>` : ''}

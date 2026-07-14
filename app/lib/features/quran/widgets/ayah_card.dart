@@ -197,6 +197,11 @@ class _AyahCardState extends ConsumerState<AyahCard> {
                 _tappableArabic(scale)
               else
                 Text(arabic, textAlign: TextAlign.right, style: Islam307Theme.arabic(size: 24 * scale)),
+              if (_wordsLoaded && _words.isNotEmpty)
+                const Padding(
+                  padding: EdgeInsets.only(top: 6),
+                  child: Text('لفظ پر ٹیپ کریں · مزید کے لیے مکمل تجزیہ', textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: Islam307Theme.textMuted)),
+                ),
               if (translation != null) ...[
                 const SizedBox(height: 12),
                 Container(
