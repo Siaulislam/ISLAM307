@@ -53,7 +53,15 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     }
 
     final surahNo = widget.surahNumber ?? 1;
-    final ayahs = await _repo.ayahsForSurah(surahNo);
+    final allAyahs = await _repo.ayahsForSurah(surahNo);
+    final ayahs = widget.startAyah > 1
+        ? allAyahs
+            .where(
+              (ayah) =>
+                  (ayah['ayah_number'] as int? ?? 0) >= widget.startAyah,
+            )
+            .toList()
+        : allAyahs;
     final surah = await _repo.surah(surahNo);
     if (!mounted) return;
     setState(() {
@@ -101,17 +109,6 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
                       child: Text('Personal file · $_userId', style: const TextStyle(fontSize: 11, color: Islam307Theme.textMuted, fontWeight: FontWeight.w600)),
                     ),
                   ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                  child: Row(
-                    children: [
-                      _langChip(QuranDisplayLanguage.urdu, 'Urdu'),
-                      _langChip(QuranDisplayLanguage.english, 'English'),
-                      _langChip(QuranDisplayLanguage.arabicOnly, 'Arabic Only'),
-                    ],
-                  ),
-                ),
                 Expanded(
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
@@ -119,6 +116,9 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
                     itemBuilder: (_, i) => AyahCard(
                       ayah: _ayahs[i],
                       surahAyahCount: _ayahs.isEmpty ? null : _ayahs.last['ayah_number'] as int?,
+                      autoLoadTafsir: widget.rukuNumber != null
+                          ? i == 0
+                          : _ayahs[i]['ayah_number'] == widget.startAyah,
                     ),
                   ),
                 ),
@@ -167,17 +167,4 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
     );
   }
 
-  Widget _langChip(QuranDisplayLanguage lang, String label) {
-    final selected = ref.watch(appSettingsProvider).quranLanguage == lang;
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: selected,
-        onSelected: (_) => ref.read(appSettingsProvider.notifier).setQuranLanguage(lang),
-        selectedColor: Islam307Theme.emerald,
-        labelStyle: TextStyle(fontWeight: FontWeight.w700, color: selected ? Colors.white : null),
-      ),
-    );
-  }
 }

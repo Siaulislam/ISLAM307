@@ -89,11 +89,16 @@ const state = {
   quranTranslationLang: localStorage.getItem('i307_quran_tr_lang') || '',
   /** '' = no inline tafsir panel */
   quranTafsirSlug: localStorage.getItem('i307_quran_tafsir') || '',
+  quranTafsirAyahKey: '',
   openMenu: null, // 'translation' | 'tafsir' | null
   openMenuAyah: null, // 's:a' for which card shows the dropdown
   wordsBySurah: {}, // surah -> words[]
   wordCacheLoading: {},
 };
+if (['ur', 'en'].includes(state.quranTranslationLang)) {
+  state.quranTranslationLang = '';
+  localStorage.removeItem('i307_quran_tr_lang');
+}
 
 const NO_AUTH = 'No authentic reference found.';
 
@@ -261,26 +266,31 @@ function ayahTranslationText(a, langId) {
 }
 
 function translationBlockHtml(a) {
-  const langId = state.quranTranslationLang;
-  if (!langId) return '';
-  const meta = translationLangMeta(langId);
-  if (!meta) return '';
-  const text = ayahTranslationText(a, langId);
-  if (!text) {
-    return `<div class="ayah-translation is-empty" data-lang="${escapeHtml(langId)}">
+  const render = (langId) => {
+    const meta = translationLangMeta(langId);
+    if (!meta) return '';
+    const text = ayahTranslationText(a, langId);
+    if (!text) {
+      return `<div class="ayah-translation is-empty" data-lang="${escapeHtml(langId)}">
       <span class="ayah-translation-label">${escapeHtml(meta.label)}</span>
       <p>Authentic ${escapeHtml(meta.label)} translation is not in the library yet. ISLAM 307 never invents Quran translations.</p>
     </div>`;
-  }
-  return `<div class="ayah-translation ${meta.rtl ? 'rtl' : ''}" data-lang="${escapeHtml(langId)}" dir="${meta.rtl ? 'rtl' : 'ltr'}">
+    }
+    return `<div class="ayah-translation ${meta.rtl ? 'rtl' : ''}" data-lang="${escapeHtml(langId)}" dir="${meta.rtl ? 'rtl' : 'ltr'}">
     <span class="ayah-translation-label">${escapeHtml(meta.label)} · ${escapeHtml(meta.region)}</span>
     <p class="${meta.rtl ? 'ur' : 'en'}">${escapeHtml(text)}</p>
   </div>`;
+  };
+  const required = [render('ur'), render('en')];
+  const extra = state.quranTranslationLang && !['ur', 'en'].includes(state.quranTranslationLang)
+    ? render(state.quranTranslationLang)
+    : '';
+  return required.concat(extra ? [extra] : []).join('');
 }
 
 function tafsirBlockHtml(a) {
   const slug = state.quranTafsirSlug;
-  if (!slug) return '';
+  if (!slug || state.quranTafsirAyahKey !== `${a.s}:${a.a}`) return '';
   const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
   const label = opt?.label || slug;
   if (!opt?.ready) {
@@ -318,12 +328,12 @@ function ayahHeaderMenusHtml(a) {
   const trOpen = isActiveCard && state.openMenu === 'translation';
   const tfOpen = isActiveCard && state.openMenu === 'tafsir';
   const trMeta = translationLangMeta(state.quranTranslationLang);
-  const trLabel = trMeta ? trMeta.label : 'Translation';
+  const trLabel = trMeta ? trMeta.label : 'More translation';
   const tfLabel = state.quranTafsirSlug ? 'Tafseer' : 'Tafseer';
 
   const trItems = [
-    `<button type="button" class="ayah-menu-item ${!state.quranTranslationLang ? 'is-active' : ''}" data-tr-lang="">Hide translation</button>`,
-    ...QURAN_TRANSLATION_LANGS.map((l) => `<button type="button" class="ayah-menu-item ${state.quranTranslationLang === l.id ? 'is-active' : ''}" data-tr-lang="${l.id}">
+    `<button type="button" class="ayah-menu-item ${!state.quranTranslationLang ? 'is-active' : ''}" data-tr-lang="">Hide additional translation</button>`,
+    ...QURAN_TRANSLATION_LANGS.filter((l) => !['ur', 'en'].includes(l.id)).map((l) => `<button type="button" class="ayah-menu-item ${state.quranTranslationLang === l.id ? 'is-active' : ''}" data-tr-lang="${l.id}">
         <strong>${escapeHtml(l.label)}</strong>
         <small>${escapeHtml(l.region)}</small>
       </button>`),
@@ -588,7 +598,13 @@ async function openSurah(n, button, { preserveScroll = false } = {}) {
   }
   const view = $('ayah-view');
   const top = preserveScroll ? view.scrollTop : 0;
+  const changingSurah = state.currentSurah !== n;
   state.currentSurah = n;
+  if (ayahs.length &&
+      (changingSurah || !preserveScroll || !state.quranTafsirAyahKey.startsWith(`${n}:`))) {
+    state.quranTafsirSlug = state.quranTafsirSlug || 'ibn-kathir';
+    state.quranTafsirAyahKey = `${n}:${ayahs[0].a}`;
+  }
   const lib = ensureUserLibrary();
   view.innerHTML = readerToolbarHtml(surah) + ayahs.map((a) => ayahCardHtml(a, lib)).join('');
   wireReaderEvents();
@@ -768,12 +784,18 @@ function wireReaderEvents() {
 
     card.addEventListener('click', (ev) => {
       if (ev.target.closest('[data-menu], [data-tr-lang], [data-tf-slug], .ayah-dd-panel, a, button')) return;
+      state.quranTafsirSlug = state.quranTafsirSlug || 'ibn-kathir';
+      state.quranTafsirAyahKey = ayahKeyStr;
+      refreshCurrentSurah(true);
       openVerseActions(s, a);
     });
     card.addEventListener('keydown', (ev) => {
       if (ev.key !== 'Enter' && ev.key !== ' ') return;
       if (ev.target !== card) return;
       ev.preventDefault();
+      state.quranTafsirSlug = state.quranTafsirSlug || 'ibn-kathir';
+      state.quranTafsirAyahKey = ayahKeyStr;
+      refreshCurrentSurah(true);
       openVerseActions(s, a);
     });
 
@@ -801,7 +823,7 @@ function wireReaderEvents() {
         state.openMenuAyah = null;
         refreshCurrentSurah(true);
         const meta = translationLangMeta(state.quranTranslationLang);
-        toast(meta ? `Translation · ${meta.label}` : 'Translation hidden');
+        toast(meta ? `Additional translation · ${meta.label}` : 'Additional translation hidden');
       };
     });
 
@@ -810,6 +832,7 @@ function wireReaderEvents() {
         ev.stopPropagation();
         const slug = btn.dataset.tfSlug || '';
         state.quranTafsirSlug = slug;
+        state.quranTafsirAyahKey = slug ? ayahKeyStr : '';
         localStorage.setItem('i307_quran_tafsir', slug);
         state.openMenu = null;
         state.openMenuAyah = null;
