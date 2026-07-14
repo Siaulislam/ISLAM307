@@ -1122,6 +1122,22 @@ function openHadithTopic(slug, topic) {
   openHadithReader(slug, rows.length ? rows : all, 0);
 }
 
+function openHadithPreface(slug) {
+  const pack = state.hadithCache[slug];
+  if (!pack) return;
+  const all = pack.hadiths || [];
+  const preface = prefaceHadithRows(all);
+  if (!preface.length) return;
+  const introKey = kitabTopicKey(preface[0]);
+  const numbered = countedHadithRows(all.filter((h) => kitabTopicKey(h) === introKey));
+  state.hadithTopicKey = introKey;
+  state.hadithTopicTitle = 'المقدمة';
+  state.hadithTopicEn = 'MOQDEMA';
+  setHadithBrowseMode('topics');
+  // A deliberate MOQDEMA open starts with both preface rows, then Hadith 1..N.
+  openHadithReader(slug, preface.concat(numbered), 0);
+}
+
 function clearHadithTopic(slug) {
   stopHadithSpeech();
   state.hadithTopicKey = null;
@@ -2084,12 +2100,14 @@ function renderHadithList(slug, filter = '') {
 function paintHadithTopics(slug, pack, topics) {
   const totalAll = (pack.hadiths || []).length;
   const q = (state.hadithFilter || '').trim();
+  const preface = prefaceHadithRows(pack.hadiths || []);
+  const showPreface = preface.length > 0 && (!q || 'moqdema muqaddimah introduction المقدمة'.includes(q.toLowerCase()));
   $('hadith-view').innerHTML = `
     <div class="hadith-browse-head">
       <div>
         <p class="hadith-browse-kicker">${escapeHtml(pack.book.en)}</p>
         <h2 class="hadith-browse-title" dir="rtl">موضوعات · کتب</h2>
-        <p class="hadith-browse-sub">${topics.length.toLocaleString()} topics · ${totalAll.toLocaleString()} hadith${q ? ` · filter “${escapeHtml(q)}”` : ''}</p>
+        <p class="hadith-browse-sub">${topics.length.toLocaleString()} topics${showPreface ? ' + MOQDEMA' : ''} · ${totalAll.toLocaleString()} entries${q ? ` · filter “${escapeHtml(q)}”` : ''}</p>
       </div>
       <button type="button" class="hadith-action" data-act="read-all">Read all ▶</button>
     </div>
@@ -2099,11 +2117,29 @@ function paintHadithTopics(slug, pack, topics) {
   $('hadith-view').querySelector('[data-act="read-all"]').onclick = () => openHadithBookReader(slug);
 
   const grid = $('hadith-topic-grid');
-  if (!topics.length) {
+  if (!topics.length && !showPreface) {
     grid.innerHTML = '<p class="empty">No topics match this search.</p>';
     return;
   }
   const frag = document.createDocumentFragment();
+  if (showPreface) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'hadith-topic-card';
+    card.innerHTML = `
+      <div class="hadith-topic-index">00</div>
+      <div class="hadith-topic-main">
+        <p class="hadith-topic-title" dir="rtl">المقدمة</p>
+        <span class="hadith-kitab-hint">MOQDEMA</span>
+      </div>
+      <div class="hadith-topic-side">
+        <span class="hadith-topic-range">Before Hadith 1</span>
+        <span class="hadith-topic-count-label">${preface.length.toLocaleString()} entries</span>
+      </div>
+    `;
+    card.onclick = () => openHadithPreface(slug);
+    frag.appendChild(card);
+  }
   topics.forEach((t, idx) => {
     const card = document.createElement('button');
     card.type = 'button';
