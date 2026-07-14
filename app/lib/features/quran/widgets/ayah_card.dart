@@ -3,14 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
-import '../../core/audio/recitation_audio_service.dart';
-import '../../core/audio/tts_service.dart';
-import '../../core/models/quran_word.dart';
-import '../../core/repositories/quran_word_repository.dart';
-import '../../core/repositories/tafsir_repository.dart';
-import '../../core/settings/app_settings.dart';
-import '../../core/theme/islam307_theme.dart';
-import '../../core/user/user_library_store.dart';
+import '../../../core/audio/recitation_audio_service.dart';
+import '../../../core/audio/tts_service.dart';
+import '../../../core/models/quran_word.dart';
+import '../../../core/repositories/quran_word_repository.dart';
+import '../../../core/repositories/tafsir_repository.dart';
+import '../../../core/settings/app_settings.dart';
+import '../../../core/theme/islam307_theme.dart';
+import '../../../core/user/user_library_store.dart';
 import 'word_detail_sheet.dart';
 
 class AyahCard extends ConsumerStatefulWidget {
@@ -265,7 +265,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
                 text: englishTranslation,
                 rtl: false,
                 style: TextStyle(
-                  color: Theme.of(context).hintColor,
+                  color: Islam307Theme.textPrimary,
                   height: 1.6,
                   fontSize: 15 * scale,
                 ),
@@ -659,16 +659,34 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       _tafsirEntry = null;
       _tafsirLoading = true;
     });
-    final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
-    if (!mounted ||
-        requestId != _tafsirRequestId ||
-        _tafsirSlug != slug) {
-      return;
+    try {
+      final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
+      if (!mounted ||
+          requestId != _tafsirRequestId ||
+          _tafsirSlug != slug) {
+        return;
+      }
+      setState(() => _tafsirEntry = entry);
+    } catch (_) {
+      if (!mounted ||
+          requestId != _tafsirRequestId ||
+          _tafsirSlug != slug) {
+        return;
+      }
+      setState(() {
+        _tafsirEntry = {
+          'unavailable': true,
+          'message':
+              'Official Tafseer could not be loaded. No substitute was generated.',
+        };
+      });
+    } finally {
+      if (mounted &&
+          requestId == _tafsirRequestId &&
+          _tafsirSlug == slug) {
+        setState(() => _tafsirLoading = false);
+      }
     }
-    setState(() {
-      _tafsirEntry = entry;
-      _tafsirLoading = false;
-    });
   }
 
   Future<void> _pickTafsirSource() async {
@@ -744,6 +762,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       setState(() {
         _tafsirSlug = null;
         _tafsirEntry = null;
+        _tafsirLoading = false;
       });
       return;
     }
@@ -754,16 +773,34 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       _tafsirLoading = true;
     });
     await ref.read(appSettingsProvider.notifier).setPreferredTafsir(choice);
-    final entry = await _tafsirRepo.entry(choice, _surah, _ayahNo);
-    if (!mounted ||
-        requestId != _tafsirRequestId ||
-        _tafsirSlug != choice) {
-      return;
+    try {
+      final entry = await _tafsirRepo.entry(choice, _surah, _ayahNo);
+      if (!mounted ||
+          requestId != _tafsirRequestId ||
+          _tafsirSlug != choice) {
+        return;
+      }
+      setState(() => _tafsirEntry = entry);
+    } catch (_) {
+      if (!mounted ||
+          requestId != _tafsirRequestId ||
+          _tafsirSlug != choice) {
+        return;
+      }
+      setState(() {
+        _tafsirEntry = {
+          'unavailable': true,
+          'message':
+              'Official Tafseer could not be loaded. No substitute was generated.',
+        };
+      });
+    } finally {
+      if (mounted &&
+          requestId == _tafsirRequestId &&
+          _tafsirSlug == choice) {
+        setState(() => _tafsirLoading = false);
+      }
     }
-    setState(() {
-      _tafsirEntry = entry;
-      _tafsirLoading = false;
-    });
   }
 
   Widget _tappableArabic(double scale) {

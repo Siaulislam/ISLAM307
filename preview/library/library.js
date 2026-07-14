@@ -80,6 +80,7 @@ const state = {
   tafsirSources: [],
   tafsirCache: {},
   currentSurah: null,
+  surahRequestId: 0,
   fontScale: Number(localStorage.getItem('i307_font') || 1),
   dark: localStorage.getItem('i307_dark') === '1',
   audio: null,
@@ -586,8 +587,11 @@ function escapeHtml(s) {
 }
 
 async function openSurah(n, button, { preserveScroll = false } = {}) {
+  const requestId = ++state.surahRequestId;
   await ensureAyahs();
+  if (requestId !== state.surahRequestId) return;
   await ensureSurahWords(n);
+  if (requestId !== state.surahRequestId) return;
   $('surah-list').querySelectorAll('button').forEach((b) => b.classList.remove('active'));
   if (button) button.classList.add('active');
   const surah = state.surahs.find((s) => s.n === n);

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/audio/tts_service.dart';
-import '../../core/models/quran_grammar.dart';
-import '../../core/models/quran_word.dart';
-import '../../core/repositories/quran_word_repository.dart';
-import '../../core/theme/islam307_theme.dart';
+import '../../../core/audio/tts_service.dart';
+import '../../../core/models/quran_grammar.dart';
+import '../../../core/models/quran_word.dart';
+import '../../../core/repositories/quran_word_repository.dart';
+import '../../../core/theme/islam307_theme.dart';
 import 'root_detail_sheet.dart';
 
 const _langLabels = <String, String>{

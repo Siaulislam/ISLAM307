@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/models/quran_grammar.dart';
-import '../../core/repositories/quran_word_repository.dart';
-import '../../core/theme/islam307_theme.dart';
+import '../../../core/models/quran_grammar.dart';
+import '../../../core/repositories/quran_word_repository.dart';
+import '../../../core/theme/islam307_theme.dart';
 import 'word_detail_sheet.dart';
 
 /// Offline root page — attested local glosses only.
