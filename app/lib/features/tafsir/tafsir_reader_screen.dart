@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/repositories/tafsir_repository.dart';
+import '../../core/tafsir/quran_verse_validator.dart';
 import '../../core/theme/islam307_theme.dart';
 import 'tafsir_attribution.dart';
 
@@ -54,6 +55,7 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
   @override
   Widget build(BuildContext context) {
     final unavailable = _entry == null || _entry!['unavailable'] == true;
+    final maxAyah = QuranVerseValidator.maxAyah(widget.surah);
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.sourceSlug} · ${widget.surah}:${widget.ayah}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
@@ -64,7 +66,9 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
             icon: const Icon(Icons.chevron_left_rounded),
           ),
           IconButton(
-            onPressed: () => _go(widget.surah, widget.ayah + 1),
+            onPressed: widget.ayah < maxAyah
+                ? () => _go(widget.surah, widget.ayah + 1)
+                : null,
             icon: const Icon(Icons.chevron_right_rounded),
           ),
         ],

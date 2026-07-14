@@ -31,15 +31,20 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   }
 
   Future<void> _loadTafsirSources() async {
-    final sources = await _tafsirRepo.catalogSources();
-    final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
-    if (!mounted) return;
-    setState(() {
-      _tafsirSources = sources;
-      _tafsirSlug = sources.any((source) => source['slug'] == preferred)
-          ? preferred
-          : 'ibn-kathir';
-    });
+    try {
+      final sources = await _tafsirRepo.catalogSources();
+      final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
+      if (!mounted) return;
+      setState(() {
+        _tafsirSources = sources;
+        _tafsirSlug = sources.any((source) => source['slug'] == preferred)
+            ? preferred
+            : 'ibn-kathir';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _tafsirSources = const []);
+    }
   }
 
   Future<void> _run() async {

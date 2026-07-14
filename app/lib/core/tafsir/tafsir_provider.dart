@@ -13,6 +13,8 @@ abstract class TafsirProvider {
     required int surah,
     required int ayah,
   });
+
+  void refresh();
 }
 
 class TafsirProviderException implements Exception {

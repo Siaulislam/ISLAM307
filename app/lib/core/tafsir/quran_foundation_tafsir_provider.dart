@@ -1,46 +1,12 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
+import 'tafsir_http_transport_base.dart';
+import 'tafsir_http_transport_factory.dart';
 import 'tafsir_models.dart';
 import 'tafsir_provider.dart';
+import 'quran_verse_validator.dart';
 
-class TafsirHttpResponse {
-  const TafsirHttpResponse(this.statusCode, this.body);
-
-  final int statusCode;
-  final String body;
-}
-
-abstract class TafsirHttpTransport {
-  Future<TafsirHttpResponse> get(
-    Uri uri, {
-    Map<String, String> headers = const {},
-  });
-}
-
-class IoTafsirHttpTransport implements TafsirHttpTransport {
-  IoTafsirHttpTransport({HttpClient? client})
-      : _client = client ?? HttpClient() {
-    _client.connectionTimeout = const Duration(seconds: 15);
-    _client.userAgent = 'ISLAM307/1.0 QuranFoundation-Tafsir';
-  }
-
-  final HttpClient _client;
-
-  @override
-  Future<TafsirHttpResponse> get(
-    Uri uri, {
-    Map<String, String> headers = const {},
-  }) async {
-    final request = await _client.getUrl(uri).timeout(const Duration(seconds: 20));
-    headers.forEach(request.headers.set);
-    request.headers.set(HttpHeaders.acceptHeader, 'application/json');
-    final response = await request.close().timeout(const Duration(seconds: 30));
-    final body = await utf8.decoder.bind(response).join();
-    return TafsirHttpResponse(response.statusCode, body);
-  }
-}
+export 'tafsir_http_transport_base.dart';
 
 class QuranFoundationApiConfig {
   const QuranFoundationApiConfig({
@@ -108,7 +74,7 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
     QuranFoundationApiConfig? config,
     TafsirHttpTransport? transport,
   })  : _config = config ?? QuranFoundationApiConfig.fromEnvironment(),
-        _transport = transport ?? IoTafsirHttpTransport();
+        _transport = transport ?? createTafsirHttpTransport();
 
   final QuranFoundationApiConfig _config;
   final TafsirHttpTransport _transport;
@@ -170,6 +136,17 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
           .map(
             (source) => source.toCatalogMap(
               unavailableReason: '${source.licenseNote} ${error.message}',
+              retryable: error.retryable,
+            ),
+          )
+          .toList();
+    } catch (_) {
+      return requested
+          .map(
+            (source) => source.toCatalogMap(
+              unavailableReason:
+                  '${source.licenseNote} The official resource registry returned invalid data.',
+              retryable: true,
             ),
           )
           .toList();
@@ -182,7 +159,7 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
     required int surah,
     required int ayah,
   }) async {
-    if (surah < 1 || surah > 114 || ayah < 1) {
+    if (!QuranVerseValidator.isValid(surah, ayah)) {
       throw const TafsirProviderException('Invalid Quran verse reference.');
     }
     if (!_config.isConfigured) {
@@ -214,12 +191,26 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
       query: {'verse_key': '$surah:$ayah', 'per_page': '1'},
     );
     final rows = payload['tafsirs'];
-    if (rows is! List || rows.isEmpty || rows.first is! Map) {
+    if (rows is! List) {
       throw TafsirProviderException(
         'No licensed ${source.name} entry was returned for $surah:$ayah.',
       );
     }
-    final row = Map<String, dynamic>.from(rows.first as Map);
+    final matchingRows = rows.whereType<Map>().map((raw) {
+      return Map<String, dynamic>.from(raw);
+    }).where((row) {
+      final rowResource = row['resource_id'];
+      final resourceId =
+          rowResource is int ? rowResource : int.tryParse('$rowResource');
+      return resourceId == resource.id &&
+          '${row['verse_key'] ?? ''}'.trim() == '$surah:$ayah';
+    }).toList();
+    if (matchingRows.length != 1) {
+      throw TafsirProviderException(
+        'The official API did not return one exact ${source.name} match for $surah:$ayah.',
+      );
+    }
+    final row = matchingRows.single;
     final rawText = '${row['text'] ?? ''}'.trim();
     final text = _plainText(rawText);
     if (text.isEmpty) {
@@ -232,8 +223,7 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
         : const <String, dynamic>{};
     final sourceName =
         '${row['resource_name'] ?? meta['tafsir_name'] ?? resource.name}'.trim();
-    final author =
-        '${meta['author_name'] ?? resource.author ?? source.author}'.trim();
+    final author = '${meta['author_name'] ?? resource.author}'.trim();
     final language = '${row['language_name'] ?? resource.language}'.trim();
     final verseKey = '${row['verse_key'] ?? '$surah:$ayah'}'.trim();
     final entry = TafsirEntry(
@@ -255,8 +245,19 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
     return entry;
   }
 
-  Future<List<TafsirApiResource>> _resources() {
-    return _resourceRequest ??= _loadResources();
+  Future<List<TafsirApiResource>> _resources() async {
+    final existing = _resourceRequest;
+    if (existing != null) return existing;
+    final request = _loadResources();
+    _resourceRequest = request;
+    try {
+      return await request;
+    } catch (_) {
+      if (identical(_resourceRequest, request)) {
+        _resourceRequest = null;
+      }
+      rethrow;
+    }
   }
 
   Future<List<TafsirApiResource>> _loadResources() async {
@@ -268,12 +269,25 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
         'The official Tafseer resource registry returned an invalid response.',
       );
     }
-    return rows
-        .whereType<Map>()
-        .map((row) => TafsirApiResource.fromJson(
-              Map<String, dynamic>.from(row),
-            ))
-        .toList();
+    try {
+      return rows
+          .whereType<Map>()
+          .map((row) => TafsirApiResource.fromJson(
+                Map<String, dynamic>.from(row),
+              ))
+          .toList();
+    } on FormatException {
+      throw const TafsirProviderException(
+        'The official Tafseer resource registry returned malformed data.',
+        retryable: true,
+      );
+    }
+  }
+
+  @override
+  void refresh() {
+    _resourceRequest = null;
+    _resolvedResources.clear();
   }
 
   Future<Map<String, dynamic>> _authorizedGet(
@@ -306,6 +320,12 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
     if (response.statusCode == 429) {
       throw const TafsirProviderException(
         'The official Tafseer API rate limit was reached. Please retry later.',
+        retryable: true,
+      );
+    }
+    if (response.statusCode == 401 || response.statusCode == 403) {
+      throw const TafsirProviderException(
+        'Quran Foundation authorization expired or was refused.',
         retryable: true,
       );
     }

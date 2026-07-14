@@ -1,3 +1,5 @@
+import '../tafsir/quran_verse_validator.dart';
+
 class TafsirIntent {
   const TafsirIntent({
     required this.isTafsirRequest,
@@ -35,7 +37,9 @@ class TafsirIntent {
     }
     final surah = int.tryParse(match.group(1)!);
     final ayah = int.tryParse(match.group(2)!);
-    if (surah == null || surah < 1 || surah > 114 || ayah == null || ayah < 1) {
+    if (surah == null ||
+        ayah == null ||
+        !QuranVerseValidator.isValid(surah, ayah)) {
       return const TafsirIntent(isTafsirRequest: true);
     }
     return TafsirIntent(

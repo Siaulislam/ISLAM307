@@ -9,6 +9,16 @@ class _Request {
 }
 
 class _FakeTransport implements TafsirHttpTransport {
+  _FakeTransport({
+    this.tafsirBody =
+        '{"tafsirs":[{"resource_id":999,"verse_key":"2:255",'
+        '"language_name":"english","resource_name":"Tafsir Ibn Kathir",'
+        '"text":"<p>Authenticated explanation.</p>"}],'
+        '"meta":{"tafsir_name":"Tafsir Ibn Kathir",'
+        '"author_name":"Hafiz Ibn Kathir"}}',
+  });
+
+  final String tafsirBody;
   final requests = <_Request>[];
 
   @override
@@ -26,14 +36,7 @@ class _FakeTransport implements TafsirHttpTransport {
         '"translated_name":{"name":"Tafsir Ibn Kathir"}}]}',
       );
     }
-    return const TafsirHttpResponse(
-      200,
-      '{"tafsirs":[{"resource_id":999,"verse_key":"2:255",'
-      '"language_name":"english","resource_name":"Tafsir Ibn Kathir",'
-      '"text":"<p>Authenticated explanation.</p>"}],'
-      '"meta":{"tafsir_name":"Tafsir Ibn Kathir",'
-      '"author_name":"Hafiz Ibn Kathir"}}',
-    );
+    return TafsirHttpResponse(200, tafsirBody);
   }
 }
 
@@ -93,5 +96,29 @@ void main() {
     );
     final catalog = await provider.catalog(requestedTafsirSources);
     expect(catalog.every((source) => source['available'] == false), isTrue);
+  });
+
+  test('rejects a response for the wrong verse or resource', () async {
+    final transport = _FakeTransport(
+      tafsirBody:
+          '{"tafsirs":[{"resource_id":1000,"verse_key":"2:256",'
+          '"text":"Wrong text"}]}',
+    );
+    final provider = QuranFoundationTafsirProvider(
+      config: const QuranFoundationApiConfig(
+        apiBaseUrl: 'https://apis.quran.foundation',
+        clientId: 'approved-client',
+        accessToken: 'short-lived-token',
+        tokenBrokerUrl: '',
+      ),
+      transport: transport,
+    );
+    await provider.catalog(requestedTafsirSources);
+    final definition = requestedTafsirSources
+        .firstWhere((source) => source.slug == 'ibn-kathir');
+    await expectLater(
+      provider.fetch(source: definition, surah: 2, ayah: 255),
+      throwsA(isA<Exception>()),
+    );
   });
 }

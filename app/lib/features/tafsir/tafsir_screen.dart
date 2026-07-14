@@ -26,6 +26,7 @@ class _TafsirScreenState extends ConsumerState<TafsirScreen> {
   Map<String, dynamic>? _entry;
   bool _loading = true;
   bool _loadingEntry = false;
+  String? _bootError;
 
   @override
   void initState() {
@@ -34,24 +35,38 @@ class _TafsirScreenState extends ConsumerState<TafsirScreen> {
   }
 
   Future<void> _boot() async {
-    final sources = await _tafsirRepo.catalogSources();
-    final surahs = await _quranRepo.surahs();
-    final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
-    final available = sources.where((s) => s['available'] == true).toList();
-    final slug = sources.any((s) => s['slug'] == preferred)
-        ? preferred
-        : (available.isNotEmpty
-            ? available.first['slug'] as String
-            : sources.first['slug'] as String);
-    if (!mounted) return;
-    setState(() {
-      _sources = sources;
-      _surahs = surahs;
-      _slug = slug;
-      _maxAyah = (surahs.firstWhere((s) => s['number'] == 1)['ayah_count'] as int?) ?? 7;
-      _loading = false;
-    });
-    await _loadEntry();
+    try {
+      final sources = await _tafsirRepo.catalogSources();
+      final surahs = await _quranRepo.surahs();
+      if (sources.isEmpty || surahs.isEmpty) {
+        throw StateError('Tafseer source or Quran metadata is unavailable.');
+      }
+      final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
+      final available = sources.where((s) => s['available'] == true).toList();
+      final slug = sources.any((s) => s['slug'] == preferred)
+          ? preferred
+          : (available.isNotEmpty
+              ? available.first['slug'] as String
+              : sources.first['slug'] as String);
+      if (!mounted) return;
+      setState(() {
+        _sources = sources;
+        _surahs = surahs;
+        _slug = slug;
+        _maxAyah =
+            (surahs.firstWhere((s) => s['number'] == 1)['ayah_count'] as int?) ??
+                7;
+        _loading = false;
+      });
+      await _loadEntry();
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _bootError =
+            'Official Tafseer sources could not be loaded. No substitute text was generated.';
+        _loading = false;
+      });
+    }
   }
 
   Future<void> _loadEntry() async {
@@ -74,6 +89,20 @@ class _TafsirScreenState extends ConsumerState<TafsirScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
+          : _bootError != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      _bootError!,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                )
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [

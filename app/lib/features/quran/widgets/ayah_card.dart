@@ -69,9 +69,14 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   }
 
   Future<void> _loadTafsirSources() async {
-    final sources = await _tafsirRepo.catalogSources();
-    if (!mounted) return;
-    setState(() => _tafsirSources = sources);
+    try {
+      final sources = await _tafsirRepo.catalogSources();
+      if (!mounted) return;
+      setState(() => _tafsirSources = sources);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _tafsirSources = const []);
+    }
   }
 
   Future<void> _loadPersonal() async {

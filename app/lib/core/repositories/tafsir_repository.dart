@@ -1,3 +1,4 @@
+import '../tafsir/legacy_tafsir_cleanup.dart';
 import '../tafsir/tafsir_provider.dart';
 import '../tafsir/tafsir_provider_registry.dart';
 
@@ -10,7 +11,10 @@ class TafsirRepository {
   static const unavailableMessage =
       'Licensed Tafseer is unavailable for this selection. ISLAM 307 never generates Tafseer with AI.';
 
-  Future<List<Map<String, dynamic>>> catalogSources() => _providers.catalog();
+  Future<List<Map<String, dynamic>>> catalogSources() async {
+    await LegacyTafsirCleanup.run();
+    return _providers.catalog();
+  }
 
   Future<List<Map<String, dynamic>>> sources() => catalogSources();
 
@@ -19,7 +23,7 @@ class TafsirRepository {
     int surah,
     int ayah,
   ) async {
-    final catalog = await _providers.catalog();
+    final catalog = await catalogSources();
     Map<String, dynamic>? meta;
     for (final s in catalog) {
       if (s['slug'] == sourceSlug) {

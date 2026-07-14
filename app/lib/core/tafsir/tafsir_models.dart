@@ -29,6 +29,7 @@ class TafsirSourceDefinition {
   Map<String, dynamic> toCatalogMap({
     TafsirApiResource? resource,
     String? unavailableReason,
+    bool retryable = false,
   }) {
     return {
       'slug': slug,
@@ -42,6 +43,7 @@ class TafsirSourceDefinition {
       'api_resource_id': resource?.id,
       'api_resource_slug': resource?.slug,
       'notes': resource == null ? unavailableReason ?? licenseNote : licenseNote,
+      'retryable': retryable,
     };
   }
 
@@ -68,9 +70,14 @@ class TafsirApiResource {
   final String translatedName;
 
   factory TafsirApiResource.fromJson(Map<String, dynamic> json) {
+    final rawId = json['id'];
+    final id = rawId is int ? rawId : int.tryParse('$rawId');
+    if (id == null || id <= 0) {
+      throw const FormatException('Invalid Tafseer resource id');
+    }
     final translated = json['translated_name'];
     return TafsirApiResource(
-      id: json['id'] as int,
+      id: id,
       name: '${json['name'] ?? ''}'.trim(),
       author: '${json['author_name'] ?? ''}'.trim(),
       slug: '${json['slug'] ?? ''}'.trim(),
