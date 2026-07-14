@@ -42,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=hadith-reader-62' : '?v=hadith-reader-62';
+  const bust = url.includes('?') ? '&v=hadith-reader-63' : '?v=hadith-reader-63';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
@@ -1229,7 +1229,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-62`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-63`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -1255,7 +1255,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-62`);
+    const res = await fetch(`${path}?v=hadith-reader-63`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1676,12 +1676,12 @@ function chapterRangeForHadith(pack, hadith) {
   if (!peers.length) {
     return { first: hadith.n, last: hadith.n, count: 1 };
   }
-  // Numbered range excludes preface (n<=0). Skip empty trailing slots (e.g. Intro 92).
+  // Numbered range excludes preface (n<=0). Prefer filled rows for first/last span.
   const numbered = peers.filter((h) => {
     if (!(Number(h.n) > 0)) return false;
     const ar = String(h.ar || '').trim();
     const en = String(h.en || '').trim();
-    return ar.length > 0 || en.length > 0 || Number(h.n) < 92;
+    return ar.length > 0 || en.length > 0;
   });
   const use = numbered.length ? numbered : peers;
   let first = use[0].n;
