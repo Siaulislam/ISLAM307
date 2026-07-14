@@ -114,13 +114,6 @@ def main() -> int:
     meta = dict(source.execute("SELECT key, value FROM meta"))
     if not meta.get("source_text", "").startswith("Tanzil Project Uthmani v1.1"):
         raise SystemExit("Refusing to sanitize: Tanzil v1.1 source metadata missing")
-    surahs = source.execute(
-        """
-        SELECT id, number, name_ar, name_en, name_transliteration,
-               NULL AS revelation_place, ayah_count, bismillah_pre
-        FROM surahs ORDER BY number
-        """
-    ).fetchall()
     ayahs = source.execute(
         """
         SELECT id, global_number, surah_number, ayah_number, text_uthmani
@@ -128,8 +121,26 @@ def main() -> int:
         """
     ).fetchall()
     source.close()
-    if len(surahs) != 114 or len(ayahs) != 6236:
+    if len(ayahs) != 6236:
         raise SystemExit("Unexpected Quran row counts")
+    counts: dict[int, int] = {}
+    for row in ayahs:
+        counts[row[2]] = counts.get(row[2], 0) + 1
+    if set(counts) != set(range(1, 115)):
+        raise SystemExit("Unexpected Surah numbering")
+    surahs = [
+        (
+            number,
+            number,
+            f"سورة {number}",
+            f"Surah {number}",
+            None,
+            None,
+            counts[number],
+            0,
+        )
+        for number in range(1, 115)
+    ]
     digest = hashlib.sha256()
     for row in ayahs:
         digest.update(f"{row[2]}:{row[3]}\t{row[4]}\n".encode("utf-8"))

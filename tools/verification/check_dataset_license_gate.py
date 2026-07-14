@@ -24,6 +24,21 @@ ALLOWED_PREVIEW_DATA = {
     "preview/library/data/quran/surahs.json",
 }
 
+ALLOWED_MODULES = {
+    "app/assets/modules/data_sources.json",
+    "app/assets/modules/dataset_registry.json",
+    "app/assets/modules/feature_modules.json",
+}
+
+ALLOWED_PREVIEW_SHELL = {
+    "preview/icons.html",
+    "preview/index.html",
+    "preview/licenses.html",
+    "preview/library/index.html",
+    "preview/library/library.css",
+    "preview/library/library.js",
+}
+
 FORBIDDEN_PATHS = [
     "app/assets/databases/hadith.db",
     "app/assets/databases/hadith.db.gz",
@@ -89,6 +104,28 @@ def main() -> int:
         errors.append(
             f"Unexpected preview content packs: {sorted(unexpected_preview)}"
         )
+    module_files = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "app/assets/modules").rglob("*")
+        if path.is_file()
+    }
+    if module_files != ALLOWED_MODULES:
+        errors.append(
+            f"Unexpected packaged module assets: "
+            f"{sorted(module_files - ALLOWED_MODULES)}"
+        )
+    preview_shell = {
+        path.relative_to(ROOT).as_posix()
+        for path in (ROOT / "preview").rglob("*")
+        if path.is_file()
+        and "preview/library/data/" not in path.relative_to(ROOT).as_posix()
+        and "preview/branding/" not in path.relative_to(ROOT).as_posix()
+    }
+    if preview_shell != ALLOWED_PREVIEW_SHELL:
+        errors.append(
+            f"Unexpected preview shell files: "
+            f"{sorted(preview_shell - ALLOWED_PREVIEW_SHELL)}"
+        )
 
     for dataset_id, record in records.items():
         evidence = ROOT / record["evidence"]
@@ -101,6 +138,15 @@ def main() -> int:
     branding = records.get("app-owned-branding")
     if branding is None or branding.get("status") != "app_owned":
         errors.append("Packaged branding assets lack an app-owned license record")
+    else:
+        if tree_checksum(
+            ROOT / "app/assets/branding"
+        ) != branding.get("checksum_sha256"):
+            errors.append("App branding checksum does not match license record")
+        if tree_checksum(
+            ROOT / "preview/branding"
+        ) != branding.get("preview_checksum_sha256"):
+            errors.append("Preview branding checksum does not match license record")
     for feature_id, feature in features.items():
         if feature["dataset_id"] not in records:
             errors.append(
@@ -164,6 +210,13 @@ def main() -> int:
            OR has_rub_el_hizb != 0
         """
     ).fetchone()[0]
+    surah_rows = quran_db.execute(
+        """
+        SELECT number, name_ar, name_en, name_transliteration,
+               revelation_place, ayah_count, bismillah_pre
+        FROM surahs ORDER BY number
+        """
+    ).fetchall()
     quran_db.close()
     if quran_meta.get("schema_version") != "6_tanzil_arabic_only":
         errors.append("quran.db is not the sanitized Arabic-only schema")
@@ -181,6 +234,20 @@ def main() -> int:
         errors.append(
             "quran.db contains permission-pending structural/Tajweed metadata"
         )
+    if len(surah_rows) != 114:
+        errors.append("quran.db Surah catalog must contain 114 generated rows")
+    for number, name_ar, name_en, transliteration, place, count, bismillah in surah_rows:
+        if (
+            name_ar != f"سورة {number}"
+            or name_en != f"Surah {number}"
+            or transliteration is not None
+            or place is not None
+            or bismillah != 0
+            or not isinstance(count, int)
+            or count <= 0
+        ):
+            errors.append("quran.db contains unverified Surah metadata")
+            break
 
     preview_path = ROOT / "preview/library/data/quran/ayahs.json.gz"
     preview = json.loads(gzip.decompress(preview_path.read_bytes()))
@@ -234,8 +301,18 @@ def main() -> int:
             encoding="utf-8"
         )
     )
-    if len(surahs.get("surahs", [])) != 114:
+    preview_surahs = surahs.get("surahs", [])
+    if len(preview_surahs) != 114:
         errors.append("Quran preview Surah catalog must contain 114 rows")
+    for row in preview_surahs:
+        number = row.get("n")
+        if (
+            set(row) != {"n", "en", "ar", "ayahs"}
+            or row.get("en") != f"Surah {number}"
+            or row.get("ar") != f"سورة {number}"
+        ):
+            errors.append("Quran preview contains unverified Surah metadata")
+            break
 
     if errors:
         raise SystemExit("\n".join(errors))
@@ -243,6 +320,15 @@ def main() -> int:
         "Dataset license gate passed: only explicitly approved content is bundled."
     )
     return 0
+
+
+def tree_checksum(root: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(item for item in root.rglob("*") if item.is_file()):
+        digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+        digest.update(b"\0")
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
 
 
 if __name__ == "__main__":
