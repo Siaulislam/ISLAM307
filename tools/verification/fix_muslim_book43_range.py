@@ -87,6 +87,11 @@ def main() -> int:
                 UPDATE hadiths
                 SET chapter_id = ?, reference_book = ?, reference_hadith = ?
                 WHERE book_id = ? AND hadith_number = ?
+                  AND (
+                    chapter_id IS NOT ?
+                    OR reference_book IS NOT ?
+                    OR reference_hadith IS NOT ?
+                  )
                 """,
                 (
                     chapter_ids[book_number],
@@ -94,6 +99,9 @@ def main() -> int:
                     in_book_number,
                     book_id,
                     hadith_number,
+                    chapter_ids[book_number],
+                    book_number,
+                    in_book_number,
                 ),
             )
 
@@ -103,8 +111,18 @@ def main() -> int:
                 UPDATE chapters
                 SET hadith_start = ?, hadith_end = ?
                 WHERE id = ?
+                  AND (
+                    hadith_start IS NOT ?
+                    OR hadith_end IS NOT ?
+                  )
                 """,
-                (first_hadith, last_hadith, chapter_ids[book_number]),
+                (
+                    first_hadith,
+                    last_hadith,
+                    chapter_ids[book_number],
+                    first_hadith,
+                    last_hadith,
+                ),
             )
         conn.commit()
 
