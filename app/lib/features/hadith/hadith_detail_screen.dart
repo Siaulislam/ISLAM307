@@ -588,7 +588,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     final inScopedNumbers = _numbers.isNotEmpty && (widget.chapterId != null || widget.unassigned);
     final chapterFirst = h?['chapter_first'] ?? (inScopedNumbers ? _numbers.first : null);
     final chapterLast = h?['chapter_last'] ?? (inScopedNumbers ? _numbers.last : null);
-    // Always show Hadith X to Y on the right for every reader box.
+    // Current hadith number must change on Next/Previous; chapter range is secondary.
     final isPreface = widget.hadithNumber <= 0;
     final rangeLabel = () {
       final start = chapterFirst;
@@ -599,11 +599,9 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
         }
         return 'المقدمة';
       }
-      if (start != null && end != null) {
-        return '$start' == '$end' ? 'Hadith $start' : 'Hadith $start to $end';
+      if (start != null && end != null && '$start' != '$end') {
+        return 'Hadith ${widget.hadithNumber} · $start to $end';
       }
-      final positive = _numbers.where((n) => n > 0).toList();
-      if (positive.length >= 2) return 'Hadith ${positive.first} to ${positive.last}';
       return 'Hadith ${widget.hadithNumber}';
     }();
 

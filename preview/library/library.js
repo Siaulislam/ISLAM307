@@ -1760,12 +1760,12 @@ function openHadithReader(slug, rows, index) {
   const span = chapterRangeForHadith(pack, hadith);
   const isPreface = Number(hadith.n) <= 0;
   const dispN = hadithDisplayN(hadith);
-  // Counted range is Hadith 1..N only — preface/MOQDEMA (n<=0) is not counted.
+  // Current number must change on Next/Previous. Range is secondary context only.
   const countLabel = isPreface
     ? (span && span.first != null ? `المقدمة · before Hadith ${span.first} to ${span.last}` : 'المقدمة')
-    : (!span
-      ? `Hadith ${dispN}`
-      : (span.first === span.last ? `Hadith ${span.first}` : `Hadith ${span.first} to ${span.last}`));
+    : (span && span.first != null && span.last != null && Number(span.first) !== Number(span.last)
+      ? `Hadith ${dispN} · ${span.first} to ${span.last}`
+      : `Hadith ${dispN}`);
 
   $('hadith-view').innerHTML = `
     <article class="hadith-reader" id="hadith-reader">
