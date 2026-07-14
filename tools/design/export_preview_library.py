@@ -12,7 +12,6 @@ ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "preview" / "library" / "data"
 QURAN_DB = ROOT / "app" / "assets" / "databases" / "quran.db"
 HADITH_GZ = ROOT / "app" / "assets" / "databases" / "hadith.db.gz"
-TAFSIR_GZ = ROOT / "app" / "assets" / "databases" / "tafsir.db.gz"
 
 import sys
 
@@ -264,43 +263,12 @@ def export_hadith() -> dict:
     return totals
 
 
-def export_tafsir() -> dict:
-    conn = connect_gz(TAFSIR_GZ)
-    sources = [
-        {
-            "id": r["id"],
-            "slug": r["slug"],
-            "en": r["name_en"],
-            "ar": r["name_ar"],
-            "author": r["author"],
-            "lang": r["language"],
-        }
-        for r in conn.execute(
-            "SELECT id, slug, name_en, name_ar, author, language FROM sources ORDER BY sort_order"
-        )
-    ]
-    write_json(OUT / "tafsir" / "sources.json", {"sources": sources})
-    counts = {}
-    for source in sources:
-        rows = [
-            {"s": r["surah_number"], "a": r["ayah_number"], "text": r["text"]}
-            for r in conn.execute(
-                "SELECT surah_number, ayah_number, text FROM entries WHERE source_id = ? ORDER BY surah_number, ayah_number",
-                (source["id"],),
-            )
-        ]
-        write_json_gz(OUT / "tafsir" / f"{source['slug']}.json.gz", {"source": source, "entries": rows})
-        counts[source["slug"]] = len(rows)
-    return counts
-
-
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     summary = {
         "quran": export_quran(),
         "quran_words": export_quran_words(),
         "hadith": export_hadith(),
-        "tafsir": export_tafsir(),
     }
     write_json(OUT / "manifest.json", summary)
     print(json.dumps(summary, indent=2))

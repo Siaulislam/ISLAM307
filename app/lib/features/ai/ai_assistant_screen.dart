@@ -1,28 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/ai/source_reference_search.dart';
 import '../../core/database/database_registry.dart';
+import '../../core/repositories/tafsir_repository.dart';
+import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
 
 /// Source-only AI assistant — never invents religious content.
-class AiAssistantScreen extends StatefulWidget {
+class AiAssistantScreen extends ConsumerStatefulWidget {
   const AiAssistantScreen({super.key});
 
   @override
-  State<AiAssistantScreen> createState() => _AiAssistantScreenState();
+  ConsumerState<AiAssistantScreen> createState() => _AiAssistantScreenState();
 }
 
-class _AiAssistantScreenState extends State<AiAssistantScreen> {
+class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   final _controller = TextEditingController();
   final _search = SourceReferenceSearch(registry: DatabaseRegistry.instance);
+  final _tafsirRepo = TafsirRepository();
   SourceReferenceResult? _result;
+  List<Map<String, dynamic>> _tafsirSources = const [];
+  String _tafsirSlug = 'ibn-kathir';
   bool _loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTafsirSources();
+  }
+
+  Future<void> _loadTafsirSources() async {
+    final sources = await _tafsirRepo.catalogSources();
+    final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
+    if (!mounted) return;
+    setState(() {
+      _tafsirSources = sources;
+      _tafsirSlug = sources.any((source) => source['slug'] == preferred)
+          ? preferred
+          : 'ibn-kathir';
+    });
+  }
 
   Future<void> _run() async {
     final q = _controller.text.trim();
     if (q.isEmpty) return;
     setState(() => _loading = true);
-    final result = await _search.search(q);
+    final result = await _search.search(
+      q,
+      tafsirSourceSlug: _tafsirSlug,
+    );
     if (!mounted) return;
     setState(() {
       _result = result;
@@ -59,10 +86,37 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
               ),
             ),
           ),
+          if (_tafsirSources.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: DropdownButtonFormField<String>(
+                value: _tafsirSlug,
+                decoration: const InputDecoration(
+                  labelText: 'Tafseer source for verse explanations',
+                ),
+                items: _tafsirSources
+                    .map(
+                      (source) => DropdownMenuItem(
+                        value: source['slug'] as String,
+                        child: Text(
+                          '${source['name_en']}${source['available'] == true ? '' : ' · unavailable'}',
+                        ),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) async {
+                  if (value == null) return;
+                  setState(() => _tafsirSlug = value);
+                  await ref
+                      .read(appSettingsProvider.notifier)
+                      .setPreferredTafsir(value);
+                },
+              ),
+            ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Searches only local quran.db (ayahs + word/grammar/morphology/root), hadith.db, and tafsir.db. Never invents Quran meanings. If nothing authenticated is found: “No authentic reference found.”',
+              'Quran and Hadith search locally. Explicit requests such as “Explain Quran 2:255” retrieve the selected Tafseer directly from an authorized official API. Tafseer is never generated or read from bundled files.',
               style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12, height: 1.4),
             ),
           ),
@@ -142,6 +196,17 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
               const SizedBox(height: 6),
               Text(r.hadithCitationLines.join('\n'), style: const TextStyle(fontSize: 12, color: Islam307Theme.emeraldDeep, height: 1.4)),
             ],
+            if (r.type == SourceType.tafsir) ...[
+              const SizedBox(height: 6),
+              Text(
+                r.tafsirCitationLines.join('\n'),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Islam307Theme.emeraldDeep,
+                  height: 1.4,
+                ),
+              ),
+            ],
           ],
         ),
         onTap: () {
@@ -150,7 +215,9 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
           } else if (r.type == SourceType.hadith && r.hadithBook != null && r.hadithNumber != null) {
             // Book id is not always on the reference; stay on AI and keep citation visible.
           } else if (r.type == SourceType.tafsir && r.surah != null && r.ayah != null) {
-            context.push('/tafsir/ibn-kathir/${r.surah}/${r.ayah}');
+            context.push(
+              '/tafsir/${r.tafsirSlug ?? _tafsirSlug}/${r.surah}/${r.ayah}',
+            );
           } else if (r.type == SourceType.word && r.surah != null && r.ayah != null) {
             context.push('/quran/read/${r.surah}/${r.ayah}');
           }

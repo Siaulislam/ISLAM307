@@ -7,7 +7,7 @@
       "No advertisements.",
       "No paid subscriptions.",
       "Built as Sadaqah Jariyah.",
-      "AI never invents Quran, Hadith, Tafsir, or narrator biographies — it only searches local authenticated databases.",
+      "AI never invents Quran, Hadith, Tafseer, or narrator biographies. Tafseer is queried at runtime only from an authorized official API.",
       "No copyrighted datasets are used without permission."
     ]
   },
@@ -100,12 +100,13 @@
       "notes": "narrators.db ships schema + approved-source catalog with zero biography rows until a licensed import. See assets/modules/narrators_sources.json and tools/narrators/."
     },
     {
-      "id": "tafsir-packs",
-      "title": "Tafsir packs (offline)",
-      "purpose": "Authenticated tafsir text for offline reading and AI source search.",
-      "license": "Per-pack license; preserve source name and reference",
-      "attribution": "Tafsir entries come only from local tafsir.db. Unavailable packs show an explicit unavailable message — never invented text.",
-      "url": "https://quran.com"
+      "id": "quran-foundation-tafseer-api",
+      "title": "Quran Foundation Content API — Tafseer",
+      "purpose": "Runtime, verse-specific Tafseer retrieval from resources authorized for this application.",
+      "license": "Quran Foundation Developer Terms (2025-06-13): in-application display only; no resale, sublicensing, scraping, or raw-data redistribution; ordinary storage limited to one week unless separately permitted.",
+      "attribution": "Tafseer name, author, language, Quran reference, API resource, and Quran Foundation source are shown with every response.",
+      "url": "https://api-docs.quran.foundation/legal/developer-terms/",
+      "notes": "No Tafseer corpus is bundled. The app uses short-lived OAuth credentials and a direct official Content API request. Unsupported works return an explicit unavailable message."
     }
   ]
 }

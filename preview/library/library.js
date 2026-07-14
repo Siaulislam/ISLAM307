@@ -118,14 +118,14 @@ const QURAN_TRANSLATION_LANGS = [
 
 /** Authenticated + future tafsir sources (future ones open as “coming soon”). */
 const QURAN_TAFSIR_OPTIONS = [
-  { id: 'ibn-kathir', label: 'Tafsir Ibn Kathir', ready: true },
-  { id: 'tabari', label: 'Tafsir al-Tabari', ready: false },
-  { id: 'jalalayn', label: 'Tafsir al-Jalalayn', ready: false },
-  { id: 'qurtubi', label: 'Tafsir al-Qurtubi', ready: false },
-  { id: 'baghawi', label: 'Tafsir al-Baghawi', ready: false },
-  { id: 'saadi', label: 'Tafsir as-Sa‘di', ready: false },
-  { id: 'maariful', label: 'Ma‘ariful Quran', ready: false },
-  { id: 'kathir-ur', label: 'Ibn Kathir (Urdu)', ready: false },
+  { id: 'ibn-kathir', label: 'Tafsir Ibn Kathir', author: 'Hafiz Ibn Kathir', ready: false },
+  { id: 'al-tabari', label: 'Tafsir al-Tabari', author: 'Imam al-Tabari', ready: false },
+  { id: 'al-qurtubi', label: 'Tafsir al-Qurtubi', author: 'Imam al-Qurtubi', ready: false },
+  { id: 'al-baghawi', label: 'Tafsir al-Baghawi', author: 'Imam al-Baghawi', ready: false },
+  { id: 'al-jalalayn', label: 'Tafsir al-Jalalayn', author: 'Al-Mahalli & As-Suyuti', ready: false },
+  { id: 'as-sadi', label: 'Tafsir as-Sa‘di', author: 'Abd al-Rahman al-Sa‘di', ready: false },
+  { id: 'tafhim-ul-quran', label: 'Tafhim-ul-Quran', author: 'Syed Abul A‘la Maududi', ready: false },
+  { id: 'maariful-quran', label: 'Ma‘ariful Quran', author: 'Mufti Muhammad Shafi', ready: false },
 ];
 
 const $ = (id) => document.getElementById(id);
@@ -286,7 +286,7 @@ function tafsirBlockHtml(a) {
   if (!opt?.ready) {
     return `<div class="ayah-tafsir is-soon" data-slug="${escapeHtml(slug)}">
       <span class="ayah-tafsir-label">${escapeHtml(label)}</span>
-      <p>This tafsir will be added from an authenticated classical source. Nothing is generated with AI.</p>
+      <p>Unavailable in the static preview. The app queries an authorized Quran Foundation API at runtime; no local Tafseer file or generated substitute is used.</p>
     </div>`;
   }
   const pack = state.tafsirCache[slug];
@@ -333,7 +333,7 @@ function ayahHeaderMenusHtml(a) {
     `<button type="button" class="ayah-menu-item ${!state.quranTafsirSlug ? 'is-active' : ''}" data-tf-slug="">Hide tafseer</button>`,
     ...QURAN_TAFSIR_OPTIONS.map((t) => `<button type="button" class="ayah-menu-item ${state.quranTafsirSlug === t.id ? 'is-active' : ''}" data-tf-slug="${t.id}">
       <strong>${escapeHtml(t.label)}</strong>
-      <small>${t.ready ? 'Available' : 'Coming soon'}</small>
+      <small>${t.ready ? 'Available' : 'Official API app only'}</small>
     </button>`).join(''),
   ].join('');
 
@@ -610,11 +610,9 @@ function refreshCurrentSurah(preserveScroll = true) {
 }
 
 async function ensureTafsirPack(slug) {
-  if (!slug || state.tafsirCache[slug]) return state.tafsirCache[slug];
-  const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
-  if (!opt?.ready) return null;
-  state.tafsirCache[slug] = await fetchJsonGz(`data/tafsir/${slug}.json.gz`);
-  return state.tafsirCache[slug];
+  // Protected Tafseer APIs require backend-held OAuth credentials. GitHub
+  // Pages never loads a local corpus or embeds a client secret.
+  return null;
 }
 
 function openVerseActions(surah, ayah) {
@@ -827,7 +825,7 @@ function wireReaderEvents() {
         }
         refreshCurrentSurah(true);
         const opt = QURAN_TAFSIR_OPTIONS.find((t) => t.id === slug);
-        toast(opt ? (opt.ready ? `Tafseer · ${opt.label}` : `${opt.label} · coming soon`) : 'Tafseer hidden');
+        toast(opt ? (opt.ready ? `Tafseer · ${opt.label}` : `${opt.label} · official API app only`) : 'Tafseer hidden');
       };
     });
   });
@@ -2311,18 +2309,11 @@ async function openTafsir(source, button) {
   if (button) button.classList.add('active');
   const surah = Number($('tafsir-surah').value) || 1;
   const ayah = Number($('tafsir-ayah').value) || 1;
-  $('tafsir-view').innerHTML = `<p class="status">Loading ${source.en}…</p>`;
-  if (!state.tafsirCache[source.slug]) {
-    state.tafsirCache[source.slug] = await fetchJsonGz(`data/tafsir/${source.slug}.json.gz`);
-  }
-  const pack = state.tafsirCache[source.slug];
-  const entry = pack.entries.find((e) => e.s === surah && e.a === ayah);
-  $('tafsir-view').innerHTML = entry
-    ? `<div class="tafsir-card">
-        <div class="meta-row"><span>${source.en}</span><span>${surah}:${ayah}</span></div>
-        <p class="en" style="color:var(--text);white-space:pre-wrap">${entry.text}</p>
-      </div>`
-    : `<p class="empty">No authentic tafsir entry for ${surah}:${ayah} in ${source.en}. ISLAM 307 never generates tafsir with AI.</p>`;
+  $('tafsir-view').innerHTML = `<div class="tafsir-card">
+    <div class="meta-row"><span>${escapeHtml(source.en)}</span><span>${surah}:${ayah}</span></div>
+    <p class="empty">Unavailable in this static preview. The installed app retrieves verse-specific Tafseer from the authorized Quran Foundation Content API using short-lived credentials. No local Tafseer corpus or generated substitute is used.</p>
+    <p class="status">Author: ${escapeHtml(source.author || '—')}<br>Source: Quran Foundation Content API<br>Reference: Quran ${surah}:${ayah}</p>
+  </div>`;
 }
 
 $('quran-search').addEventListener('input', (e) => renderSurahList(e.target.value));
@@ -2371,14 +2362,20 @@ async function boot() {
       window.speechSynthesis.getVoices();
       window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
     }
-    const [surahPack, hadithPack, tafsirPack] = await Promise.all([
+    const [surahPack, hadithPack] = await Promise.all([
       fetchJson('data/quran/surahs.json'),
       fetchJson('data/hadith/books.json'),
-      fetchJson('data/tafsir/sources.json'),
     ]);
     state.surahs = surahPack.surahs;
     state.hadithBooks = hadithPack.books;
-    state.tafsirSources = tafsirPack.sources;
+    state.tafsirSources = QURAN_TAFSIR_OPTIONS.map((source, index) => ({
+      id: index + 1,
+      slug: source.id,
+      en: source.label,
+      ar: '',
+      author: source.author,
+      lang: '',
+    }));
     renderSurahList();
     renderHadithBooks();
     renderTafsirSources();

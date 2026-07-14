@@ -8,7 +8,6 @@ class ModuleCatalog {
   static final ModuleCatalog instance = ModuleCatalog._();
 
   Map<String, dynamic>? _translations;
-  Map<String, dynamic>? _tafsirs;
   Map<String, dynamic>? _hadith;
   Map<String, dynamic>? _audio;
   Map<String, dynamic>? _narrators;
@@ -16,11 +15,6 @@ class ModuleCatalog {
   Future<Map<String, dynamic>> quranTranslations() async {
     _translations ??= jsonDecode(await rootBundle.loadString('assets/modules/quran_translations.json')) as Map<String, dynamic>;
     return _translations!;
-  }
-
-  Future<Map<String, dynamic>> tafsirSources() async {
-    _tafsirs ??= jsonDecode(await rootBundle.loadString('assets/modules/tafsir_sources.json')) as Map<String, dynamic>;
-    return _tafsirs!;
   }
 
   Future<Map<String, dynamic>> hadithCollections() async {
@@ -41,19 +35,6 @@ class ModuleCatalog {
   Future<List<String>> enabledHadithSlugs() async {
     final m = await hadithCollections();
     return (m['enabled_slugs'] as List).cast<String>();
-  }
-
-  Future<List<Map<String, dynamic>>> installedTafsirs() async {
-    final m = await tafsirSources();
-    return (m['sources'] as List)
-        .cast<Map<String, dynamic>>()
-        .where((s) => s['installed'] == true)
-        .toList();
-  }
-
-  Future<List<Map<String, dynamic>>> allTafsirs() async {
-    final m = await tafsirSources();
-    return (m['sources'] as List).cast<Map<String, dynamic>>();
   }
 
   Future<List<Map<String, dynamic>>> allNarratorSources() async {

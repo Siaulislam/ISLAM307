@@ -18,7 +18,6 @@ class DatabaseRegistry {
   static const bundled = {
     'quran': 'assets/databases/quran.db',
     'hadith': 'assets/databases/hadith.db.gz',
-    'tafsir': 'assets/databases/tafsir.db.gz',
     'narrators': 'assets/databases/narrators.db.gz',
   };
 

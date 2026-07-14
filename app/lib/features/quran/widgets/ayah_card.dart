@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../core/audio/recitation_audio_service.dart';
 import '../../core/audio/tts_service.dart';
-import '../../core/database/database_registry.dart';
 import '../../core/models/quran_word.dart';
 import '../../core/repositories/quran_word_repository.dart';
 import '../../core/repositories/tafsir_repository.dart';
@@ -38,6 +37,8 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   String? _tafsirSlug;
   Map<String, dynamic>? _tafsirEntry;
   bool _tafsirLoading = false;
+  final _tafsirRepo = TafsirRepository();
+  List<Map<String, dynamic>> _tafsirSources = const [];
 
   static const _translationOptions = <(String id, String label, String region)>[
     ('ur', 'Urdu', 'Pakistan'),
@@ -56,17 +57,6 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     ('sw', 'Swahili', 'East Africa'),
   ];
 
-  static const _tafsirOptions = <(String id, String label, bool ready)>[
-    ('ibn-kathir', 'Tafsir Ibn Kathir', true),
-    ('tabari', 'Tafsir al-Tabari', false),
-    ('jalalayn', 'Tafsir al-Jalalayn', false),
-    ('qurtubi', 'Tafsir al-Qurtubi', false),
-    ('baghawi', 'Tafsir al-Baghawi', false),
-    ('saadi', 'Tafsir as-Sa‘di', false),
-    ('maariful', 'Ma‘ariful Quran', false),
-    ('kathir-ur', 'Ibn Kathir (Urdu)', false),
-  ];
-
   int get _surah => widget.ayah['surah_number'] as int;
   int get _ayahNo => widget.ayah['ayah_number'] as int;
 
@@ -75,6 +65,13 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     super.initState();
     _loadPersonal();
     _loadWords();
+    _loadTafsirSources();
+  }
+
+  Future<void> _loadTafsirSources() async {
+    final sources = await _tafsirRepo.catalogSources();
+    if (!mounted) return;
+    setState(() => _tafsirSources = sources);
   }
 
   Future<void> _loadPersonal() async {
@@ -411,13 +408,17 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     );
   }
 
+  Map<String, dynamic>? get _selectedTafsirSource {
+    for (final source in _tafsirSources) {
+      if (source['slug'] == _tafsirSlug) return source;
+    }
+    return null;
+  }
+
   Widget _tafsirPanel() {
-    final label = _tafsirOptions
-            .where((e) => e.$1 == _tafsirSlug)
-            .map((e) => e.$2)
-            .followedBy([_tafsirSlug!])
-            .first;
-    final ready = _tafsirOptions.any((e) => e.$1 == _tafsirSlug && e.$3);
+    final source = _selectedTafsirSource;
+    final label = '${source?['name_en'] ?? _tafsirSlug}';
+    final ready = source?['available'] == true;
     if (!ready) {
       return Container(
         padding: const EdgeInsets.all(12),
@@ -427,7 +428,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
           border: Border.all(color: const Color(0xFFFDE68A)),
         ),
         child: Text(
-          '$label will be added from an authenticated classical source. Nothing is generated with AI.',
+          '${source?['notes'] ?? '$label is unavailable from an authorized official API.'} Nothing is generated with AI.',
           style: const TextStyle(fontSize: 13, height: 1.45, fontWeight: FontWeight.w600, color: Color(0xFF92400E)),
         ),
       );
@@ -463,6 +464,20 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               color: unavailable ? const Color(0xFF92400E) : null,
             ),
           ),
+          if (!unavailable) ...[
+            const SizedBox(height: 10),
+            Text(
+              'Author: ${_tafsirEntry?['author'] ?? '—'}\n'
+              'Source: ${_tafsirEntry?['source'] ?? '—'}\n'
+              'Language: ${_tafsirEntry?['language'] ?? '—'}\n'
+              'Citation: ${_tafsirEntry?['citation'] ?? '—'}',
+              style: const TextStyle(
+                height: 1.45,
+                fontSize: 12,
+                color: Islam307Theme.emeraldDeep,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -525,7 +540,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
             const Padding(
               padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
               child: Text(
-                'Pick the exact tafsir you need. Future sources will appear here when authenticated editions are added.',
+                'Sources are discovered from the authenticated Quran Foundation registry. Unlicensed or unavailable works remain disabled.',
                 style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13, height: 1.4),
               ),
             ),
@@ -535,13 +550,25 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               selected: _tafsirSlug == null,
               onTap: () => Navigator.pop(ctx, ''),
             ),
-            ..._tafsirOptions.map(
-              (o) => ListTile(
-                leading: Icon(o.$3 ? Icons.menu_book_rounded : Icons.schedule_rounded, color: Islam307Theme.emerald),
-                title: Text(o.$2, style: const TextStyle(fontWeight: FontWeight.w700)),
-                subtitle: Text(o.$3 ? 'Available' : 'Coming soon'),
-                selected: _tafsirSlug == o.$1,
-                onTap: () => Navigator.pop(ctx, o.$1),
+            ..._tafsirSources.map(
+              (source) => ListTile(
+                leading: Icon(
+                  source['available'] == true
+                      ? Icons.menu_book_rounded
+                      : Icons.block_rounded,
+                  color: Islam307Theme.emerald,
+                ),
+                title: Text(
+                  '${source['name_en']}',
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ),
+                subtitle: Text(
+                  source['available'] == true
+                      ? '${source['author']} · ${source['language']} · official API'
+                      : 'Unavailable — no authorized API resource',
+                ),
+                selected: _tafsirSlug == source['slug'],
+                onTap: () => Navigator.pop(ctx, source['slug'] as String),
               ),
             ),
           ],
@@ -556,14 +583,12 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       });
       return;
     }
-    final ready = _tafsirOptions.any((e) => e.$1 == choice && e.$3);
     setState(() {
       _tafsirSlug = choice;
       _tafsirEntry = null;
-      _tafsirLoading = ready;
+      _tafsirLoading = true;
     });
-    if (!ready) return;
-    final entry = await TafsirRepository(DatabaseRegistry.instance).entry(choice, _surah, _ayahNo);
+    final entry = await _tafsirRepo.entry(choice, _surah, _ayahNo);
     if (!mounted) return;
     setState(() {
       _tafsirEntry = entry;
@@ -645,7 +670,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       await _speak(translation, translationLang);
     } else if (choice == 'tafsir') {
       final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
-      final entry = await TafsirRepository(DatabaseRegistry.instance).entry(slug, _surah, _ayahNo);
+      final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
       final text = '${entry?['text'] ?? ''}';
       if (text.isEmpty || entry?['unavailable'] == true) {
         _toast(entry?['message'] as String? ?? TafsirRepository.unavailableMessage);
@@ -774,8 +799,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
 
   Future<void> _openTafsir(BuildContext context) async {
     final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
-    final repo = TafsirRepository(DatabaseRegistry.instance);
-    final entry = await repo.entry(slug, _surah, _ayahNo);
+    final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
     if (!context.mounted) return;
     await showModalBottomSheet<void>(
       context: context,
@@ -810,6 +834,18 @@ class _AyahCardState extends ConsumerState<AyahCard> {
                 Text('${entry['source_name']}', style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
                 const SizedBox(height: 10),
                 Text('${entry['text']}', style: const TextStyle(height: 1.7)),
+                const SizedBox(height: 12),
+                Text(
+                  'Author: ${entry['author'] ?? '—'}\n'
+                  'Source: ${entry['source'] ?? '—'}\n'
+                  'Language: ${entry['language'] ?? '—'}\n'
+                  'Citation: ${entry['citation'] ?? '—'}',
+                  style: const TextStyle(
+                    height: 1.45,
+                    fontSize: 12,
+                    color: Islam307Theme.emeraldDeep,
+                  ),
+                ),
                 TextButton(onPressed: () => context.push('/tafsir/$slug/$_surah/$_ayahNo'), child: const Text('Open in Tafsir module')),
               ],
             ],

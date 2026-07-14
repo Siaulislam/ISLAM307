@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate ISLAM 307 verification reports for hadith.db and tafsir.db."""
+"""Generate ISLAM 307 verification reports for bundled databases."""
 
 from __future__ import annotations
 
@@ -12,8 +12,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 HADITH_DB = ROOT / "app" / "assets" / "databases" / "hadith.db"
-TAFSIR_DB = ROOT / "app" / "assets" / "databases" / "tafsir.db"
-QURAN_DB = ROOT / "app" / "assets" / "databases" / "quran.db"
 REPORT_DIR = ROOT / "reports" / "verification"
 
 
@@ -171,48 +169,6 @@ def analyze_hadith() -> dict:
     }
 
 
-def analyze_tafsir() -> dict:
-    conn = sqlite3.connect(TAFSIR_DB)
-    meta = dict(conn.execute("SELECT key, value FROM meta").fetchall())
-    sources = [dict(zip(["id", "slug", "name_en", "name_ar", "author", "language", "sort_order"], r)) for r in conn.execute("SELECT id, slug, name_en, name_ar, author, language, sort_order FROM sources").fetchall()]
-    total = conn.execute("SELECT COUNT(*) FROM entries").fetchone()[0]
-
-    by_surah = dict(conn.execute("SELECT surah_number, COUNT(*) FROM entries GROUP BY surah_number").fetchall())
-    conn.close()
-
-    qconn = sqlite3.connect(QURAN_DB)
-    surahs = qconn.execute("SELECT number, ayah_count FROM surahs ORDER BY number").fetchall()
-    qconn.close()
-
-    expected_total = sum(a for _, a in surahs)
-    covered = total
-    missing_ayahs: list[str] = []
-    per_surah = []
-    for sn, ac in surahs:
-        have = by_surah.get(sn, 0)
-        per_surah.append({"surah": sn, "expected_ayahs": ac, "entries": have, "complete": have == ac})
-        for ayah in range(1, ac + 1):
-            # check missing at ayah level via recount - expensive; infer from count mismatch
-            pass
-        if have < ac:
-            missing_ayahs.append(f"{sn} ({have}/{ac})")
-
-    return {
-        "database_path": str(TAFSIR_DB),
-        "file_size_mb": round(TAFSIR_DB.stat().st_size / 1024 / 1024, 2),
-        "meta": meta,
-        "sources": sources,
-        "total_entries": total,
-        "expected_ayahs_quran": expected_total,
-        "coverage_percent": round(100.0 * covered / expected_total, 2) if expected_total else 0,
-        "is_complete": covered == expected_total,
-        "surahs_with_any_entry": len(by_surah),
-        "surahs_complete": sum(1 for p in per_surah if p["complete"]),
-        "surahs_partial_or_missing": [p for p in per_surah if not p["complete"]],
-        "per_surah": per_surah,
-    }
-
-
 def write_markdown_hadith(data: dict, path: Path) -> None:
     meta = data["meta"]
     lines = [
@@ -323,58 +279,6 @@ def write_markdown_hadith(data: dict, path: Path) -> None:
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
-def write_markdown_tafsir(data: dict, path: Path) -> None:
-    src = data["sources"][0] if data["sources"] else {}
-    lines = [
-        "# ISLAM 307 — Tafsir Database Verification Report",
-        "",
-        f"Generated: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')}",
-        "",
-        "## Executive summary",
-        "",
-        f"- **Source:** {src.get('name_en', 'Unknown')} (resource_id **169** via api.qurancdn.com)",
-        f"- **Author:** {src.get('author', 'Ibn Kathir')}",
-        f"- **Language:** {src.get('language', 'en')}",
-        f"- **Total entries:** {data['total_entries']:,} / {data['expected_ayahs_quran']:,} expected ayahs",
-        f"- **Coverage:** **{data['coverage_percent']}%**",
-        f"- **Complete:** **{'YES' if data['is_complete'] else 'NO'}**",
-        "",
-        "## 1. Edition of Tafsir Ibn Kathir",
-        "",
-        "Built from **Quran.com CDN API** (`api.qurancdn.com/api/qdc/tafsirs/169/by_ayah/{surah}:{ayah}`).",
-        "",
-        "This is the **English abridged Tafsir Ibn Kathir** edition distributed by Quran.com / QuranFoundation ecosystem — **not** the full Arabic *Tafsir al-Quran al-Azim*.",
-        "",
-        "Specific print edition metadata (publisher, ISBN, translator name, year) is **NOT stored** in tafsir.db.",
-        "",
-        "## 2. Completeness",
-        "",
-        f"- Expected ayahs (114 surahs): **{data['expected_ayahs_quran']:,}**",
-        f"- Entries stored: **{data['total_entries']:,}**",
-        f"- Missing: **{data['expected_ayahs_quran'] - data['total_entries']:,}** ayahs",
-        f"- Surahs with full coverage: **{data['surahs_complete']} / 114**",
-        "",
-        "**Verdict:** ⚠️ **INCOMPLETE** — 227 ayahs have no tafsir entry (API returned empty or fetch failed).",
-        "",
-        "## 3. Commercial license compatibility",
-        "",
-        "- Data fetched from **Quran.com CDN** without explicit offline redistribution license stored in database.",
-        "- Quran.com content is generally offered for apps with attribution, but **commercial offline bundling requires written permission** from QuranFoundation/Quran.com.",
-        "",
-        "**Verdict:** ⚠️ **NOT verified commercial-ready.** Confirm licensing with Quran.com / Darussalam (English Ibn Kathir translator/publisher) before commercial distribution.",
-        "",
-        "## 4. Per-surah coverage",
-        "",
-        "See `reports/verification/tafsir_full_report.json` for full surah-by-surah breakdown.",
-        "",
-        "## Recommendation",
-        "",
-        "Obtain licensed offline Ibn Kathir text or explicit API/dump permission. Re-run builder and store edition metadata in `sources` table.",
-        "",
-    ]
-    path.write_text("\n".join(lines), encoding="utf-8")
-
-
 def main() -> int:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -384,13 +288,6 @@ def main() -> int:
         json.dumps(hadith, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     write_markdown_hadith(hadith, REPORT_DIR / "HADITH_VERIFICATION_REPORT.md")
-
-    print("Analyzing tafsir.db...")
-    tafsir = analyze_tafsir()
-    (REPORT_DIR / "tafsir_full_report.json").write_text(
-        json.dumps(tafsir, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
-    write_markdown_tafsir(tafsir, REPORT_DIR / "TAFSIR_VERIFICATION_REPORT.md")
 
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -402,13 +299,13 @@ def main() -> int:
             "grade_distribution": hadith["grade_distribution"],
         },
         "tafsir": {
-            "total": tafsir["total_entries"],
-            "expected": tafsir["expected_ayahs_quran"],
-            "complete": tafsir["is_complete"],
-            "commercial_ready": False,
+            "delivery": "runtime_official_api",
+            "bundled_entries": 0,
+            "provider": "Quran Foundation Content API",
+            "license_review": "docs/TAFSEER_SOURCES_AND_LICENSES.md",
         },
         "development_blocked": True,
-        "recommendation": "Rebuild hadith.db from Sunnah.com API; confirm tafsir licensing before commercial use.",
+        "recommendation": "Rebuild hadith.db from Sunnah.com API; Tafseer must remain runtime official-API-only.",
     }
     (REPORT_DIR / "VERIFICATION_SUMMARY.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"

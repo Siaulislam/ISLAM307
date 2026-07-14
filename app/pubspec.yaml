@@ -30,7 +30,6 @@ flutter:
   assets:
     - assets/databases/quran.db
     - assets/databases/hadith.db.gz
-    - assets/databases/tafsir.db.gz
     - assets/databases/narrators.db.gz
     - assets/branding/
     - assets/branding/hadith/

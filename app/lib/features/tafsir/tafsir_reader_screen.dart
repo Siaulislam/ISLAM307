@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/database/database_registry.dart';
 import '../../core/repositories/tafsir_repository.dart';
 import '../../core/theme/islam307_theme.dart';
+import 'tafsir_attribution.dart';
 
 class TafsirReaderScreen extends StatefulWidget {
   const TafsirReaderScreen({
@@ -21,7 +21,7 @@ class TafsirReaderScreen extends StatefulWidget {
 }
 
 class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
-  final _repo = TafsirRepository(DatabaseRegistry.instance);
+  final _repo = TafsirRepository();
   Map<String, dynamic>? _entry;
   bool _loading = true;
 
@@ -86,6 +86,8 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
                       style: const TextStyle(color: Islam307Theme.textMuted, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 16),
                   Text('${_entry!['text']}', style: const TextStyle(height: 1.7, fontSize: 15)),
+                  const SizedBox(height: 16),
+                  TafsirAttribution(entry: _entry!),
                 ],
               ],
             ),

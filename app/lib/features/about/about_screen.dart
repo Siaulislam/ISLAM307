@@ -71,7 +71,7 @@ class _AboutScreenState extends State<AboutScreen> {
           ),
           const Divider(),
           const Text(
-            'AI searches only local authenticated databases (quran.db, hadith.db, tafsir.db, narrators.db). '
+            'AI searches authenticated local Quran and Hadith databases. Verse-specific Tafseer is retrieved at runtime from the authorized Quran Foundation Content API and is not bundled locally. '
             'Narrator biographies are never invented — only approved classical Sunni sources with license/permission. '
             'If nothing matches: “No authentic reference found.” '
             'If a narrator profile is not in narrators.db yet: “This narrator profile has not been imported into the local database yet.”',

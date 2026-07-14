@@ -3,9 +3,11 @@ import '../database/quran_database.dart';
 import '../repositories/hadith_repository.dart';
 import '../repositories/quran_word_repository.dart';
 import '../repositories/tafsir_repository.dart';
+import 'tafsir_intent.dart';
 
 /// Source-only Islamic search — NEVER generates rulings from itself.
-/// Searches quran.db, hadith.db, tafsir.db, and word knowledge tables via local DB only.
+/// Quran and Hadith search locally; explicit verse-Tafseer requests query the
+/// official licensed provider at runtime.
 class SourceReferenceSearch {
   SourceReferenceSearch({
     required DatabaseRegistry registry,
@@ -15,7 +17,7 @@ class SourceReferenceSearch {
     QuranWordRepository? words,
   })  : _quran = quran ?? QuranDatabase.instance,
         _hadith = hadith ?? HadithRepository(registry),
-        _tafsir = tafsir ?? TafsirRepository(registry),
+        _tafsir = tafsir ?? TafsirRepository(),
         _words = words ?? QuranWordRepository();
 
   final QuranDatabase _quran;
@@ -25,15 +27,58 @@ class SourceReferenceSearch {
 
   static const noReferenceMessage = 'No authentic reference found.';
 
-  Future<SourceReferenceResult> search(String question) async {
+  Future<SourceReferenceResult> search(
+    String question, {
+    String tafsirSourceSlug = 'ibn-kathir',
+  }) async {
     final q = question.trim();
     if (q.isEmpty) {
       return SourceReferenceResult.empty(noReferenceMessage);
     }
 
+    final tafsirIntent = TafsirIntent.parse(q);
+    if (tafsirIntent.isTafsirRequest) {
+      if (!tafsirIntent.hasVerse) {
+        return SourceReferenceResult.empty(
+          'Please include a verse reference, for example “Explain Quran 2:255”. Tafseer is never guessed.',
+        );
+      }
+      final entry = await _tafsir.entry(
+        tafsirSourceSlug,
+        tafsirIntent.surah!,
+        tafsirIntent.ayah!,
+      );
+      if (entry == null || entry['unavailable'] == true) {
+        return SourceReferenceResult.empty(
+          [
+            entry?['message'] ?? TafsirRepository.unavailableMessage,
+            if ('${entry?['notes'] ?? ''}'.trim().isNotEmpty) entry!['notes'],
+          ].join('\n'),
+        );
+      }
+      final reference = SourceReference(
+        type: SourceType.tafsir,
+        title:
+            'Tafseer · ${entry['source_name']} · ${entry['surah_number']}:${entry['ayah_number']}',
+        excerpt: '${entry['text']}',
+        surah: entry['surah_number'] as int?,
+        ayah: entry['ayah_number'] as int?,
+        tafsirSlug: entry['source_slug'] as String?,
+        tafsirName: entry['source_name'] as String?,
+        tafsirAuthor: entry['author'] as String?,
+        tafsirSource: entry['source'] as String?,
+        tafsirLanguage: entry['language'] as String?,
+        citation: entry['citation'] as String?,
+        referenceUrl: entry['reference_url'] as String?,
+      );
+      return SourceReferenceResult(
+        references: [reference],
+        answerExcerpt: reference.excerpt,
+      );
+    }
+
     final quranHits = await _quran.search(q, limit: 5);
     final hadithHits = await _hadith.search(q, limit: 5);
-    final tafsirHits = await _tafsir.search(q, limit: 5);
     final wordHits = await _words.search(q, limit: 8);
 
     final refs = <SourceReference>[
@@ -60,15 +105,6 @@ class SourceReferenceSearch {
           referenceUrl: null,
         );
       }),
-      ...tafsirHits.map((r) => SourceReference(
-            type: SourceType.tafsir,
-            title: 'Tafsir · ${r['source_name']} · ${r['surah_number']}:${r['ayah_number']}',
-            excerpt: r['text'] as String? ?? '',
-            surah: r['surah_number'] as int?,
-            ayah: r['ayah_number'] as int?,
-            tafsirName: r['source_name'] as String?,
-            referenceUrl: 'https://quran.com/${r['surah_number']}:${r['ayah_number']}/tafsir',
-          )),
       ...wordHits.map((w) => SourceReference(
             type: SourceType.word,
             title: 'Word · ${w.surah}:${w.ayah}:${w.wordNumber} · ${w.textAr}',
@@ -102,7 +138,12 @@ class SourceReference {
     this.ayah,
     this.hadithBook,
     this.hadithNumber,
+    this.tafsirSlug,
     this.tafsirName,
+    this.tafsirAuthor,
+    this.tafsirSource,
+    this.tafsirLanguage,
+    this.citation,
     this.grade,
     this.scholar,
     this.referenceUrl,
@@ -115,7 +156,12 @@ class SourceReference {
   final int? ayah;
   final String? hadithBook;
   final int? hadithNumber;
+  final String? tafsirSlug;
   final String? tafsirName;
+  final String? tafsirAuthor;
+  final String? tafsirSource;
+  final String? tafsirLanguage;
+  final String? citation;
   final String? grade;
   final String? scholar;
   final String? referenceUrl;
@@ -129,6 +175,19 @@ class SourceReference {
       'Grade: ${grade ?? HadithRepository.gradeNotVerified}',
       if (scholar != null && scholar!.isNotEmpty) 'Scholar: $scholar',
       if (referenceUrl != null && referenceUrl!.isNotEmpty) 'Reference: $referenceUrl',
+    ];
+  }
+
+  List<String> get tafsirCitationLines {
+    if (type != SourceType.tafsir) return [];
+    return [
+      'Tafseer: ${tafsirName ?? '—'}',
+      'Author: ${tafsirAuthor ?? '—'}',
+      'Source: ${tafsirSource ?? '—'}',
+      'Language: ${tafsirLanguage ?? '—'}',
+      'Citation: ${citation ?? 'Quran ${surah ?? '—'}:${ayah ?? '—'}'}',
+      if (referenceUrl != null && referenceUrl!.isNotEmpty)
+        'Reference: $referenceUrl',
     ];
   }
 }

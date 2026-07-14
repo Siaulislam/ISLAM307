@@ -8,12 +8,12 @@
 |-------|--------|
 | UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
 | `quran.db` | Built (6,236 ayahs + English + Urdu + word knowledge) |
-| `hadith.db` / `tafsir.db` | Bundled; Flutter modules wired |
+| `hadith.db` | Bundled; Flutter module wired |
 | Flutter Quran module | Surah/Ruku browse, word-by-word, Urdu/EN/Arabic-only, View Tafsir, audio + TTS |
 | Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
-| Flutter Tafsir module | Source/Surah/Ayah picker · authentic packs only |
+| Flutter Tafsir module | Official runtime API · dynamic source registry · no bundled Tafseer corpus |
 | Search + Light/Dark | Wired (ayah, word, root, morphology, juz, page) |
-| AI Assistant | Source-only local DB search (never invents) |
+| AI Assistant | Local Quran/Hadith search + official verse-Tafseer API lookup (never invents) |
 | About / Licenses | Data Sources & Licenses acknowledgements |
 | Prayer, etc. | Next |
 
@@ -62,8 +62,13 @@ Open `design/mockups/index.html` directly in Chrome if you prefer.
 ```bash
 cd app
 flutter pub get
-flutter run
+flutter run \
+  --dart-define=QF_TOKEN_BROKER_URL=https://your-secure-backend.example/qf-token
 ```
+
+Quran Foundation requires OAuth client secrets to remain on a backend. See
+[`docs/TAFSEER_SOURCES_AND_LICENSES.md`](docs/TAFSEER_SOURCES_AND_LICENSES.md)
+for API setup, source availability, attribution, and caching restrictions.
 
 ### Rebuild Quran database
 ```bash

@@ -21,4 +21,4 @@ python tools/verification/generate_reports.py
 ## Verdict
 
 - **hadith.db:** FAIL — unofficial source (fawazahmed0/hadith-api), not commercial-ready
-- **tafsir.db:** FAIL — incomplete (96.36%), license not verified for offline commercial bundling
+- **tafsir.db:** REMOVED — the failed/incompletely licensed offline corpus is no longer bundled. Historical audit files are retained for provenance only; current Tafseer is runtime official-API-only. See `docs/TAFSEER_SOURCES_AND_LICENSES.md`.
