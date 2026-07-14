@@ -1238,7 +1238,6 @@ body.dark .ai-box {
   border-color: #134e4a;
   color: #e2e8f0;
 }
-body.dark .ayah-word-hint { color: #94a3b8; }
 
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
