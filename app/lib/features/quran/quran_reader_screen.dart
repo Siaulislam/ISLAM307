@@ -30,6 +30,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
   String _title = 'Quran';
   bool _loading = true;
   String? _userId;
+  String? _selectedTafsirAyahKey;
 
   @override
   void initState() {
@@ -47,6 +48,9 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
         _userId = uid;
         _ayahs = ayahs;
         _title = 'Ruku ${widget.rukuNumber}${first == null ? '' : ' · ${first['name_en']}'}';
+        _selectedTafsirAyahKey = ayahs.isEmpty
+            ? null
+            : '${ayahs.first['surah_number']}:${ayahs.first['ayah_number']}';
         _loading = false;
       });
       return;
@@ -68,6 +72,9 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
       _userId = uid;
       _ayahs = ayahs;
       _title = surah == null ? 'Surah $surahNo' : '${surah['name_en']}';
+      _selectedTafsirAyahKey = ayahs.isEmpty
+          ? null
+          : '${ayahs.first['surah_number']}:${ayahs.first['ayah_number']}';
       _loading = false;
     });
   }
@@ -113,13 +120,23 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
                   child: ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
                     itemCount: _ayahs.length,
-                    itemBuilder: (_, i) => AyahCard(
-                      ayah: _ayahs[i],
-                      surahAyahCount: _ayahs.isEmpty ? null : _ayahs.last['ayah_number'] as int?,
-                      autoLoadTafsir: widget.rukuNumber != null
-                          ? i == 0
-                          : _ayahs[i]['ayah_number'] == widget.startAyah,
-                    ),
+                    itemBuilder: (_, i) {
+                      final ayah = _ayahs[i];
+                      final key =
+                          '${ayah['surah_number']}:${ayah['ayah_number']}';
+                      return AyahCard(
+                        key: ValueKey('ayah:$key'),
+                        ayah: ayah,
+                        surahAyahCount: _ayahs.isEmpty
+                            ? null
+                            : _ayahs.last['ayah_number'] as int?,
+                        tafsirSelected: _selectedTafsirAyahKey == key,
+                        onSelectForTafsir: () {
+                          if (_selectedTafsirAyahKey == key) return;
+                          setState(() => _selectedTafsirAyahKey = key);
+                        },
+                      );
+                    },
                   ),
                 ),
                 ListenableBuilder(

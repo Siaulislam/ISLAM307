@@ -19,13 +19,15 @@ class AyahCard extends ConsumerStatefulWidget {
     required this.ayah,
     this.surahName,
     this.surahAyahCount,
-    this.autoLoadTafsir = false,
+    this.tafsirSelected = false,
+    this.onSelectForTafsir,
   });
 
   final Map<String, dynamic> ayah;
   final String? surahName;
   final int? surahAyahCount;
-  final bool autoLoadTafsir;
+  final bool tafsirSelected;
+  final VoidCallback? onSelectForTafsir;
 
   @override
   ConsumerState<AyahCard> createState() => _AyahCardState();
@@ -76,10 +78,25 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     _loadPersonal();
     _loadWords();
     _loadTafsirSources();
-    if (widget.autoLoadTafsir) {
+    if (widget.tafsirSelected) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _loadPreferredTafsirForAyah();
       });
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant AyahCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!oldWidget.tafsirSelected && widget.tafsirSelected) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _loadPreferredTafsirForAyah();
+      });
+    } else if (oldWidget.tafsirSelected && !widget.tafsirSelected) {
+      _tafsirRequestId++;
+      _tafsirSlug = null;
+      _tafsirEntry = null;
+      _tafsirLoading = false;
     }
   }
 
@@ -203,7 +220,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          _loadPreferredTafsirForAyah();
+          widget.onSelectForTafsir?.call();
           _openVerseActions(
             arabic: arabic,
             translation: actionTranslation,
@@ -690,6 +707,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   }
 
   Future<void> _pickTafsirSource() async {
+    widget.onSelectForTafsir?.call();
     final choice = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
