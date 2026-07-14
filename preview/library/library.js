@@ -42,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=hadith-reader-59' : '?v=hadith-reader-59';
+  const bust = url.includes('?') ? '&v=hadith-reader-60' : '?v=hadith-reader-60';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
@@ -1229,7 +1229,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-59`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-60`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -1255,7 +1255,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-59`);
+    const res = await fetch(`${path}?v=hadith-reader-60`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1706,17 +1706,25 @@ function openHadithReader(slug, rows, index) {
   const total = rows.length;
   const pos = safeIndex + 1;
   const topicTitle = state.hadithTopicTitle || localizedKitabName(hadith, pack);
+  const subjectBadge =
+    (hadith.reference_detail?.baab ||
+      hadith.reference_detail?.by_lang?.ur?.values?.baab ||
+      hadith.reference_detail?.by_lang?.ar?.values?.baab ||
+      topicTitle ||
+      '').trim() || topicTitle;
   const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
   const progress = Math.round((pos / total) * 100);
   // Always show authentic کتاب span on the right (e.g. Hadith 135 to 247).
   const span = chapterRangeForHadith(pack, hadith);
-  const isPreface = Number(hadith.n) === 0;
+  const isPreface = Number(hadith.n) <= 0;
   const countLabel = isPreface
     ? (span && span.first != null ? `Before Hadith ${span.first} to ${span.last}` : 'Introduction preface')
     : (!span
       ? `Hadith ${hadith.n}`
       : (span.first === span.last ? `Hadith ${span.first}` : `Hadith ${span.first} to ${span.last}`));
-  const nowLabel = isPreface ? `Now reading · ${topicTitle || 'المقدمة'}` : `Now reading Hadith ${hadith.n}`;
+  const nowLabel = isPreface
+    ? `Now reading · ${subjectBadge || topicTitle || 'المقدمة'}`
+    : `Now reading Hadith ${hadith.n}`;
 
   $('hadith-view').innerHTML = `
     <article class="hadith-reader" id="hadith-reader">
@@ -1731,7 +1739,7 @@ function openHadithReader(slug, rows, index) {
       <div class="hadith-reader-heading">
         <div class="hadith-reader-heading-row">
           <p class="hadith-reader-book">${escapeHtml(pack.book.en)}</p>
-          <span class="hadith-subject-badge" dir="rtl">${escapeHtml(topicTitle)}</span>
+          <span class="hadith-subject-badge" dir="rtl">${escapeHtml(subjectBadge)}</span>
         </div>
         <p class="hadith-reader-count">${escapeHtml(countLabel)}</p>
         <p class="hadith-reader-now">${escapeHtml(nowLabel)}</p>
