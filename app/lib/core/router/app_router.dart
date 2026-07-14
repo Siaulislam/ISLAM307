@@ -93,8 +93,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/tafsir/:slug/:surah/:ayah',
         builder: (_, state) {
           final slug = state.pathParameters['slug']!;
-          final surah = int.parse(state.pathParameters['surah']!);
-          final ayah = int.parse(state.pathParameters['ayah']!);
+          final surah =
+              int.tryParse(state.pathParameters['surah'] ?? '') ?? 0;
+          final ayah = int.tryParse(state.pathParameters['ayah'] ?? '') ?? 0;
           return TafsirReaderScreen(sourceSlug: slug, surah: surah, ayah: ayah);
         },
       ),

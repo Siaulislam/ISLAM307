@@ -25,6 +25,7 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
   final _repo = TafsirRepository();
   Map<String, dynamic>? _entry;
   bool _loading = true;
+  int _requestId = 0;
 
   @override
   void initState() {
@@ -41,9 +42,10 @@ class _TafsirReaderScreenState extends State<TafsirReaderScreen> {
   }
 
   Future<void> _load() async {
+    final requestId = ++_requestId;
     setState(() => _loading = true);
     final entry = await _repo.entry(widget.sourceSlug, widget.surah, widget.ayah);
-    if (!mounted) return;
+    if (!mounted || requestId != _requestId) return;
     setState(() {
       _entry = entry;
       _loading = false;

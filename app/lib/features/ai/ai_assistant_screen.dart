@@ -23,6 +23,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   List<Map<String, dynamic>> _tafsirSources = const [];
   String _tafsirSlug = 'ibn-kathir';
   bool _loading = false;
+  int _requestId = 0;
 
   @override
   void initState() {
@@ -48,18 +49,30 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   }
 
   Future<void> _run() async {
+    if (_loading) return;
     final q = _controller.text.trim();
     if (q.isEmpty) return;
+    final requestId = ++_requestId;
     setState(() => _loading = true);
-    final result = await _search.search(
-      q,
-      tafsirSourceSlug: _tafsirSlug,
-    );
-    if (!mounted) return;
-    setState(() {
-      _result = result;
-      _loading = false;
-    });
+    try {
+      final result = await _search.search(
+        q,
+        tafsirSourceSlug: _tafsirSlug,
+      );
+      if (!mounted || requestId != _requestId) return;
+      setState(() => _result = result);
+    } catch (_) {
+      if (!mounted || requestId != _requestId) return;
+      setState(
+        () => _result = SourceReferenceResult.empty(
+          'Authenticated sources could not be reached. No answer was generated.',
+        ),
+      );
+    } finally {
+      if (mounted && requestId == _requestId) {
+        setState(() => _loading = false);
+      }
+    }
   }
 
   @override
@@ -83,7 +96,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
             child: TextField(
               controller: _controller,
               textInputAction: TextInputAction.search,
-              onSubmitted: (_) => _run(),
+              onSubmitted: _loading ? null : (_) => _run(),
               decoration: InputDecoration(
                 hintText: 'Ask with a topic, e.g. نماز / prayer / صبر',
                 prefixIcon: const Icon(Icons.auto_awesome_rounded),

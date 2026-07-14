@@ -15,7 +15,9 @@ class TafsirIntent {
 
   static TafsirIntent parse(String question) {
     final normalized = question.trim().toLowerCase();
-    final asksForTafsir = [
+    final match = RegExp(r'\b(\d{1,3})\s*[:/]\s*(\d{1,3})\b')
+        .firstMatch(normalized);
+    final explicitTafsirWords = [
       'tafsir',
       'tafseer',
       'explain this verse',
@@ -26,12 +28,19 @@ class TafsirIntent {
       'تفسیر',
       'تفسير',
     ].any(normalized.contains);
+    final asksForExplanation = match != null &&
+        [
+          'explain',
+          'meaning',
+          'interpret',
+          'شرح',
+          'وضاحت',
+        ].any(normalized.contains);
+    final asksForTafsir = explicitTafsirWords || asksForExplanation;
     if (!asksForTafsir) {
       return const TafsirIntent(isTafsirRequest: false);
     }
 
-    final match = RegExp(r'\b(\d{1,3})\s*[:/]\s*(\d{1,3})\b')
-        .firstMatch(normalized);
     if (match == null) {
       return const TafsirIntent(isTafsirRequest: true);
     }

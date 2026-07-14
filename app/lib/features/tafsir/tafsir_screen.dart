@@ -27,6 +27,7 @@ class _TafsirScreenState extends ConsumerState<TafsirScreen> {
   bool _loading = true;
   bool _loadingEntry = false;
   String? _bootError;
+  int _entryRequestId = 0;
 
   @override
   void initState() {
@@ -71,9 +72,10 @@ class _TafsirScreenState extends ConsumerState<TafsirScreen> {
 
   Future<void> _loadEntry() async {
     if (_slug == null) return;
+    final requestId = ++_entryRequestId;
     setState(() => _loadingEntry = true);
     final entry = await _tafsirRepo.entry(_slug!, _surah, _ayah);
-    if (!mounted) return;
+    if (!mounted || requestId != _entryRequestId) return;
     setState(() {
       _entry = entry;
       _loadingEntry = false;

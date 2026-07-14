@@ -39,6 +39,8 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   bool _tafsirLoading = false;
   final _tafsirRepo = TafsirRepository();
   List<Map<String, dynamic>> _tafsirSources = const [];
+  String? _tafsirCatalogError;
+  bool _tafsirCatalogLoading = false;
 
   static const _translationOptions = <(String id, String label, String region)>[
     ('ur', 'Urdu', 'Pakistan'),
@@ -69,13 +71,27 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   }
 
   Future<void> _loadTafsirSources() async {
+    if (mounted) {
+      setState(() {
+        _tafsirCatalogLoading = true;
+        _tafsirCatalogError = null;
+      });
+    }
     try {
       final sources = await _tafsirRepo.catalogSources();
       if (!mounted) return;
-      setState(() => _tafsirSources = sources);
+      setState(() {
+        _tafsirSources = sources;
+        _tafsirCatalogLoading = false;
+      });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _tafsirSources = const []);
+      setState(() {
+        _tafsirSources = const [];
+        _tafsirCatalogLoading = false;
+        _tafsirCatalogError =
+            'Official Tafseer sources could not be loaded. Tap to retry.';
+      });
     }
   }
 
@@ -555,6 +571,23 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               selected: _tafsirSlug == null,
               onTap: () => Navigator.pop(ctx, ''),
             ),
+            if (_tafsirCatalogLoading)
+              const ListTile(
+                leading: CircularProgressIndicator(),
+                title: Text('Loading official Tafseer sources…'),
+              ),
+            if (_tafsirCatalogError != null)
+              ListTile(
+                leading: const Icon(
+                  Icons.refresh_rounded,
+                  color: Islam307Theme.emerald,
+                ),
+                title: Text(_tafsirCatalogError!),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _loadTafsirSources();
+                },
+              ),
             ..._tafsirSources.map(
               (source) => ListTile(
                 leading: Icon(

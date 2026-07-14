@@ -10,6 +10,11 @@ class _Request {
 
 class _FakeTransport implements TafsirHttpTransport {
   _FakeTransport({
+    this.resourcesBody =
+        '{"tafsirs":[{"id":999,"name":"Tafsir Ibn Kathir",'
+        '"author_name":"Hafiz Ibn Kathir",'
+        '"slug":"en-tafsir-ibn-kathir","language_name":"english",'
+        '"translated_name":{"name":"Tafsir Ibn Kathir"}}]}',
     this.tafsirBody =
         '{"tafsirs":[{"resource_id":999,"verse_key":"2:255",'
         '"language_name":"english","resource_name":"Tafsir Ibn Kathir",'
@@ -18,6 +23,7 @@ class _FakeTransport implements TafsirHttpTransport {
         '"author_name":"Hafiz Ibn Kathir"}}',
   });
 
+  final String resourcesBody;
   final String tafsirBody;
   final requests = <_Request>[];
 
@@ -28,13 +34,7 @@ class _FakeTransport implements TafsirHttpTransport {
   }) async {
     requests.add(_Request(uri, headers));
     if (uri.path.endsWith('/resources/tafsirs')) {
-      return const TafsirHttpResponse(
-        200,
-        '{"tafsirs":[{"id":999,"name":"Tafsir Ibn Kathir",'
-        '"author_name":"Hafiz Ibn Kathir",'
-        '"slug":"en-tafsir-ibn-kathir","language_name":"english",'
-        '"translated_name":{"name":"Tafsir Ibn Kathir"}}]}',
-      );
+      return TafsirHttpResponse(200, resourcesBody);
     }
     return TafsirHttpResponse(200, tafsirBody);
   }
@@ -120,5 +120,33 @@ void main() {
       provider.fetch(source: definition, surah: 2, ayah: 255),
       throwsA(isA<Exception>()),
     );
+  });
+
+  test('refuses ambiguous matching resources', () async {
+    final transport = _FakeTransport(
+      resourcesBody:
+          '{"tafsirs":['
+          '{"id":999,"name":"Tafsir Ibn Kathir",'
+          '"author_name":"Hafiz Ibn Kathir",'
+          '"slug":"en-tafsir-ibn-kathir","language_name":"english"},'
+          '{"id":1000,"name":"Tafsir Ibn Kathir",'
+          '"author_name":"Hafiz Ibn Kathir",'
+          '"slug":"en-tafsir-ibn-kathir","language_name":"english"}'
+          ']}',
+    );
+    final provider = QuranFoundationTafsirProvider(
+      config: const QuranFoundationApiConfig(
+        apiBaseUrl: 'https://apis.quran.foundation',
+        clientId: 'approved-client',
+        accessToken: 'short-lived-token',
+        tokenBrokerUrl: '',
+      ),
+      transport: transport,
+    );
+    final catalog = await provider.catalog(requestedTafsirSources);
+    final ibnKathir =
+        catalog.firstWhere((source) => source['slug'] == 'ibn-kathir');
+    expect(ibnKathir['available'], isFalse);
+    expect('${ibnKathir['notes']}', contains('multiple matching'));
   });
 }

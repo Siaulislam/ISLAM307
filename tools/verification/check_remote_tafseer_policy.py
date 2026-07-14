@@ -20,6 +20,10 @@ FORBIDDEN_CODE = {
     ROOT / "tools" / "design" / "export_preview_library.py": ["export_tafsir"],
 }
 
+ALLOWED_CLEANUP_FILES = {
+    ROOT / "app" / "lib" / "core" / "tafsir" / "legacy_tafsir_cleanup_io.dart",
+}
+
 
 def main() -> int:
     errors: list[str] = []
@@ -31,6 +35,8 @@ def main() -> int:
         files = path.rglob("*") if path.is_dir() else [path]
         for file in files:
             if not file.is_file() or file.suffix not in {".dart", ".js", ".py"}:
+                continue
+            if file in ALLOWED_CLEANUP_FILES:
                 continue
             text = file.read_text(encoding="utf-8", errors="replace")
             for needle in needles:

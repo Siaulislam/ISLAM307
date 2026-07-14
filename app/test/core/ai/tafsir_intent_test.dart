@@ -9,6 +9,13 @@ void main() {
     expect(intent.ayah, 255);
   });
 
+  test('detects the exact AI Assistant example', () {
+    final intent = TafsirIntent.parse('Explain Quran 2:255');
+    expect(intent.isTafsirRequest, isTrue);
+    expect(intent.surah, 2);
+    expect(intent.ayah, 255);
+  });
+
   test('requires a verse instead of guessing', () {
     final intent = TafsirIntent.parse('Give me Tafseer');
     expect(intent.isTafsirRequest, isTrue);

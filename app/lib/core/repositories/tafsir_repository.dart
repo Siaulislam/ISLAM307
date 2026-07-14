@@ -1,4 +1,5 @@
 import '../tafsir/legacy_tafsir_cleanup.dart';
+import '../tafsir/quran_verse_validator.dart';
 import '../tafsir/tafsir_provider.dart';
 import '../tafsir/tafsir_provider_registry.dart';
 
@@ -23,6 +24,18 @@ class TafsirRepository {
     int surah,
     int ayah,
   ) async {
+    if (!QuranVerseValidator.isValid(surah, ayah)) {
+      return {
+        'unavailable': true,
+        'message': 'Invalid Quran verse reference: $surah:$ayah.',
+        'slug': sourceSlug,
+        'source_slug': sourceSlug,
+        'surah_number': surah,
+        'ayah_number': ayah,
+        'citation': 'Invalid Quran reference',
+        'retryable': false,
+      };
+    }
     final catalog = await catalogSources();
     Map<String, dynamic>? meta;
     for (final s in catalog) {

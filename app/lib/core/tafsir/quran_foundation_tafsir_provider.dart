@@ -82,6 +82,7 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
   _ApiCredentials? _credentials;
   Future<List<TafsirApiResource>>? _resourceRequest;
   final Map<String, TafsirApiResource> _resolvedResources = {};
+  final Map<String, String> _resolutionErrors = {};
   final Map<String, _CachedEntry> _entryCache = {};
 
   @override
@@ -108,18 +109,25 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
     try {
       final resources = await _resources();
       _resolvedResources.clear();
+      _resolutionErrors.clear();
       for (final source in requested) {
         final matches = resources.where(source.matchesApiResource).toList();
-        if (matches.isEmpty) continue;
-        matches.sort((a, b) {
-          final aPreferred =
-              a.language.toLowerCase() == source.preferredLanguage.toLowerCase();
-          final bPreferred =
-              b.language.toLowerCase() == source.preferredLanguage.toLowerCase();
-          if (aPreferred == bPreferred) return a.id.compareTo(b.id);
-          return aPreferred ? -1 : 1;
-        });
-        _resolvedResources[source.slug] = matches.first;
+        final preferred = matches
+            .where(
+              (resource) =>
+                  resource.language.toLowerCase() ==
+                  source.preferredLanguage.toLowerCase(),
+            )
+            .toList();
+        if (preferred.length == 1) {
+          _resolvedResources[source.slug] = preferred.single;
+        } else if (preferred.isEmpty) {
+          _resolutionErrors[source.slug] =
+              'No uniquely licensed ${source.preferredLanguage} resource was returned.';
+        } else {
+          _resolutionErrors[source.slug] =
+              'The API returned multiple matching ${source.preferredLanguage} resources; automatic selection was refused.';
+        }
       }
 
       return requested
@@ -127,7 +135,7 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
             (source) => source.toCatalogMap(
               resource: _resolvedResources[source.slug],
               unavailableReason:
-                  '${source.licenseNote} This work is not present in the authorized API resource registry.',
+                  '${source.licenseNote} ${_resolutionErrors[source.slug] ?? 'This work is not present in the authorized API resource registry.'}',
             ),
           )
           .toList();
@@ -269,6 +277,12 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
         'The official Tafseer resource registry returned an invalid response.',
       );
     }
+    if (rows.any((row) => row is! Map)) {
+      throw const TafsirProviderException(
+        'The official Tafseer resource registry returned malformed data.',
+        retryable: true,
+      );
+    }
     try {
       return rows
           .whereType<Map>()
@@ -288,6 +302,7 @@ class QuranFoundationTafsirProvider implements TafsirProvider {
   void refresh() {
     _resourceRequest = null;
     _resolvedResources.clear();
+    _resolutionErrors.clear();
   }
 
   Future<Map<String, dynamic>> _authorizedGet(

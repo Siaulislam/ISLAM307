@@ -6,8 +6,22 @@ import 'package:path_provider/path_provider.dart';
 class LegacyTafsirCleanup {
   static Future<void>? _request;
 
-  static Future<void> run() {
-    return _request ??= _deleteLegacyFiles();
+  static Future<void> run() async {
+    final existing = _request;
+    if (existing != null) {
+      await existing;
+      return;
+    }
+    final request = _deleteLegacyFiles();
+    _request = request;
+    try {
+      await request;
+    } catch (_) {
+      if (identical(_request, request)) {
+        _request = null;
+      }
+      rethrow;
+    }
   }
 
   static Future<void> _deleteLegacyFiles() async {
@@ -16,6 +30,7 @@ class LegacyTafsirCleanup {
       'tafsir.db',
       'tafsir.db-wal',
       'tafsir.db-shm',
+      'tafsir.db-journal',
     ]) {
       final file = File(p.join(documents.path, name));
       if (await file.exists()) {
