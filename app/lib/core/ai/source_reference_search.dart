@@ -143,7 +143,7 @@ class SourceReference {
     return [
       'Book: ${hadithBook ?? '—'}',
       'Hadith Number: ${hadithNumber ?? '—'}',
-      'Grade: ${grade ?? HadithRepository.gradeNotVerified}',
+      'Grade: ${grade ?? 'Grade not verified.'}',
       if (scholar != null && scholar!.isNotEmpty) 'Scholar: $scholar',
       if (referenceUrl != null && referenceUrl!.isNotEmpty) 'Reference: $referenceUrl',
     ];

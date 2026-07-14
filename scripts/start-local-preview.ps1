@@ -12,8 +12,6 @@ Write-Host "Folder: $Root"
 Write-Host ""
 Write-Host "Open in Chrome:" -ForegroundColor Cyan
 Write-Host "  http://localhost:$Port/preview/" -ForegroundColor Yellow
-Write-Host "  http://localhost:$Port/design/mockups/index.html" -ForegroundColor Yellow
-Write-Host "  http://localhost:$Port/design/mockups/phase3-mockups.html" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Press Ctrl+C to stop the server." -ForegroundColor DarkGray
 Write-Host ""

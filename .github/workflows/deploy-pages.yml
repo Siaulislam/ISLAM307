@@ -52,7 +52,7 @@ jobs:
           ok=0
           for attempt in $(seq 1 12); do
             code="$(curl -sS -o /tmp/islam307-preview.html -w '%{http_code}' -L "${PAGE_URL}preview/" || true)"
-            if [[ "$code" == "200" ]] && grep -qiE 'ISLAM 307|mockups' /tmp/islam307-preview.html; then
+            if [[ "$code" == "200" ]] && grep -qi 'ISLAM 307' /tmp/islam307-preview.html; then
               ok=1
               break
             fi
@@ -81,10 +81,8 @@ jobs:
             echo "|------|-----|"
             echo "| Preview hub | ${PAGE_URL}preview/ |"
             echo "| Live library (Quran/Hadith/Tafsir) | ${PAGE_URL}preview/library/ |"
-            echo "| Phase 1 mockups | ${PAGE_URL}design/mockups/index.html |"
-            echo "| Phase 3 mockups | ${PAGE_URL}design/mockups/phase3-mockups.html |"
             echo ""
-            echo "On Home mockup, tap **Quran / Hadith / Tafsir** to open those screens."
+            echo "Permission-pending religious datasets are excluded from the deployed preview."
             echo ""
             echo "If you see **404**, enable Pages once:"
             echo "Settings → Pages → **Deploy from a branch** → **gh-pages** → **/ (root)**"

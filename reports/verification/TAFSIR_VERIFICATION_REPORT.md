@@ -1,5 +1,9 @@
 # ISLAM 307 — Tafsir Database Verification Report
 
+> **Historical audit / release action:** The audited Tafseer database and
+> preview pack were removed on 2026-07-14. No Tafseer is bundled or streamed
+> during normal use; the feature is a permission placeholder.
+
 Generated: 2026-07-11 05:14 UTC
 
 ## Executive summary

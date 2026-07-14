@@ -10,6 +10,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 REGISTRY = ROOT / "app" / "assets" / "modules" / "dataset_registry.json"
+FEATURES = ROOT / "app" / "assets" / "modules" / "feature_modules.json"
 
 ALLOWED_BUNDLED = {
     "app/assets/databases/quran.db": "quran-arabic-tanzil",
@@ -31,6 +32,8 @@ FORBIDDEN_PATHS = [
 def main() -> int:
     payload = json.loads(REGISTRY.read_text(encoding="utf-8"))
     records = {row["id"]: row for row in payload["datasets"]}
+    feature_payload = json.loads(FEATURES.read_text(encoding="utf-8"))
+    features = {row["id"]: row for row in feature_payload["features"]}
     errors: list[str] = []
 
     for path, dataset_id in ALLOWED_BUNDLED.items():
@@ -77,6 +80,26 @@ def main() -> int:
             for key in ("original_source", "license", "version", "attribution"):
                 if not str(record.get(key) or "").strip():
                     errors.append(f"{dataset_id} missing approved metadata: {key}")
+    branding = records.get("app-owned-branding")
+    if branding is None or branding.get("status") != "app_owned":
+        errors.append("Packaged branding assets lack an app-owned license record")
+    for feature_id, feature in features.items():
+        if feature["dataset_id"] not in records:
+            errors.append(
+                f"Feature {feature_id} references unknown dataset "
+                f"{feature['dataset_id']}"
+            )
+    for dataset_id, record in records.items():
+        for feature_id in record.get("feature_ids", []):
+            feature = features.get(feature_id)
+            if feature is None:
+                errors.append(
+                    f"Dataset {dataset_id} references missing feature {feature_id}"
+                )
+            elif feature["dataset_id"] != dataset_id:
+                errors.append(
+                    f"Feature {feature_id} does not map back to {dataset_id}"
+                )
 
     quran_db = sqlite3.connect(ROOT / "app/assets/databases/quran.db")
     quran_meta = dict(quran_db.execute("SELECT key,value FROM meta"))

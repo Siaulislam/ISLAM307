@@ -15,15 +15,23 @@ class _SearchScreenState extends State<SearchScreen> {
   final _service = GlobalSearchService();
   List<GlobalSearchHit> _hits = [];
   bool _loading = false;
+  int _requestId = 0;
 
   Future<void> _run(String q) async {
+    final requestId = ++_requestId;
     setState(() => _loading = true);
-    final hits = await _service.search(q);
-    if (!mounted) return;
-    setState(() {
-      _hits = hits;
-      _loading = false;
-    });
+    try {
+      final hits = await _service.search(q);
+      if (!mounted || requestId != _requestId) return;
+      setState(() => _hits = hits);
+    } catch (_) {
+      if (!mounted || requestId != _requestId) return;
+      setState(() => _hits = const []);
+    } finally {
+      if (mounted && requestId == _requestId) {
+        setState(() => _loading = false);
+      }
+    }
   }
 
   @override
@@ -51,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (q.trim().isEmpty) setState(() => _hits = []);
               },
               decoration: const InputDecoration(
-                hintText: 'Arabic, Urdu, English, root, word, morphology, ayah, surah, juz, page…',
+                hintText: 'Arabic Quran, Surah, Ayah, feature, or personal note…',
                 prefixIcon: Icon(Icons.search_rounded),
               ),
             ),

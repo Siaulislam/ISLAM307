@@ -36,6 +36,22 @@
       "evidence": "LICENSES/quran-translations.md"
     },
     {
+      "id": "quran-structure",
+      "title": "Quran Page, Juz, Ruku, Sajdah and Tajweed Metadata",
+      "feature_ids": ["quran-structure"],
+      "status": "permission_pending",
+      "original_source": "https://quran.com",
+      "license": "Quran Foundation Developer Terms",
+      "copyright_owner": "Quran Foundation",
+      "contact": "developers@quran.com; legal@quran.foundation",
+      "version": "Not approved",
+      "download_date": null,
+      "offline_redistribution": false,
+      "commercial_distribution": false,
+      "attribution": "Pending written permission",
+      "evidence": "LICENSES/quran-structure.md"
+    },
+    {
       "id": "hadith-core",
       "title": "Hadith Collections and Translations",
       "feature_ids": ["hadith", "hadith-translations"],
@@ -70,7 +86,7 @@
     {
       "id": "quranic-arabic-corpus",
       "title": "Quranic Arabic Corpus",
-      "feature_ids": ["glossary"],
+      "feature_ids": ["quran-word-study"],
       "status": "review_required",
       "original_source": "https://corpus.quran.com",
       "license": "GNU public license with additional terms; exact distributable obligations require review",
@@ -164,9 +180,25 @@
       "evidence": "LICENSES/islamic-learning-content.md"
     },
     {
+      "id": "app-owned-branding",
+      "title": "ISLAM 307 Branding and Feature Artwork",
+      "feature_ids": [],
+      "status": "app_owned",
+      "original_source": "Original ISLAM 307 artwork and factual feature labels",
+      "license": "Project software/artwork license",
+      "copyright_owner": "ISLAM 307",
+      "contact": "Project owner",
+      "version": "1",
+      "download_date": null,
+      "offline_redistribution": true,
+      "commercial_distribution": true,
+      "attribution": "ISLAM 307 branding",
+      "evidence": "LICENSES/app-owned-branding.md"
+    },
+    {
       "id": "app-owned-utilities",
       "title": "App-owned Calculators and Personal Utilities",
-      "feature_ids": ["qibla", "islamic-calendar", "zakat-calculator", "bookmarks", "favorites", "history", "notes"],
+      "feature_ids": ["qibla", "islamic-calendar", "zakat-calculator", "bookmarks", "favorites", "history", "notes", "ai"],
       "status": "app_owned",
       "original_source": "ISLAM 307 application code and user-entered data",
       "license": "Project software license; no imported religious dataset",

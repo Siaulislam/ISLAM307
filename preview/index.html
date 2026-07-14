@@ -31,22 +31,20 @@
 
     <div class="card">
       <h2>Live Library <span class="status">Use this to read</span></h2>
-      <a class="btn" href="library/index.html">Open Quran / Hadith / Tafsir library</a>
+      <a class="btn" href="library/index.html">Open licensed-content preview</a>
       <ul>
-        <li><strong>All 114 Surahs</strong> with Arabic + Urdu + English</li>
-        <li>4 Hadith collections (Bukhari, Muslim, Tirmidhi, Abu Dawood)</li>
-        <li>Tafsir Ibn Kathir offline entries</li>
+        <li><strong>All 114 Surahs</strong> with licensed Tanzil Arabic</li>
+        <li>Translations, Hadith and Tafseer show permission placeholders</li>
+        <li>No religious content is streamed or generated</li>
       </ul>
     </div>
 
     <div class="card">
-      <h2>UI Mockups <span class="status">Ready</span></h2>
-      <a class="btn" href="../design/mockups/index.html">Phase 1 — All 15 screens</a>
-      <a class="btn" href="../design/mockups/phase3-mockups.html">Phase 3 — Hadith · Tafsir · AI</a>
+      <h2>App-owned UI Assets <span class="status">Ready</span></h2>
       <a class="btn secondary" href="icons.html">Book icon pack (15)</a>
       <ul>
-        <li>Home → tap <strong>Quran / Hadith / Tafsir</strong> opens the live library</li>
-        <li>Quran mockup screen now lists <strong>all 114 surahs</strong> (tap to read)</li>
+        <li>Original branding and feature navigation artwork</li>
+        <li>Artwork does not enable permission-pending content</li>
       </ul>
     </div>
 
@@ -55,22 +53,14 @@
       <a class="btn" href="licenses.html">Open acknowledgements</a>
       <ul>
         <li>Tanzil Uthmani (CC BY-ND) — unmodified Arabic Quran text</li>
-        <li>Quranic Arabic Corpus morphology — word roots, grammar, morphology</li>
-        <li>Quran.com word glosses (EN/UR) with attribution</li>
-        <li>Offline TTS (device voices) — no per-word audio storage</li>
+        <li>Every pending dataset is excluded from packaged content</li>
+        <li>Permission requests and license evidence are tracked separately</li>
       </ul>
     </div>
 
     <div class="card">
-      <h2>Verification reports <span class="status">Ready</span></h2>
-      <a class="btn secondary" href="../reports/verification/HADITH_VERIFICATION_REPORT.md">Hadith report</a>
-      <a class="btn secondary" href="../reports/verification/TAFSIR_VERIFICATION_REPORT.md">Tafsir report</a>
-      <a class="btn secondary" href="../reports/verification/README.md">Summary README</a>
-    </div>
-
-    <div class="card">
-      <h2>Flutter app <span class="status">Quran · Hadith · Tafsir</span></h2>
-      <p style="color:var(--muted);font-size:14px;line-height:1.6">Mockups are HTML. The real app runs with Flutter and bundled SQLite databases:</p>
+      <h2>Flutter app <span class="status">License-gated · Offline</span></h2>
+      <p style="color:var(--muted);font-size:14px;line-height:1.6">The app uses a sanitized Quran database and writable user SQLite. Pending content remains disabled:</p>
       <ul>
         <li><code>cd app</code></li>
         <li><code>flutter pub get</code></li>

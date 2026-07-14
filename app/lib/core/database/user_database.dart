@@ -373,16 +373,40 @@ class UserDatabase {
     int limit = 30,
   }) async {
     final db = await open();
-    if (query.trim().isEmpty) return const [];
-    return db.rawQuery(
-      '''
-      SELECT kind, title, body, target_uri
-      FROM user_search_fts
-      WHERE user_search_fts MATCH ?
-      LIMIT ?
-      ''',
-      [query.trim(), limit],
-    );
+    final clean = query.trim();
+    if (clean.isEmpty) return const [];
+    final tokens = RegExp(r'[A-Za-z0-9\u0600-\u06FF]+')
+        .allMatches(clean)
+        .map((match) => match.group(0)!)
+        .where((token) => token.isNotEmpty)
+        .toList();
+    if (tokens.isEmpty) return const [];
+    final ftsQuery = tokens
+        .map((token) => '"${token.replaceAll('"', '""')}"')
+        .join(' AND ');
+    try {
+      return await db.rawQuery(
+        '''
+        SELECT kind, title, body, target_uri
+        FROM user_search_fts
+        WHERE user_search_fts MATCH ?
+        LIMIT ?
+        ''',
+        [ftsQuery, limit],
+      );
+    } on DatabaseException {
+      final like = '%${clean.replaceAll('%', '').replaceAll('_', '')}%';
+      return db.rawQuery(
+        '''
+        SELECT 'note' AS kind, 'Personal note' AS title, body, target_uri
+        FROM notes
+        WHERE body LIKE ?
+        ORDER BY updated_at DESC
+        LIMIT ?
+        ''',
+        [like, limit],
+      );
+    }
   }
 
   Future<void> _replaceSearchEntry(

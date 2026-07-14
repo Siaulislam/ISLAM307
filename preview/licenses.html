@@ -23,7 +23,7 @@
   <div class="wrap">
     <a class="back" href="index.html">← Preview hub</a>
     <h1>About ISLAM 307 · Data Sources & Licenses</h1>
-    <p class="lead">100% FREE · Sadaqah Jariyah · No ads · No subscriptions. AI never invents — it only searches local authenticated databases.</p>
+    <p class="lead">Only explicitly approved offline commercial datasets are packaged. Permission-pending features remain empty placeholders.</p>
     <div class="card">
       <h2>App policy</h2>
       <ul class="policy" id="policy"></ul>
@@ -32,8 +32,12 @@
   </div>
   <script>
     async function load() {
-      const res = await fetch('../app/assets/modules/data_sources.json');
-      const data = await res.json();
+      const [policyRes, registryRes] = await Promise.all([
+        fetch('../app/assets/modules/data_sources.json'),
+        fetch('../app/assets/modules/dataset_registry.json'),
+      ]);
+      const data = await policyRes.json();
+      const registry = await registryRes.json();
       const policy = document.getElementById('policy');
       (data.app.policy || []).forEach((line) => {
         const li = document.createElement('li');
@@ -41,16 +45,18 @@
         policy.appendChild(li);
       });
       const root = document.getElementById('sources');
-      (data.sources || []).forEach((s) => {
+      (registry.datasets || []).forEach((s) => {
         const el = document.createElement('div');
         el.className = 'card';
         el.innerHTML = `
           <h2>${s.title}</h2>
-          <p><strong>Purpose:</strong> ${s.purpose}</p>
+          <p><strong>Status:</strong> ${s.status}</p>
           <p><strong>License:</strong> ${s.license}</p>
+          <p><strong>Owner:</strong> ${s.copyright_owner}</p>
+          <p><strong>Contact:</strong> ${s.contact}</p>
+          <p><strong>Offline:</strong> ${s.offline_redistribution ? 'Allowed' : 'Not approved'} · <strong>Commercial:</strong> ${s.commercial_distribution ? 'Allowed' : 'Not approved'}</p>
           <p>${s.attribution}</p>
-          ${s.notes ? `<p><strong>Note:</strong> ${s.notes}</p>` : ''}
-          <p class="meta"><a href="${s.url}" target="_blank" rel="noopener">${s.url}</a></p>
+          <p class="meta">${s.original_source}</p>
         `;
         root.appendChild(el);
       });

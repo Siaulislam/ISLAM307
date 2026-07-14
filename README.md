@@ -6,7 +6,7 @@
 
 | Phase | Status |
 |-------|--------|
-| UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
+| Flutter UI | License-gated feature routes and offline utilities wired |
 | `quran.db` | 6,236 licensed Tanzil Arabic ayahs only |
 | Hadith / translations / Tafseer | Permission-pending placeholders; no corpus bundled |
 | Flutter Quran module | Surah browse, Arabic reading, personal bookmarks/history/notes |
@@ -31,8 +31,6 @@ Then open in Chrome:
 |------|-----|
 | **Preview hub** | http://localhost:5500/preview/ |
 | **Live library (Quran/Hadith/Tafsir)** | http://localhost:5500/preview/library/ |
-| **Phase 1 mockups (15 screens)** | http://localhost:5500/design/mockups/index.html |
-| **Phase 3 mockups (Hadith/Tafsir/AI)** | http://localhost:5500/design/mockups/phase3-mockups.html |
 
 Press `Ctrl+C` in the terminal to stop the server.
 
@@ -44,8 +42,6 @@ Press `Ctrl+C` in the terminal to stop the server.
 |------|-----|
 | Preview hub | https://siaulislam.github.io/ISLAM307/preview/ |
 | Live library | https://siaulislam.github.io/ISLAM307/preview/library/ |
-| Phase 1 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/index.html |
-| Phase 3 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/phase3-mockups.html |
 | Book icons | https://siaulislam.github.io/ISLAM307/preview/icons.html |
 
 Redeploys automatically on every push to `main`.
@@ -54,9 +50,6 @@ Redeploys automatically on every push to `main`.
 - **Source:** Deploy from a branch
 - **Branch:** `gh-pages` → `/ (root)`
 - Save, then wait ~1 minute and refresh.
-
-### UI mockups (file path alternative)
-Open `design/mockups/index.html` directly in Chrome if you prefer.
 
 ### Run app
 ```bash
