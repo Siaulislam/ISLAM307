@@ -42,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=hadith-reader-60' : '?v=hadith-reader-60';
+  const bust = url.includes('?') ? '&v=hadith-reader-61' : '?v=hadith-reader-61';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
@@ -1229,7 +1229,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-60`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-61`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -1255,7 +1255,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-60`);
+    const res = await fetch(`${path}?v=hadith-reader-61`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
@@ -1676,8 +1676,13 @@ function chapterRangeForHadith(pack, hadith) {
   if (!peers.length) {
     return { first: hadith.n, last: hadith.n, count: 1 };
   }
-  // Numbered range excludes preface (n=0) so Introduction stays "Hadith 1 to 92".
-  const numbered = peers.filter((h) => Number(h.n) > 0);
+  // Numbered range excludes preface (n<=0). Skip empty trailing slots (e.g. Intro 92).
+  const numbered = peers.filter((h) => {
+    if (!(Number(h.n) > 0)) return false;
+    const ar = String(h.ar || '').trim();
+    const en = String(h.en || '').trim();
+    return ar.length > 0 || en.length > 0 || Number(h.n) < 92;
+  });
   const use = numbered.length ? numbered : peers;
   let first = use[0].n;
   let last = use[0].n;
@@ -1686,6 +1691,12 @@ function chapterRangeForHadith(pack, hadith) {
     if (h.n > last) last = h.n;
   }
   return { first, last, count: peers.length };
+}
+
+function hadithDisplayN(hadith) {
+  const disp = hadith?.display_n || hadith?.reference_detail?.hadith_number;
+  if (disp != null && String(disp).trim() && String(disp) !== 'preface') return String(disp).trim();
+  return String(hadith?.n ?? '');
 }
 
 function openHadithReader(slug, rows, index) {
@@ -1712,19 +1723,22 @@ function openHadithReader(slug, rows, index) {
       hadith.reference_detail?.by_lang?.ar?.values?.baab ||
       topicTitle ||
       '').trim() || topicTitle;
-  const ref = hadith.reference || `${pack.book.en} · Hadith ${hadith.n}`;
+  const ref = hadith.reference || `${pack.book.en} · Hadith ${hadithDisplayN(hadith)}`;
   const progress = Math.round((pos / total) * 100);
   // Always show authentic کتاب span on the right (e.g. Hadith 135 to 247).
   const span = chapterRangeForHadith(pack, hadith);
   const isPreface = Number(hadith.n) <= 0;
+  const dispN = hadithDisplayN(hadith);
   const countLabel = isPreface
     ? (span && span.first != null ? `Before Hadith ${span.first} to ${span.last}` : 'Introduction preface')
     : (!span
-      ? `Hadith ${hadith.n}`
+      ? `Hadith ${dispN}`
       : (span.first === span.last ? `Hadith ${span.first}` : `Hadith ${span.first} to ${span.last}`));
   const nowLabel = isPreface
     ? `Now reading · ${subjectBadge || topicTitle || 'المقدمة'}`
-    : `Now reading Hadith ${hadith.n}`;
+    : (hadith.reference && String(hadith.reference).startsWith('Introduction')
+      ? `Now reading · ${hadith.reference}`
+      : `Now reading Hadith ${dispN}`);
 
   $('hadith-view').innerHTML = `
     <article class="hadith-reader" id="hadith-reader">
@@ -2149,9 +2163,10 @@ function paintHadithListPage(slug, pack, reset = false) {
     row.className = 'hadith-number-row';
     row.dataset.n = String(h.n);
     const kitabName = localizedKitabName(h, pack);
+    const disp = hadithDisplayN(h);
     row.innerHTML = `
-      <button type="button" class="hadith-n-btn" data-act="open-hadith" aria-label="Open Hadith ${h.n}">
-        <span class="hadith-n">Hadith ${h.n}</span>
+      <button type="button" class="hadith-n-btn" data-act="open-hadith" aria-label="Open Hadith ${escapeHtml(disp)}">
+        <span class="hadith-n">Hadith ${escapeHtml(disp)}</span>
       </button>
       <button type="button" class="hadith-kitab-btn" data-act="open-topic" title="Open all hadith in this topic">
         <p class="hadith-kitab" dir="rtl">${escapeHtml(kitabName)}</p>

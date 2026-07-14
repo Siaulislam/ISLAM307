@@ -337,7 +337,7 @@ class HadithRepository {
     map['book_slug'] ??= slug;
     map['book_name_ar'] ??= bookNameAr;
     // Keep DB fields if present, but never invent sunnah.com / fawazahmed0 defaults for UI.
-    map['reference_detail'] = buildReferenceDetail(
+    final detail = buildReferenceDetail(
       bookName: bookName,
       bookSlug: slug,
       bookNameAr: bookNameAr,
@@ -348,6 +348,49 @@ class HadithRepository {
       chapterNumber: kitabNumber,
       grade: map['grade'] as String?,
     );
+    // Apply authenticated per-hadith baab / tracking ref from sunnah intro import meta.
+    final sp = map['source_provider'] as String?;
+    if (sp != null && sp.startsWith('sunnah-intro-meta:')) {
+      try {
+        final meta = jsonDecode(sp.substring('sunnah-intro-meta:'.length));
+        if (meta is Map) {
+          final baabAr = (meta['subject_ar'] as String?)?.trim() ?? '';
+          final baabEn = (meta['subject_en'] as String?)?.trim() ?? '';
+          final tracking = (meta['tracking_reference'] as String?)?.trim() ?? '';
+          final disp = (meta['display_narration'] as String?)?.trim() ?? '';
+          if (baabAr.isNotEmpty) {
+            detail['baab'] = baabAr;
+            final byLang = detail['by_lang'];
+            if (byLang is Map) {
+              for (final lang in ['ar', 'ur', 'en']) {
+                final entry = byLang[lang];
+                if (entry is Map) {
+                  final values = entry['values'];
+                  if (values is Map) {
+                    values['baab'] = lang == 'en' && baabEn.isNotEmpty ? baabEn : baabAr;
+                  }
+                }
+              }
+            }
+          }
+          if (baabEn.isNotEmpty) detail['english_kitab'] = baabEn;
+          if (disp.isNotEmpty) detail['hadith_number'] = disp;
+          if (tracking.isNotEmpty) map['reference'] = tracking;
+          if (disp.isNotEmpty) map['display_n'] = disp;
+        }
+      } catch (_) {
+        // ignore malformed meta; keep chapter-level baab
+      }
+    }
+    if (hadithNo == -1) {
+      detail['baab'] = 'المقدمة';
+      map['reference'] = 'Sahih Muslim · Introduction (preface)';
+    } else if (hadithNo == 0) {
+      const bab = 'باب وُجُوبِ الرِّوَايَةِ عَنِ الثِّقَاتِ، وَتَرْكِ الْكَذَّابِينَ';
+      detail['baab'] = bab;
+      map['reference'] = 'Sahih Muslim · $bab';
+    }
+    map['reference_detail'] = detail;
     map.remove('source_provider');
     map.remove('reference_url');
     (map['reference_detail'] as Map).remove('source_url');
