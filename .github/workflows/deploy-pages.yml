@@ -7,7 +7,8 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Deploy feature-branch preview updates for online checking (e.g. Muslim Urdu topics).
+    branches: [main, cursor/muslim-urdu-topics-c4fa]
   workflow_dispatch:
 
 permissions:

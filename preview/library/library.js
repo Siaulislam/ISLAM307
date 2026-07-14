@@ -1011,7 +1011,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-37`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-51`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;
@@ -1037,7 +1037,7 @@ async function loadNarratorSanadPack(bookSlug, hadithNumber) {
   // Rich per-hadith packs (e.g. Bukhari 1 classical import) take priority.
   const path = `data/narrators/${bookSlug}-${hadithNumber}.json`;
   try {
-    const res = await fetch(`${path}?v=hadith-reader-37`);
+    const res = await fetch(`${path}?v=hadith-reader-51`);
     if (!res.ok) {
       narratorPackCache[key] = null;
       return null;
