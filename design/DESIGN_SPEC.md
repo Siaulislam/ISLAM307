@@ -3,8 +3,9 @@
 ## Brand identity
 
 - **Name:** ISLAM 307
-- **Logo:** Geometric emerald tile with "307" + "ISLAM" wordmark
+- **Logo:** Premium calligraphy mark — Arabic الإسلام · gold 307 · tagline **KNOWLEDGE · GUIDANCE · PEACE** (`app/assets/branding/islam307_logo.png`)
 - **Tone:** Premium, calm, scholarly, trustworthy
+- **Surfaces:** Splash & Welcome use full logo; Dashboard top/bottom use compact brand bar
 - **Not inspired by:** Islam360 or any clone — original layout and visual language only
 
 ## Color palette

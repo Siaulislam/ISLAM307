@@ -1,0 +1,20 @@
+{
+  "hadith_number": 92,
+  "status": "filled",
+  "subject_ar": "باب صِحَّةِ الاِحْتِجَاجِ بِالْحَدِيثِ الْمُعَنْعَنِ",
+  "subject_en": "The Soundness of Relying on Ḥadīth Related with the Term Meaning 'On Authority of'",
+  "source": "user-provided Hadith_92 file (Arabic + English)",
+  "urdu": "translated from English via GoogleTranslator",
+  "lengths": {
+    "ar": 16847,
+    "en": 20100,
+    "ur": 16648
+  },
+  "chapter_hadith_end": 92,
+  "counted_introduction_range": "1-92",
+  "notes": [
+    "Slot 92 was previously empty (sunnah In-book narrations end at 91 / label Introduction 92).",
+    "Subject باب line removed from body text and stored as baab metadata.",
+    "MOQDEMA (-1/0) unchanged; automatic Next chain now includes 92."
+  ]
+}

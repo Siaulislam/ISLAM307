@@ -1,0 +1,60 @@
+{
+  "slug": "bukhari-01-revelation",
+  "kitab_en": "Revelation",
+  "kitab_ur": "کتاب وحی کے بیان میں",
+  "chapter_number": 1,
+  "abs_start": 1,
+  "abs_end": 7,
+  "total": 7,
+  "items": [
+    {
+      "local": 1,
+      "absolute": 1,
+      "html": "html/hadith-01.html",
+      "png": "png/hadith-01.png",
+      "title": "Hadith 1 to 7"
+    },
+    {
+      "local": 2,
+      "absolute": 2,
+      "html": "html/hadith-02.html",
+      "png": "png/hadith-02.png",
+      "title": "Hadith 1 to 7"
+    },
+    {
+      "local": 3,
+      "absolute": 3,
+      "html": "html/hadith-03.html",
+      "png": "png/hadith-03.png",
+      "title": "Hadith 1 to 7"
+    },
+    {
+      "local": 4,
+      "absolute": 4,
+      "html": "html/hadith-04.html",
+      "png": "png/hadith-04.png",
+      "title": "Hadith 1 to 7"
+    },
+    {
+      "local": 5,
+      "absolute": 5,
+      "html": "html/hadith-05.html",
+      "png": "png/hadith-05.png",
+      "title": "Hadith 1 to 7"
+    },
+    {
+      "local": 6,
+      "absolute": 6,
+      "html": "html/hadith-06.html",
+      "png": "png/hadith-06.png",
+      "title": "Hadith 1 to 7"
+    },
+    {
+      "local": 7,
+      "absolute": 7,
+      "html": "html/hadith-07.html",
+      "png": "png/hadith-07.png",
+      "title": "Hadith 1 to 7"
+    }
+  ]
+}

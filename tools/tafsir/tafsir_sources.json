@@ -7,6 +7,25 @@
       "author": "Ibn Kathir",
       "language": "en",
       "api_resource_id": 169
+    },
+    {
+      "slug": "al-tabari",
+      "name_en": "Tafsir Al-Tabari",
+      "name_ar": "تفسير الطبري",
+      "author": "Al-Tabari",
+      "language": "ar",
+      "api_resource_id": 15,
+      "optional": true
+    },
+    {
+      "slug": "al-qurtubi",
+      "name_en": "Tafsir Al-Qurtubi",
+      "name_ar": "تفسير القرطبي",
+      "author": "Al-Qurtubi",
+      "language": "ar",
+      "api_resource_id": 90,
+      "optional": true
     }
-  ]
+  ],
+  "notes": "Jalalayn and Tafhim-ul-Quran require separate licensed authenticated packs before install."
 }
