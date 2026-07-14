@@ -45,6 +45,7 @@ class HadithRepository {
   }
 
   /// Topics (کتاب) with hadith counts for professional browse.
+  /// Counts / range exclude preface/MOQDEMA (`hadith_number <= 0`) and empty slots.
   Future<List<Map<String, dynamic>>> chaptersWithCounts(int bookId) async {
     await _ensureChapterI18n();
     final db = await _registry.open('hadith');
@@ -53,9 +54,21 @@ class HadithRepository {
     final rows = await db.rawQuery(
       '''
       SELECT c.id, c.book_id, c.number, c.title, c.hadith_start, c.hadith_end,
-             COUNT(h.id) AS hadith_count,
-             MIN(h.hadith_number) AS first_hadith,
-             MAX(h.hadith_number) AS last_hadith
+             COUNT(CASE
+               WHEN h.hadith_number > 0
+                AND (length(trim(coalesce(h.text_ar,''))) > 0
+                  OR length(trim(coalesce(h.text_en,''))) > 0)
+               THEN 1 END) AS hadith_count,
+             MIN(CASE
+               WHEN h.hadith_number > 0
+                AND (length(trim(coalesce(h.text_ar,''))) > 0
+                  OR length(trim(coalesce(h.text_en,''))) > 0)
+               THEN h.hadith_number END) AS first_hadith,
+             MAX(CASE
+               WHEN h.hadith_number > 0
+                AND (length(trim(coalesce(h.text_ar,''))) > 0
+                  OR length(trim(coalesce(h.text_en,''))) > 0)
+               THEN h.hadith_number END) AS last_hadith
       FROM chapters c
       LEFT JOIN hadiths h ON h.chapter_id = c.id
       WHERE c.book_id = ? AND TRIM(IFNULL(c.title, '')) != ''
@@ -154,14 +167,35 @@ class HadithRepository {
   }
 
   /// Lightweight ordered numbers for a chapter (Hadith Reader navigation).
+  /// Excludes preface/MOQDEMA (`hadith_number <= 0`) and empty text slots so
+  /// Next/Previous walks Hadith 1 → 2 → … only.
   Future<List<int>> hadithNumbersForChapter(int bookId, int chapterId) async {
     final db = await _registry.open('hadith');
-    final rows = await db.query(
-      'hadiths',
-      columns: ['hadith_number'],
-      where: 'book_id = ? AND chapter_id = ?',
-      whereArgs: [bookId, chapterId],
-      orderBy: 'hadith_number ASC',
+    final rows = await db.rawQuery(
+      '''
+      SELECT hadith_number FROM hadiths
+      WHERE book_id = ? AND chapter_id = ?
+        AND hadith_number > 0
+        AND (length(trim(coalesce(text_ar,''))) > 0
+          OR length(trim(coalesce(text_en,''))) > 0)
+      ORDER BY hadith_number ASC
+      ''',
+      [bookId, chapterId],
+    );
+    return rows.map((r) => r['hadith_number'] as int).toList();
+  }
+
+  /// Preface / MOQDEMA rows for a chapter (`hadith_number <= 0`), ordered.
+  Future<List<int>> prefaceHadithNumbersForChapter(int bookId, int chapterId) async {
+    final db = await _registry.open('hadith');
+    final rows = await db.rawQuery(
+      '''
+      SELECT hadith_number FROM hadiths
+      WHERE book_id = ? AND chapter_id = ?
+        AND hadith_number <= 0
+      ORDER BY hadith_number ASC
+      ''',
+      [bookId, chapterId],
     );
     return rows.map((r) => r['hadith_number'] as int).toList();
   }
@@ -193,15 +227,61 @@ class HadithRepository {
   }) async {
     final db = await _registry.open('hadith');
     if (chapterId != null) {
-      final rows = await db.query(
-        'hadiths',
-        columns: ['hadith_number'],
-        where: next
-            ? 'book_id = ? AND chapter_id = ? AND hadith_number > ?'
-            : 'book_id = ? AND chapter_id = ? AND hadith_number < ?',
-        whereArgs: [bookId, chapterId, hadithNumber],
-        orderBy: next ? 'hadith_number ASC' : 'hadith_number DESC',
-        limit: 1,
+      // Numbered reads stay on hadith_number > 0 with text (MOQDEMA not counted).
+      // From preface (n <= 0), Next enters Hadith 1 of the counted chain.
+      if (hadithNumber <= 0) {
+        if (next) {
+          final prefaceNext = await db.rawQuery(
+            '''
+            SELECT hadith_number FROM hadiths
+            WHERE book_id = ? AND chapter_id = ?
+              AND hadith_number > ? AND hadith_number <= 0
+            ORDER BY hadith_number ASC LIMIT 1
+            ''',
+            [bookId, chapterId, hadithNumber],
+          );
+          if (prefaceNext.isNotEmpty) {
+            return prefaceNext.first['hadith_number'] as int;
+          }
+          final firstCounted = await db.rawQuery(
+            '''
+            SELECT hadith_number FROM hadiths
+            WHERE book_id = ? AND chapter_id = ?
+              AND hadith_number > 0
+              AND (length(trim(coalesce(text_ar,''))) > 0
+                OR length(trim(coalesce(text_en,''))) > 0)
+            ORDER BY hadith_number ASC LIMIT 1
+            ''',
+            [bookId, chapterId],
+          );
+          if (firstCounted.isEmpty) return null;
+          return firstCounted.first['hadith_number'] as int;
+        }
+        final prefacePrev = await db.rawQuery(
+          '''
+          SELECT hadith_number FROM hadiths
+          WHERE book_id = ? AND chapter_id = ?
+            AND hadith_number < ? AND hadith_number <= 0
+          ORDER BY hadith_number DESC LIMIT 1
+          ''',
+          [bookId, chapterId, hadithNumber],
+        );
+        if (prefacePrev.isEmpty) return null;
+        return prefacePrev.first['hadith_number'] as int;
+      }
+
+      final rows = await db.rawQuery(
+        '''
+        SELECT hadith_number FROM hadiths
+        WHERE book_id = ? AND chapter_id = ?
+          AND hadith_number ${next ? '>' : '<'} ?
+          AND hadith_number > 0
+          AND (length(trim(coalesce(text_ar,''))) > 0
+            OR length(trim(coalesce(text_en,''))) > 0)
+        ORDER BY hadith_number ${next ? 'ASC' : 'DESC'}
+        LIMIT 1
+        ''',
+        [bookId, chapterId, hadithNumber],
       );
       if (rows.isEmpty) return null;
       return rows.first['hadith_number'] as int;

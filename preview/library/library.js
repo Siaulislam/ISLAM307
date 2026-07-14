@@ -1011,12 +1011,29 @@ function kitabTopicKey(hadith) {
   return 'unassigned';
 }
 
+function isCountedHadithRow(h) {
+  // MOQDEMA / preface (n <= 0) is never part of automatic Hadith 1..N navigation.
+  if (!(Number(h?.n) > 0)) return false;
+  return String(h.ar || '').trim().length > 0 || String(h.en || '').trim().length > 0;
+}
+
+function countedHadithRows(rows) {
+  return (rows || []).filter(isCountedHadithRow).sort((a, b) => Number(a.n) - Number(b.n));
+}
+
+function prefaceHadithRows(rows) {
+  return (rows || []).filter((h) => Number(h?.n) <= 0).sort((a, b) => Number(a.n) - Number(b.n));
+}
+
 /** Honest range label: never imply a continuous block when count << span. */
 function topicRangeLabel(topic) {
-  const count = Number(topic.count || 0);
-  const first = topic.first;
-  const last = topic.last;
-  const nums = Array.isArray(topic.nums) ? topic.nums : [];
+  const nums = (Array.isArray(topic.countedNums) && topic.countedNums.length
+    ? topic.countedNums
+    : (Array.isArray(topic.nums) ? topic.nums : [])
+  ).filter((n) => Number(n) > 0);
+  const first = topic.countedFirst != null ? topic.countedFirst : (nums.length ? nums[0] : topic.first);
+  const last = topic.countedLast != null ? topic.countedLast : (nums.length ? nums[nums.length - 1] : topic.last);
+  const count = topic.countedCount != null ? Number(topic.countedCount) : (nums.length || Number(topic.count || 0));
   if (count <= 0) return '';
   if (count === 1 || first === last) return `Hadith ${first}`;
   const span = Number(last) - Number(first) + 1;
@@ -1050,6 +1067,10 @@ function buildKitabTopics(pack) {
         first: h.n,
         last: h.n,
         nums: [],
+        countedNums: [],
+        countedFirst: null,
+        countedLast: null,
+        countedCount: 0,
       });
     }
     const row = map.get(key);
@@ -1057,16 +1078,29 @@ function buildKitabTopics(pack) {
     if (h.n < row.first) row.first = h.n;
     if (h.n > row.last) row.last = h.n;
     row.nums.push(h.n);
+    if (isCountedHadithRow(h)) {
+      row.countedNums.push(h.n);
+      row.countedCount += 1;
+      if (row.countedFirst == null || h.n < row.countedFirst) row.countedFirst = h.n;
+      if (row.countedLast == null || h.n > row.countedLast) row.countedLast = h.n;
+    }
   }
   for (const row of map.values()) {
     row.nums.sort((a, b) => a - b);
+    row.countedNums.sort((a, b) => a - b);
+    // Topic card uses counted hadiths only (MOQDEMA not counted).
+    if (row.countedCount > 0) {
+      row.count = row.countedCount;
+      row.first = row.countedFirst;
+      row.last = row.countedLast;
+    }
   }
   return [...map.values()].sort((a, b) => {
     if (a.key === 'unassigned') return 1;
     if (b.key === 'unassigned') return -1;
     const an = a.kitab_number == null ? 9999 : Number(a.kitab_number);
     const bn = b.kitab_number == null ? 9999 : Number(b.kitab_number);
-    return an - bn || a.first - b.first;
+    return an - bn || Number(a.first) - Number(b.first);
   });
 }
 
@@ -1082,8 +1116,10 @@ function openHadithTopic(slug, topic) {
   state.hadithTopicTitle = topic.title || '';
   state.hadithTopicEn = topic.en || '';
   setHadithBrowseMode('topics');
-  const rows = (pack.hadiths || []).filter((h) => kitabTopicKey(h) === topic.key);
-  openHadithReader(slug, rows, 0);
+  const all = (pack.hadiths || []).filter((h) => kitabTopicKey(h) === topic.key);
+  // Automatic Next/Previous uses counted hadiths only (1..N). MOQDEMA is not in this chain.
+  const rows = countedHadithRows(all);
+  openHadithReader(slug, rows.length ? rows : all, 0);
 }
 
 function clearHadithTopic(slug) {
@@ -1676,13 +1712,8 @@ function chapterRangeForHadith(pack, hadith) {
   if (!peers.length) {
     return { first: hadith.n, last: hadith.n, count: 1 };
   }
-  // Numbered range excludes preface (n<=0). Prefer filled rows for first/last span.
-  const numbered = peers.filter((h) => {
-    if (!(Number(h.n) > 0)) return false;
-    const ar = String(h.ar || '').trim();
-    const en = String(h.en || '').trim();
-    return ar.length > 0 || en.length > 0;
-  });
+  // Numbered range excludes preface (n<=0) and empty slots. MOQDEMA is never counted.
+  const numbered = countedHadithRows(peers);
   const use = numbered.length ? numbered : peers;
   let first = use[0].n;
   let last = use[0].n;
@@ -1690,7 +1721,7 @@ function chapterRangeForHadith(pack, hadith) {
     if (h.n < first) first = h.n;
     if (h.n > last) last = h.n;
   }
-  return { first, last, count: peers.length };
+  return { first, last, count: use.length };
 }
 
 function hadithDisplayN(hadith) {
@@ -1889,11 +1920,27 @@ function openHadithReader(slug, rows, index) {
 function openHadithDetail(slug, hadithNumber) {
   const pack = state.hadithCache[slug];
   if (!pack) return;
-  const rows = state.hadithTopicKey
+  const n = Number(hadithNumber);
+  const allTopic = state.hadithTopicKey
     ? (pack.hadiths || []).filter((h) => kitabTopicKey(h) === state.hadithTopicKey)
-    : (state.hadithReaderRows && state.hadithReaderRows.length ? state.hadithReaderRows : pack.hadiths);
-  const idx = rows.findIndex((h) => Number(h.n) === Number(hadithNumber));
-  openHadithReader(slug, rows.length ? rows : pack.hadiths, idx >= 0 ? idx : 0);
+    : (state.hadithReaderRows && state.hadithReaderRows.length
+      ? state.hadithReaderRows
+      : (pack.hadiths || []));
+  const numbered = countedHadithRows(allTopic);
+  const preface = prefaceHadithRows(allTopic);
+
+  // Automatic Next/Previous for "Hadith 1 to N" never includes MOQDEMA (n <= 0).
+  // Opening a preface row can still Next into Hadith 1, then 2…N.
+  let scope;
+  if (Number.isFinite(n) && n <= 0 && (preface.length || numbered.length)) {
+    scope = preface.concat(numbered);
+  } else if (numbered.length) {
+    scope = numbered;
+  } else {
+    scope = allTopic;
+  }
+  const idx = scope.findIndex((h) => Number(h.n) === n);
+  openHadithReader(slug, scope.length ? scope : pack.hadiths, idx >= 0 ? idx : 0);
 }
 
 function isHadithNumberQuery(filter) {

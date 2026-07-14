@@ -93,6 +93,7 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
       final i = _numbers.indexOf(widget.hadithNumber);
       _index = i >= 0 ? i : 0;
     } else if (widget.chapterId != null) {
+      // Counted chain only (Hadith 1..N). MOQDEMA is not in automatic Next/Previous.
       _numbers = await _repo.hadithNumbersForChapter(widget.bookId, widget.chapterId!);
       final i = _numbers.indexOf(widget.hadithNumber);
       _index = i >= 0 ? i : 0;
@@ -104,8 +105,24 @@ class _HadithDetailScreenState extends State<HadithDetailScreen> {
     setState(() => _loading = true);
     final row = await _repo.hadith(widget.bookId, widget.hadithNumber);
     final chapterId = widget.unassigned ? null : (widget.chapterId ?? (row?['chapter_id'] as int?));
+    final isPreface = widget.hadithNumber <= 0;
 
-    if ((widget.chapterId != null || widget.unassigned) && _numbers.isNotEmpty) {
+    if (isPreface && chapterId != null && !widget.unassigned) {
+      // Preface/MOQDEMA: not part of counted 1..N list; still allow Next into Hadith 1.
+      _prevNumber = await _repo.adjacentHadithNumber(
+        widget.bookId,
+        widget.hadithNumber,
+        next: false,
+        chapterId: chapterId,
+      );
+      _nextNumber = await _repo.adjacentHadithNumber(
+        widget.bookId,
+        widget.hadithNumber,
+        next: true,
+        chapterId: chapterId,
+      );
+      _index = 0;
+    } else if ((widget.chapterId != null || widget.unassigned) && _numbers.isNotEmpty) {
       final i = _numbers.indexOf(widget.hadithNumber);
       _index = i >= 0 ? i : 0;
       _prevNumber = _index > 0 ? _numbers[_index - 1] : null;
