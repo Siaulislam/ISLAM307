@@ -23,6 +23,9 @@ def configure_ios() -> None:
     data["NSSpeechRecognitionUsageDescription"] = (
         "Zia Assistant converts your spoken question into text on request."
     )
+    data["NSLocationWhenInUseUsageDescription"] = (
+        "Qibla Direction uses your location only to calculate the bearing to the Kaaba."
+    )
     with path.open("wb") as handle:
         plistlib.dump(data, handle, sort_keys=False)
 
@@ -35,12 +38,16 @@ def configure_android() -> None:
     ET.register_namespace("android", android)
     tree = ET.parse(path)
     root = tree.getroot()
-    permission = "android.permission.RECORD_AUDIO"
+    permissions = {
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+    }
     existing = {
         node.attrib.get(f"{{{android}}}name")
         for node in root.findall("uses-permission")
     }
-    if permission not in existing:
+    for permission in sorted(permissions - existing):
         node = ET.Element("uses-permission")
         node.set(f"{{{android}}}name", permission)
         root.insert(0, node)

@@ -18,6 +18,7 @@ import '../../features/about/about_screen.dart';
 import '../../features/ai/ai_assistant_screen.dart';
 import '../../features/namaz/namaz_tracker_screen.dart';
 import '../../features/tasbeeh/tasbeeh_counter_screen.dart';
+import '../../features/qibla/qibla_direction_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -33,6 +34,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/tasbeeh',
         builder: (_, __) => const TasbeehCounterScreen(),
       ),
+      GoRoute(path: '/qibla', builder: (_, __) => const QiblaDirectionScreen()),
       GoRoute(path: '/about', builder: (_, __) => const AboutScreen()),
       GoRoute(path: '/about/licenses', builder: (_, __) => const DataSourcesLicensesScreen()),
       GoRoute(path: '/quran', builder: (_, __) => const QuranHubScreen()),
