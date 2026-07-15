@@ -1,0 +1,101 @@
+name: Flutter iOS test build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - cursor/sahih-muslim-missing-data-7acb
+    paths:
+      - "app/**"
+      - ".github/workflows/ios-test-build.yml"
+
+jobs:
+  simulator:
+    name: Build iOS Simulator app
+    runs-on: macos-14
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate missing iOS platform scaffold
+        run: |
+          flutter create \
+            --platforms=ios \
+            --org com.siaulislam \
+            --project-name islam307 \
+            app
+
+      - name: Install Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Analyze Dart
+        working-directory: app
+        run: flutter analyze
+
+      - name: Run tests
+        working-directory: app
+        run: flutter test
+
+      - name: Build iOS Simulator release
+        working-directory: app
+        run: flutter build ios --simulator --release
+
+      - name: Package Simulator app
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            app/build/ios/iphonesimulator/Runner.app \
+            ISLAM307-iOS-Simulator.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ISLAM307-iOS-Simulator
+          path: ISLAM307-iOS-Simulator.zip
+          if-no-files-found: error
+          retention-days: 14
+
+  unsigned-device:
+    name: Build unsigned iOS device archive
+    runs-on: macos-14
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Generate missing iOS platform scaffold
+        run: |
+          flutter create \
+            --platforms=ios \
+            --org com.siaulislam \
+            --project-name islam307 \
+            app
+
+      - name: Install Flutter dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build unsigned device app
+        working-directory: app
+        run: flutter build ios --release --no-codesign
+
+      - name: Package unsigned app
+        run: |
+          mkdir -p Payload
+          cp -R app/build/ios/iphoneos/Runner.app Payload/
+          zip -qry ISLAM307-unsigned.ipa Payload
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ISLAM307-unsigned-iOS
+          path: ISLAM307-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
