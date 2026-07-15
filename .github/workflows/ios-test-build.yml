@@ -45,9 +45,9 @@ jobs:
         working-directory: app
         run: flutter test
 
-      - name: Build iOS Simulator release
+      - name: Build iOS Simulator app
         working-directory: app
-        run: flutter build ios --simulator --release
+        run: flutter build ios --simulator
 
       - name: Package Simulator app
         run: |
