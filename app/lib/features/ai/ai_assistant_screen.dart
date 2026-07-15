@@ -1,12 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/ai/evidence_scope.dart';
 import '../../core/ai/query_language.dart';
+import '../../core/ai/quran_navigation_resolver.dart';
 import '../../core/ai/source_reference_search.dart';
+import '../../core/audio/recitation_audio_service.dart';
 import '../../core/audio/speech_input_service.dart';
 import '../../core/audio/tts_service.dart';
 import '../../core/database/database_registry.dart';
+import '../../core/database/quran_database.dart';
 import '../../core/theme/islam307_theme.dart';
 
 class AiAssistantScreen extends StatefulWidget {
@@ -36,6 +41,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     if (_loading && scope == null) return;
     final question = (questionOverride ?? _controller.text).trim();
     if (question.isEmpty) return;
+    if (scope == null && await _handleQuranNavigation(question)) return;
     if (_isReadCommand(question) && _result != null) {
       await _speakAnswer(_result!);
       return;
@@ -101,12 +107,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
         });
         if (!isFinal) return;
         setState(() => _listening = false);
-        if (_handleVoiceScopeChoice(words)) return;
-        if (_isReadCommand(words) && _result != null) {
-          _speakAnswer(_result!);
-          return;
-        }
-        _run(questionOverride: words);
+        unawaited(_processFinalVoice(words));
       },
       onError: (message) {
         if (!mounted) return;
@@ -124,6 +125,40 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
             'Microphone permission or speech recognition is unavailable.';
       }
     });
+  }
+
+  Future<void> _processFinalVoice(String words) async {
+    if (await _handleQuranNavigation(words)) return;
+    if (_handleVoiceScopeChoice(words)) return;
+    if (_isReadCommand(words) && _result != null) {
+      await _speakAnswer(_result!);
+      return;
+    }
+    await _run(questionOverride: words);
+  }
+
+  Future<bool> _handleQuranNavigation(String command) async {
+    try {
+      final surahs = await QuranDatabase.instance.surahs();
+      final match = QuranNavigationResolver.resolve(command, surahs);
+      if (match == null || !mounted) return false;
+      await TtsService.instance.stop();
+      await RecitationAudioService.instance.stop();
+      if (!mounted) return true;
+      setState(() {
+        _voiceStatus = match.autoPlay
+            ? 'Opening ${match.displayName} with Sheikh Sudais recitation…'
+            : 'Opening ${match.displayName}…';
+      });
+      final autoplay = match.autoPlay ? '1' : '0';
+      context.push(
+        '/quran/read/${match.surahNumber}/1'
+        '?autoplay=$autoplay&reciter=sudais',
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   bool _handleVoiceScopeChoice(String words) {
@@ -188,7 +223,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Zia Assistant',
+          'Ziaulislam',
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         leading: IconButton(

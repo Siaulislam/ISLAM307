@@ -18,10 +18,10 @@ def configure_ios() -> None:
     with path.open("rb") as handle:
         data = plistlib.load(handle)
     data["NSMicrophoneUsageDescription"] = (
-        "Zia Assistant uses the microphone only when you tap voice input."
+        "Ziaulislam uses the microphone only when you tap voice input."
     )
     data["NSSpeechRecognitionUsageDescription"] = (
-        "Zia Assistant converts your spoken question into text on request."
+        "Ziaulislam converts your spoken question into text on request."
     )
     data["NSLocationWhenInUseUsageDescription"] = (
         "Qibla Direction uses your location only to calculate the bearing to the Kaaba."
@@ -39,6 +39,7 @@ def configure_android() -> None:
     tree = ET.parse(path)
     root = tree.getroot()
     permissions = {
+        "android.permission.INTERNET",
         "android.permission.RECORD_AUDIO",
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",

@@ -14,11 +14,15 @@ class QuranReaderScreen extends ConsumerStatefulWidget {
     this.surahNumber,
     this.startAyah = 1,
     this.rukuNumber,
+    this.autoPlay = false,
+    this.reciterId = 'sudais',
   });
 
   final int? surahNumber;
   final int startAyah;
   final int? rukuNumber;
+  final bool autoPlay;
+  final String reciterId;
 
   @override
   ConsumerState<QuranReaderScreen> createState() => _QuranReaderScreenState();
@@ -31,6 +35,7 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
   bool _loading = true;
   String? _userId;
   String? _selectedTafsirAyahKey;
+  bool _autoPlayStarted = false;
 
   @override
   void initState() {
@@ -77,6 +82,34 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
           : '${ayahs.first['surah_number']}:${ayahs.first['ayah_number']}';
       _loading = false;
     });
+    await _startAutoPlay(ayahs, allAyahs);
+  }
+
+  Future<void> _startAutoPlay(
+    List<Map<String, dynamic>> visibleAyahs,
+    List<Map<String, dynamic>> allAyahs,
+  ) async {
+    if (!widget.autoPlay ||
+        _autoPlayStarted ||
+        visibleAyahs.isEmpty ||
+        allAyahs.isEmpty) {
+      return;
+    }
+    _autoPlayStarted = true;
+    final first = visibleAyahs.first;
+    final error = await RecitationAudioService.instance.playAyah(
+      surah: first['surah_number'] as int,
+      ayah: first['ayah_number'] as int,
+      globalNumber: first['global_number'] as int?,
+      reciterId: widget.reciterId,
+      continueThroughSurah: true,
+      endAyah: allAyahs.last['ayah_number'] as int?,
+    );
+    if (error != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error)),
+      );
+    }
   }
 
   @override

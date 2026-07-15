@@ -52,7 +52,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (_, state) {
           final surah = int.parse(state.pathParameters['surah']!);
           final ayah = int.parse(state.pathParameters['ayah'] ?? '1');
-          return QuranReaderScreen(surahNumber: surah, startAyah: ayah);
+          return QuranReaderScreen(
+            surahNumber: surah,
+            startAyah: ayah,
+            autoPlay: state.uri.queryParameters['autoplay'] == '1',
+            reciterId: state.uri.queryParameters['reciter'] ?? 'sudais',
+          );
         },
       ),
       GoRoute(path: '/hadith', builder: (_, __) => const HadithScreen()),

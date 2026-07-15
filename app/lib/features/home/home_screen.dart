@@ -75,7 +75,7 @@ class HomeScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         icon: const Icon(Icons.auto_awesome_rounded),
         label: const Text(
-          'Zia Assistant',
+          'Ziaulislam',
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
       ),
