@@ -78,7 +78,7 @@ class GenericLocalDatabaseSearch {
                   (a['pk'] as int? ?? 0).compareTo(b['pk'] as int? ?? 0),
             );
           final orderBy = primaryKeys.isEmpty
-              ? ''
+              ? ' ORDER BY ${searchableColumns.take(2).map(_quoted).join(', ')}'
               : ' ORDER BY ${primaryKeys.map((column) => _quoted('${column['name']}')).join(', ')}';
           try {
             final rows = await db.rawQuery(
@@ -117,8 +117,7 @@ class GenericLocalDatabaseSearch {
         table.endsWith('_idx') ||
         table.endsWith('_content') ||
         table.endsWith('_docsize') ||
-        table.endsWith('_config') ||
-        table.contains('_fts');
+        table.endsWith('_config');
   }
 
   GenericKnowledgeHit _toHit(
@@ -141,7 +140,7 @@ class GenericLocalDatabaseSearch {
       ...ordered
           .map((column) => '${row[column] ?? ''}'.trim())
           .where((value) => value.isNotEmpty),
-    ];
+    ].where((value) => _valueMatchesLanguage(value, language)).toList();
     final excerpt = values.toSet().take(3).join('\n');
     final reference = _reference(database, table, row);
     return GenericKnowledgeHit(
@@ -168,8 +167,18 @@ class GenericLocalDatabaseSearch {
     }
     final hadith = row['hadith_number'];
     if (hadith != null) {
-      final book = row['book_id'] ?? row['book_slug'] ?? database;
-      return 'Hadith · Book $book · $hadith';
+      final stored = '${row['reference'] ?? ''}'.trim();
+      if (stored.isNotEmpty) return stored;
+      final bookName =
+          row['book_name'] ?? row['book_slug'] ?? row['book_id'] ?? database;
+      final referenceBook = row['reference_book'];
+      final referenceHadith = row['reference_hadith'];
+      if (referenceBook != null &&
+          '$referenceBook' != '0' &&
+          referenceHadith != null) {
+        return '$bookName · Book $referenceBook · Hadith $referenceHadith';
+      }
+      return '$bookName · Hadith $hadith';
     }
     final id = row['id'] ?? row['slug'];
     return '$database.$table${id == null ? '' : ' · $id'}';
@@ -186,6 +195,9 @@ class GenericLocalDatabaseSearch {
       'description',
       'body',
       'quote',
+      'content',
+      'label',
+      'excerpt',
     }.contains(name)) {
       return true;
     }
@@ -201,6 +213,11 @@ class GenericLocalDatabaseSearch {
             name.contains('english') ||
             name.contains('summary'),
     };
+  }
+
+  bool _valueMatchesLanguage(String value, QueryLanguage language) {
+    if (!RegExp(r'[A-Za-z\u0600-\u06FF]').hasMatch(value)) return true;
+    return QueryLanguageDetector.detect(value) == language;
   }
 
   String _quoted(String identifier) {

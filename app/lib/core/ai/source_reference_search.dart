@@ -151,7 +151,9 @@ class SourceReferenceSearch {
       final personalHits = <PersonalKnowledgeHit>[];
       final assetHits = <AssetKnowledgeHit>[];
       for (final term in terms) {
-        personalHits.addAll(await _personal.search(term));
+        personalHits.addAll(
+          await _personal.search(term, language: language),
+        );
         assetHits.addAll(await _assets.search(term));
       }
       refs.addAll(personalHits.map(
@@ -176,12 +178,20 @@ class SourceReferenceSearch {
 
     final filtered = _deduplicate(refs)
       ..sort((a, b) {
+        final coverage = _termCoverage(b, terms).compareTo(
+          _termCoverage(a, terms),
+        );
+        if (coverage != 0) return coverage;
         final priority =
             _sourcePriority(a.type).compareTo(_sourcePriority(b.type));
         if (priority != 0) return priority;
         final reference = a.reference.compareTo(b.reference);
         if (reference != 0) return reference;
-        return a.title.compareTo(b.title);
+        final source = a.sourceId.compareTo(b.sourceId);
+        if (source != 0) return source;
+        final title = a.title.compareTo(b.title);
+        if (title != 0) return title;
+        return a.excerpt.compareTo(b.excerpt);
       });
     if (filtered.isEmpty) {
       return SourceReferenceResult.empty(
@@ -337,6 +347,15 @@ class SourceReferenceSearch {
       SourceType.personal => 4,
       SourceType.app => 5,
     };
+  }
+
+  int _termCoverage(SourceReference reference, List<String> terms) {
+    final text =
+        '${reference.title} ${reference.excerpt} ${reference.reference}'
+            .toLowerCase();
+    return terms
+        .where((term) => text.contains(term.toLowerCase()))
+        .length;
   }
 
   String _composeAnswer(
