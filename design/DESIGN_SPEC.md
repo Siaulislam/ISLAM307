@@ -34,8 +34,8 @@
 3. Home Dashboard — verse, prayer, quick grid, continue reading
 4. Quran Surah list — search, juz/page tabs
 5. Quran Reader — Uthmani, tools, translation, word meaning
-6. Hadith — license-status placeholder until approved packs exist
-7. Tafseer — offline license-status placeholder
+6. Hadith — 7 books list
+7. Tafsir — professional reading
 8. AI Assistant — source-only answers with references
 9. Prayer — times, qibla, tasbeeh, hijri
 10. Library — categories + books
@@ -52,8 +52,8 @@ Home · Quran · AI · Library · More
 ## AI rules (critical)
 
 - NEVER generate Islamic rulings from model knowledge alone
-- Search only approved local Arabic Quran data, app-owned feature labels and user-authored SQLite notes
-- Every religious result MUST cite its approved local dataset and reference
+- Search local Quran.db and Hadith.db; retrieve verse-specific Tafseer only from an authorized official API
+- Every answer MUST cite: Surah/Ayah OR Hadith Book/Number OR Tafsir name
 - Fallback: **"No authentic reference found."**
 
 ## Database plan (Phase 2)
@@ -61,7 +61,7 @@ Home · Quran · AI · Library · More
 | Database | Purpose |
 |----------|---------|
 | quran.db | 13-line Uthmani, translation, search, pages, juz |
-| Hadith placeholder | Disabled until exact licensed editions permit offline commercial redistribution |
+| hadith.db | 7 collections |
 | Tafseer API | Runtime Quran Foundation lookup; no bundled Tafseer corpus |
 | duas.db | Supplications |
 | azkar.db | Remembrance |

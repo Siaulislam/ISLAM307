@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/settings/app_settings.dart';
-import 'core/database/user_database.dart';
-import 'core/user/user_library_store.dart';
 import 'core/tafsir/legacy_tafsir_cleanup.dart';
 import 'core/theme/islam307_theme.dart';
 import 'core/router/app_router.dart';
@@ -15,8 +13,6 @@ Future<void> main() async {
     // Retry occurs before the first Tafseer API request. Never reopen the
     // legacy database even if cleanup is temporarily blocked by the OS.
   }
-  await UserDatabase.instance.open();
-  await UserLibraryStore.instance.migrateLegacyJson();
   runApp(const ProviderScope(child: Islam307App()));
 }
 

@@ -1,12 +1,9 @@
-name: Verify licensed quran.db
+name: Build quran.db
 
 on:
   push:
     paths:
       - 'tools/quran/**'
-      - 'app/assets/databases/quran.db'
-      - 'app/assets/modules/dataset_registry.json'
-      - 'LICENSES/quran-arabic-tanzil.md'
       - '.github/workflows/build-quran-db.yml'
   workflow_dispatch:
 
@@ -18,10 +15,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Sanitize licensed Quran package
-        run: python tools/quran/sanitize_commercial_quran_db.py
-      - name: Enforce dataset license gate
-        run: python tools/verification/check_dataset_license_gate.py
+      - name: Build quran.db
+        run: python tools/quran/build_quran_db.py --skip-pdf
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

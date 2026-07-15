@@ -1,9 +1,5 @@
 # ISLAM 307 — Hadith Database Verification Report
 
-> **Historical audit / release action:** The audited database, preview packs,
-> snapshots and imported source text were removed from release assets on
-> 2026-07-14. Hadith screens are permission placeholders.
-
 Generated: 2026-07-11 05:14 UTC
 
 ## Executive summary

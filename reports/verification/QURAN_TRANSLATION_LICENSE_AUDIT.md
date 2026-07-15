@@ -1,9 +1,5 @@
 # Offline Quran translation — availability & license audit
 
-> **Historical audit / release action:** All translation content was removed
-> from `quran.db` and preview packs on 2026-07-14. Translation features now
-> display permission placeholders. Nothing below is approved for bundling.
-
 **App policy:** 100% free · Sadaqah Jariyah · offline-first · never invent or machine-translate Quran text.
 
 **Checked:** 2026-07-13 against Quran.com API resource list, Quran Foundation Developer Terms, and Tanzil translation terms.

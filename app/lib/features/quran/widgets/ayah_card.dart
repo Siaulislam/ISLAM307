@@ -7,6 +7,7 @@ import '../../../core/audio/recitation_audio_service.dart';
 import '../../../core/audio/tts_service.dart';
 import '../../../core/models/quran_word.dart';
 import '../../../core/repositories/quran_word_repository.dart';
+import '../../../core/repositories/tafsir_repository.dart';
 import '../../../core/settings/app_settings.dart';
 import '../../../core/theme/islam307_theme.dart';
 import '../../../core/user/user_library_store.dart';
@@ -33,10 +34,7 @@ class AyahCard extends ConsumerStatefulWidget {
 }
 
 class _AyahCardState extends ConsumerState<AyahCard> {
-  static const _tafsirUnavailable =
-      'Offline Tafseer is unavailable until redistribution permission is approved.';
   bool _bookmarked = false;
-  bool _favorite = false;
   String? _highlight;
   String? _note;
   bool _ready = false;
@@ -48,17 +46,8 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   String? _tafsirSlug;
   Map<String, dynamic>? _tafsirEntry;
   bool _tafsirLoading = false;
-  List<Map<String, dynamic>> _tafsirSources = const [
-    {
-      'slug': 'ibn-kathir',
-      'name_en': 'Offline Tafseer',
-      'author': 'Permission pending',
-      'language': '—',
-      'available': false,
-      'notes':
-          'No Tafseer is installed. Permanent offline commercial redistribution permission is required.',
-    },
-  ];
+  final _tafsirRepo = TafsirRepository();
+  List<Map<String, dynamic>> _tafsirSources = const [];
   String? _tafsirCatalogError;
   bool _tafsirCatalogLoading = false;
   int _tafsirRequestId = 0;
@@ -112,34 +101,38 @@ class _AyahCardState extends ConsumerState<AyahCard> {
   }
 
   Future<void> _loadTafsirSources() async {
-    if (!mounted) return;
-    setState(() {
-      _tafsirCatalogLoading = false;
-      _tafsirCatalogError = null;
-    });
-  }
-
-  Future<Map<String, dynamic>> _offlineTafsirPlaceholder(String slug) async {
-    return {
-      'unavailable': true,
-      'slug': slug,
-      'source_name': 'Offline Tafseer',
-      'message':
-          'Tafseer permission is pending. No local content is installed, streamed, or generated.',
-      'notes': 'See LICENSES/tafsir.md and LICENSE_REQUEST.md.',
-    };
+    if (mounted) {
+      setState(() {
+        _tafsirCatalogLoading = true;
+        _tafsirCatalogError = null;
+      });
+    }
+    try {
+      final sources = await _tafsirRepo.catalogSources();
+      if (!mounted) return;
+      setState(() {
+        _tafsirSources = sources;
+        _tafsirCatalogLoading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _tafsirSources = const [];
+        _tafsirCatalogLoading = false;
+        _tafsirCatalogError =
+            'Official Tafseer sources could not be loaded. Tap to retry.';
+      });
+    }
   }
 
   Future<void> _loadPersonal() async {
     final store = UserLibraryStore.instance;
     final bookmarked = await store.isBookmarked(_surah, _ayahNo);
-    final favorite = await store.isFavorite('quran://$_surah/$_ayahNo');
     final highlight = await store.highlight(_surah, _ayahNo);
     final note = await store.note(_surah, _ayahNo);
     if (!mounted) return;
     setState(() {
       _bookmarked = bookmarked;
-      _favorite = favorite;
       _highlight = highlight;
       _note = note;
       _ready = true;
@@ -163,9 +156,6 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     final refLabel = '$_surah:$_ayahNo';
     final page = widget.ayah['page_madani'] ?? widget.ayah['page'];
     final juz = widget.ayah['juz'];
-    final locationLabel = page == null && juz == null
-        ? 'Metadata permission pending'
-        : 'Page ${page ?? '—'} · Juz ${juz ?? '—'}';
 
     // Authenticated offline columns only (translation_<lang>). Never invent text.
     const rtlLangs = {'ur', 'fa', 'ps'};
@@ -269,7 +259,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
                     ),
                   ),
                   Text(
-                    locationLabel,
+                    'Page $page · Juz $juz',
                     style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Islam307Theme.emerald),
                   ),
                 ],
@@ -423,14 +413,6 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               onTap: () => Navigator.pop(ctx, 'bookmark'),
             ),
             ListTile(
-              leading: Icon(
-                _favorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                color: Islam307Theme.emerald,
-              ),
-              title: Text(_favorite ? 'Remove favorite' : 'Favorite'),
-              onTap: () => Navigator.pop(ctx, 'favorite'),
-            ),
-            ListTile(
               leading: const Icon(Icons.highlight_rounded, color: Islam307Theme.emerald),
               title: Text(_highlight != null ? 'Remove highlight' : 'Highlight'),
               onTap: () => Navigator.pop(ctx, 'highlight'),
@@ -463,9 +445,9 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               )
             else
               ListTile(
-                leading: const Icon(Icons.lock_outline_rounded, color: Islam307Theme.gold),
-                title: const Text('Recitation audio'),
-                subtitle: const Text('Permission pending · no streaming'),
+                leading: const Icon(Icons.play_circle_fill_rounded, color: Islam307Theme.emerald),
+                title: const Text('Recite'),
+                subtitle: const Text('Choose Qari · continues automatically'),
                 onTap: () => Navigator.pop(ctx, 'recite'),
               ),
           ],
@@ -475,8 +457,6 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     if (choice == null || !mounted) return;
     if (choice == 'bookmark') {
       await _toggleBookmark();
-    } else if (choice == 'favorite') {
-      await _toggleFavorite();
     } else if (choice == 'highlight') {
       await _toggleHighlight();
     } else if (choice == 'notes') {
@@ -488,9 +468,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     } else if (choice == 'speak') {
       await _speakMenu(arabic, translation, ttsLang);
     } else if (choice == 'recite') {
-      _toast(
-        'Recitation audio is disabled until offline commercial rights are approved.',
-      );
+      await _pickReciterAndPlay();
     } else if (choice == 'stop') {
       await RecitationAudioService.instance.stop();
       _toast('Recitation stopped');
@@ -551,7 +529,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
           const SizedBox(height: 6),
           Text(
             text.isEmpty
-                ? 'Translation permission is pending; no text is bundled.'
+                ? 'Authenticated translation is unavailable for this Ayah.'
                 : text,
             textAlign: rtl ? TextAlign.right : TextAlign.left,
             textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
@@ -614,7 +592,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
           const SizedBox(height: 6),
           Text(
             unavailable
-                ? (_tafsirEntry?['message'] as String? ?? _tafsirUnavailable)
+                ? (_tafsirEntry?['message'] as String? ?? TafsirRepository.unavailableMessage)
                 : text,
             style: TextStyle(
               height: 1.7,
@@ -699,7 +677,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       _tafsirLoading = true;
     });
     try {
-      final entry = await _offlineTafsirPlaceholder(slug);
+      final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
       if (!mounted ||
           requestId != _tafsirRequestId ||
           _tafsirSlug != slug) {
@@ -814,7 +792,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     });
     await ref.read(appSettingsProvider.notifier).setPreferredTafsir(choice);
     try {
-      final entry = await _offlineTafsirPlaceholder(choice);
+      final entry = await _tafsirRepo.entry(choice, _surah, _ayahNo);
       if (!mounted ||
           requestId != _tafsirRequestId ||
           _tafsirSlug != choice) {
@@ -916,10 +894,10 @@ class _AyahCardState extends ConsumerState<AyahCard> {
       await _speak(translation, translationLang);
     } else if (choice == 'tafsir') {
       final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
-      final entry = await _offlineTafsirPlaceholder(slug);
+      final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
       final text = '${entry?['text'] ?? ''}';
       if (text.isEmpty || entry?['unavailable'] == true) {
-        _toast(entry?['message'] as String? ?? _tafsirUnavailable);
+        _toast(entry?['message'] as String? ?? TafsirRepository.unavailableMessage);
         return;
       }
       final lang = RegExp(r'[\u0600-\u06FF]').hasMatch(text) ? 'ar-SA' : 'en-US';
@@ -939,16 +917,6 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     if (!mounted) return;
     setState(() => _bookmarked = on);
     _toast(on ? 'Bookmarked in your personal file' : 'Bookmark removed');
-  }
-
-  Future<void> _toggleFavorite() async {
-    final on = await UserLibraryStore.instance.toggleFavorite(
-      'quran://$_surah/$_ayahNo',
-      title: 'Quran $_surah:$_ayahNo',
-    );
-    if (!mounted) return;
-    setState(() => _favorite = on);
-    _toast(on ? 'Added to favorites' : 'Favorite removed');
   }
 
   Future<void> _toggleHighlight() async {
@@ -1002,9 +970,60 @@ class _AyahCardState extends ConsumerState<AyahCard> {
     await Share.share(text);
   }
 
+  Future<void> _pickReciterAndPlay() async {
+    final reciters = await RecitationAudioService.instance.reciters();
+    if (!mounted) return;
+    final chosen = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (ctx) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 8, 20, 12),
+              child: Text('Choose Qari (KSA / Imam Al-Haram)', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+              child: Text(
+                'Recitation continues to the next ayah automatically. Press Stop anytime.',
+                style: TextStyle(color: Islam307Theme.textMuted, fontSize: 13, height: 1.4),
+              ),
+            ),
+            ...reciters.map((r) => ListTile(
+                  leading: const Icon(Icons.record_voice_over_rounded, color: Islam307Theme.emerald),
+                  title: Text('${r['name_en']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+                  subtitle: Text('${r['title'] ?? ''} · ${r['name_ar'] ?? ''}'),
+                  onTap: () => Navigator.pop(ctx, r['id'] as String),
+                )),
+          ],
+        ),
+      ),
+    );
+    if (chosen == null) return;
+
+    // Continue through the end of this surah automatically.
+    final endAyah = widget.surahAyahCount;
+    final err = await RecitationAudioService.instance.playAyah(
+      surah: _surah,
+      ayah: _ayahNo,
+      globalNumber: widget.ayah['global_number'] as int?,
+      reciterId: chosen,
+      continueThroughSurah: true,
+      endAyah: endAyah,
+    );
+    if (err != null) {
+      _toast(err);
+    } else {
+      final name = RecitationAudioService.instance.reciterName ?? 'Qari';
+      _toast('Playing · $name · tap Stop to end');
+    }
+  }
+
   Future<void> _openTafsir(BuildContext context) async {
     final slug = ref.read(appSettingsProvider).preferredTafsirSlug;
-    final entry = await _offlineTafsirPlaceholder(slug);
+    final entry = await _tafsirRepo.entry(slug, _surah, _ayahNo);
     if (!context.mounted) return;
     await showModalBottomSheet<void>(
       context: context,
@@ -1033,7 +1052,7 @@ class _AyahCardState extends ConsumerState<AyahCard> {
               ),
               const SizedBox(height: 12),
               if (entry == null || entry['unavailable'] == true)
-                Text(entry?['message'] as String? ?? _tafsirUnavailable,
+                Text(entry?['message'] as String? ?? TafsirRepository.unavailableMessage,
                     style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w700))
               else ...[
                 Text('${entry['source_name']}', style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),

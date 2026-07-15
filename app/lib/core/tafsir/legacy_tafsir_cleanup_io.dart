@@ -31,14 +31,6 @@ class LegacyTafsirCleanup {
       'tafsir.db-wal',
       'tafsir.db-shm',
       'tafsir.db-journal',
-      'hadith.db',
-      'hadith.db-wal',
-      'hadith.db-shm',
-      'hadith.db-journal',
-      'narrators.db',
-      'narrators.db-wal',
-      'narrators.db-shm',
-      'narrators.db-journal',
     ]) {
       final file = File(p.join(documents.path, name));
       if (await file.exists()) {

@@ -3,14 +3,110 @@
     "name": "ISLAM 307",
     "tagline": "100% FREE · Sadaqah Jariyah · Offline-first",
     "policy": [
-      "Only datasets with explicit offline and commercial redistribution rights may be bundled.",
-      "Permission-pending content remains a disabled placeholder.",
-      "AI searches only approved local databases and user-authored SQLite data.",
-      "No religious content is fabricated, scraped, streamed during normal use, or copied from unofficial repositories.",
-      "Every enabled dataset requires source, license, version, download date, attribution and evidence metadata."
+      "This application is 100% free.",
+      "No advertisements.",
+      "No paid subscriptions.",
+      "Built as Sadaqah Jariyah.",
+      "AI never invents Quran, Hadith, Tafseer, or narrator biographies. Tafseer is queried at runtime only from an authorized official API.",
+      "No copyrighted datasets are used without permission."
     ]
   },
-  "registry": "assets/modules/dataset_registry.json",
-  "license_folder": "LICENSES/",
-  "permission_report": "LICENSE_REQUEST.md"
+  "sources": [
+    {
+      "id": "tanzil",
+      "title": "Tanzil Quran Text (Uthmani)",
+      "purpose": "Offline Arabic Quran text for reading, search, copy, bookmark, and AI reference.",
+      "license": "Creative Commons Attribution-NoDerivatives 3.0 Unported (CC BY-ND 3.0)",
+      "attribution": "Quran text courtesy of Tanzil Project (https://tanzil.net). The text is used unmodified (NoDerivatives).",
+      "url": "https://tanzil.net",
+      "notes": "BY-ND requires attribution and forbids derivative changes to the Quran text."
+    },
+    {
+      "id": "qac",
+      "title": "Quranic Arabic Corpus — Morphology",
+      "purpose": "Word-by-word morphology, grammar tags, roots, lemmas, and syntax segments for offline word study.",
+      "license": "GNU General Public License (GPL) with Quranic Arabic Corpus terms of use",
+      "attribution": "Morphological annotation © Kais Dukes, Quranic Arabic Corpus (http://corpus.quran.com). Annotations are used without alteration.",
+      "url": "http://corpus.quran.com",
+      "notes": "Applications may use the corpus data with attribution and a link to corpus.quran.com. Do not change annotations."
+    },
+    {
+      "id": "qurancom-wbw",
+      "title": "Quran.com word glosses (EN / UR)",
+      "purpose": "English and Urdu word meanings and transliteration bundled offline for word-by-word study.",
+      "license": "Quran.com / QuranFoundation terms — attribution required; commercial redistribution may require permission",
+      "attribution": "Word translations and transliteration via Quran.com API (https://quran.com). Used for a free Sadaqah Jariyah offline app with attribution.",
+      "url": "https://quran.com",
+      "notes": "If redistributing commercially, contact QuranFoundation for clarification."
+    },
+    {
+      "id": "qurancom-meta",
+      "title": "Quran.com metadata",
+      "purpose": "Surah metadata, page/juz/ruku/sajdah mapping, and related structural fields.",
+      "license": "Quran.com API terms with attribution",
+      "attribution": "Structural Quran metadata from Quran.com API v4 (https://quran.com).",
+      "url": "https://quran.com"
+    },
+    {
+      "id": "sahih-international",
+      "title": "Sahih International (English translation)",
+      "purpose": "English ayah translation for offline reading and search.",
+      "license": "Widely redistributed for free Islamic education; preserve attribution",
+      "attribution": "English translation: Sahih International.",
+      "url": "https://quran.com"
+    },
+    {
+      "id": "junagarhi",
+      "title": "Maulana Muhammad Junagarhi (Urdu translation)",
+      "purpose": "Urdu ayah translation for offline reading and search.",
+      "license": "Distributed via Quran.com translation resources; preserve attribution",
+      "attribution": "Urdu translation: Maulana Muhammad Junagarhi (Quran.com translation id 54).",
+      "url": "https://quran.com"
+    },
+    {
+      "id": "quran-translations-offline",
+      "title": "Offline ayah translations (authenticated)",
+      "purpose": "Exact ayah translations for the in-app language picker (never machine-translated).",
+      "license": "See reports/verification/QURAN_TRANSLATION_LICENSE_AUDIT.md — free Sadaqah Jariyah offline use with full attribution; commercial store redistribution may require written permission from translators / Quran Foundation.",
+      "attribution": "Downloaded from Quran.com API v4 into quran.db: Saheeh International (en, id 20); Junagarhi (ur, id 54); Maulana Azizul Haque al-Umari (hi, id 122); Dar Al-Salam Center (fil, id 211); Taisirul Quran (bn, id 161); Indonesian Islamic Affairs Ministry (id, id 33); Abdullah Muhammad Basmeih (ms, id 39); Diyanet (tr, id 77); IslamHouse Persian (fa, id 135); Muhammad Hamidullah (fr, id 31); Abubakar Mahmoud Gumi (ha, id 32); Mahmud Muhammad Abduh (so, id 46); Zakaria Abulsalam (ps, id 118); Ali Muhsin Al-Barwani (sw, id 49).",
+      "url": "https://quran.com",
+      "notes": "ISLAM 307 never invents or auto-converts Quran translations. Text is unaltered. Selecting Hindi (etc.) shows that language’s authenticated ayah text from the offline database. Attribution is shown in About → Data Sources."
+    },
+    {
+      "id": "everyayah",
+      "title": "EveryAyah recitation audio",
+      "purpose": "Optional network Quran recitation playback (not stored per-word).",
+      "license": "EveryAyah.com distribution terms",
+      "attribution": "Recitation audio streams from EveryAyah.com when the user chooses to play a reciter.",
+      "url": "https://everyayah.com",
+      "notes": "Word/verse TTS uses the device offline Text-To-Speech engine — audio files are not stored for every word."
+    },
+    {
+      "id": "hadith-packs",
+      "title": "Hadith collections (offline packs)",
+      "purpose": "Bukhari, Muslim, Abu Dawood, Tirmidhi text for offline reading and AI source search.",
+      "license": "See verification reports; preserve book/number grading attribution",
+      "attribution": "Hadith text and metadata are served only from authenticated local hadith.db packs. AI must cite book and number. The app does not display external Reference URL or Source Provider links.",
+      "url": "",
+      "notes": "Reference sheet shows Book · Chapter · Hadith Number · Grade only."
+    },
+    {
+      "id": "hadith-narrators",
+      "title": "Narrator (Rijāl) Knowledge System",
+      "purpose": "Display authenticated hadith narrator names and, when licensed, classical rijāl biographies from approved Sunni references only.",
+      "license": "Narrator names: same provenance as hadith packs. Biographies: ONLY from approved classical works with license/permission — never AI, Wikipedia, blogs, or forums.",
+      "attribution": "Approved references (permission required to import text): Tahdhib al-Kamal (al-Mizzi), Tahdhib al-Tahdhib & Taqrib al-Tahdhib & Al-Isabah & Lisan al-Mizan (Ibn Hajar), Siyar A'lam al-Nubala & Mizan al-I'tidal (al-Dhahabi), Tabaqat Ibn Sa'd, Tarikh al-Kabir (al-Bukhari), Al-Jarh wa al-Ta'dil (Ibn Abi Hatim). Until a narrator is imported into narrators.db: “This narrator profile has not been imported into the local database yet.” Never invent biographies with AI.",
+      "url": "",
+      "notes": "narrators.db ships schema + approved-source catalog with zero biography rows until a licensed import. See assets/modules/narrators_sources.json and tools/narrators/."
+    },
+    {
+      "id": "quran-foundation-tafseer-api",
+      "title": "Quran Foundation Content API — Tafseer",
+      "purpose": "Runtime, verse-specific Tafseer retrieval from resources authorized for this application.",
+      "license": "Quran Foundation Developer Terms (2025-06-13): in-application display only; no resale, sublicensing, scraping, or raw-data redistribution; ordinary storage limited to one week unless separately permitted.",
+      "attribution": "Tafseer name, author, language, Quran reference, API resource, and Quran Foundation source are shown with every response.",
+      "url": "https://api-docs.quran.foundation/legal/developer-terms/",
+      "notes": "No Tafseer corpus is bundled. The app uses short-lived OAuth credentials and a direct official Content API request. Unsupported works return an explicit unavailable message."
+    }
+  ]
 }

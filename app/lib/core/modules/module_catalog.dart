@@ -1,12 +1,46 @@
-/// Compatibility facade for permission-pending content repositories.
-///
-/// Religious catalogs remain empty until DatasetLicenseRegistry marks an exact
-/// dataset approved for offline commercial bundling.
+import 'dart:convert';
+import 'package:flutter/services.dart';
+
+/// Loads modular catalogs so translations, tafsirs, hadith books, and reciters
+/// can be extended without hardcoding feature screens.
 class ModuleCatalog {
   ModuleCatalog._();
   static final ModuleCatalog instance = ModuleCatalog._();
 
-  Future<List<String>> enabledHadithSlugs() async => const [];
+  Map<String, dynamic>? _translations;
+  Map<String, dynamic>? _hadith;
+  Map<String, dynamic>? _audio;
+  Map<String, dynamic>? _narrators;
 
-  Future<List<Map<String, dynamic>>> allNarratorSources() async => const [];
+  Future<Map<String, dynamic>> quranTranslations() async {
+    _translations ??= jsonDecode(await rootBundle.loadString('assets/modules/quran_translations.json')) as Map<String, dynamic>;
+    return _translations!;
+  }
+
+  Future<Map<String, dynamic>> hadithCollections() async {
+    _hadith ??= jsonDecode(await rootBundle.loadString('assets/modules/hadith_collections.json')) as Map<String, dynamic>;
+    return _hadith!;
+  }
+
+  Future<Map<String, dynamic>> audioReciters() async {
+    _audio ??= jsonDecode(await rootBundle.loadString('assets/modules/audio_reciters.json')) as Map<String, dynamic>;
+    return _audio!;
+  }
+
+  Future<Map<String, dynamic>> narratorSources() async {
+    _narrators ??= jsonDecode(await rootBundle.loadString('assets/modules/narrators_sources.json')) as Map<String, dynamic>;
+    return _narrators!;
+  }
+
+  Future<List<String>> enabledHadithSlugs() async {
+    final m = await hadithCollections();
+    return (m['enabled_slugs'] as List).cast<String>();
+  }
+
+  Future<List<Map<String, dynamic>>> allNarratorSources() async {
+    final m = await narratorSources();
+    final approved = (m['approved_sources'] as List?)?.cast<Map<String, dynamic>>();
+    if (approved != null) return approved;
+    return (m['sources'] as List?)?.cast<Map<String, dynamic>>() ?? const [];
+  }
 }

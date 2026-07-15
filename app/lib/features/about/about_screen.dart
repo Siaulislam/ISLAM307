@@ -71,9 +71,10 @@ class _AboutScreenState extends State<AboutScreen> {
           ),
           const Divider(),
           const Text(
-            'AI searches only approved local datasets and user-authored SQLite data. Internet APIs are not used during normal reading or AI search. '
-            'Permission-pending Quran translations, Hadith, Tafseer, narrator biographies, guides and learning content remain disabled placeholders. '
-            'If no approved local source exists: “No authentic licensed reference found.”',
+            'AI searches authenticated local Quran and Hadith databases. Verse-specific Tafseer is retrieved at runtime from the authorized Quran Foundation Content API and is not bundled locally. '
+            'Narrator biographies are never invented — only approved classical Sunni sources with license/permission. '
+            'If nothing matches: “No authentic reference found.” '
+            'If a narrator profile is not in narrators.db yet: “This narrator profile has not been imported into the local database yet.”',
             style: TextStyle(color: Islam307Theme.textMuted, height: 1.5, fontSize: 13),
           ),
         ],
@@ -99,10 +100,9 @@ class _DataSourcesLicensesScreenState extends State<DataSourcesLicensesScreen> {
   }
 
   Future<void> _load() async {
-    final raw =
-        await rootBundle.loadString('assets/modules/dataset_registry.json');
+    final raw = await rootBundle.loadString('assets/modules/data_sources.json');
     final data = jsonDecode(raw) as Map<String, dynamic>;
-    final list = (data['datasets'] as List).cast<Map<String, dynamic>>();
+    final list = (data['sources'] as List).cast<Map<String, dynamic>>();
     if (!mounted) return;
     setState(() => _sources = list);
   }
@@ -121,7 +121,7 @@ class _DataSourcesLicensesScreenState extends State<DataSourcesLicensesScreen> {
         itemBuilder: (context, i) {
           if (i == 0) {
             return const Text(
-              'Only records marked approved_for_bundling may contain packaged religious content. All other features remain placeholders.',
+              'Settings → About → Data Sources. Required acknowledgements for each offline dataset used by ISLAM 307.',
               style: TextStyle(color: Islam307Theme.textMuted, height: 1.5),
             );
           }
@@ -137,19 +137,17 @@ class _DataSourcesLicensesScreenState extends State<DataSourcesLicensesScreen> {
               children: [
                 Text('${s['title']}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Islam307Theme.emeraldDeep)),
                 const SizedBox(height: 8),
-                Text('Status: ${s['status']}', style: const TextStyle(height: 1.45, fontWeight: FontWeight.w700)),
+                Text('Purpose: ${s['purpose']}', style: const TextStyle(height: 1.45)),
                 const SizedBox(height: 6),
                 Text('License: ${s['license']}', style: const TextStyle(height: 1.45, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 6),
-                Text('Owner: ${s['copyright_owner']}', style: const TextStyle(height: 1.45)),
-                const SizedBox(height: 6),
-                Text('Contact: ${s['contact']}', style: const TextStyle(height: 1.45)),
-                const SizedBox(height: 6),
-                Text('Offline: ${s['offline_redistribution'] == true ? 'Allowed' : 'Not approved'} · Commercial: ${s['commercial_distribution'] == true ? 'Allowed' : 'Not approved'}', style: const TextStyle(height: 1.45)),
-                const SizedBox(height: 6),
                 Text('${s['attribution']}', style: const TextStyle(height: 1.45, color: Islam307Theme.textMuted)),
+                if ((s['notes'] as String?)?.isNotEmpty == true) ...[
+                  const SizedBox(height: 6),
+                  Text('Note: ${s['notes']}', style: const TextStyle(height: 1.45, fontSize: 13)),
+                ],
                 const SizedBox(height: 8),
-                Text('${s['original_source']}', style: const TextStyle(color: Islam307Theme.emerald, fontWeight: FontWeight.w700, fontSize: 13)),
+                Text('${s['url']}', style: const TextStyle(color: Islam307Theme.emerald, fontWeight: FontWeight.w700, fontSize: 13)),
               ],
             ),
           );

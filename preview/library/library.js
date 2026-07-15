@@ -1,5 +1,39 @@
-// Audio license permission is pending. No reciter catalog or stream URL ships.
-const RECITERS = [];
+const RECITERS = [
+  {
+    id: 'sudais',
+    name: 'Sheikh Abdurrahman As-Sudais',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'shuraim',
+    name: 'Sheikh Saud Ash-Shuraim',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/Saood_ash-Shuraym_128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'muaiqly',
+    name: 'Sheikh Maher Al-Muaiqly',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/MaherAlMuaiqly128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'dosari',
+    name: 'Sheikh Yasser Ad-Dossari',
+    title: 'Imam Al-Haram · Makkah',
+    url: (s, a) => `https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+  {
+    id: 'hudhaify',
+    name: 'Sheikh Ali Al-Hudhaify',
+    title: 'Imam An-Nabawi · Madinah',
+    url: (s, a) => `https://everyayah.com/data/Hudhaify_128kbps/${pad(s)}${pad(a)}.mp3`,
+  },
+];
+
+function pad(n) {
+  return String(n).padStart(3, '0');
+}
 
 async function fetchJson(url) {
   const res = await fetch(url);
@@ -8,7 +42,7 @@ async function fetchJson(url) {
 }
 
 async function fetchJsonGz(url) {
-  const bust = url.includes('?') ? '&v=license-gate-77' : '?v=license-gate-77';
+  const bust = url.includes('?') ? '&v=hadith-reader-73' : '?v=hadith-reader-73';
   const res = await fetch(`${url}${bust}`);
   if (!res.ok) throw new Error(`Failed to load ${url}`);
   const buf = await res.arrayBuffer();
@@ -335,9 +369,19 @@ function ayahHeaderMenusHtml(a) {
 
 async function ensureSurahWords(surah) {
   if (state.wordsBySurah[surah]) return state.wordsBySurah[surah];
-  // Word corpus license review is pending; no pack is fetched or bundled.
-  state.wordsBySurah[surah] = [];
-  return state.wordsBySurah[surah];
+  if (state.wordCacheLoading[surah]) return state.wordCacheLoading[surah];
+  state.wordCacheLoading[surah] = fetchJsonGz(`data/quran/words/${surah}.json.gz`)
+    .then((data) => {
+      state.wordsBySurah[surah] = data.words || [];
+      delete state.wordCacheLoading[surah];
+      return state.wordsBySurah[surah];
+    })
+    .catch(() => {
+      state.wordsBySurah[surah] = [];
+      delete state.wordCacheLoading[surah];
+      return [];
+    });
+  return state.wordCacheLoading[surah];
 }
 
 function wordsForAyah(surah, ayah) {
@@ -618,7 +662,7 @@ function openVerseActions(surah, ayah) {
         <button type="button" data-act="share"><strong>Share</strong><small>Share this ayah</small></button>
         ${playing
           ? `<button type="button" data-act="stop" class="danger"><strong>Stop</strong><small>Stop recitation</small></button>`
-          : `<button type="button" data-act="recite"><strong>Recitation audio</strong><small>Permission pending · no streaming</small></button>`}
+          : `<button type="button" data-act="recite" class="primary"><strong>Recite</strong><small>Choose Qari · continues automatically</small></button>`}
       </div>
       <button type="button" class="ghost" data-close>Close</button>
     </div>
@@ -685,7 +729,7 @@ function openVerseActions(surah, ayah) {
       }
       if (act === 'recite') {
         close();
-        toast('Recitation audio is disabled until offline commercial rights are approved.');
+        openReciterPicker(surah, ayah);
         return;
       }
       if (act === 'stop') {
@@ -926,11 +970,6 @@ function bookIconUrl(slug) {
 function renderHadithBooks() {
   const list = $('hadith-books');
   list.innerHTML = '';
-  if (!state.hadithBooks.length) {
-    list.innerHTML = '<p class="empty">Permission pending</p>';
-    $('hadith-view').innerHTML = '<p class="empty">Hadith content is not bundled until exact editions and translations explicitly allow offline commercial redistribution.</p>';
-    return;
-  }
   state.hadithBooks.forEach((book) => {
     const b = document.createElement('button');
     const icon = bookIconUrl(book.slug);
@@ -1267,7 +1306,7 @@ async function loadNarratorCatalog() {
   if (narratorCatalogPromise) return narratorCatalogPromise;
   narratorCatalogPromise = (async () => {
     try {
-      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=license-gate-77`);
+      narratorCatalog = await fetchJsonGz(`data/narrators/catalog.json.gz?v=hadith-reader-73`);
       return narratorCatalog;
     } catch (_) {
       narratorCatalog = null;

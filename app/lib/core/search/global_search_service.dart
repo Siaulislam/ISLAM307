@@ -1,5 +1,5 @@
-import '../database/user_database.dart';
-import '../datasets/dataset_license_registry.dart';
+import '../database/database_registry.dart';
+import '../repositories/hadith_repository.dart';
 import '../repositories/quran_repository.dart';
 import '../repositories/quran_word_repository.dart';
 
@@ -20,31 +20,20 @@ class GlobalSearchHit {
 class GlobalSearchService {
   GlobalSearchService({
     QuranRepository? quran,
+    HadithRepository? hadith,
     QuranWordRepository? words,
-    UserDatabase? userDatabase,
   })  : _quran = quran ?? QuranRepository(),
-        _words = words ?? QuranWordRepository(),
-        _userDatabase = userDatabase ?? UserDatabase.instance;
+        _hadith = hadith ?? HadithRepository(DatabaseRegistry.instance),
+        _words = words ?? QuranWordRepository();
 
   final QuranRepository _quran;
+  final HadithRepository _hadith;
   final QuranWordRepository _words;
-  final UserDatabase _userDatabase;
 
   Future<List<GlobalSearchHit>> search(String query) async {
     final q = query.trim();
     if (q.isEmpty) return [];
     final hits = <GlobalSearchHit>[];
-
-    for (final feature in await DatasetLicenseRegistry.instance.features()) {
-      if (feature.title.toLowerCase().contains(q.toLowerCase())) {
-        hits.add(GlobalSearchHit(
-          kind: 'Feature',
-          title: feature.title,
-          subtitle: 'Offline module · license-gated',
-          route: feature.route,
-        ));
-      }
-    }
 
     final ayahs = await _quran.search(q, limit: 20);
     for (final a in ayahs) {
@@ -71,24 +60,16 @@ class GlobalSearchService {
       ));
     }
 
-    final userRows = await _userDatabase.searchUserData(q, limit: 20);
-    for (final row in userRows) {
+    final hadiths = await _hadith.search(q, limit: 20);
+    for (final h in hadiths) {
       hits.add(GlobalSearchHit(
-        kind: 'Personal',
-        title: '${row['title'] ?? 'Personal note'}',
-        subtitle: '${row['body'] ?? ''}',
-        route: _routeForUri('${row['target_uri'] ?? ''}'),
+        kind: 'Hadith',
+        title: '${h['book_name']} · ${h['hadith_number']}',
+        subtitle: '${h['text_en'] ?? h['text_ar'] ?? ''}',
+        route: '/hadith/read/${h['book_id']}/${h['hadith_number']}',
       ));
     }
 
     return hits;
-  }
-
-  String _routeForUri(String uri) {
-    final quran = RegExp(r'^quran://(\d+)/(\d+)$').firstMatch(uri);
-    if (quran != null) {
-      return '/quran/read/${quran.group(1)}/${quran.group(2)}';
-    }
-    return '/library/notes';
   }
 }

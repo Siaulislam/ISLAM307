@@ -6,14 +6,14 @@
 
 | Phase | Status |
 |-------|--------|
-| Flutter UI | License-gated feature routes and offline utilities wired |
-| `quran.db` | 6,236 licensed Tanzil Arabic ayahs only |
-| Hadith / translations / Tafseer | Permission-pending placeholders; no corpus bundled |
-| Flutter Quran module | Surah browse, Arabic reading, personal bookmarks/history/notes |
-| Flutter Hadith module | License-status placeholder |
-| Flutter Tafsir module | License-status placeholder for permanent offline rights |
+| UI mockups | Approved (Home buttons open Quran/Hadith/Tafsir) |
+| `quran.db` | Built (6,236 ayahs + English + Urdu + word knowledge) |
+| `hadith.db` | Bundled; Flutter module wired |
+| Flutter Quran module | Surah/Ruku browse, word-by-word, Urdu/EN/Arabic-only, View Tafsir, audio + TTS |
+| Flutter Hadith module | Bukhari · Muslim · Tirmidhi · Abu Dawood |
+| Flutter Tafsir module | Official runtime API · dynamic source registry · no bundled Tafseer corpus |
 | Search + Light/Dark | Wired (ayah, word, root, morphology, juz, page) |
-| AI Assistant | Approved local Arabic Quran + user-note search only |
+| AI Assistant | Local Quran/Hadith search + official verse-Tafseer API lookup (never invents) |
 | About / Licenses | Data Sources & Licenses acknowledgements |
 | Prayer, etc. | Next |
 
@@ -31,6 +31,8 @@ Then open in Chrome:
 |------|-----|
 | **Preview hub** | http://localhost:5500/preview/ |
 | **Live library (Quran/Hadith/Tafsir)** | http://localhost:5500/preview/library/ |
+| **Phase 1 mockups (15 screens)** | http://localhost:5500/design/mockups/index.html |
+| **Phase 3 mockups (Hadith/Tafsir/AI)** | http://localhost:5500/design/mockups/phase3-mockups.html |
 
 Press `Ctrl+C` in the terminal to stop the server.
 
@@ -42,6 +44,8 @@ Press `Ctrl+C` in the terminal to stop the server.
 |------|-----|
 | Preview hub | https://siaulislam.github.io/ISLAM307/preview/ |
 | Live library | https://siaulislam.github.io/ISLAM307/preview/library/ |
+| Phase 1 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/index.html |
+| Phase 3 mockups | https://siaulislam.github.io/ISLAM307/design/mockups/phase3-mockups.html |
 | Book icons | https://siaulislam.github.io/ISLAM307/preview/icons.html |
 
 Redeploys automatically on every push to `main`.
@@ -51,6 +55,9 @@ Redeploys automatically on every push to `main`.
 - **Branch:** `gh-pages` → `/ (root)`
 - Save, then wait ~1 minute and refresh.
 
+### UI mockups (file path alternative)
+Open `design/mockups/index.html` directly in Chrome if you prefer.
+
 ### Run app
 ```bash
 cd app
@@ -59,13 +66,13 @@ flutter run \
   --dart-define=QF_TOKEN_BROKER_URL=https://your-secure-backend.example/qf-token
 ```
 
-See [`LICENSE_REQUEST.md`](LICENSE_REQUEST.md), [`LICENSES/`](LICENSES/) and
-[`docs/DATASET_LICENSE_TODO.md`](docs/DATASET_LICENSE_TODO.md) for pending
-content permissions.
+Quran Foundation requires OAuth client secrets to remain on a backend. See
+[`docs/TAFSEER_SOURCES_AND_LICENSES.md`](docs/TAFSEER_SOURCES_AND_LICENSES.md)
+for API setup, source availability, attribution, and caching restrictions.
 
 ### Rebuild Quran database
 ```bash
-python tools/quran/sanitize_commercial_quran_db.py
+python tools/quran/build_quran_db.py --skip-pdf
 ```
 
 Output: `app/assets/databases/quran.db`
@@ -75,13 +82,23 @@ Output: `app/assets/databases/quran.db`
 | Data | Source |
 |------|--------|
 | Arabic Uthmani | Tanzil Project v1.1 (CC BY-ND — unmodified) |
+| Page, Juz, Ruku, Sajdah, Tajweed | Quran.com API v4 |
+| English translation | Sahih International |
+| Urdu translation | Maulana Muhammad Junagarhi |
+| Word morphology / roots / grammar | Quranic Arabic Corpus v0.4 |
+| Word EN/UR meanings | Quran.com word glosses (build-time) |
+| 13-line pages | Optional PDF import (not runtime) |
 
-Translations, page/Juz/Ruku metadata, Tajweed and word knowledge remain empty
-until their exact licenses permit offline commercial redistribution.
+The app reads **quran.db only** — never the PDF. Acknowledgements live in **About → Data Sources & Licenses**.
+
+### Rebuild word knowledge (Phase 4)
+
+```bash
+python tools/quran/import_quran_knowledge.py --chapters 1-114
+```
 
 ## Tech
 
 Flutter + SQLite · No Firebase · 100% offline
 
-User-generated bookmarks, favorites, notes and history are stored in `user.db`.
-Religious content packs are enabled only after passing the dataset license gate.
+Planned DBs: hadith, tafsir, duas, azkar, library, audio, bookmarks, history, notes, usersettings

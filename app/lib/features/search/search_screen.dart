@@ -15,23 +15,15 @@ class _SearchScreenState extends State<SearchScreen> {
   final _service = GlobalSearchService();
   List<GlobalSearchHit> _hits = [];
   bool _loading = false;
-  int _requestId = 0;
 
   Future<void> _run(String q) async {
-    final requestId = ++_requestId;
     setState(() => _loading = true);
-    try {
-      final hits = await _service.search(q);
-      if (!mounted || requestId != _requestId) return;
-      setState(() => _hits = hits);
-    } catch (_) {
-      if (!mounted || requestId != _requestId) return;
-      setState(() => _hits = const []);
-    } finally {
-      if (mounted && requestId == _requestId) {
-        setState(() => _loading = false);
-      }
-    }
+    final hits = await _service.search(q);
+    if (!mounted) return;
+    setState(() {
+      _hits = hits;
+      _loading = false;
+    });
   }
 
   @override
@@ -59,7 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (q.trim().isEmpty) setState(() => _hits = []);
               },
               decoration: const InputDecoration(
-                hintText: 'Arabic Quran, Surah, Ayah, feature, or personal note…',
+                hintText: 'Arabic, Urdu, English, root, word, morphology, ayah, surah, juz, page…',
                 prefixIcon: Icon(Icons.search_rounded),
               ),
             ),
@@ -67,7 +59,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Offline search uses only approved local Arabic Quran text and your personal notes. Permission-pending datasets are excluded.',
+              'Instant offline search across Quran, words/roots/grammar, Hadith, and Tafsir. Try: 2:255 · juz 1 · page 2 · root رحم · نماز',
               style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12),
             ),
           ),

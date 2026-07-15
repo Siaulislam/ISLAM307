@@ -67,15 +67,6 @@ class _QuranReaderScreenState extends ConsumerState<QuranReaderScreen> {
             .toList()
         : allAyahs;
     final surah = await _repo.surah(surahNo);
-    if (ayahs.isNotEmpty) {
-      await UserLibraryStore.instance.recordQuranHistory(
-        surahNo,
-        ayahs.first['ayah_number'] as int,
-        title: surah == null
-            ? 'Quran $surahNo:${ayahs.first['ayah_number']}'
-            : '${surah['name_en']} · ${ayahs.first['ayah_number']}',
-      );
-    }
     if (!mounted) return;
     setState(() {
       _userId = uid;

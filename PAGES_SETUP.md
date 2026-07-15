@@ -18,6 +18,7 @@ GitHub just needs you to **turn on Pages** for this repository once.
 
 5. Wait 1–2 minutes, then open:
    - https://siaulislam.github.io/ISLAM307/preview/
+   - https://siaulislam.github.io/ISLAM307/design/mockups/index.html
 
 ## Already works locally
 

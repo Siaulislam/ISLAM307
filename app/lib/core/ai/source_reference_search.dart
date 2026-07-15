@@ -1,7 +1,8 @@
+import '../database/database_registry.dart';
 import '../database/quran_database.dart';
-import '../database/user_database.dart';
-import '../datasets/dataset_license_registry.dart';
+import '../repositories/hadith_repository.dart';
 import '../repositories/quran_word_repository.dart';
+import '../repositories/tafsir_repository.dart';
 import 'tafsir_intent.dart';
 
 /// Source-only Islamic search — NEVER generates rulings from itself.
@@ -9,18 +10,22 @@ import 'tafsir_intent.dart';
 /// official licensed provider at runtime.
 class SourceReferenceSearch {
   SourceReferenceSearch({
+    required DatabaseRegistry registry,
     QuranDatabase? quran,
+    HadithRepository? hadith,
+    TafsirRepository? tafsir,
     QuranWordRepository? words,
-    UserDatabase? userDatabase,
   })  : _quran = quran ?? QuranDatabase.instance,
-        _words = words ?? QuranWordRepository(),
-        _userDatabase = userDatabase ?? UserDatabase.instance;
+        _hadith = hadith ?? HadithRepository(registry),
+        _tafsir = tafsir ?? TafsirRepository(),
+        _words = words ?? QuranWordRepository();
 
   final QuranDatabase _quran;
+  final HadithRepository _hadith;
+  final TafsirRepository _tafsir;
   final QuranWordRepository _words;
-  final UserDatabase _userDatabase;
 
-  static const noReferenceMessage = 'No authentic licensed local reference found.';
+  static const noReferenceMessage = 'No authentic reference found.';
 
   Future<SourceReferenceResult> search(
     String question, {
@@ -38,19 +43,43 @@ class SourceReferenceSearch {
           'Please include a verse reference, for example “Explain Quran 2:255”. Tafseer is never guessed.',
         );
       }
-      return SourceReferenceResult.empty(
-        'Offline Tafseer is permission pending. No Tafseer has been imported, and AI will not stream or generate a substitute for Quran ${tafsirIntent.surah}:${tafsirIntent.ayah}.',
+      final entry = await _tafsir.entry(
+        tafsirSourceSlug,
+        tafsirIntent.surah!,
+        tafsirIntent.ayah!,
+      );
+      if (entry == null || entry['unavailable'] == true) {
+        return SourceReferenceResult.empty(
+          [
+            entry?['message'] ?? TafsirRepository.unavailableMessage,
+            if ('${entry?['notes'] ?? ''}'.trim().isNotEmpty) entry!['notes'],
+          ].join('\n'),
+        );
+      }
+      final reference = SourceReference(
+        type: SourceType.tafsir,
+        title:
+            'Tafseer · ${entry['source_name']} · ${entry['surah_number']}:${entry['ayah_number']}',
+        excerpt: '${entry['text']}',
+        surah: entry['surah_number'] as int?,
+        ayah: entry['ayah_number'] as int?,
+        tafsirSlug: entry['source_slug'] as String?,
+        tafsirName: entry['source_name'] as String?,
+        tafsirAuthor: entry['author'] as String?,
+        tafsirSource: entry['source'] as String?,
+        tafsirLanguage: entry['language'] as String?,
+        citation: entry['citation'] as String?,
+        referenceUrl: entry['reference_url'] as String?,
+      );
+      return SourceReferenceResult(
+        references: [reference],
+        answerExcerpt: reference.excerpt,
       );
     }
 
     final quranHits = await _quran.search(q, limit: 5);
+    final hadithHits = await _hadith.search(q, limit: 5);
     final wordHits = await _words.search(q, limit: 8);
-    final userHits = await _userDatabase.searchUserData(q, limit: 8);
-    final featureHits = (await DatasetLicenseRegistry.instance.features())
-        .where(
-          (feature) =>
-              feature.title.toLowerCase().contains(q.toLowerCase()),
-        );
 
     final refs = <SourceReference>[
       ...quranHits.map((r) => SourceReference(
@@ -62,6 +91,20 @@ class SourceReferenceSearch {
             surah: r['surah_number'] as int?,
             ayah: r['ayah_number'] as int?,
           )),
+      ...hadithHits.map((r) {
+        final grading = HadithRepository.gradingSummary(r);
+        return SourceReference(
+          type: SourceType.hadith,
+          title: 'Hadith · ${r['book_name']} · ${r['hadith_number']}',
+          excerpt: (r['text_en'] as String?) ?? (r['text_ar'] as String? ?? ''),
+          hadithBook: r['book_name'] as String?,
+          hadithNumber: r['hadith_number'] as int?,
+          grade: grading.grade,
+          scholar: grading.scholar,
+          // Do not surface sunnah.com / fawazahmed0 reference URLs in AI answers.
+          referenceUrl: null,
+        );
+      }),
       ...wordHits.map((w) => SourceReference(
             type: SourceType.word,
             title: 'Word · ${w.surah}:${w.ayah}:${w.wordNumber} · ${w.textAr}',
@@ -75,18 +118,6 @@ class SourceReferenceSearch {
             surah: w.surah,
             ayah: w.ayah,
           )),
-      ...userHits.map((row) => SourceReference(
-            type: SourceType.user,
-            title: '${row['title'] ?? 'Personal note'}',
-            excerpt: '${row['body'] ?? ''}',
-            targetUri: row['target_uri'] as String?,
-          )),
-      ...featureHits.map((feature) => SourceReference(
-            type: SourceType.feature,
-            title: feature.title,
-            excerpt: 'Offline module · license-gated',
-            targetUri: feature.route,
-          )),
     ];
 
     if (refs.isEmpty) {
@@ -96,7 +127,7 @@ class SourceReferenceSearch {
   }
 }
 
-enum SourceType { quran, hadith, tafsir, word, user, feature }
+enum SourceType { quran, hadith, tafsir, word }
 
 class SourceReference {
   const SourceReference({
@@ -116,7 +147,6 @@ class SourceReference {
     this.grade,
     this.scholar,
     this.referenceUrl,
-    this.targetUri,
   });
 
   final SourceType type;
@@ -135,7 +165,6 @@ class SourceReference {
   final String? grade;
   final String? scholar;
   final String? referenceUrl;
-  final String? targetUri;
 
   /// Display lines required for hadith AI answers.
   List<String> get hadithCitationLines {
@@ -143,7 +172,7 @@ class SourceReference {
     return [
       'Book: ${hadithBook ?? '—'}',
       'Hadith Number: ${hadithNumber ?? '—'}',
-      'Grade: ${grade ?? 'Grade not verified.'}',
+      'Grade: ${grade ?? HadithRepository.gradeNotVerified}',
       if (scholar != null && scholar!.isNotEmpty) 'Scholar: $scholar',
       if (referenceUrl != null && referenceUrl!.isNotEmpty) 'Reference: $referenceUrl',
     ];
