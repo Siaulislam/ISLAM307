@@ -93,7 +93,7 @@
               <div class="grid-item" role="button" tabindex="0" data-goto="quran"><div class="icon">📖</div><span>Quran</span></div>
               <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#hadith"><div class="icon">📜</div><span>Hadith</span></div>
               <div class="grid-item" role="button" tabindex="0" data-open="../../preview/library/index.html#tafsir"><div class="icon">📚</div><span>Tafsir</span></div>
-              <div class="grid-item" role="button" tabindex="0" data-goto="ai"><div class="icon">✨</div><span>AI</span></div>
+              <div class="grid-item" role="button" tabindex="0" data-goto="ai"><div class="icon">✨</div><span>Zia Assistant</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🕌</div><span>Prayer</span></div>
               <div class="grid-item" role="button" tabindex="0" data-goto="prayer"><div class="icon">🧭</div><span>Qibla</span></div>
               <div class="grid-item is-disabled" title="Coming soon"><div class="icon">📿</div><span>Azkar</span></div>
@@ -355,22 +355,16 @@
       <div class="screen" data-id="ai">
         <div class="phone">
           <div class="pattern-bg"></div>
-          <div class="phone-notch">AI Assistant</div>
+          <div class="phone-notch">Zia Assistant</div>
           <div class="screen-body">
-            <strong style="font-size:18px;color:var(--emerald-deep)">Islamic AI Assistant</strong>
+            <strong style="font-size:18px;color:var(--emerald-deep)">Zia Assistant</strong>
             <div class="ai-warning">⚠ Answers ONLY from Quran, Hadith &amp; Tafsir in your offline library. Never invented. If no reference: "No authentic reference found."</div>
-            <div class="search-bar">Ask about prayer, fasting, charity...</div>
-            <div class="card card-emerald">
-              <p style="font-size:13px;font-weight:600;color:var(--emerald-deep)">You asked:</p>
-              <p style="font-size:14px;margin-top:4px">What is the reward of establishing prayer?</p>
+            <div style="display:flex;gap:6px;margin:10px 0">
+              <input id="mockup-ai-query" class="search-bar" type="search" placeholder="Ask in Urdu, English, or Arabic…" style="flex:1;min-width:0;border:1px solid #dbe4ea;outline:none;font:inherit" />
+              <button id="mockup-ai-ask" type="button" style="border:0;border-radius:10px;padding:0 12px;background:var(--emerald);color:white;font-weight:800;cursor:pointer">Ask</button>
             </div>
-            <div class="card">
-              <p style="font-size:13px;line-height:1.6">Indeed, prayer prohibits immorality and wrongdoing...</p>
-              <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
-                <span class="ref-badge">Quran · Al-Ankabut · 29:45</span>
-                <span class="ref-badge">Hadith · Sahih Muslim · 223</span>
-                <span class="ref-badge">Tafsir · Ibn Kathir</span>
-              </div>
+            <div id="mockup-ai-answer" class="card">
+              <p style="font-size:13px;line-height:1.6">Enter a question. Zia Assistant will search the local preview database and preserve stored references.</p>
             </div>
             <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px">Offline AI Search · Source-verified</p>
           </div>
@@ -565,7 +559,7 @@
       { id: 'quran-reader', label: 'Quran Reader' },
       { id: 'hadith', label: 'Hadith' },
       { id: 'tafsir', label: 'Tafsir' },
-      { id: 'ai', label: 'AI Assistant' },
+      { id: 'ai', label: 'Zia Assistant' },
       { id: 'prayer', label: 'Prayer' },
       { id: 'library', label: 'Library' },
       { id: 'audio', label: 'Audio' },
@@ -644,6 +638,176 @@
     if (surahSearch) {
       surahSearch.addEventListener('input', (e) => filterSurahs(e.target.value));
       surahSearch.addEventListener('click', (e) => e.stopPropagation());
+    }
+
+    let mockupAiData = null;
+
+    function aiEscape(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function fetchMockupGzip(url) {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Missing local pack: ${url}`);
+      if (typeof DecompressionStream === 'undefined') {
+        throw new Error('This browser cannot read local gzip packs.');
+      }
+      const stream = new Response(await response.arrayBuffer())
+        .body.pipeThrough(new DecompressionStream('gzip'));
+      return JSON.parse(await new Response(stream).text());
+    }
+
+    async function loadMockupAiData() {
+      if (mockupAiData) return mockupAiData;
+      const base = '../../preview/library/data';
+      const [quran, books, tafsirSources] = await Promise.all([
+        fetchMockupGzip(`${base}/quran/ayahs.json.gz`),
+        fetch(`${base}/hadith/books.json`).then((r) => r.json()),
+        fetch(`${base}/tafsir/sources.json`).then((r) => r.json()),
+      ]);
+      const hadithPacks = [];
+      for (const book of books.books || []) {
+        hadithPacks.push(
+          await fetchMockupGzip(`${base}/hadith/${book.slug}.json.gz`),
+        );
+      }
+      const tafsirPacks = [];
+      for (const source of tafsirSources.sources || []) {
+        tafsirPacks.push(
+          await fetchMockupGzip(`${base}/tafsir/${source.slug}.json.gz`),
+        );
+      }
+      mockupAiData = { quran, hadithPacks, tafsirPacks };
+      return mockupAiData;
+    }
+
+    function aiLanguage(query) {
+      if (!/[\u0600-\u06ff]/.test(query)) return 'en';
+      return /[ٹڈڑںھہےگپچژک]|نماز|کیا|کیسے|مجھے/.test(query) ? 'ur' : 'ar';
+    }
+
+    function aiTerms(query) {
+      const stop = new Set([
+        'what','is','the','about','show','give','from','please','quran','hadith',
+        'کیا','کے','کی','میں','مجھے','سے','اور','قرآن','حدیث',
+        'ما','هل','عن','في','من','القرآن','الحديث',
+      ]);
+      return (query.toLowerCase().match(/[a-z0-9\u0600-\u06ff]+/g) || [])
+        .filter((term) => term.length > 1 && !stop.has(term));
+    }
+
+    function matchingText(row, language, fields) {
+      for (const field of fields[language]) {
+        const value = String(row[field] || '').trim();
+        if (value) return value;
+      }
+      return '';
+    }
+
+    async function runMockupAssistant() {
+      const input = document.getElementById('mockup-ai-query');
+      const output = document.getElementById('mockup-ai-answer');
+      const query = (input?.value || '').trim();
+      if (!query || !output) return;
+      output.innerHTML = '<p>Searching local application data…</p>';
+      try {
+        const data = await loadMockupAiData();
+        const language = aiLanguage(query);
+        const terms = aiTerms(query);
+        if (!terms.length) {
+          output.innerHTML = '<p>The requested information is not available in the current database.</p>';
+          return;
+        }
+        const containsTerms = (text) => {
+          const lower = text.toLowerCase();
+          return terms.every((term) => lower.includes(term));
+        };
+        const quranHits = (data.quran.ayahs || []).flatMap((row) => {
+          const text = matchingText(row, language, {
+            ur: ['ur'], ar: ['ar'], en: ['en'],
+          });
+          return text && containsTerms(text)
+            ? [{ type: 'Quran', text, ref: `Quran ${row.s}:${row.a}` }]
+            : [];
+        }).slice(0, 5);
+        const hadithHits = data.hadithPacks.flatMap((pack) =>
+          (pack.hadiths || []).flatMap((row) => {
+            const text = matchingText(row, language, {
+              ur: ['ur'], ar: ['ar'], en: ['en'],
+            });
+            const book = pack.book?.en || pack.book?.slug || 'Hadith';
+            return text && containsTerms(text)
+              ? [{ type: 'Hadith', text, ref: row.reference || `${book} · Hadith ${row.n}` }]
+              : [];
+          }),
+        ).slice(0, 5);
+        const tafsirHits = data.tafsirPacks.flatMap((pack) =>
+          (pack.entries || []).flatMap((row) => {
+            const text = String(row.text || '').trim();
+            return text && containsTerms(text)
+              ? [{ type: 'Tafsir', text, ref: `${pack.source?.en || 'Tafsir'} · ${row.s}:${row.a}` }]
+              : [];
+          }),
+        ).slice(0, 5);
+        const explicitQuran = /quran|قرآن|القرآن|ayah|verse/i.test(query);
+        const explicitHadith = /hadith|حدیث|الحديث|sunnah/i.test(query);
+        if (!explicitQuran && !explicitHadith && quranHits.length && hadithHits.length) {
+          output.innerHTML = `
+            <p style="font-weight:700;margin-bottom:10px">Would you like the answer from the Quran, Hadith, or both?</p>
+            <div style="display:flex;gap:6px">
+              <button type="button" data-ai-scope="quran">Quran</button>
+              <button type="button" data-ai-scope="hadith">Hadith</button>
+              <button type="button" data-ai-scope="both">Both</button>
+            </div>`;
+          output.querySelectorAll('[data-ai-scope]').forEach((button) => {
+            button.onclick = () => {
+              const scope = button.dataset.aiScope;
+              const hits = scope === 'quran'
+                ? quranHits
+                : scope === 'hadith'
+                  ? hadithHits
+                  : [...quranHits, ...hadithHits];
+              renderMockupAiHits(hits, output);
+            };
+          });
+          return;
+        }
+        const selected = explicitQuran && !explicitHadith
+          ? quranHits
+          : explicitHadith && !explicitQuran
+            ? hadithHits
+            : [...quranHits, ...hadithHits, ...tafsirHits];
+        renderMockupAiHits(selected, output);
+      } catch (error) {
+        output.innerHTML = `<p>No local answer was generated.<br><small>${aiEscape(error.message)}</small></p>`;
+      }
+    }
+
+    function renderMockupAiHits(hits, output) {
+      if (!hits.length) {
+        output.innerHTML = '<p>The requested information is not available in the current database.</p>';
+        return;
+      }
+      output.innerHTML = hits.slice(0, 6).map((hit) => `
+        <div style="margin-bottom:12px">
+          <p style="font-size:13px;line-height:1.55">${aiEscape(hit.text)}</p>
+          <span class="ref-badge">${aiEscape(hit.ref)}</span>
+        </div>`).join('');
+    }
+
+    const mockupAiAsk = document.getElementById('mockup-ai-ask');
+    const mockupAiQuery = document.getElementById('mockup-ai-query');
+    if (mockupAiAsk) mockupAiAsk.addEventListener('click', runMockupAssistant);
+    if (mockupAiQuery) {
+      mockupAiQuery.addEventListener('keydown', (event) => {
+        event.stopPropagation();
+        if (event.key === 'Enter') runMockupAssistant();
+      });
+      mockupAiQuery.addEventListener('click', (event) => event.stopPropagation());
     }
 
     const hash = (location.hash || '').replace(/^#/, '');
