@@ -67,7 +67,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'AI Assistant',
+          'Zia Assistant',
           style: TextStyle(fontWeight: FontWeight.w800),
         ),
         leading: IconButton(
