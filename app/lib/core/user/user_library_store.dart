@@ -130,5 +130,36 @@ class UserLibraryStore {
     await _persist();
   }
 
+  Future<List<Map<String, String>>> knowledgeRecords() async {
+    final data = await _load();
+    final rows = <Map<String, String>>[];
+    for (final value in (data['bookmarks'] as List?) ?? const []) {
+      rows.add({
+        'title': 'Quran bookmark',
+        'body': '$value',
+        'reference': 'Personal library · Bookmark $value',
+      });
+    }
+    for (final entry
+        in Map<String, dynamic>.from(data['notes'] as Map? ?? const {}).entries) {
+      rows.add({
+        'title': 'Personal Quran note',
+        'body': '${entry.value}',
+        'reference': 'Personal note · Quran ${entry.key}',
+      });
+    }
+    for (final entry
+        in Map<String, dynamic>.from(
+          data['highlights'] as Map? ?? const {},
+        ).entries) {
+      rows.add({
+        'title': 'Quran highlight',
+        'body': '${entry.value}',
+        'reference': 'Personal highlight · Quran ${entry.key}',
+      });
+    }
+    return rows;
+  }
+
   Future<String> exportPath() async => (await _file()).path;
 }

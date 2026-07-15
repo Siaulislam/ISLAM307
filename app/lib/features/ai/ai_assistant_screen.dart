@@ -1,71 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../core/ai/evidence_scope.dart';
+import '../../core/ai/query_language.dart';
 import '../../core/ai/source_reference_search.dart';
 import '../../core/database/database_registry.dart';
-import '../../core/repositories/tafsir_repository.dart';
-import '../../core/settings/app_settings.dart';
 import '../../core/theme/islam307_theme.dart';
 
-/// Source-only AI assistant — never invents religious content.
-class AiAssistantScreen extends ConsumerStatefulWidget {
+class AiAssistantScreen extends StatefulWidget {
   const AiAssistantScreen({super.key});
 
   @override
-  ConsumerState<AiAssistantScreen> createState() => _AiAssistantScreenState();
+  State<AiAssistantScreen> createState() => _AiAssistantScreenState();
 }
 
-class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
+class _AiAssistantScreenState extends State<AiAssistantScreen> {
   final _controller = TextEditingController();
-  final _search = SourceReferenceSearch(registry: DatabaseRegistry.instance);
-  final _tafsirRepo = TafsirRepository();
+  final _search =
+      SourceReferenceSearch(registry: DatabaseRegistry.instance);
+
   SourceReferenceResult? _result;
-  List<Map<String, dynamic>> _tafsirSources = const [];
-  String _tafsirSlug = 'ibn-kathir';
   bool _loading = false;
   int _requestId = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadTafsirSources();
-  }
-
-  Future<void> _loadTafsirSources() async {
-    try {
-      final sources = await _tafsirRepo.catalogSources();
-      final preferred = ref.read(appSettingsProvider).preferredTafsirSlug;
-      if (!mounted) return;
-      setState(() {
-        _tafsirSources = sources;
-        _tafsirSlug = sources.any((source) => source['slug'] == preferred)
-            ? preferred
-            : 'ibn-kathir';
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _tafsirSources = const []);
-    }
-  }
-
-  Future<void> _run() async {
-    if (_loading) return;
-    final q = _controller.text.trim();
-    if (q.isEmpty) return;
+  Future<void> _run({EvidenceScope? scope}) async {
+    if (_loading && scope == null) return;
+    final question = _controller.text.trim();
+    if (question.isEmpty) return;
     final requestId = ++_requestId;
-    setState(() => _loading = true);
+    setState(() {
+      _loading = true;
+    });
     try {
       final result = await _search.search(
-        q,
-        tafsirSourceSlug: _tafsirSlug,
+        question,
+        scopeOverride: scope,
       );
       if (!mounted || requestId != _requestId) return;
       setState(() => _result = result);
     } catch (_) {
       if (!mounted || requestId != _requestId) return;
+      final language = QueryLanguageDetector.detect(question);
       setState(
         () => _result = SourceReferenceResult.empty(
-          'Authenticated sources could not be reached. No answer was generated.',
+          _errorMessage(language),
+          language: language,
         ),
       );
     } finally {
@@ -84,10 +63,17 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   @override
   Widget build(BuildContext context) {
     final result = _result;
+    final rtl = result?.language != QueryLanguage.english;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AI Assistant', style: TextStyle(fontWeight: FontWeight.w800)),
-        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20), onPressed: () => context.pop()),
+        title: const Text(
+          'AI Assistant',
+          style: TextStyle(fontWeight: FontWeight.w800),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: Column(
         children: [
@@ -98,149 +84,180 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               textInputAction: TextInputAction.search,
               onSubmitted: _loading ? null : (_) => _run(),
               decoration: InputDecoration(
-                hintText: 'Ask with a topic, e.g. نماز / prayer / صبر',
-                prefixIcon: const Icon(Icons.auto_awesome_rounded),
-                suffixIcon: IconButton(onPressed: _loading ? null : _run, icon: const Icon(Icons.search_rounded)),
+                hintText: 'Ask in Urdu, English, or Arabic…',
+                prefixIcon: const Icon(Icons.search_rounded),
+                suffixIcon: IconButton(
+                  onPressed: _loading ? null : _run,
+                  icon: const Icon(Icons.arrow_forward_rounded),
+                ),
               ),
             ),
           ),
-          if (_tafsirSources.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: DropdownButtonFormField<String>(
-                value: _tafsirSlug,
-                decoration: const InputDecoration(
-                  labelText: 'Tafseer source for verse explanations',
-                ),
-                items: _tafsirSources
-                    .map(
-                      (source) => DropdownMenuItem(
-                        value: source['slug'] as String,
-                        child: Text(
-                          '${source['name_en']}${source['available'] == true ? '' : ' · unavailable'}',
-                        ),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) async {
-                  if (value == null) return;
-                  setState(() => _tafsirSlug = value);
-                  await ref
-                      .read(appSettingsProvider.notifier)
-                      .setPreferredTafsir(value);
-                },
-              ),
-            ),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'Quran and Hadith search locally. Explicit requests such as “Explain Quran 2:255” retrieve the selected Tafseer directly from an authorized official API. Tafseer is never generated or read from bundled files.',
-              style: TextStyle(color: Islam307Theme.textMuted, fontSize: 12, height: 1.4),
+              'Answers use retrieved local app data only. No local result means no answer is generated.',
+              style: TextStyle(
+                color: Islam307Theme.textMuted,
+                fontSize: 12,
+                height: 1.4,
+              ),
             ),
           ),
           const SizedBox(height: 8),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: Islam307Theme.emerald))
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: Islam307Theme.emerald,
+                    ),
+                  )
                 : result == null
-                    ? const Center(child: Text('Enter a topic to search authenticated offline sources.', style: TextStyle(color: Islam307Theme.textMuted)))
-                    : !result.hasReferences
-                        ? Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(24),
-                              child: Text(
-                                result.answerExcerpt ?? SourceReferenceSearch.noReferenceMessage,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                    ? const Center(
+                        child: Text(
+                          'Ask a question to search all local knowledge.',
+                          style: TextStyle(color: Islam307Theme.textMuted),
+                        ),
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        children: [
+                          _answerCard(result.answerText, rtl: rtl),
+                          if (result.needsScopeChoice) ...[
+                            const SizedBox(height: 12),
+                            _scopeChoices(),
+                          ],
+                          if (result.hasReferences) ...[
+                            const SizedBox(height: 18),
+                            Text(
+                              _evidenceHeading(result.language),
+                              textDirection:
+                                  rtl ? TextDirection.rtl : TextDirection.ltr,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w800,
+                                color: Islam307Theme.emeraldDeep,
                               ),
                             ),
-                          )
-                        : ListView(
-                            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                            children: [
-                              _sectionHeader('Relevant Quran verses'),
-                              ...result.byType(SourceType.quran).map(_refTile),
-                              _sectionHeader('Relevant Hadith'),
-                              ..._orEmpty(result.byType(SourceType.hadith)),
-                              _sectionHeader('Relevant Tafsir'),
-                              ..._orEmpty(result.byType(SourceType.tafsir)),
-                              _sectionHeader('Word meanings / grammar'),
-                              ..._orEmpty(result.byType(SourceType.word)),
-                              const SizedBox(height: 12),
-                              const Text('References', style: TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
-                              const SizedBox(height: 6),
-                              Text(
-                                result.references.map((r) => '• ${r.title}').join('\n'),
-                                style: const TextStyle(height: 1.5, fontSize: 13, color: Islam307Theme.textMuted),
-                              ),
-                            ],
-                          ),
+                            const SizedBox(height: 8),
+                            ...result.references.map(_referenceCard),
+                          ],
+                        ],
+                      ),
           ),
         ],
       ),
     );
   }
 
-  Widget _sectionHeader(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12, bottom: 8),
-      child: Text(title, style: const TextStyle(fontWeight: FontWeight.w800, color: Islam307Theme.emeraldDeep)),
+  Widget _answerCard(String answer, {required bool rtl}) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: SelectableText(
+          answer,
+          textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+          textAlign: rtl ? TextAlign.right : TextAlign.left,
+          style: const TextStyle(height: 1.65, fontSize: 15),
+        ),
+      ),
     );
   }
 
-  List<Widget> _orEmpty(List<SourceReference> refs) {
-    if (refs.isEmpty) {
-      return [
-        const Padding(
-          padding: EdgeInsets.only(bottom: 8),
-          child: Text(SourceReferenceSearch.noReferenceMessage, style: TextStyle(color: Islam307Theme.textMuted)),
+  Widget _scopeChoices() {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8,
+      runSpacing: 8,
+      children: [
+        FilledButton(
+          onPressed: () => _run(scope: EvidenceScope.quran),
+          child: const Text('Quran'),
         ),
-      ];
-    }
-    return refs.map(_refTile).toList();
+        FilledButton(
+          onPressed: () => _run(scope: EvidenceScope.hadith),
+          child: const Text('Hadith'),
+        ),
+        FilledButton(
+          onPressed: () => _run(scope: EvidenceScope.both),
+          child: const Text('Both'),
+        ),
+      ],
+    );
   }
 
-  Widget _refTile(SourceReference r) {
+  Widget _referenceCard(SourceReference reference) {
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
-        title: Text(r.title, style: const TextStyle(fontWeight: FontWeight.w700)),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 6),
-            Text(r.excerpt, maxLines: 5, overflow: TextOverflow.ellipsis, style: const TextStyle(height: 1.45)),
-            if (r.type == SourceType.hadith) ...[
-              const SizedBox(height: 6),
-              Text(r.hadithCitationLines.join('\n'), style: const TextStyle(fontSize: 12, color: Islam307Theme.emeraldDeep, height: 1.4)),
-            ],
-            if (r.type == SourceType.tafsir) ...[
+        leading: CircleAvatar(
+          backgroundColor: Islam307Theme.emeraldSoft,
+          child: Icon(
+            _sourceIcon(reference.type),
+            color: Islam307Theme.emerald,
+            size: 18,
+          ),
+        ),
+        title: Text(
+          reference.title,
+          style: const TextStyle(fontWeight: FontWeight.w700),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 6),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                reference.excerpt,
+                maxLines: 8,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(height: 1.45),
+              ),
               const SizedBox(height: 6),
               Text(
-                r.tafsirCitationLines.join('\n'),
+                reference.citationLines.join('\n'),
                 style: const TextStyle(
-                  fontSize: 12,
                   color: Islam307Theme.emeraldDeep,
+                  fontSize: 12,
                   height: 1.4,
                 ),
               ),
             ],
-          ],
+          ),
         ),
-        onTap: () {
-          if (r.type == SourceType.quran && r.surah != null && r.ayah != null) {
-            context.push('/quran/read/${r.surah}/${r.ayah}');
-          } else if (r.type == SourceType.hadith && r.hadithBook != null && r.hadithNumber != null) {
-            // Book id is not always on the reference; stay on AI and keep citation visible.
-          } else if (r.type == SourceType.tafsir && r.surah != null && r.ayah != null) {
-            context.push(
-              '/tafsir/${r.tafsirSlug ?? _tafsirSlug}/${r.surah}/${r.ayah}',
-            );
-          } else if (r.type == SourceType.word && r.surah != null && r.ayah != null) {
-            context.push('/quran/read/${r.surah}/${r.ayah}');
-          }
-        },
+        onTap: reference.route == null
+            ? null
+            : () => context.push(reference.route!),
       ),
     );
+  }
+
+  IconData _sourceIcon(SourceType type) {
+    return switch (type) {
+      SourceType.quran => Icons.menu_book_rounded,
+      SourceType.hadith => Icons.auto_stories_rounded,
+      SourceType.word => Icons.translate_rounded,
+      SourceType.narrator => Icons.person_search_rounded,
+      SourceType.personal => Icons.person_rounded,
+      SourceType.app => Icons.storage_rounded,
+    };
+  }
+
+  String _evidenceHeading(QueryLanguage language) {
+    return switch (language) {
+      QueryLanguage.urdu => 'مقامی حوالے',
+      QueryLanguage.arabic => 'المراجع المحلية',
+      QueryLanguage.english => 'Local references',
+    };
+  }
+
+  String _errorMessage(QueryLanguage language) {
+    return switch (language) {
+      QueryLanguage.urdu =>
+        'مقامی ڈیٹابیس تلاش نہیں ہو سکا۔ کوئی جواب تیار نہیں کیا گیا۔',
+      QueryLanguage.arabic =>
+        'تعذر البحث في قاعدة البيانات المحلية. لم يتم إنشاء أي إجابة.',
+      QueryLanguage.english =>
+        'The local database search failed. No answer was generated.',
+    };
   }
 }

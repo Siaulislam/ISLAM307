@@ -21,6 +21,8 @@ class DatabaseRegistry {
     'narrators': 'assets/databases/narrators.db.gz',
   };
 
+  Iterable<String> get registeredNames => bundled.keys;
+
   bool isRegistered(String name) => bundled.containsKey(name);
 
   Future<Database> open(String name) async {
@@ -41,7 +43,8 @@ class DatabaseRegistry {
 
   Future<void> _materializeAsset(String assetPath, String destPath) async {
     final data = await rootBundle.load(assetPath);
-    final bytes = data.buffer.asUint8List();
+    final bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     if (assetPath.endsWith('.gz')) {
       final decoded = gzip.decode(bytes);
       await File(destPath).writeAsBytes(decoded, flush: true);
