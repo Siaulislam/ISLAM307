@@ -3,8 +3,9 @@
 ## Brand identity
 
 - **Name:** ISLAM 307
-- **Logo:** Geometric emerald tile with "307" + "ISLAM" wordmark
+- **Logo:** Premium calligraphy mark — Arabic الإسلام · gold 307 · tagline **KNOWLEDGE · GUIDANCE · PEACE** (`app/assets/branding/islam307_logo.png`)
 - **Tone:** Premium, calm, scholarly, trustworthy
+- **Surfaces:** Splash & Welcome use full logo; Dashboard top/bottom use compact brand bar
 - **Not inspired by:** Islam360 or any clone — original layout and visual language only
 
 ## Color palette
@@ -51,7 +52,7 @@ Home · Quran · AI · Library · More
 ## AI rules (critical)
 
 - NEVER generate Islamic rulings from model knowledge alone
-- Search ONLY: Quran.db, Hadith.db, Tafsir.db
+- Search local Quran.db and Hadith.db; retrieve verse-specific Tafseer only from an authorized official API
 - Every answer MUST cite: Surah/Ayah OR Hadith Book/Number OR Tafsir name
 - Fallback: **"No authentic reference found."**
 
@@ -61,7 +62,7 @@ Home · Quran · AI · Library · More
 |----------|---------|
 | quran.db | 13-line Uthmani, translation, search, pages, juz |
 | hadith.db | 7 collections |
-| tafsir.db | Tafsir texts linked to ayah |
+| Tafseer API | Runtime Quran Foundation lookup; no bundled Tafseer corpus |
 | duas.db | Supplications |
 | azkar.db | Remembrance |
 | library.db | Islamic books |

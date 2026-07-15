@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-07-12T11:49:37.109546+00:00",
+  "policy": [
+    "Never invent Arabic/translation/narrator/grade/reference with AI.",
+    "Cross-check only against authenticated source editions.",
+    "Empty Arabic left empty when missing in authenticated source."
+  ],
+  "source": "fawazahmed0/hadith-api@1 (same provenance as current hadith.db)",
+  "books": {
+    "bukhari": {
+      "name": "Sahih Bukhari",
+      "total": 7563,
+      "arabic_imported": 0,
+      "arabic_cleared": 0,
+      "narrators_corrected": 0,
+      "references_corrected": 7563,
+      "missing_authenticated_arabic": 9,
+      "mismatches": []
+    },
+    "muslim": {
+      "name": "Sahih Muslim",
+      "total": 7563,
+      "arabic_imported": 0,
+      "arabic_cleared": 0,
+      "narrators_corrected": 0,
+      "references_corrected": 7563,
+      "missing_authenticated_arabic": 203,
+      "mismatches": []
+    },
+    "abudawud": {
+      "name": "Sunan Abu Dawood",
+      "total": 5274,
+      "arabic_imported": 0,
+      "arabic_cleared": 0,
+      "narrators_corrected": 0,
+      "references_corrected": 5274,
+      "missing_authenticated_arabic": 2,
+      "mismatches": []
+    },
+    "tirmidhi": {
+      "name": "Jami' at-Tirmidhi",
+      "total": 3956,
+      "arabic_imported": 0,
+      "arabic_cleared": 2,
+      "narrators_corrected": 0,
+      "references_corrected": 3956,
+      "missing_authenticated_arabic": 69,
+      "mismatches": [
+        {
+          "n": 2787,
+          "field": "text_ar",
+          "action": "cleared_non_arabic_placeholder"
+        },
+        {
+          "n": 2855,
+          "field": "text_ar",
+          "action": "cleared_non_arabic_placeholder"
+        }
+      ]
+    }
+  },
+  "totals": {
+    "hadith_checked": 24356,
+    "arabic_imported_from_source": 0,
+    "arabic_cleared_non_arabic_script": 2,
+    "narrators_corrected": 0,
+    "references_corrected": 24356,
+    "missing_authenticated_arabic": 283,
+    "remaining_issues": []
+  }
+}

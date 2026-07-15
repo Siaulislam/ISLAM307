@@ -1,0 +1,32 @@
+{
+  "slug": "bukhari-38-transferance-of-a-debt-from-one-person-t",
+  "kitab_en": "Transferance of a Debt from One Person to Another (Al-Hawaala)",
+  "kitab_ur": "کتاب حوالہ کے مسائل کا بیان",
+  "chapter_number": 38,
+  "abs_start": 2287,
+  "abs_end": 2289,
+  "total": 3,
+  "items": [
+    {
+      "local": 1,
+      "absolute": 2287,
+      "html": "html/hadith-01.html",
+      "png": "png/hadith-01.png",
+      "title": "Hadith 2287 to 2289"
+    },
+    {
+      "local": 2,
+      "absolute": 2288,
+      "html": "html/hadith-02.html",
+      "png": "png/hadith-02.png",
+      "title": "Hadith 2287 to 2289"
+    },
+    {
+      "local": 3,
+      "absolute": 2289,
+      "html": "html/hadith-03.html",
+      "png": "png/hadith-03.png",
+      "title": "Hadith 2287 to 2289"
+    }
+  ]
+}

@@ -7,7 +7,8 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    # Deploy preview on each update for online checking.
+    branches: [main, cursor/restore-quran-wbw-c4fa, cursor/abudawud-urdu-topics-c4fa, cursor/tirmidhi-urdu-topics-c4fa, cursor/muslim-missing-arabic-c4fa, cursor/muslim-muqaddimah-preface-c4fa, cursor/sahih-muslim-missing-data-7acb]
   workflow_dispatch:
 
 permissions:
@@ -79,8 +80,11 @@ jobs:
             echo "| Page | URL |"
             echo "|------|-----|"
             echo "| Preview hub | ${PAGE_URL}preview/ |"
+            echo "| Live library (Quran/Hadith/Tafsir) | ${PAGE_URL}preview/library/ |"
             echo "| Phase 1 mockups | ${PAGE_URL}design/mockups/index.html |"
             echo "| Phase 3 mockups | ${PAGE_URL}design/mockups/phase3-mockups.html |"
+            echo ""
+            echo "On Home mockup, tap **Quran / Hadith / Tafsir** to open those screens."
             echo ""
             echo "If you see **404**, enable Pages once:"
             echo "Settings → Pages → **Deploy from a branch** → **gh-pages** → **/ (root)**"

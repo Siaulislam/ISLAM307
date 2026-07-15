@@ -13,11 +13,29 @@ class DatabaseRegistry {
   final _cache = <String, Database>{};
 
   /// Asset paths — add new databases here (no hardcoding in features).
+  /// `narrators.db.gz` ships schema + approved-source catalog (0 biography rows
+  /// until a licensed import is added).
   static const bundled = {
     'quran': 'assets/databases/quran.db',
     'hadith': 'assets/databases/hadith.db.gz',
-    'tafsir': 'assets/databases/tafsir.db.gz',
+    'narrators': 'assets/databases/narrators.db.gz',
   };
+  static const evidenceScopes = {
+    'quran': 'quran',
+    'hadith': 'hadith',
+    'narrators': 'hadith',
+  };
+
+  Iterable<String> get registeredNames => bundled.keys;
+
+  Set<String> namesForEvidenceScope(String scope) {
+    return evidenceScopes.entries
+        .where((entry) => entry.value == scope)
+        .map((entry) => entry.key)
+        .toSet();
+  }
+
+  bool isRegistered(String name) => bundled.containsKey(name);
 
   Future<Database> open(String name) async {
     if (_cache.containsKey(name)) return _cache[name]!;
@@ -37,7 +55,8 @@ class DatabaseRegistry {
 
   Future<void> _materializeAsset(String assetPath, String destPath) async {
     final data = await rootBundle.load(assetPath);
-    final bytes = data.buffer.asUint8List();
+    final bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
     if (assetPath.endsWith('.gz')) {
       final decoded = gzip.decode(bytes);
       await File(destPath).writeAsBytes(decoded, flush: true);
