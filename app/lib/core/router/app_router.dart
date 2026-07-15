@@ -16,6 +16,8 @@ import '../../features/tafsir/tafsir_reader_screen.dart';
 import '../../features/search/search_screen.dart';
 import '../../features/about/about_screen.dart';
 import '../../features/ai/ai_assistant_screen.dart';
+import '../../features/namaz/namaz_tracker_screen.dart';
+import '../../features/tasbeeh/tasbeeh_counter_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -26,6 +28,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/home', builder: (_, __) => const HomeScreen()),
       GoRoute(path: '/search', builder: (_, __) => const SearchScreen()),
       GoRoute(path: '/ai', builder: (_, __) => const AiAssistantScreen()),
+      GoRoute(path: '/namaz', builder: (_, __) => const NamazTrackerScreen()),
+      GoRoute(
+        path: '/tasbeeh',
+        builder: (_, __) => const TasbeehCounterScreen(),
+      ),
       GoRoute(path: '/about', builder: (_, __) => const AboutScreen()),
       GoRoute(path: '/about/licenses', builder: (_, __) => const DataSourcesLicensesScreen()),
       GoRoute(path: '/quran', builder: (_, __) => const QuranHubScreen()),
