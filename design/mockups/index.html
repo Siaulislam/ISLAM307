@@ -664,11 +664,17 @@
     async function loadMockupAiData() {
       if (mockupAiData) return mockupAiData;
       const base = '../../preview/library/data';
-      const [quran, books, tafsirSources] = await Promise.all([
+      const [quran, books] = await Promise.all([
         fetchMockupGzip(`${base}/quran/ayahs.json.gz`),
         fetch(`${base}/hadith/books.json`).then((r) => r.json()),
-        fetch(`${base}/tafsir/sources.json`).then((r) => r.json()),
       ]);
+      let tafsirSources = { sources: [] };
+      try {
+        const response = await fetch(`${base}/tafsir/sources.json`);
+        if (response.ok) tafsirSources = await response.json();
+      } catch (_) {
+        // Tafseer pack is optional; continue with available local sources.
+      }
       const hadithPacks = [];
       for (const book of books.books || []) {
         hadithPacks.push(
@@ -756,8 +762,15 @@
         const explicitQuran = /quran|قرآن|القرآن|ayah|verse/i.test(query);
         const explicitHadith = /hadith|حدیث|الحديث|sunnah/i.test(query);
         if (!explicitQuran && !explicitHadith && quranHits.length && hadithHits.length) {
+          const choiceQuestion = language === 'ur'
+            ? 'کیا آپ جواب قرآن، حدیث، یا دونوں سے چاہتے ہیں؟'
+            : language === 'ar'
+              ? 'هل تريد الإجابة من القرآن أو الحديث أو كليهما؟'
+              : 'Would you like the answer from the Quran, Hadith, or both?';
+          speakMockupAnswer(choiceQuestion, language);
           output.innerHTML = `
-            <p style="font-weight:700;margin-bottom:10px">Would you like the answer from the Quran, Hadith, or both?</p>
+            <div style="margin-bottom:8px;color:var(--emerald-deep);font-weight:800">🔊 Voice response</div>
+            <p style="font-weight:700;margin-bottom:10px">${aiEscape(choiceQuestion)}</p>
             <div style="display:flex;gap:6px">
               <button type="button" data-ai-scope="quran">Quran</button>
               <button type="button" data-ai-scope="hadith">Hadith</button>
@@ -771,7 +784,7 @@
                 : scope === 'hadith'
                   ? hadithHits
                   : [...quranHits, ...hadithHits];
-              renderMockupAiHits(hits, output);
+              renderMockupAiHits(hits, output, language);
             };
           });
           return;
@@ -781,22 +794,58 @@
           : explicitHadith && !explicitQuran
             ? hadithHits
             : [...quranHits, ...hadithHits, ...tafsirHits];
-        renderMockupAiHits(selected, output);
+        renderMockupAiHits(selected, output, language);
       } catch (error) {
-        output.innerHTML = `<p>No local answer was generated.<br><small>${aiEscape(error.message)}</small></p>`;
+        const message = 'No local answer was generated because the required local data pack could not be opened.';
+        speakMockupAnswer(message, 'en');
+        output.innerHTML = `
+          <div style="margin-bottom:8px;color:var(--emerald-deep);font-weight:800">🔊 Voice response</div>
+          <p>${aiEscape(message)}</p>`;
       }
     }
 
-    function renderMockupAiHits(hits, output) {
+    function renderMockupAiHits(hits, output, language) {
       if (!hits.length) {
-        output.innerHTML = '<p>The requested information is not available in the current database.</p>';
+        const unavailable = language === 'ur'
+          ? 'درخواست کردہ معلومات موجودہ ڈیٹابیس میں دستیاب نہیں ہیں۔'
+          : language === 'ar'
+            ? 'المعلومات المطلوبة غير متاحة في قاعدة البيانات الحالية.'
+            : 'The requested information is not available in the current database.';
+        speakMockupAnswer(unavailable, language);
+        output.innerHTML = `
+          <div style="margin-bottom:10px;color:var(--emerald-deep);font-weight:800">🔊 Voice response</div>
+          <p>${aiEscape(unavailable)}</p>`;
         return;
       }
-      output.innerHTML = hits.slice(0, 6).map((hit) => `
+      const selected = hits.slice(0, 6);
+      const spoken = selected.map((hit) => `${hit.text}. ${hit.ref}`).join('. ');
+      speakMockupAnswer(spoken, language);
+      output.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <strong style="color:var(--emerald-deep)">🔊 Voice response</strong>
+          <button id="mockup-ai-replay" type="button" style="border:1px solid #dbe4ea;border-radius:8px;background:white;padding:5px 8px;cursor:pointer">Replay</button>
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-weight:800;margin-bottom:8px">WRITTEN EVIDENCE</div>
+        ${selected.map((hit) => `
         <div style="margin-bottom:12px">
           <p style="font-size:13px;line-height:1.55">${aiEscape(hit.text)}</p>
           <span class="ref-badge">${aiEscape(hit.ref)}</span>
-        </div>`).join('');
+        </div>`).join('')}`;
+      const replay = output.querySelector('#mockup-ai-replay');
+      if (replay) replay.onclick = () => speakMockupAnswer(spoken, language);
+    }
+
+    function speakMockupAnswer(text, language) {
+      if (!window.speechSynthesis || !text) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language === 'ur'
+        ? 'ur-PK'
+        : language === 'ar'
+          ? 'ar-SA'
+          : 'en-US';
+      utterance.rate = 0.92;
+      window.speechSynthesis.speak(utterance);
     }
 
     const mockupAiAsk = document.getElementById('mockup-ai-ask');
