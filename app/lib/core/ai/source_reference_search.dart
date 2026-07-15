@@ -44,9 +44,10 @@ class SourceReferenceSearch {
   Future<SourceReferenceResult> search(
     String question, {
     EvidenceScope? scopeOverride,
+    QueryLanguage? languageOverride,
   }) async {
     final query = question.trim();
-    final language = QueryLanguageDetector.detect(query);
+    final language = languageOverride ?? QueryLanguageDetector.detect(query);
     if (query.isEmpty) {
       return SourceReferenceResult.empty(
         _notFound(language),

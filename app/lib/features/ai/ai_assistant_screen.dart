@@ -20,6 +20,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       SourceReferenceSearch(registry: DatabaseRegistry.instance);
 
   SourceReferenceResult? _result;
+  QueryLanguage _responseLanguage = QueryLanguage.urdu;
   bool _loading = false;
   int _requestId = 0;
 
@@ -35,6 +36,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       final result = await _search.search(
         question,
         scopeOverride: scope,
+        languageOverride: _responseLanguage,
       );
       if (!mounted || requestId != _requestId) return;
       setState(() => _result = result);
@@ -91,6 +93,41 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                   icon: const Icon(Icons.arrow_forward_rounded),
                 ),
               ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Row(
+              children: [
+                const Text(
+                  'Answer:',
+                  style: TextStyle(
+                    color: Islam307Theme.textMuted,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                ...QueryLanguage.values.map(
+                  (language) => Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: ChoiceChip(
+                      label: Text(_languageLabel(language)),
+                      selected: _responseLanguage == language,
+                      onSelected: (_) {
+                        setState(() => _responseLanguage = language);
+                        if (_controller.text.trim().isNotEmpty) _run();
+                      },
+                      selectedColor: Islam307Theme.emerald,
+                      labelStyle: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: _responseLanguage == language
+                            ? Colors.white
+                            : null,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const Padding(
@@ -196,6 +233,14 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       (EvidenceScope.quran, QueryLanguage.english) => 'Quran',
       (EvidenceScope.hadith, QueryLanguage.english) => 'Hadith',
       (EvidenceScope.both, QueryLanguage.english) => 'Both',
+    };
+  }
+
+  String _languageLabel(QueryLanguage language) {
+    return switch (language) {
+      QueryLanguage.urdu => 'اردو',
+      QueryLanguage.english => 'English',
+      QueryLanguage.arabic => 'العربية',
     };
   }
 

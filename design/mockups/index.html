@@ -359,6 +359,14 @@
           <div class="screen-body">
             <strong style="font-size:18px;color:var(--emerald-deep)">Zia Assistant</strong>
             <div class="ai-warning">⚠ Answers ONLY from Quran, Hadith &amp; Tafsir in your offline library. Never invented. If no reference: "No authentic reference found."</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:10px">
+              <label for="mockup-ai-language" style="font-size:11px;font-weight:800;color:var(--muted)">Answer:</label>
+              <select id="mockup-ai-language" style="border:1px solid #dbe4ea;border-radius:8px;padding:5px 8px;background:white;font:inherit;font-size:11px">
+                <option value="ur" selected>اردو</option>
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+              </select>
+            </div>
             <div style="display:flex;gap:6px;margin:10px 0">
               <input id="mockup-ai-query" class="search-bar" type="search" placeholder="Ask in Urdu, English, or Arabic…" style="flex:1;min-width:0;border:1px solid #dbe4ea;outline:none;font:inherit" />
               <button id="mockup-ai-ask" type="button" style="border:0;border-radius:10px;padding:0 12px;background:var(--emerald);color:white;font-weight:800;cursor:pointer">Ask</button>
@@ -722,7 +730,10 @@
       output.innerHTML = '<p>Searching local application data…</p>';
       try {
         const data = await loadMockupAiData();
-        const language = aiLanguage(query);
+        const language =
+          document.getElementById('mockup-ai-language')?.value ||
+          aiLanguage(query) ||
+          'ur';
         const terms = aiTerms(query);
         if (!terms.length) {
           output.innerHTML = '<p>The requested information is not available in the current database.</p>';
@@ -736,7 +747,10 @@
           const text = matchingText(row, language, {
             ur: ['ur'], ar: ['ar'], en: ['en'],
           });
-          return text && containsTerms(text)
+          const searchable = [row.ur, row.ar, row.en]
+            .filter(Boolean)
+            .join(' ');
+          return text && containsTerms(searchable)
             ? [{ type: 'Quran', text, ref: `Quran ${row.s}:${row.a}` }]
             : [];
         }).slice(0, 5);
@@ -746,13 +760,18 @@
               ur: ['ur'], ar: ['ar'], en: ['en'],
             });
             const book = pack.book?.en || pack.book?.slug || 'Hadith';
-            return text && containsTerms(text)
+            const searchable = [row.ur, row.ar, row.en]
+              .filter(Boolean)
+              .join(' ');
+            return text && containsTerms(searchable)
               ? [{ type: 'Hadith', text, ref: row.reference || `${book} · Hadith ${row.n}` }]
               : [];
           }),
         ).slice(0, 5);
         const tafsirHits = data.tafsirPacks.flatMap((pack) =>
           (pack.entries || []).flatMap((row) => {
+            const sourceLanguage = String(pack.source?.lang || 'en').toLowerCase();
+            if (sourceLanguage !== language) return [];
             const text = String(row.text || '').trim();
             return text && containsTerms(text)
               ? [{ type: 'Tafsir', text, ref: `${pack.source?.en || 'Tafsir'} · ${row.s}:${row.a}` }]
@@ -850,6 +869,7 @@
 
     const mockupAiAsk = document.getElementById('mockup-ai-ask');
     const mockupAiQuery = document.getElementById('mockup-ai-query');
+    const mockupAiLanguage = document.getElementById('mockup-ai-language');
     if (mockupAiAsk) mockupAiAsk.addEventListener('click', runMockupAssistant);
     if (mockupAiQuery) {
       mockupAiQuery.addEventListener('keydown', (event) => {
@@ -857,6 +877,12 @@
         if (event.key === 'Enter') runMockupAssistant();
       });
       mockupAiQuery.addEventListener('click', (event) => event.stopPropagation());
+    }
+    if (mockupAiLanguage) {
+      mockupAiLanguage.addEventListener('change', () => {
+        if ((mockupAiQuery?.value || '').trim()) runMockupAssistant();
+      });
+      mockupAiLanguage.addEventListener('click', (event) => event.stopPropagation());
     }
 
     const hash = (location.hash || '').replace(/^#/, '');
