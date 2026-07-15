@@ -30,6 +30,9 @@ jobs:
             --project-name islam307 \
             app
 
+      - name: Configure voice permissions
+        run: python3 tools/flutter/configure_voice_permissions.py
+
       - name: Install Flutter dependencies
         working-directory: app
         run: flutter pub get
@@ -81,6 +84,9 @@ jobs:
             --org com.siaulislam \
             --project-name islam307 \
             app
+
+      - name: Configure voice permissions
+        run: python3 tools/flutter/configure_voice_permissions.py
 
       - name: Install Flutter dependencies
         working-directory: app

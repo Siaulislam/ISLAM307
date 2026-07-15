@@ -198,10 +198,12 @@ class TtsService {
     String text, {
     String language = 'en-IN',
     double? rateMultiplier,
+    bool waitForCompletion = true,
   }) async {
     final clean = text.trim();
     if (clean.isEmpty) return true;
     await _ensure();
+    await _tts.awaitSpeakCompletion(waitForCompletion);
     final available = await isLanguageAvailable(language);
     if (!available) return false;
     if (rateMultiplier != null) {
