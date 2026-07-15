@@ -20,8 +20,20 @@ class DatabaseRegistry {
     'hadith': 'assets/databases/hadith.db.gz',
     'narrators': 'assets/databases/narrators.db.gz',
   };
+  static const evidenceScopes = {
+    'quran': 'quran',
+    'hadith': 'hadith',
+    'narrators': 'hadith',
+  };
 
   Iterable<String> get registeredNames => bundled.keys;
+
+  Set<String> namesForEvidenceScope(String scope) {
+    return evidenceScopes.entries
+        .where((entry) => entry.value == scope)
+        .map((entry) => entry.key)
+        .toSet();
+  }
 
   bool isRegistered(String name) => bundled.containsKey(name);
 

@@ -31,7 +31,8 @@ class LocalAssetKnowledgeSearch {
               asset.startsWith('assets/modules/') &&
               asset.endsWith('.json'),
         )
-        .toList();
+        .toList()
+      ..sort();
     final hits = <AssetKnowledgeHit>[];
     for (final asset in assets) {
       try {

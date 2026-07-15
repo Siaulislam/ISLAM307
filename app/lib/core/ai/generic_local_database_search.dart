@@ -25,13 +25,12 @@ class GenericLocalDatabaseSearch {
   final DatabaseRegistry _registry;
 
   Future<List<GenericKnowledgeHit>> search(
-    String query, {
+    List<String> terms, {
     required QueryLanguage language,
     Set<String>? databases,
     int limit = 20,
   }) async {
-    final clean = query.trim();
-    if (clean.isEmpty) return const [];
+    if (terms.isEmpty) return const [];
     final results = <GenericKnowledgeHit>[];
     for (final databaseName in _registry.registeredNames) {
       if (databases != null && !databases.contains(databaseName)) continue;
@@ -47,25 +46,45 @@ class GenericLocalDatabaseSearch {
           final columns = await db.rawQuery(
             'PRAGMA table_info(${_quoted(table)})',
           );
-          final textColumns = columns
+          final searchableColumns = columns
               .where((column) {
                 final type = '${column['type'] ?? ''}'.toUpperCase();
-                return type.contains('TEXT') ||
-                    type.contains('CHAR') ||
-                    type.contains('CLOB');
+                final name = '${column['name'] ?? ''}';
+                return !type.contains('BLOB') &&
+                    name.isNotEmpty &&
+                    _matchesLanguage(name, language);
               })
               .map((column) => '${column['name']}')
               .where((name) => name.isNotEmpty)
               .toList();
-          if (textColumns.isEmpty) continue;
-          final like = '%${clean.replaceAll('%', '').replaceAll('_', '')}%';
-          final where =
-              textColumns.map((column) => '${_quoted(column)} LIKE ?').join(' OR ');
+          if (searchableColumns.isEmpty) continue;
+          final whereParts = <String>[];
+          final arguments = <Object?>[];
+          for (final column in searchableColumns) {
+            for (final term in terms) {
+              whereParts.add(
+                'CAST(${_quoted(column)} AS TEXT) LIKE ? COLLATE NOCASE',
+              );
+              arguments.add(
+                '%${term.replaceAll('%', '').replaceAll('_', '')}%',
+              );
+            }
+          }
+          final primaryKeys = columns
+              .where((column) => (column['pk'] as int? ?? 0) > 0)
+              .toList()
+            ..sort(
+              (a, b) =>
+                  (a['pk'] as int? ?? 0).compareTo(b['pk'] as int? ?? 0),
+            );
+          final orderBy = primaryKeys.isEmpty
+              ? ''
+              : ' ORDER BY ${primaryKeys.map((column) => _quoted('${column['name']}')).join(', ')}';
           try {
             final rows = await db.rawQuery(
-              'SELECT rowid AS __rowid__, * FROM ${_quoted(table)} '
-              'WHERE $where LIMIT ?',
-              [...List.filled(textColumns.length, like), 2],
+              'SELECT * FROM ${_quoted(table)} '
+              'WHERE ${whereParts.join(' OR ')}$orderBy LIMIT ?',
+              [...arguments, 2],
             );
             for (final row in rows) {
               results.add(
@@ -73,16 +92,16 @@ class GenericLocalDatabaseSearch {
                   databaseName,
                   table,
                   Map<String, dynamic>.from(row),
-                  textColumns,
-                  clean,
+                  searchableColumns,
+                  terms,
                   language,
                 ),
               );
               if (results.length >= limit) break;
             }
           } catch (_) {
-            // A virtual/WITHOUT ROWID table may reject the generic query.
-            // Its dedicated repository remains available.
+            // A virtual table may reject the generic query. Its dedicated
+            // repository remains available.
           }
         }
       } catch (_) {
@@ -107,21 +126,15 @@ class GenericLocalDatabaseSearch {
     String table,
     Map<String, dynamic> row,
     List<String> textColumns,
-    String query,
+    List<String> terms,
     QueryLanguage language,
   ) {
-    final preferredColumns = switch (language) {
-      QueryLanguage.urdu => ['text_ur', 'name_ur', 'translation_ur'],
-      QueryLanguage.arabic => ['text_ar', 'name_ar', 'text_uthmani'],
-      QueryLanguage.english => ['text_en', 'name_en', 'translation_en', 'text'],
-    };
-    final ordered = <String>[
-      ...preferredColumns.where(textColumns.contains),
-      ...textColumns.where((column) => !preferredColumns.contains(column)),
-    ];
+    final ordered = [...textColumns]..sort();
     final matching = ordered.where((column) {
       final value = '${row[column] ?? ''}'.trim();
-      return value.toLowerCase().contains(query.toLowerCase());
+      return terms.any(
+        (term) => value.toLowerCase().contains(term.toLowerCase()),
+      );
     });
     final values = <String>[
       ...matching.map((column) => '${row[column]}'.trim()),
@@ -158,8 +171,36 @@ class GenericLocalDatabaseSearch {
       final book = row['book_id'] ?? row['book_slug'] ?? database;
       return 'Hadith · Book $book · $hadith';
     }
-    final id = row['id'] ?? row['slug'] ?? row['__rowid__'];
+    final id = row['id'] ?? row['slug'];
     return '$database.$table${id == null ? '' : ' · $id'}';
+  }
+
+  bool _matchesLanguage(String column, QueryLanguage language) {
+    final name = column.toLowerCase();
+    if ({
+      'text',
+      'title',
+      'name',
+      'value',
+      'notes',
+      'description',
+      'body',
+      'quote',
+    }.contains(name)) {
+      return true;
+    }
+    return switch (language) {
+      QueryLanguage.urdu =>
+        name.contains('_ur') || name.contains('urdu'),
+      QueryLanguage.arabic =>
+        name.contains('_ar') ||
+            name.contains('arabic') ||
+            name.contains('uthmani'),
+      QueryLanguage.english =>
+        name.contains('_en') ||
+            name.contains('english') ||
+            name.contains('summary'),
+    };
   }
 
   String _quoted(String identifier) {

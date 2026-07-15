@@ -7,6 +7,7 @@ import 'generic_local_database_search.dart';
 import 'local_asset_knowledge_search.dart';
 import 'personal_state_knowledge.dart';
 import 'query_language.dart';
+import 'query_terms.dart';
 
 /// Deterministic retrieval-only assistant.
 ///
@@ -55,19 +56,35 @@ class SourceReferenceSearch {
 
     final explicitScope = EvidenceScopeDetector.detect(query);
     final effectiveScope = scopeOverride ?? explicitScope;
+    final terms = QueryTerms.extract(query);
+    if (terms.isEmpty) {
+      return SourceReferenceResult.empty(
+        _notFound(language),
+        language: language,
+      );
+    }
     final searchQuran =
         effectiveScope == null || effectiveScope != EvidenceScope.hadith;
     final searchHadith =
         effectiveScope == null || effectiveScope != EvidenceScope.quran;
 
     final quranRows = searchQuran
-        ? await _safe(() => _quran.search(query, limit: 8))
+        ? await _searchTerms(
+            terms,
+            (term) => _quran.search(term, limit: 8),
+          )
         : const <Map<String, dynamic>>[];
     final hadithRows = searchHadith
-        ? await _safe(() => _hadith.search(query, limit: 8))
+        ? await _searchTerms(
+            terms,
+            (term) => _hadith.search(term, limit: 8),
+          )
         : const <Map<String, dynamic>>[];
     final wordRows = searchQuran
-        ? await _safe(() => _words.search(query, limit: 8))
+        ? await _searchTerms(
+            terms,
+            (term) => _words.search(term, limit: 8),
+          )
         : const [];
 
     if (scopeOverride == null &&
@@ -100,12 +117,16 @@ class SourceReferenceSearch {
     ];
 
     final genericDatabases = switch (effectiveScope) {
-      EvidenceScope.quran => {'quran'},
-      EvidenceScope.hadith => {'hadith', 'narrators'},
+      EvidenceScope.quran => _registry.namesForEvidenceScope('quran'),
+      EvidenceScope.hadith => _registry.namesForEvidenceScope('hadith'),
+      EvidenceScope.both => {
+          ..._registry.namesForEvidenceScope('quran'),
+          ..._registry.namesForEvidenceScope('hadith'),
+        },
       _ => _registry.registeredNames.toSet(),
     };
     final genericHits = await _generic.search(
-      query,
+      terms,
       language: language,
       databases: genericDatabases,
       limit: 12,
@@ -126,28 +147,42 @@ class SourceReferenceSearch {
       );
     }));
 
-    final personalHits = await _personal.search(query);
-    refs.addAll(personalHits.map(
-      (hit) => SourceReference(
-        type: SourceType.personal,
-        sourceId: 'personal',
-        title: hit.title,
-        excerpt: hit.excerpt,
-        reference: hit.reference,
-      ),
-    ));
-    final assetHits = await _assets.search(query);
-    refs.addAll(assetHits.map(
-      (hit) => SourceReference(
-        type: SourceType.app,
-        sourceId: 'assets',
-        title: hit.title,
-        excerpt: hit.excerpt,
-        reference: hit.reference,
-      ),
-    ));
+    if (effectiveScope == null) {
+      final personalHits = <PersonalKnowledgeHit>[];
+      final assetHits = <AssetKnowledgeHit>[];
+      for (final term in terms) {
+        personalHits.addAll(await _personal.search(term));
+        assetHits.addAll(await _assets.search(term));
+      }
+      refs.addAll(personalHits.map(
+        (hit) => SourceReference(
+          type: SourceType.personal,
+          sourceId: 'personal',
+          title: hit.title,
+          excerpt: hit.excerpt,
+          reference: hit.reference,
+        ),
+      ));
+      refs.addAll(assetHits.map(
+        (hit) => SourceReference(
+          type: SourceType.app,
+          sourceId: 'assets',
+          title: hit.title,
+          excerpt: hit.excerpt,
+          reference: hit.reference,
+        ),
+      ));
+    }
 
-    final filtered = _deduplicate(refs);
+    final filtered = _deduplicate(refs)
+      ..sort((a, b) {
+        final priority =
+            _sourcePriority(a.type).compareTo(_sourcePriority(b.type));
+        if (priority != 0) return priority;
+        final reference = a.reference.compareTo(b.reference);
+        if (reference != 0) return reference;
+        return a.title.compareTo(b.title);
+      });
     if (filtered.isEmpty) {
       return SourceReferenceResult.empty(
         _notFound(language),
@@ -170,6 +205,17 @@ class SourceReferenceSearch {
     }
   }
 
+  Future<List<T>> _searchTerms<T>(
+    List<String> terms,
+    Future<List<T>> Function(String term) search,
+  ) async {
+    final rows = <T>[];
+    for (final term in terms) {
+      rows.addAll(await _safe(() => search(term)));
+    }
+    return rows;
+  }
+
   SourceReference _quranReference(
     Map<String, dynamic> row,
     QueryLanguage language,
@@ -185,8 +231,8 @@ class SourceReferenceSearch {
         row,
         language,
         arabic: const ['text_uthmani'],
-        urdu: const ['translation_ur', 'text_uthmani'],
-        english: const ['translation_en', 'text_uthmani'],
+        urdu: const ['translation_ur'],
+        english: const ['translation_en'],
       ),
       reference: reference,
       surah: surah,
@@ -204,7 +250,16 @@ class SourceReferenceSearch {
     final number = row['hadith_number'] as int?;
     final book = '${row['book_name'] ?? row['book_slug'] ?? 'Hadith'}';
     final grading = HadithRepository.gradingSummary(row);
-    final reference = '$book · Hadith ${number ?? '—'}';
+    final storedReference = '${row['reference'] ?? ''}'.trim();
+    final referenceBook = row['reference_book'];
+    final referenceHadith = row['reference_hadith'];
+    final reference = storedReference.isNotEmpty
+        ? storedReference
+        : referenceBook != null &&
+                '$referenceBook' != '0' &&
+                referenceHadith != null
+            ? '$book · Book $referenceBook · Hadith $referenceHadith'
+            : '$book · Hadith ${number ?? '—'}';
     return SourceReference(
       type: SourceType.hadith,
       sourceId: 'hadith',
@@ -212,9 +267,9 @@ class SourceReferenceSearch {
       excerpt: _pickText(
         row,
         language,
-        arabic: const ['text_ar', 'text_en', 'text_ur'],
-        urdu: const ['text_ur', 'text_ar', 'text_en'],
-        english: const ['text_en', 'text_ar', 'text_ur'],
+        arabic: const ['text_ar'],
+        urdu: const ['text_ur'],
+        english: const ['text_en'],
       ),
       reference: reference,
       hadithBook: book,
@@ -232,8 +287,6 @@ class SourceReferenceSearch {
     final values = switch (language) {
       QueryLanguage.urdu => [
           if (word.meaningUr.isNotEmpty) word.meaningUr,
-          if (word.textAr.isNotEmpty) word.textAr,
-          if (word.meaningEn.isNotEmpty) word.meaningEn,
         ],
       QueryLanguage.arabic => [
           if (word.textAr.isNotEmpty) word.textAr,
@@ -242,8 +295,6 @@ class SourceReferenceSearch {
         ],
       QueryLanguage.english => [
           if (word.meaningEn.isNotEmpty) word.meaningEn,
-          if (word.textAr.isNotEmpty) word.textAr,
-          if (word.root.isNotEmpty) 'Root: ${word.root}',
         ],
     };
     return values.join('\n');
@@ -275,6 +326,17 @@ class SourceReferenceSearch {
       final key = '${row.reference}\u0000${row.excerpt.trim()}';
       return seen.add(key);
     }).toList();
+  }
+
+  int _sourcePriority(SourceType type) {
+    return switch (type) {
+      SourceType.quran => 0,
+      SourceType.hadith => 1,
+      SourceType.word => 2,
+      SourceType.narrator => 3,
+      SourceType.personal => 4,
+      SourceType.app => 5,
+    };
   }
 
   String _composeAnswer(

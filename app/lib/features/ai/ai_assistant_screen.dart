@@ -125,7 +125,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
                           _answerCard(result.answerText, rtl: rtl),
                           if (result.needsScopeChoice) ...[
                             const SizedBox(height: 12),
-                            _scopeChoices(),
+                            _scopeChoices(result.language),
                           ],
                           if (result.hasReferences) ...[
                             const SizedBox(height: 18),
@@ -163,7 +163,7 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
     );
   }
 
-  Widget _scopeChoices() {
+  Widget _scopeChoices(QueryLanguage language) {
     return Wrap(
       alignment: WrapAlignment.center,
       spacing: 8,
@@ -171,18 +171,32 @@ class _AiAssistantScreenState extends State<AiAssistantScreen> {
       children: [
         FilledButton(
           onPressed: () => _run(scope: EvidenceScope.quran),
-          child: const Text('Quran'),
+          child: Text(_scopeLabel(EvidenceScope.quran, language)),
         ),
         FilledButton(
           onPressed: () => _run(scope: EvidenceScope.hadith),
-          child: const Text('Hadith'),
+          child: Text(_scopeLabel(EvidenceScope.hadith, language)),
         ),
         FilledButton(
           onPressed: () => _run(scope: EvidenceScope.both),
-          child: const Text('Both'),
+          child: Text(_scopeLabel(EvidenceScope.both, language)),
         ),
       ],
     );
+  }
+
+  String _scopeLabel(EvidenceScope scope, QueryLanguage language) {
+    return switch ((scope, language)) {
+      (EvidenceScope.quran, QueryLanguage.urdu) => 'قرآن',
+      (EvidenceScope.hadith, QueryLanguage.urdu) => 'حدیث',
+      (EvidenceScope.both, QueryLanguage.urdu) => 'دونوں',
+      (EvidenceScope.quran, QueryLanguage.arabic) => 'القرآن',
+      (EvidenceScope.hadith, QueryLanguage.arabic) => 'الحديث',
+      (EvidenceScope.both, QueryLanguage.arabic) => 'كلاهما',
+      (EvidenceScope.quran, QueryLanguage.english) => 'Quran',
+      (EvidenceScope.hadith, QueryLanguage.english) => 'Hadith',
+      (EvidenceScope.both, QueryLanguage.english) => 'Both',
+    };
   }
 
   Widget _referenceCard(SourceReference reference) {
