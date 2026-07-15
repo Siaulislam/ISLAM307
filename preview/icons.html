@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISLAM 307 — Book Icon Pack</title>
+  <style>
+    body { font-family: Segoe UI, system-ui, sans-serif; background:#fff; color:#0f172a; padding:32px 20px; }
+    h1 { color:#065f46; }
+    p { color:#64748b; max-width:640px; line-height:1.6; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:20px; max-width:980px; margin-top:24px; }
+    .item { text-align:center; }
+    .item img { width:128px; height:128px; border-radius:20px; box-shadow:0 8px 28px rgba(15,23,42,.12); background:#fff; }
+    .item strong { display:block; margin-top:10px; font-size:13px; }
+    .item small { color:#64748b; font-size:11px; }
+  </style>
+</head>
+<body>
+  <h1>ISLAM 307 — Premium Book Icons (15)</h1>
+  <p>Emerald #0F8B5F · Gold emboss · Original Material 3 SVG · 512×512. Inspired by traditional bindings — not copied.</p>
+  <div class="grid" id="grid"></div>
+  <script>
+    const books = [
+      ['quran','Al-Quran Al-Kareem'],['bukhari','Sahih al-Bukhari'],['muslim','Sahih Muslim'],
+      ['abudawud','Sunan Abu Dawood'],['tirmidhi',"Jami' at-Tirmidhi"],['nasai',"Sunan an-Nasa'i"],
+      ['ibnmajah','Sunan Ibn Majah'],['malik','Muwatta Imam Malik'],['ahmad','Musnad Ahmad'],
+      ['riyad-us-saliheen','Riyad us-Saliheen'],['bulugh-al-maram','Bulugh al-Maram'],
+      ['ibn-kathir','Tafsir Ibn Kathir'],['jalalayn','Tafsir al-Jalalayn'],['maarif',"Ma'ariful Quran"],
+      ['hisn-al-muslim','Hisn al-Muslim']
+    ];
+    document.getElementById('grid').innerHTML = books.map(([s,n]) =>
+      `<div class="item"><img src="../app/assets/branding/books/${s}.svg" alt="${n}"><strong>${n}</strong><small>${s}.svg</small></div>`
+    ).join('');
+  </script>
+</body>
+</html>

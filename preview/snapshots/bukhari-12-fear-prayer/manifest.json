@@ -1,0 +1,53 @@
+{
+  "slug": "bukhari-12-fear-prayer",
+  "kitab_en": "Fear Prayer",
+  "kitab_ur": "کتاب نماز خوف کا بیان",
+  "chapter_number": 12,
+  "abs_start": 942,
+  "abs_end": 947,
+  "total": 6,
+  "items": [
+    {
+      "local": 1,
+      "absolute": 942,
+      "html": "html/hadith-01.html",
+      "png": "png/hadith-01.png",
+      "title": "Hadith 942 to 947"
+    },
+    {
+      "local": 2,
+      "absolute": 943,
+      "html": "html/hadith-02.html",
+      "png": "png/hadith-02.png",
+      "title": "Hadith 942 to 947"
+    },
+    {
+      "local": 3,
+      "absolute": 944,
+      "html": "html/hadith-03.html",
+      "png": "png/hadith-03.png",
+      "title": "Hadith 942 to 947"
+    },
+    {
+      "local": 4,
+      "absolute": 945,
+      "html": "html/hadith-04.html",
+      "png": "png/hadith-04.png",
+      "title": "Hadith 942 to 947"
+    },
+    {
+      "local": 5,
+      "absolute": 946,
+      "html": "html/hadith-05.html",
+      "png": "png/hadith-05.png",
+      "title": "Hadith 942 to 947"
+    },
+    {
+      "local": 6,
+      "absolute": 947,
+      "html": "html/hadith-06.html",
+      "png": "png/hadith-06.png",
+      "title": "Hadith 942 to 947"
+    }
+  ]
+}

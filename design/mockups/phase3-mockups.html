@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISLAM 307 — Phase 3 UI Mockups (Hadith · Tafsir · AI)</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="kitab-icons.css" />
+  <link rel="stylesheet" href="phase3-styles.css" />
+</head>
+<body>
+  <header class="gallery-header">
+    <h1>Phase 3 — Hadith · Tafsir · AI Assistant</h1>
+    <p>Original ISLAM 307 design · White · Emerald · Gold · Fully responsive (phone · tablet · fold). <strong>Review &amp; approve before Flutter UI coding.</strong></p>
+    <p style="margin-top:8px;font-size:13px;color:var(--emerald-deep);font-weight:700">Toggle device: Phone · Tablet · Fold</p>
+    <div class="device-toggle" id="deviceToggle">
+      <button class="active" data-device="phone">Phone</button>
+      <button data-device="tablet">Tablet</button>
+      <button data-device="fold">Fold</button>
+    </div>
+  </header>
+
+  <nav class="screen-nav" id="nav"></nav>
+
+  <div class="mockup-stage">
+    <div id="deviceFrame" class="device-phone">
+      <!-- HADITH BOOKS -->
+      <div class="screen active" data-id="hadith-books">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Hadith</div>
+          <div class="screen-body">
+            <div class="top-bar"><strong style="font-size:18px;color:var(--emerald-deep)">Hadith Collections</strong><div class="icon-btn">🔖</div></div>
+            <div class="search-bar">🔍 Search hadith, narrator, grade…</div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/bukhari.svg" alt="Sahih Bukhari" /></div><div class="meta"><strong>Sahih Bukhari</strong><small>7,563 hadith · Offline</small></div><span class="chip">Sahih</span></div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/muslim.svg" alt="Sahih Muslim" /></div><div class="meta"><strong>Sahih Muslim</strong><small>7,563 hadith · Offline</small></div><span class="chip">Sahih</span></div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/abudawud.svg" alt="Sunan Abu Dawood" /></div><div class="meta"><strong>Sunan Abu Dawood</strong><small>5,274 hadith</small></div></div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/tirmidhi.svg" alt="Jami at-Tirmidhi" /></div><div class="meta"><strong>Jami' at-Tirmidhi</strong><small>3,956 hadith</small></div></div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/nasai.svg" alt="Sunan an-Nasai" /></div><div class="meta"><strong>Sunan an-Nasa'i</strong><small>5,758 hadith</small></div></div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/ibnmajah.svg" alt="Sunan Ibn Majah" /></div><div class="meta"><strong>Sunan Ibn Majah</strong><small>4,341 hadith</small></div></div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/malik.svg" alt="Muwatta Imam Malik" /></div><div class="meta"><strong>Muwatta Imam Malik</strong><small>1,720 hadith</small></div></div>
+          </div>
+        </div>
+        <p class="screen-label">Hadith · Book List</p>
+      </div>
+
+      <!-- HADITH CHAPTERS -->
+      <div class="screen" data-id="hadith-chapters">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Sahih Bukhari</div>
+          <div class="screen-body">
+            <div class="search-bar">🔍 Search chapters…</div>
+            <p class="section-title">Book of Revelation</p>
+            <div class="list-row"><div class="num">1</div><div class="meta"><strong>How the Divine Inspiration started</strong><small>Hadith 1–7</small></div></div>
+            <div class="list-row"><div class="num">2</div><div class="meta"><strong>Belief</strong><small>Hadith 8–58</small></div></div>
+            <div class="list-row"><div class="num">3</div><div class="meta"><strong>Knowledge</strong><small>Hadith 59–134</small></div></div>
+          </div>
+        </div>
+        <p class="screen-label">Hadith · Chapters</p>
+      </div>
+
+      <!-- HADITH DETAIL -->
+      <div class="screen" data-id="hadith-detail">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Bukhari · Hadith 1</div>
+          <div class="screen-body">
+            <div class="toolbar">
+              <span class="tool">🔖</span><span class="tool">📋</span><span class="tool">↗</span><span class="tool">🔗 Ref</span>
+            </div>
+            <span class="chip">Sahih · Narrated 'Umar bin Al-Khattab</span>
+            <p class="ayah-block" style="font-size:17px;margin-top:14px">إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ…</p>
+            <p class="translation">Actions are judged by intentions, and every person will be rewarded according to their intention…</p>
+            <div class="ref-badge">Sahih Bukhari · Hadith 1</div>
+            <div class="card card-emerald" style="margin-top:14px">
+              <strong style="font-size:12px;color:var(--emerald-deep)">Grading (always shown)</strong>
+              <p style="font-size:13px;margin-top:6px;color:var(--text)"><strong>Grade:</strong> Sahih</p>
+              <p style="font-size:13px;margin-top:4px;color:var(--text)"><strong>Scholar:</strong> Al-Albani</p>
+              <p style="font-size:12px;margin-top:8px;color:var(--muted)"><strong>Reference:</strong> sunnah.com/bukhari:1</p>
+            </div>
+            <div class="card" style="margin-top:10px;border-color:var(--gold)">
+              <strong style="font-size:11px;color:var(--gold-deep)">Multiple gradings</strong>
+              <p style="font-size:12px;margin-top:4px">Sahih (Al-Albani) · Sahih (Darussalam)</p>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">Hadith · Detail Reader</p>
+      </div>
+
+      <!-- TAFSIR -->
+      <div class="screen" data-id="tafsir-list">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Tafsir</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Tafsir Sources</strong>
+            <div class="search-bar" style="margin-top:12px">🔍 Search tafsir…</div>
+            <div class="list-row"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/ibn-kathir.svg" alt="Tafsir Ibn Kathir" /></div><div class="meta"><strong>Tafsir Ibn Kathir</strong><small>English · Offline</small></div></div>
+            <div class="list-row" style="opacity:.55"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/jalalayn.svg" alt="Al-Jalalayn" /></div><div class="meta"><strong>Al-Jalalayn</strong><small>Coming soon</small></div></div>
+            <div class="list-row" style="opacity:.55"><div class="num kitab-icon-wrap"><img class="kitab-icon" src="../../app/assets/branding/books/maarif.svg" alt="Maariful Quran" /></div><div class="meta"><strong>Ma'ariful Quran</strong><small>Coming soon</small></div></div>
+          </div>
+        </div>
+        <p class="screen-label">Tafsir · Source List</p>
+      </div>
+
+      <div class="screen" data-id="tafsir-reader">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Ibn Kathir · 2:255</div>
+          <div class="screen-body">
+            <p class="ayah-block" style="font-size:15px">اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ…</p>
+            <p class="section-title">Tafsir Ibn Kathir</p>
+            <p style="font-size:14px;line-height:1.75;color:var(--text)">Allah! None has the right to be worshipped but He, the Ever Living, the One Who sustains and protects all that exists…</p>
+            <div class="toolbar" style="margin-top:16px">
+              <span class="tool">🔖 Bookmark</span><span class="tool">📋 Copy</span><span class="tool">↗ Share</span>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">Tafsir · Reading Screen</p>
+      </div>
+
+      <!-- AI -->
+      <div class="screen" data-id="ai-assistant">
+        <div class="phone">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">AI Assistant</div>
+          <div class="screen-body">
+            <strong style="font-size:18px;color:var(--emerald-deep)">Islamic AI Assistant</strong>
+            <div class="ai-warning">Answers ONLY from offline Quran, Hadith &amp; Tafsir. Never invented rulings. Every hadith shows Book · Number · Grade · Scholar · Reference URL.</div>
+            <div class="search-bar">Ask about prayer, zakat, fasting…</div>
+            <div class="card card-emerald"><p style="font-size:13px;font-weight:600">You asked:</p><p style="margin-top:4px">What is the reward of establishing prayer?</p></div>
+            <div class="card">
+              <p style="font-size:14px;line-height:1.65">Indeed, prayer prohibits immorality and wrongdoing…</p>
+              <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+                <span class="ref-badge">📖 Quran · Al-Ankabut · 29:45</span>
+                <span class="ref-badge">📜 Book: Sahih Muslim · Hadith: 223</span>
+                <span class="ref-badge">✓ Grade: Sahih · Scholar: Al-Nawawi</span>
+                <span class="ref-badge">🔗 sunnah.com/muslim:223</span>
+                <span class="ref-badge">📚 Tafsir · Ibn Kathir · 29:45</span>
+              </div>
+            </div>
+            <div class="card" style="border-color:#fde68a;background:#fffbeb">
+              <p style="font-size:13px;color:#92400e;font-weight:600">Grade not verified.</p>
+              <p style="font-size:12px;color:#b45309;margin-top:4px">Shown when grading is unavailable in the authenticated source.</p>
+            </div>
+            <div class="card" style="border-color:#fecaca;background:#fef2f2">
+              <p style="font-size:13px;color:#991b1b;font-weight:600">No authentic reference found.</p>
+              <p style="font-size:12px;color:#b91c1c;margin-top:4px">Shown when offline libraries contain no matching source.</p>
+            </div>
+          </div>
+          <nav class="bottom-nav">
+            <div class="nav-item"><div class="ni">🏠</div>Home</div>
+            <div class="nav-item"><div class="ni">📖</div>Quran</div>
+            <div class="nav-item active"><div class="ni">✨</div>AI</div>
+            <div class="nav-item"><div class="ni">📕</div>Library</div>
+            <div class="nav-item"><div class="ni">☰</div>More</div>
+          </nav>
+        </div>
+        <p class="screen-label">AI Assistant · Source-verified answers</p>
+      </div>
+
+      <!-- TABLET SPLIT (shown on tablet/fold) -->
+      <div class="screen" data-id="tablet-split">
+        <div class="phone tablet-frame">
+          <div class="pattern-bg"></div>
+          <div class="phone-notch">Tablet · Hadith (split view)</div>
+          <div class="split-layout">
+            <div class="split-pane">
+              <p class="section-title">Chapters</p>
+              <div class="list-row"><div class="num">1</div><div class="meta"><strong>Revelation</strong></div></div>
+              <div class="list-row"><div class="num">2</div><div class="meta"><strong>Belief</strong></div></div>
+            </div>
+            <div class="split-pane split-detail">
+              <span class="chip">Bukhari · Hadith 1</span>
+              <p class="translation" style="margin-top:12px">Actions are judged by intentions…</p>
+            </div>
+          </div>
+        </div>
+        <p class="screen-label">Tablet / Fold · Master-detail layout</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="phase3-mockups.js"></script>
+</body>
+</html>

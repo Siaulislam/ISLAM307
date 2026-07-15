@@ -1,0 +1,25 @@
+{
+  "generated_at": "2026-07-12T12:31:58.310826+00:00",
+  "policy": [
+    "Never invent narrators.",
+    "Copied only from sunnah.com after verifying book + content/in-book reference.",
+    "Did not trust hadith number alone."
+  ],
+  "attempted": 301,
+  "imported": 82,
+  "left_empty_unverified": 211,
+  "verified_but_no_ravi": 8,
+  "fetch_failed": 0,
+  "remaining_missing_by_book": {
+    "abudawud": 1,
+    "bukhari": 10,
+    "muslim": 203,
+    "tirmidhi": 5
+  },
+  "remaining_missing_total": 219,
+  "methods": {
+    "sunnah_same_chain_previous": 2,
+    "sunnah_narrated_label": 61,
+    "sunnah_arabic_isnad_last_link": 19
+  }
+}

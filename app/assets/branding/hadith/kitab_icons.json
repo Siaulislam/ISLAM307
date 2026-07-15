@@ -1,0 +1,15 @@
+{
+  "version": 3,
+  "design": "ISLAM 307 respective book cover icons — PNG covers preferred, SVG fallback",
+  "icon_base_path": "books",
+  "cover_color": "#0F8B5F",
+  "books": [
+    { "slug": "bukhari", "name_en": "Sahih Bukhari", "name_ar": "صحيح البخاري", "icon_file": "covers/bukhari_sm.png", "cover_file": "covers/bukhari.png", "badge": "Sahih", "accent": "#B45309", "accent_soft": "#FFFBEB" },
+    { "slug": "muslim", "name_en": "Sahih Muslim", "name_ar": "صحيح مسلم", "icon_file": "covers/muslim_sm.png", "cover_file": "covers/muslim.png", "badge": "Sahih", "accent": "#7F1D1D", "accent_soft": "#FEF2F2" },
+    { "slug": "abudawud", "name_en": "Sunan Abu Dawood", "name_ar": "سنن أبي داود", "icon_file": "covers/abudawud_sm.png", "cover_file": "covers/abudawud.png", "badge": "Sunan", "accent": "#065F46", "accent_soft": "#ECFDF5" },
+    { "slug": "tirmidhi", "name_en": "Jami' at-Tirmidhi", "name_ar": "جامع الترمذي", "icon_file": "covers/tirmidhi_sm.png", "cover_file": "covers/tirmidhi.png", "badge": "Jami'", "accent": "#78350F", "accent_soft": "#FFFBEB" },
+    { "slug": "nasai", "name_en": "Sunan an-Nasa'i", "name_ar": "سنن النسائي", "icon_file": "nasai.svg", "badge": "Sunan" },
+    { "slug": "ibnmajah", "name_en": "Sunan Ibn Majah", "name_ar": "سنن ابن ماجه", "icon_file": "ibnmajah.svg", "badge": "Sunan" },
+    { "slug": "malik", "name_en": "Muwatta Imam Malik", "name_ar": "موطأ الإمام مالك", "icon_file": "malik.svg", "badge": "Muwatta" }
+  ]
+}

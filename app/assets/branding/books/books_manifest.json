@@ -1,0 +1,149 @@
+{
+  "version": 2,
+  "design": "ISLAM 307 premium book icons — original Material 3, inspired by traditional bindings",
+  "cover_color": "#0F8B5F",
+  "gold": "#C9A227",
+  "size": 512,
+  "books": [
+    {
+      "slug": "quran",
+      "name_en": "Al-Quran Al-Kareem",
+      "name_ar": "القرآن الكريم",
+      "icon_file": "covers/quran_sm.png",
+      "cover_file": "covers/quran.png",
+      "sort_order": 1,
+      "accent": "#B45309",
+      "accent_soft": "#FFFBEB"
+    },
+    {
+      "slug": "bukhari",
+      "name_en": "Sahih al-Bukhari",
+      "name_ar": "صحيح البخاري",
+      "icon_file": "covers/bukhari_sm.png",
+      "cover_file": "covers/bukhari.png",
+      "sort_order": 2,
+      "accent": "#B45309",
+      "accent_soft": "#FFFBEB"
+    },
+    {
+      "slug": "muslim",
+      "name_en": "Sahih Muslim",
+      "name_ar": "صحيح مسلم",
+      "icon_file": "covers/muslim_sm.png",
+      "cover_file": "covers/muslim.png",
+      "sort_order": 3,
+      "accent": "#7F1D1D",
+      "accent_soft": "#FEF2F2"
+    },
+    {
+      "slug": "abudawud",
+      "name_en": "Sunan Abu Dawood",
+      "name_ar": "سنن أبي داود",
+      "icon_file": "covers/abudawud_sm.png",
+      "cover_file": "covers/abudawud.png",
+      "sort_order": 4,
+      "accent": "#065F46",
+      "accent_soft": "#ECFDF5"
+    },
+    {
+      "slug": "tirmidhi",
+      "name_en": "Jami' at-Tirmidhi",
+      "name_ar": "جامع الترمذي",
+      "icon_file": "covers/tirmidhi_sm.png",
+      "cover_file": "covers/tirmidhi.png",
+      "sort_order": 5,
+      "accent": "#78350F",
+      "accent_soft": "#FFFBEB"
+    },
+    {
+      "slug": "nasai",
+      "name_en": "Sunan an-Nasa'i",
+      "name_ar": "سنن النسائي",
+      "icon_file": "nasai.svg",
+      "sort_order": 6,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "ibnmajah",
+      "name_en": "Sunan Ibn Majah",
+      "name_ar": "سنن ابن ماجه",
+      "icon_file": "ibnmajah.svg",
+      "sort_order": 7,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "malik",
+      "name_en": "Muwatta Imam Malik",
+      "name_ar": "موطأ الإمام مالك",
+      "icon_file": "malik.svg",
+      "sort_order": 8,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "ahmad",
+      "name_en": "Musnad Ahmad",
+      "name_ar": "مسند أحمد",
+      "icon_file": "ahmad.svg",
+      "sort_order": 9,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "riyad-us-saliheen",
+      "name_en": "Riyad us-Saliheen",
+      "name_ar": "رياض الصالحين",
+      "icon_file": "riyad-us-saliheen.svg",
+      "sort_order": 10,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "bulugh-al-maram",
+      "name_en": "Bulugh al-Maram",
+      "name_ar": "بلوغ المرام",
+      "icon_file": "bulugh-al-maram.svg",
+      "sort_order": 11,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "ibn-kathir",
+      "name_en": "Tafsir Ibn Kathir",
+      "name_ar": "تفسير ابن كثير",
+      "icon_file": "ibn-kathir.svg",
+      "sort_order": 12,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "jalalayn",
+      "name_en": "Tafsir al-Jalalayn",
+      "name_ar": "تفسير الجلالين",
+      "icon_file": "jalalayn.svg",
+      "sort_order": 13,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "maarif",
+      "name_en": "Ma'ariful Quran",
+      "name_ar": "معارف القرآن",
+      "icon_file": "maarif.svg",
+      "sort_order": 14,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    },
+    {
+      "slug": "hisn-al-muslim",
+      "name_en": "Hisn al-Muslim",
+      "name_ar": "حصن المسلم",
+      "icon_file": "hisn-al-muslim.svg",
+      "sort_order": 15,
+      "accent": "#0F8B5F",
+      "accent_soft": "#ecfdf5"
+    }
+  ]
+}

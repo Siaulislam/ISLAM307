@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ISLAM 307 — Data Sources & Licenses</title>
+  <style>
+    :root { --emerald:#065f46; --gold:#c9a227; --muted:#64748b; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:Segoe UI,system-ui,sans-serif; background:linear-gradient(160deg,#f8fafc,#ecfdf5 40%,#fffbeb); min-height:100vh; color:#0f172a; padding:32px 18px 48px; }
+    .wrap { max-width:820px; margin:0 auto; }
+    h1 { color:var(--emerald); font-size:28px; margin:12px 0 8px; }
+    .lead { color:var(--muted); line-height:1.6; margin-bottom:20px; }
+    a.back { color:var(--emerald); font-weight:700; text-decoration:none; }
+    .card { background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:18px; margin-bottom:14px; }
+    .card h2 { font-size:17px; color:var(--emerald); margin-bottom:8px; }
+    .card p { font-size:14px; line-height:1.55; margin-bottom:6px; color:#334155; }
+    .meta { font-size:12px; color:var(--muted); }
+    .policy li { margin:6px 0 6px 18px; line-height:1.5; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="index.html">← Preview hub</a>
+    <h1>About ISLAM 307 · Data Sources & Licenses</h1>
+    <p class="lead">100% FREE · Sadaqah Jariyah · No ads · No subscriptions. AI never invents — it only searches local authenticated databases.</p>
+    <div class="card">
+      <h2>App policy</h2>
+      <ul class="policy" id="policy"></ul>
+    </div>
+    <div id="sources"></div>
+  </div>
+  <script>
+    async function load() {
+      const res = await fetch('../app/assets/modules/data_sources.json');
+      const data = await res.json();
+      const policy = document.getElementById('policy');
+      (data.app.policy || []).forEach((line) => {
+        const li = document.createElement('li');
+        li.textContent = line;
+        policy.appendChild(li);
+      });
+      const root = document.getElementById('sources');
+      (data.sources || []).forEach((s) => {
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.innerHTML = `
+          <h2>${s.title}</h2>
+          <p><strong>Purpose:</strong> ${s.purpose}</p>
+          <p><strong>License:</strong> ${s.license}</p>
+          <p>${s.attribution}</p>
+          ${s.notes ? `<p><strong>Note:</strong> ${s.notes}</p>` : ''}
+          <p class="meta"><a href="${s.url}" target="_blank" rel="noopener">${s.url}</a></p>
+        `;
+        root.appendChild(el);
+      });
+    }
+    load().catch((e) => {
+      document.getElementById('sources').innerHTML = `<div class="card"><p>Could not load data_sources.json (${e}). Open from the repo preview server.</p></div>`;
+    });
+  </script>
+</body>
+</html>

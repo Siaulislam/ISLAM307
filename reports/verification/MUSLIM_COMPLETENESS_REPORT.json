@@ -1,0 +1,3235 @@
+{
+  "book": "Sahih Muslim",
+  "slug": "muslim",
+  "book_id": 2,
+  "source": "app/assets/databases/hadith.db",
+  "total_rows": 7565,
+  "catalog_hadith_count": 7565,
+  "complete_all_langs": 7428,
+  "incomplete_any_lang": 137,
+  "summary": {
+    "missing_arabic": 114,
+    "missing_english": 114,
+    "missing_urdu": 68,
+    "empty_all_three": 45,
+    "preface_rows": [
+      {
+        "n": -1,
+        "ar": true,
+        "en": true,
+        "ur": true
+      },
+      {
+        "n": 0,
+        "ar": true,
+        "en": true,
+        "ur": true
+      }
+    ]
+  },
+  "missing_arabic_numbers": [
+    128,
+    209,
+    248,
+    384,
+    388,
+    637,
+    638,
+    794,
+    852,
+    853,
+    881,
+    1221,
+    1222,
+    1251,
+    1332,
+    1351,
+    1355,
+    1366,
+    1428,
+    1429,
+    1648,
+    1719,
+    1778,
+    2295,
+    2339,
+    2381,
+    2810,
+    3038,
+    3039,
+    3262,
+    3463,
+    3525,
+    3836,
+    3845,
+    3846,
+    4436,
+    5114,
+    5115,
+    5214,
+    5384,
+    5393,
+    5541,
+    5542,
+    5543,
+    5544,
+    5545,
+    5637,
+    5995,
+    5996,
+    5997,
+    5998,
+    5999,
+    6000,
+    6001,
+    6002,
+    6003,
+    6144,
+    6527,
+    6528,
+    6529,
+    6701,
+    6702,
+    6792,
+    6844,
+    6845,
+    7016,
+    7020,
+    7144,
+    7256,
+    7301,
+    7317,
+    7325,
+    7329,
+    7330,
+    7331,
+    7332,
+    7333,
+    7334,
+    7335,
+    7336,
+    7337,
+    7338,
+    7339,
+    7340,
+    7341,
+    7342,
+    7343,
+    7371,
+    7447,
+    7448,
+    7449,
+    7450,
+    7451,
+    7452,
+    7453,
+    7454,
+    7455,
+    7456,
+    7457,
+    7458,
+    7459,
+    7460,
+    7461,
+    7462,
+    7463,
+    7513,
+    7514,
+    7515,
+    7516,
+    7517,
+    7518,
+    7519,
+    7520,
+    7557
+  ],
+  "missing_english_numbers": [
+    128,
+    209,
+    248,
+    384,
+    388,
+    637,
+    638,
+    794,
+    852,
+    853,
+    881,
+    1221,
+    1222,
+    1251,
+    1332,
+    1351,
+    1355,
+    1366,
+    1428,
+    1429,
+    1648,
+    1719,
+    1778,
+    2295,
+    2339,
+    2381,
+    2810,
+    3038,
+    3039,
+    3262,
+    3463,
+    3525,
+    3836,
+    3845,
+    3846,
+    4436,
+    5114,
+    5115,
+    5214,
+    5384,
+    5393,
+    5541,
+    5542,
+    5543,
+    5544,
+    5545,
+    5637,
+    5995,
+    5996,
+    5997,
+    5998,
+    5999,
+    6000,
+    6001,
+    6002,
+    6003,
+    6144,
+    6527,
+    6528,
+    6529,
+    6701,
+    6702,
+    6792,
+    6844,
+    6845,
+    7016,
+    7020,
+    7144,
+    7256,
+    7301,
+    7317,
+    7325,
+    7329,
+    7330,
+    7331,
+    7332,
+    7333,
+    7334,
+    7335,
+    7336,
+    7337,
+    7338,
+    7339,
+    7340,
+    7341,
+    7342,
+    7343,
+    7371,
+    7447,
+    7448,
+    7449,
+    7450,
+    7451,
+    7452,
+    7453,
+    7454,
+    7455,
+    7456,
+    7457,
+    7458,
+    7459,
+    7460,
+    7461,
+    7462,
+    7463,
+    7513,
+    7514,
+    7515,
+    7516,
+    7517,
+    7518,
+    7519,
+    7520,
+    7557
+  ],
+  "missing_urdu_numbers": [
+    2940,
+    2941,
+    2942,
+    2943,
+    2944,
+    2945,
+    2946,
+    4678,
+    5196,
+    5197,
+    5198,
+    5199,
+    5200,
+    5201,
+    5202,
+    5203,
+    5204,
+    5205,
+    5206,
+    5207,
+    5208,
+    5209,
+    5210,
+    5541,
+    5542,
+    5543,
+    5544,
+    5545,
+    5996,
+    5997,
+    5998,
+    5999,
+    6000,
+    6001,
+    6002,
+    6003,
+    7016,
+    7020,
+    7331,
+    7332,
+    7333,
+    7334,
+    7335,
+    7336,
+    7337,
+    7338,
+    7339,
+    7340,
+    7341,
+    7342,
+    7343,
+    7447,
+    7448,
+    7449,
+    7450,
+    7451,
+    7452,
+    7453,
+    7454,
+    7455,
+    7456,
+    7457,
+    7458,
+    7459,
+    7460,
+    7461,
+    7462,
+    7463
+  ],
+  "missing_arabic_ranges": [
+    128,
+    209,
+    248,
+    384,
+    388,
+    [
+      637,
+      638
+    ],
+    794,
+    [
+      852,
+      853
+    ],
+    881,
+    [
+      1221,
+      1222
+    ],
+    1251,
+    1332,
+    1351,
+    1355,
+    1366,
+    [
+      1428,
+      1429
+    ],
+    1648,
+    1719,
+    1778,
+    2295,
+    2339,
+    2381,
+    2810,
+    [
+      3038,
+      3039
+    ],
+    3262,
+    3463,
+    3525,
+    3836,
+    [
+      3845,
+      3846
+    ],
+    4436,
+    [
+      5114,
+      5115
+    ],
+    5214,
+    5384,
+    5393,
+    [
+      5541,
+      5545
+    ],
+    5637,
+    [
+      5995,
+      6003
+    ],
+    6144,
+    [
+      6527,
+      6529
+    ],
+    [
+      6701,
+      6702
+    ],
+    6792,
+    [
+      6844,
+      6845
+    ],
+    7016,
+    7020,
+    7144,
+    7256,
+    7301,
+    7317,
+    7325,
+    [
+      7329,
+      7343
+    ],
+    7371,
+    [
+      7447,
+      7463
+    ],
+    [
+      7513,
+      7520
+    ],
+    7557
+  ],
+  "missing_english_ranges": [
+    128,
+    209,
+    248,
+    384,
+    388,
+    [
+      637,
+      638
+    ],
+    794,
+    [
+      852,
+      853
+    ],
+    881,
+    [
+      1221,
+      1222
+    ],
+    1251,
+    1332,
+    1351,
+    1355,
+    1366,
+    [
+      1428,
+      1429
+    ],
+    1648,
+    1719,
+    1778,
+    2295,
+    2339,
+    2381,
+    2810,
+    [
+      3038,
+      3039
+    ],
+    3262,
+    3463,
+    3525,
+    3836,
+    [
+      3845,
+      3846
+    ],
+    4436,
+    [
+      5114,
+      5115
+    ],
+    5214,
+    5384,
+    5393,
+    [
+      5541,
+      5545
+    ],
+    5637,
+    [
+      5995,
+      6003
+    ],
+    6144,
+    [
+      6527,
+      6529
+    ],
+    [
+      6701,
+      6702
+    ],
+    6792,
+    [
+      6844,
+      6845
+    ],
+    7016,
+    7020,
+    7144,
+    7256,
+    7301,
+    7317,
+    7325,
+    [
+      7329,
+      7343
+    ],
+    7371,
+    [
+      7447,
+      7463
+    ],
+    [
+      7513,
+      7520
+    ],
+    7557
+  ],
+  "missing_urdu_ranges": [
+    [
+      2940,
+      2946
+    ],
+    4678,
+    [
+      5196,
+      5210
+    ],
+    [
+      5541,
+      5545
+    ],
+    [
+      5996,
+      6003
+    ],
+    7016,
+    7020,
+    [
+      7331,
+      7343
+    ],
+    [
+      7447,
+      7463
+    ]
+  ],
+  "empty_all_three_numbers": [
+    5541,
+    5542,
+    5543,
+    5544,
+    5545,
+    5996,
+    5997,
+    5998,
+    5999,
+    6000,
+    6001,
+    6002,
+    6003,
+    7016,
+    7020,
+    7331,
+    7332,
+    7333,
+    7334,
+    7335,
+    7336,
+    7337,
+    7338,
+    7339,
+    7340,
+    7341,
+    7342,
+    7343,
+    7447,
+    7448,
+    7449,
+    7450,
+    7451,
+    7452,
+    7453,
+    7454,
+    7455,
+    7456,
+    7457,
+    7458,
+    7459,
+    7460,
+    7461,
+    7462,
+    7463
+  ],
+  "incomplete_chapters": [
+    {
+      "chapter_id": 154,
+      "chapter_number": 55,
+      "title": "The Book of Zuhd and Softening of Hearts ",
+      "total": 106,
+      "complete": 81,
+      "incomplete": 25,
+      "missing_ar_count": 25,
+      "missing_en_count": 25,
+      "missing_ur_count": 17,
+      "missing_ar": [
+        7447,
+        7448,
+        7449,
+        7450,
+        7451,
+        7452,
+        7453,
+        7454,
+        7455,
+        7456,
+        7457,
+        7458,
+        7459,
+        7460,
+        7461,
+        7462,
+        7463,
+        7513,
+        7514,
+        7515,
+        7516,
+        7517,
+        7518,
+        7519,
+        7520
+      ],
+      "missing_en": [
+        7447,
+        7448,
+        7449,
+        7450,
+        7451,
+        7452,
+        7453,
+        7454,
+        7455,
+        7456,
+        7457,
+        7458,
+        7459,
+        7460,
+        7461,
+        7462,
+        7463,
+        7513,
+        7514,
+        7515,
+        7516,
+        7517,
+        7518,
+        7519,
+        7520
+      ],
+      "missing_ur": [
+        7447,
+        7448,
+        7449,
+        7450,
+        7451,
+        7452,
+        7453,
+        7454,
+        7455,
+        7456,
+        7457,
+        7458,
+        7459,
+        7460,
+        7461,
+        7462,
+        7463
+      ],
+      "missing_ar_ranges": [
+        [
+          7447,
+          7463
+        ],
+        [
+          7513,
+          7520
+        ]
+      ],
+      "missing_en_ranges": [
+        [
+          7447,
+          7463
+        ],
+        [
+          7513,
+          7520
+        ]
+      ],
+      "missing_ur_ranges": [
+        [
+          7447,
+          7463
+        ]
+      ]
+    },
+    {
+      "chapter_id": 153,
+      "chapter_number": 54,
+      "title": "The Book of Tribulations and Portents of the Last Hour",
+      "total": 182,
+      "complete": 162,
+      "incomplete": 20,
+      "missing_ar_count": 20,
+      "missing_en_count": 20,
+      "missing_ur_count": 13,
+      "missing_ar": [
+        7256,
+        7301,
+        7317,
+        7325,
+        7329,
+        7330,
+        7331,
+        7332,
+        7333,
+        7334,
+        7335,
+        7336,
+        7337,
+        7338,
+        7339,
+        7340,
+        7341,
+        7342,
+        7343,
+        7371
+      ],
+      "missing_en": [
+        7256,
+        7301,
+        7317,
+        7325,
+        7329,
+        7330,
+        7331,
+        7332,
+        7333,
+        7334,
+        7335,
+        7336,
+        7337,
+        7338,
+        7339,
+        7340,
+        7341,
+        7342,
+        7343,
+        7371
+      ],
+      "missing_ur": [
+        7331,
+        7332,
+        7333,
+        7334,
+        7335,
+        7336,
+        7337,
+        7338,
+        7339,
+        7340,
+        7341,
+        7342,
+        7343
+      ],
+      "missing_ar_ranges": [
+        7256,
+        7301,
+        7317,
+        7325,
+        [
+          7329,
+          7343
+        ],
+        7371
+      ],
+      "missing_en_ranges": [
+        7256,
+        7301,
+        7317,
+        7325,
+        [
+          7329,
+          7343
+        ],
+        7371
+      ],
+      "missing_ur_ranges": [
+        [
+          7331,
+          7343
+        ]
+      ]
+    },
+    {
+      "chapter_id": 142,
+      "chapter_number": 43,
+      "title": "The Book of Virtues",
+      "total": 238,
+      "complete": 227,
+      "incomplete": 11,
+      "missing_ar_count": 11,
+      "missing_en_count": 11,
+      "missing_ur_count": 8,
+      "missing_ar": [
+        5384,
+        5995,
+        5996,
+        5997,
+        5998,
+        5999,
+        6000,
+        6001,
+        6002,
+        6003,
+        6144
+      ],
+      "missing_en": [
+        5384,
+        5995,
+        5996,
+        5997,
+        5998,
+        5999,
+        6000,
+        6001,
+        6002,
+        6003,
+        6144
+      ],
+      "missing_ur": [
+        5996,
+        5997,
+        5998,
+        5999,
+        6000,
+        6001,
+        6002,
+        6003
+      ],
+      "missing_ar_ranges": [
+        5384,
+        [
+          5995,
+          6003
+        ],
+        6144
+      ],
+      "missing_en_ranges": [
+        5384,
+        [
+          5995,
+          6003
+        ],
+        6144
+      ],
+      "missing_ur_ranges": [
+        [
+          5996,
+          6003
+        ]
+      ]
+    },
+    {
+      "chapter_id": 104,
+      "chapter_number": 5,
+      "title": "The Book of Mosques and Places of Prayer",
+      "total": 409,
+      "complete": 400,
+      "incomplete": 9,
+      "missing_ar_count": 9,
+      "missing_en_count": 9,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        1221,
+        1222,
+        1251,
+        1332,
+        1351,
+        1355,
+        1366,
+        1428,
+        1429
+      ],
+      "missing_en": [
+        1221,
+        1222,
+        1251,
+        1332,
+        1351,
+        1355,
+        1366,
+        1428,
+        1429
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        [
+          1221,
+          1222
+        ],
+        1251,
+        1332,
+        1351,
+        1355,
+        1366,
+        [
+          1428,
+          1429
+        ]
+      ],
+      "missing_en_ranges": [
+        [
+          1221,
+          1222
+        ],
+        1251,
+        1332,
+        1351,
+        1355,
+        1366,
+        [
+          1428,
+          1429
+        ]
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 135,
+      "chapter_number": 36,
+      "title": "The Book of Drinks",
+      "total": 257,
+      "complete": 241,
+      "incomplete": 16,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 15,
+      "missing_ar": [
+        5214
+      ],
+      "missing_en": [
+        5214
+      ],
+      "missing_ur": [
+        5196,
+        5197,
+        5198,
+        5199,
+        5200,
+        5201,
+        5202,
+        5203,
+        5204,
+        5205,
+        5206,
+        5207,
+        5208,
+        5209,
+        5210
+      ],
+      "missing_ar_ranges": [
+        5214
+      ],
+      "missing_en_ranges": [
+        5214
+      ],
+      "missing_ur_ranges": [
+        [
+          5196,
+          5210
+        ]
+      ]
+    },
+    {
+      "chapter_id": 136,
+      "chapter_number": 37,
+      "title": "The Book of Clothes and Adornment",
+      "total": 201,
+      "complete": 195,
+      "incomplete": 6,
+      "missing_ar_count": 6,
+      "missing_en_count": 6,
+      "missing_ur_count": 5,
+      "missing_ar": [
+        5393,
+        5541,
+        5542,
+        5543,
+        5544,
+        5545
+      ],
+      "missing_en": [
+        5393,
+        5541,
+        5542,
+        5543,
+        5544,
+        5545
+      ],
+      "missing_ur": [
+        5541,
+        5542,
+        5543,
+        5544,
+        5545
+      ],
+      "missing_ar_ranges": [
+        5393,
+        [
+          5541,
+          5545
+        ]
+      ],
+      "missing_en_ranges": [
+        5393,
+        [
+          5541,
+          5545
+        ]
+      ],
+      "missing_ur_ranges": [
+        [
+          5541,
+          5545
+        ]
+      ]
+    },
+    {
+      "chapter_id": 114,
+      "chapter_number": 15,
+      "title": "The Book of Pilgrimage",
+      "total": 607,
+      "complete": 596,
+      "incomplete": 11,
+      "missing_ar_count": 4,
+      "missing_en_count": 4,
+      "missing_ur_count": 7,
+      "missing_ar": [
+        2810,
+        3038,
+        3039,
+        3262
+      ],
+      "missing_en": [
+        2810,
+        3038,
+        3039,
+        3262
+      ],
+      "missing_ur": [
+        2940,
+        2941,
+        2942,
+        2943,
+        2944,
+        2945,
+        2946
+      ],
+      "missing_ar_ranges": [
+        2810,
+        [
+          3038,
+          3039
+        ],
+        3262
+      ],
+      "missing_en_ranges": [
+        2810,
+        [
+          3038,
+          3039
+        ],
+        3262
+      ],
+      "missing_ur_ranges": [
+        [
+          2940,
+          2946
+        ]
+      ]
+    },
+    {
+      "chapter_id": 100,
+      "chapter_number": 1,
+      "title": "The Book of Faith",
+      "total": 441,
+      "complete": 436,
+      "incomplete": 5,
+      "missing_ar_count": 5,
+      "missing_en_count": 5,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        128,
+        209,
+        248,
+        384,
+        388
+      ],
+      "missing_en": [
+        128,
+        209,
+        248,
+        384,
+        388
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        128,
+        209,
+        248,
+        384,
+        388
+      ],
+      "missing_en_ranges": [
+        128,
+        209,
+        248,
+        384,
+        388
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 144,
+      "chapter_number": 45,
+      "title": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+      "total": 223,
+      "complete": 218,
+      "incomplete": 5,
+      "missing_ar_count": 5,
+      "missing_en_count": 5,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        6527,
+        6528,
+        6529,
+        6701,
+        6702
+      ],
+      "missing_en": [
+        6527,
+        6528,
+        6529,
+        6701,
+        6702
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        [
+          6527,
+          6529
+        ],
+        [
+          6701,
+          6702
+        ]
+      ],
+      "missing_en_ranges": [
+        [
+          6527,
+          6529
+        ],
+        [
+          6701,
+          6702
+        ]
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 103,
+      "chapter_number": 4,
+      "title": "The Book of Prayers ",
+      "total": 324,
+      "complete": 321,
+      "incomplete": 3,
+      "missing_ar_count": 3,
+      "missing_en_count": 3,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        852,
+        853,
+        881
+      ],
+      "missing_en": [
+        852,
+        853,
+        881
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        [
+          852,
+          853
+        ],
+        881
+      ],
+      "missing_en_ranges": [
+        [
+          852,
+          853
+        ],
+        881
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 105,
+      "chapter_number": 6,
+      "title": "The Book of Prayer - Travellers",
+      "total": 381,
+      "complete": 378,
+      "incomplete": 3,
+      "missing_ar_count": 3,
+      "missing_en_count": 3,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        1648,
+        1719,
+        1778
+      ],
+      "missing_en": [
+        1648,
+        1719,
+        1778
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        1648,
+        1719,
+        1778
+      ],
+      "missing_en_ranges": [
+        1648,
+        1719,
+        1778
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 111,
+      "chapter_number": 12,
+      "title": "The Book of Zakat",
+      "total": 232,
+      "complete": 229,
+      "incomplete": 3,
+      "missing_ar_count": 3,
+      "missing_en_count": 3,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        2295,
+        2339,
+        2381
+      ],
+      "missing_en": [
+        2295,
+        2339,
+        2381
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        2295,
+        2339,
+        2381
+      ],
+      "missing_en_ranges": [
+        2295,
+        2339,
+        2381
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 120,
+      "chapter_number": 21,
+      "title": "The Book of Transactions",
+      "total": 161,
+      "complete": 158,
+      "incomplete": 3,
+      "missing_ar_count": 3,
+      "missing_en_count": 3,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        3836,
+        3845,
+        3846
+      ],
+      "missing_en": [
+        3836,
+        3845,
+        3846
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        3836,
+        [
+          3845,
+          3846
+        ]
+      ],
+      "missing_en_ranges": [
+        3836,
+        [
+          3845,
+          3846
+        ]
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 149,
+      "chapter_number": 50,
+      "title": "The Book of Repentance",
+      "total": 72,
+      "complete": 70,
+      "incomplete": 2,
+      "missing_ar_count": 2,
+      "missing_en_count": 2,
+      "missing_ur_count": 2,
+      "missing_ar": [
+        7016,
+        7020
+      ],
+      "missing_en": [
+        7016,
+        7020
+      ],
+      "missing_ur": [
+        7016,
+        7020
+      ],
+      "missing_ar_ranges": [
+        7016,
+        7020
+      ],
+      "missing_en_ranges": [
+        7016,
+        7020
+      ],
+      "missing_ur_ranges": [
+        7016,
+        7020
+      ]
+    },
+    {
+      "chapter_id": 101,
+      "chapter_number": 2,
+      "title": "The Book of Purification",
+      "total": 145,
+      "complete": 143,
+      "incomplete": 2,
+      "missing_ar_count": 2,
+      "missing_en_count": 2,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        637,
+        638
+      ],
+      "missing_en": [
+        637,
+        638
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        [
+          637,
+          638
+        ]
+      ],
+      "missing_en_ranges": [
+        [
+          637,
+          638
+        ]
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 115,
+      "chapter_number": 16,
+      "title": "The Book of Marriage",
+      "total": 170,
+      "complete": 168,
+      "incomplete": 2,
+      "missing_ar_count": 2,
+      "missing_en_count": 2,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        3463,
+        3525
+      ],
+      "missing_en": [
+        3463,
+        3525
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        3463,
+        3525
+      ],
+      "missing_en_ranges": [
+        3463,
+        3525
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 134,
+      "chapter_number": 35,
+      "title": "The Book of Sacrifices",
+      "total": 63,
+      "complete": 61,
+      "incomplete": 2,
+      "missing_ar_count": 2,
+      "missing_en_count": 2,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        5114,
+        5115
+      ],
+      "missing_en": [
+        5114,
+        5115
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        [
+          5114,
+          5115
+        ]
+      ],
+      "missing_en_ranges": [
+        [
+          5114,
+          5115
+        ]
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 147,
+      "chapter_number": 48,
+      "title": "The Book Pertaining to the Remembrance of Allah, Supplication, Repentance and Seeking Forgiveness ",
+      "total": 132,
+      "complete": 130,
+      "incomplete": 2,
+      "missing_ar_count": 2,
+      "missing_en_count": 2,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        6844,
+        6845
+      ],
+      "missing_en": [
+        6844,
+        6845
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        [
+          6844,
+          6845
+        ]
+      ],
+      "missing_en_ranges": [
+        [
+          6844,
+          6845
+        ]
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 102,
+      "chapter_number": 3,
+      "title": "The Book of Menstruation",
+      "total": 158,
+      "complete": 157,
+      "incomplete": 1,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        794
+      ],
+      "missing_en": [
+        794
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        794
+      ],
+      "missing_en_ranges": [
+        794
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 128,
+      "chapter_number": 29,
+      "title": "The Book of Legal Punishments",
+      "total": 72,
+      "complete": 71,
+      "incomplete": 1,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        4436
+      ],
+      "missing_en": [
+        4436
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        4436
+      ],
+      "missing_en_ranges": [
+        4436
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 137,
+      "chapter_number": 38,
+      "title": "The Book of Manners and Etiquette",
+      "total": 60,
+      "complete": 59,
+      "incomplete": 1,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        5637
+      ],
+      "missing_en": [
+        5637
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        5637
+      ],
+      "missing_en_ranges": [
+        5637
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 146,
+      "chapter_number": 47,
+      "title": "The Book of Knowledge",
+      "total": 30,
+      "complete": 29,
+      "incomplete": 1,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        6792
+      ],
+      "missing_en": [
+        6792
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        6792
+      ],
+      "missing_en_ranges": [
+        6792
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 152,
+      "chapter_number": 53,
+      "title": "The Book of Paradise, its Description, its Bounties and its Inhabitants",
+      "total": 105,
+      "complete": 104,
+      "incomplete": 1,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        7144
+      ],
+      "missing_en": [
+        7144
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        7144
+      ],
+      "missing_en_ranges": [
+        7144
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 155,
+      "chapter_number": 56,
+      "title": "The Book of Commentary on the Qur'an",
+      "total": 41,
+      "complete": 40,
+      "incomplete": 1,
+      "missing_ar_count": 1,
+      "missing_en_count": 1,
+      "missing_ur_count": 0,
+      "missing_ar": [
+        7557
+      ],
+      "missing_en": [
+        7557
+      ],
+      "missing_ur": [],
+      "missing_ar_ranges": [
+        7557
+      ],
+      "missing_en_ranges": [
+        7557
+      ],
+      "missing_ur_ranges": []
+    },
+    {
+      "chapter_id": 131,
+      "chapter_number": 32,
+      "title": "The Book of Jihad and Expeditions",
+      "total": 182,
+      "complete": 181,
+      "incomplete": 1,
+      "missing_ar_count": 0,
+      "missing_en_count": 0,
+      "missing_ur_count": 1,
+      "missing_ar": [],
+      "missing_en": [],
+      "missing_ur": [
+        4678
+      ],
+      "missing_ar_ranges": [],
+      "missing_en_ranges": [],
+      "missing_ur_ranges": [
+        4678
+      ]
+    }
+  ],
+  "incomplete_rows": [
+    {
+      "n": 128,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Faith",
+      "chapter_id": 100
+    },
+    {
+      "n": 209,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Faith",
+      "chapter_id": 100
+    },
+    {
+      "n": 248,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Faith",
+      "chapter_id": 100
+    },
+    {
+      "n": 384,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Faith",
+      "chapter_id": 100
+    },
+    {
+      "n": 388,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Faith",
+      "chapter_id": 100
+    },
+    {
+      "n": 637,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Purification",
+      "chapter_id": 101
+    },
+    {
+      "n": 638,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Purification",
+      "chapter_id": 101
+    },
+    {
+      "n": 794,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Menstruation",
+      "chapter_id": 102
+    },
+    {
+      "n": 852,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Prayers ",
+      "chapter_id": 103
+    },
+    {
+      "n": 853,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Prayers ",
+      "chapter_id": 103
+    },
+    {
+      "n": 881,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Prayers ",
+      "chapter_id": 103
+    },
+    {
+      "n": 1221,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1222,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1251,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1332,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1351,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1355,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1366,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1428,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1429,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Mosques and Places of Prayer",
+      "chapter_id": 104
+    },
+    {
+      "n": 1648,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Prayer - Travellers",
+      "chapter_id": 105
+    },
+    {
+      "n": 1719,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Prayer - Travellers",
+      "chapter_id": 105
+    },
+    {
+      "n": 1778,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Prayer - Travellers",
+      "chapter_id": 105
+    },
+    {
+      "n": 2295,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zakat",
+      "chapter_id": 111
+    },
+    {
+      "n": 2339,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zakat",
+      "chapter_id": 111
+    },
+    {
+      "n": 2381,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zakat",
+      "chapter_id": 111
+    },
+    {
+      "n": 2810,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2940,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2941,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2942,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2943,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2944,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2945,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 2946,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 3038,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 3039,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 3262,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Pilgrimage",
+      "chapter_id": 114
+    },
+    {
+      "n": 3463,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Marriage",
+      "chapter_id": 115
+    },
+    {
+      "n": 3525,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Marriage",
+      "chapter_id": 115
+    },
+    {
+      "n": 3836,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Transactions",
+      "chapter_id": 120
+    },
+    {
+      "n": 3845,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Transactions",
+      "chapter_id": 120
+    },
+    {
+      "n": 3846,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Transactions",
+      "chapter_id": 120
+    },
+    {
+      "n": 4436,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Legal Punishments",
+      "chapter_id": 128
+    },
+    {
+      "n": 4678,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Jihad and Expeditions",
+      "chapter_id": 131
+    },
+    {
+      "n": 5114,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Sacrifices",
+      "chapter_id": 134
+    },
+    {
+      "n": 5115,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Sacrifices",
+      "chapter_id": 134
+    },
+    {
+      "n": 5196,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5197,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5198,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5199,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5200,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5201,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5202,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5203,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5204,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5205,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5206,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5207,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5208,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5209,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5210,
+      "missing": [
+        "ur"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5214,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Drinks",
+      "chapter_id": 135
+    },
+    {
+      "n": 5384,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 5393,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Clothes and Adornment",
+      "chapter_id": 136
+    },
+    {
+      "n": 5541,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Clothes and Adornment",
+      "chapter_id": 136
+    },
+    {
+      "n": 5542,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Clothes and Adornment",
+      "chapter_id": 136
+    },
+    {
+      "n": 5543,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Clothes and Adornment",
+      "chapter_id": 136
+    },
+    {
+      "n": 5544,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Clothes and Adornment",
+      "chapter_id": 136
+    },
+    {
+      "n": 5545,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Clothes and Adornment",
+      "chapter_id": 136
+    },
+    {
+      "n": 5637,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Manners and Etiquette",
+      "chapter_id": 137
+    },
+    {
+      "n": 5995,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 5996,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 5997,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 5998,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 5999,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 6000,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 6001,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 6002,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 6003,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 6144,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtues",
+      "chapter_id": 142
+    },
+    {
+      "n": 6527,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+      "chapter_id": 144
+    },
+    {
+      "n": 6528,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+      "chapter_id": 144
+    },
+    {
+      "n": 6529,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+      "chapter_id": 144
+    },
+    {
+      "n": 6701,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+      "chapter_id": 144
+    },
+    {
+      "n": 6702,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Virtue, Enjoining Good Manners, and Joining of the Ties of Kinship",
+      "chapter_id": 144
+    },
+    {
+      "n": 6792,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Knowledge",
+      "chapter_id": 146
+    },
+    {
+      "n": 6844,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book Pertaining to the Remembrance of Allah, Supplication, Repentance and Seeking Forgiveness ",
+      "chapter_id": 147
+    },
+    {
+      "n": 6845,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book Pertaining to the Remembrance of Allah, Supplication, Repentance and Seeking Forgiveness ",
+      "chapter_id": 147
+    },
+    {
+      "n": 7016,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Repentance",
+      "chapter_id": 149
+    },
+    {
+      "n": 7020,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Repentance",
+      "chapter_id": 149
+    },
+    {
+      "n": 7144,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Paradise, its Description, its Bounties and its Inhabitants",
+      "chapter_id": 152
+    },
+    {
+      "n": 7256,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7301,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7317,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7325,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7329,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7330,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7331,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7332,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7333,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7334,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7335,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7336,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7337,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7338,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7339,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7340,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7341,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7342,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7343,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7371,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Tribulations and Portents of the Last Hour",
+      "chapter_id": 153
+    },
+    {
+      "n": 7447,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7448,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7449,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7450,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7451,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7452,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7453,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7454,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7455,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7456,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7457,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7458,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7459,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7460,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7461,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7462,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7463,
+      "missing": [
+        "ar",
+        "en",
+        "ur"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7513,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7514,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7515,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7516,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7517,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7518,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7519,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7520,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Zuhd and Softening of Hearts ",
+      "chapter_id": 154
+    },
+    {
+      "n": 7557,
+      "missing": [
+        "ar",
+        "en"
+      ],
+      "chapter": "The Book of Commentary on the Qur'an",
+      "chapter_id": 155
+    }
+  ],
+  "preview_pack_crosscheck": {
+    "total": 7565,
+    "missing_ar_count": 114,
+    "missing_en_count": 114,
+    "missing_ur_count": 68,
+    "missing_ar": [
+      128,
+      209,
+      248,
+      384,
+      388,
+      637,
+      638,
+      794,
+      852,
+      853,
+      881,
+      1221,
+      1222,
+      1251,
+      1332,
+      1351,
+      1355,
+      1366,
+      1428,
+      1429,
+      1648,
+      1719,
+      1778,
+      2295,
+      2339,
+      2381,
+      2810,
+      3038,
+      3039,
+      3262,
+      3463,
+      3525,
+      3836,
+      3845,
+      3846,
+      4436,
+      5114,
+      5115,
+      5214,
+      5384,
+      5393,
+      5541,
+      5542,
+      5543,
+      5544,
+      5545,
+      5637,
+      5995,
+      5996,
+      5997,
+      5998,
+      5999,
+      6000,
+      6001,
+      6002,
+      6003,
+      6144,
+      6527,
+      6528,
+      6529,
+      6701,
+      6702,
+      6792,
+      6844,
+      6845,
+      7016,
+      7020,
+      7144,
+      7256,
+      7301,
+      7317,
+      7325,
+      7329,
+      7330,
+      7331,
+      7332,
+      7333,
+      7334,
+      7335,
+      7336,
+      7337,
+      7338,
+      7339,
+      7340,
+      7341,
+      7342,
+      7343,
+      7371,
+      7447,
+      7448,
+      7449,
+      7450,
+      7451,
+      7452,
+      7453,
+      7454,
+      7455,
+      7456,
+      7457,
+      7458,
+      7459,
+      7460,
+      7461,
+      7462,
+      7463,
+      7513,
+      7514,
+      7515,
+      7516,
+      7517,
+      7518,
+      7519,
+      7520,
+      7557
+    ],
+    "missing_en": [
+      128,
+      209,
+      248,
+      384,
+      388,
+      637,
+      638,
+      794,
+      852,
+      853,
+      881,
+      1221,
+      1222,
+      1251,
+      1332,
+      1351,
+      1355,
+      1366,
+      1428,
+      1429,
+      1648,
+      1719,
+      1778,
+      2295,
+      2339,
+      2381,
+      2810,
+      3038,
+      3039,
+      3262,
+      3463,
+      3525,
+      3836,
+      3845,
+      3846,
+      4436,
+      5114,
+      5115,
+      5214,
+      5384,
+      5393,
+      5541,
+      5542,
+      5543,
+      5544,
+      5545,
+      5637,
+      5995,
+      5996,
+      5997,
+      5998,
+      5999,
+      6000,
+      6001,
+      6002,
+      6003,
+      6144,
+      6527,
+      6528,
+      6529,
+      6701,
+      6702,
+      6792,
+      6844,
+      6845,
+      7016,
+      7020,
+      7144,
+      7256,
+      7301,
+      7317,
+      7325,
+      7329,
+      7330,
+      7331,
+      7332,
+      7333,
+      7334,
+      7335,
+      7336,
+      7337,
+      7338,
+      7339,
+      7340,
+      7341,
+      7342,
+      7343,
+      7371,
+      7447,
+      7448,
+      7449,
+      7450,
+      7451,
+      7452,
+      7453,
+      7454,
+      7455,
+      7456,
+      7457,
+      7458,
+      7459,
+      7460,
+      7461,
+      7462,
+      7463,
+      7513,
+      7514,
+      7515,
+      7516,
+      7517,
+      7518,
+      7519,
+      7520,
+      7557
+    ],
+    "missing_ur": [
+      2940,
+      2941,
+      2942,
+      2943,
+      2944,
+      2945,
+      2946,
+      4678,
+      5196,
+      5197,
+      5198,
+      5199,
+      5200,
+      5201,
+      5202,
+      5203,
+      5204,
+      5205,
+      5206,
+      5207,
+      5208,
+      5209,
+      5210,
+      5541,
+      5542,
+      5543,
+      5544,
+      5545,
+      5996,
+      5997,
+      5998,
+      5999,
+      6000,
+      6001,
+      6002,
+      6003,
+      7016,
+      7020,
+      7331,
+      7332,
+      7333,
+      7334,
+      7335,
+      7336,
+      7337,
+      7338,
+      7339,
+      7340,
+      7341,
+      7342,
+      7343,
+      7447,
+      7448,
+      7449,
+      7450,
+      7451,
+      7452,
+      7453,
+      7454,
+      7455,
+      7456,
+      7457,
+      7458,
+      7459,
+      7460,
+      7461,
+      7462,
+      7463
+    ]
+  }
+}

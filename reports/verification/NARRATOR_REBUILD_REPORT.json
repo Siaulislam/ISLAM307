@@ -1,0 +1,496 @@
+{
+  "generated_at": "2026-07-12T12:26:10.461019+00:00",
+  "policy": [
+    "Never invent narrator names with AI.",
+    "Import only from authenticated Sunni editions (fawazahmed0/hadith-api@1).",
+    "If narrator cannot be verified, leave empty."
+  ],
+  "source": "fawazahmed0/hadith-api@1 (eng + ara editions)",
+  "totals": {
+    "total_hadith": 24356,
+    "before_present": 11954,
+    "after_present": 24055,
+    "after_missing": 301,
+    "recovered_new": 12101,
+    "kept_existing_same": 11035,
+    "replaced_with_authenticated": 919,
+    "cleared_unverified": 0,
+    "still_missing_unverifiable": 301,
+    "methods": {
+      "en:narrated_colon": 11926,
+      "ar:arabic_isnad_companion": 2352,
+      "en:x_said_colon": 1662,
+      "en:x_narrated_that": 1022,
+      "en:x_narrated_colon": 633,
+      "en:last_on_authority": 203,
+      "en:auth_narrated": 181,
+      "en:x_reported_colon": 1813,
+      "en:this_hadith_auth": 859,
+      "en:auth_reported": 56,
+      "en:this_hadith_by": 230,
+      "en:it_has_been_auth": 229,
+      "en:x_narrated_auth": 96,
+      "en:x_reported_auth": 291,
+      "en:x_reported_that": 1465,
+      "en:it_was_from": 19,
+      "en:x_reported_messenger": 982,
+      "en:it_was_that": 6,
+      "en:x_honor_reported": 30
+    }
+  },
+  "books": {
+    "bukhari": {
+      "book": "Sahih Bukhari",
+      "slug": "bukhari",
+      "total": 7563,
+      "before_present": 7403,
+      "before_missing": 160,
+      "after_present": 7547,
+      "after_missing": 16,
+      "recovered_new": 144,
+      "kept_existing_same": 7131,
+      "replaced_with_authenticated": 272,
+      "cleared_unverified": 0,
+      "still_missing_unverifiable": 16,
+      "methods": {
+        "en:narrated_colon": 7406,
+        "ar:arabic_isnad_companion": 109,
+        "en:x_said_colon": 28,
+        "en:x_narrated_that": 2,
+        "en:x_narrated_colon": 2
+      },
+      "samples_recovered": [
+        {
+          "n": 160,
+          "narrator": "إبراهيم",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 174,
+          "narrator": "حمزة بن عبد الله",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 188,
+          "narrator": "Abu Musa",
+          "method": "en:x_said_colon"
+        },
+        {
+          "n": 379,
+          "narrator": "ميمونة",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 393,
+          "narrator": "Maimun bin Siyah",
+          "method": "en:narrated_colon"
+        },
+        {
+          "n": 482,
+          "narrator": "أبي هريرة",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 484,
+          "narrator": "نافع",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 485,
+          "narrator": "عبد الله بن عمر حدثه",
+          "method": "ar:arabic_isnad_companion"
+        }
+      ],
+      "samples_still_missing": [
+        {
+          "n": 239,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "The same narrator said that the Prophet (ﷺ) had said: \"You should not pass urine in stagnant water which is not flowing ",
+          "ar_prefix": "وَبِإِسْنَادِهِ قَالَ ‏ \"‏ لاَ يَبُولَنَّ أَحَدُكُمْ فِي الْمَاءِ الدَّائِمِ الّ"
+        },
+        {
+          "n": 486,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "See translation for hadith 484 above",
+          "ar_prefix": "وَأَنَّ ابْنَ عُمَرَ كَانَ يُصَلِّي إِلَى الْعِرْقِ الَّذِي عِنْدَ مُنْصَرَفِ ال"
+        },
+        {
+          "n": 804,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "And Abu Huraira said, \"When Allah's Messenger (ﷺ) raised his head from (bowing) he used to say \"Sami`a l-lahu liman hami",
+          "ar_prefix": "قَالاَ وَقَالَ أَبُو هُرَيْرَةَ ـ رضى الله عنه ـ وَكَانَ رَسُولُ اللَّهِ صلى الل"
+        },
+        {
+          "n": 1848,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "A man bit the hand of another man but in that process the latter broke one incisor tooth of the former, and the Prophet ",
+          "ar_prefix": "وَعَضَّ رَجُلٌ يَدَ رَجُلٍ ـ يَعْنِي فَانْتَزَعَ ثَنِيَّتَهُ ـ فَأَبْطَلَهُ النّ"
+        },
+        {
+          "n": 5337,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "I (Humaid) said to Zainab, \"What does 'throwing a globe of dung when one year had elapsed' mean?\" Zainab said, \"When a l",
+          "ar_prefix": "قَالَ حُمَيْدٌ فَقُلْتُ لِزَيْنَبَ وَمَا تَرْمِي بِالْبَعَرَةِ عَلَى رَأْسِ الْح"
+        },
+        {
+          "n": 5710,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 5711,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 5712,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        }
+      ]
+    },
+    "muslim": {
+      "book": "Sahih Muslim",
+      "slug": "muslim",
+      "total": 7563,
+      "before_present": 5,
+      "before_missing": 7558,
+      "after_present": 7358,
+      "after_missing": 205,
+      "recovered_new": 7353,
+      "kept_existing_same": 4,
+      "replaced_with_authenticated": 1,
+      "cleared_unverified": 0,
+      "still_missing_unverifiable": 205,
+      "methods": {
+        "en:last_on_authority": 149,
+        "en:auth_narrated": 181,
+        "ar:arabic_isnad_companion": 744,
+        "en:x_reported_colon": 1717,
+        "en:this_hadith_auth": 859,
+        "en:auth_reported": 56,
+        "en:this_hadith_by": 230,
+        "en:it_has_been_auth": 229,
+        "en:x_narrated_auth": 92,
+        "en:x_reported_auth": 211,
+        "en:x_said_colon": 383,
+        "en:x_reported_that": 1438,
+        "en:x_narrated_colon": 9,
+        "en:it_was_from": 6,
+        "en:x_reported_messenger": 982,
+        "en:x_narrated_that": 35,
+        "en:it_was_that": 2,
+        "en:narrated_colon": 5,
+        "en:x_honor_reported": 30
+      },
+      "samples_recovered": [
+        {
+          "n": 3,
+          "narrator": "Anas bin Mālik",
+          "method": "en:last_on_authority"
+        },
+        {
+          "n": 4,
+          "narrator": "Abū Hurayrah",
+          "method": "en:last_on_authority"
+        },
+        {
+          "n": 15,
+          "narrator": "Abī Hurayrah",
+          "method": "en:last_on_authority"
+        },
+        {
+          "n": 93,
+          "narrator": "Yahya b. Ya'mur",
+          "method": "en:auth_narrated"
+        },
+        {
+          "n": 94,
+          "narrator": "Yahya b. Ya'mur",
+          "method": "en:auth_narrated"
+        },
+        {
+          "n": 95,
+          "narrator": "Yahya b. Ya'mur and Humaid b. 'Abdur-Rahman",
+          "method": "en:auth_narrated"
+        },
+        {
+          "n": 96,
+          "narrator": "عمر",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 97,
+          "narrator": "Abu Huraira",
+          "method": "en:x_reported_colon"
+        }
+      ],
+      "samples_still_missing": [
+        {
+          "n": 1,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 2,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 5,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 6,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 7,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 8,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 9,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 10,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        }
+      ]
+    },
+    "abudawud": {
+      "book": "Sunan Abu Dawood",
+      "slug": "abudawud",
+      "total": 5274,
+      "before_present": 2953,
+      "before_missing": 2321,
+      "after_present": 5270,
+      "after_missing": 4,
+      "recovered_new": 2317,
+      "kept_existing_same": 2684,
+      "replaced_with_authenticated": 269,
+      "cleared_unverified": 0,
+      "still_missing_unverifiable": 4,
+      "methods": {
+        "en:narrated_colon": 2930,
+        "en:x_reported_auth": 80,
+        "en:x_reported_colon": 96,
+        "en:last_on_authority": 53,
+        "en:x_said_colon": 955,
+        "ar:arabic_isnad_companion": 1117,
+        "en:x_narrated_colon": 2,
+        "en:x_reported_that": 24,
+        "en:x_narrated_auth": 4,
+        "en:x_narrated_that": 5,
+        "en:it_was_that": 2,
+        "en:it_was_from": 2
+      },
+      "samples_recovered": [
+        {
+          "n": 3,
+          "narrator": "Abu al-Tayyah",
+          "method": "en:x_reported_auth"
+        },
+        {
+          "n": 4,
+          "narrator": "Anas b. Malik",
+          "method": "en:x_reported_colon"
+        },
+        {
+          "n": 5,
+          "narrator": "Anas has:\" O Allaah",
+          "method": "en:last_on_authority"
+        },
+        {
+          "n": 11,
+          "narrator": "Marwan al-Asfar",
+          "method": "en:x_said_colon"
+        },
+        {
+          "n": 34,
+          "narrator": "عائشة",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 37,
+          "narrator": "Abd Allaah b",
+          "method": "en:last_on_authority"
+        },
+        {
+          "n": 51,
+          "narrator": "المقدام بن شريح",
+          "method": "ar:arabic_isnad_companion"
+        },
+        {
+          "n": 52,
+          "narrator": "Aishah",
+          "method": "en:x_narrated_colon"
+        }
+      ],
+      "samples_still_missing": [
+        {
+          "n": 123,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "Another version says:He wiped his ears inside and outside. Hisham adds: He inserted his fingers in the ear-holes",
+          "ar_prefix": "حَدَّثَنَا مَحْمُودُ بْنُ خَالِدٍ، وَهِشَامُ بْنُ خَالِدٍ، - الْمَعْنَى - قَالاَ"
+        },
+        {
+          "n": 907,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 1598,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "Waki’ said Ba’l means the agricultural crop which grows by the rain water. Ibn Al Aswad said and Yahya, that is, Ibn Ada",
+          "ar_prefix": "حَدَّثَنَا الْهَيْثَمُ بْنُ خَالِدٍ الْجُهَنِيُّ، وَحُسَيْنُ بْنُ الأَسْوَدِ الْ"
+        },
+        {
+          "n": 4290,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        }
+      ]
+    },
+    "tirmidhi": {
+      "book": "Jami' at-Tirmidhi",
+      "slug": "tirmidhi",
+      "total": 3956,
+      "before_present": 1593,
+      "before_missing": 2363,
+      "after_present": 3880,
+      "after_missing": 76,
+      "recovered_new": 2287,
+      "kept_existing_same": 1216,
+      "replaced_with_authenticated": 377,
+      "cleared_unverified": 0,
+      "still_missing_unverifiable": 76,
+      "methods": {
+        "en:x_narrated_that": 980,
+        "en:x_said_colon": 296,
+        "en:x_narrated_colon": 620,
+        "ar:arabic_isnad_companion": 382,
+        "en:x_reported_that": 3,
+        "en:narrated_colon": 1585,
+        "en:it_was_from": 11,
+        "en:it_was_that": 2,
+        "en:last_on_authority": 1
+      },
+      "samples_recovered": [
+        {
+          "n": 1,
+          "narrator": "Ibn `Umar",
+          "method": "en:x_narrated_that"
+        },
+        {
+          "n": 2,
+          "narrator": "Abu Hurairah",
+          "method": "en:x_narrated_that"
+        },
+        {
+          "n": 3,
+          "narrator": "Ali",
+          "method": "en:x_narrated_that"
+        },
+        {
+          "n": 4,
+          "narrator": "Jabir bin 'Abdullah, may Allah be pleased with them",
+          "method": "en:x_narrated_that"
+        },
+        {
+          "n": 5,
+          "narrator": "Anas bin Malik",
+          "method": "en:x_said_colon"
+        },
+        {
+          "n": 6,
+          "narrator": "Anas bin Malik",
+          "method": "en:x_said_colon"
+        },
+        {
+          "n": 7,
+          "narrator": "Aishah, [may Allah be pleased with her]",
+          "method": "en:x_said_colon"
+        },
+        {
+          "n": 8,
+          "narrator": "Abu Ayyub Al-Ansari",
+          "method": "en:x_narrated_that"
+        }
+      ],
+      "samples_still_missing": [
+        {
+          "n": 225,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "Narrator not mentioned:And the Prophet said: \"If the people knew what (reward) is in the call (Adhan) and the first row,",
+          "ar_prefix": "وَقَالَ النَّبِيُّ صلى الله عليه وسلم ‏ \"‏ لَوْ أَنَّ النَّاسَ يَعْلَمُونَ مَا ف"
+        },
+        {
+          "n": 319,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "It has been related that :the Prophet said: \"Whoever builds a Masjid for (the sake of) Allah, be it small or large, then",
+          "ar_prefix": "وَقَدْ رُوِيَ عَنِ النَّبِيِّ صلى الله عليه وسلم أَنَّهُ قَالَ ‏ \"‏ مَنْ بَنَى ل"
+        },
+        {
+          "n": 391,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 455,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 457,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 458,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 945,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        },
+        {
+          "n": 1205,
+          "reason": "No verifiable narrator in authenticated English or Arabic isnad",
+          "en_prefix": "",
+          "ar_prefix": ""
+        }
+      ]
+    }
+  }
+}
